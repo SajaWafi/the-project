@@ -27,8 +27,7 @@
     .mobile-screen {
         width: 340px;       
         height: 800px;
-        max-width: 100%;
-        max-height: 95vh;
+       
         position: relative;
         overflow: hidden;
         border-radius: 14px;
@@ -65,7 +64,6 @@
 
     .logo {
          width: 450px;
-        
         margin-bottom: 55px;
         display: block;
     }
