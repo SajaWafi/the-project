@@ -25,9 +25,9 @@
     }
 
     .mobile-screen {
-        width: 340px;       
-        height: 800px;
-       
+         width: 100%;
+    max-width: 360px; /* هذا المهم */
+    height: 100vh;
         position: relative;
         overflow: hidden;
         border-radius: 14px;
