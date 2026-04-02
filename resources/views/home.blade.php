@@ -342,10 +342,11 @@
         }
 
         .bottom-nav {
-        position: absolute;
+         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
+
         height: 70px;
 
         background: #2f80ed;
@@ -357,14 +358,15 @@
     }
 
     .nav-item {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: rgba(255,255,255,0.6);
-        transition: 0.2s;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            transition: 0.2s;
     }
 
     .nav-svg {
@@ -375,8 +377,8 @@
     /* 🔥 الحالة النشطة */
     .nav-item.active {
         background: rgba(255,255,255,0.25);
-    border-radius: 14px;
-    color: #fff;
+        border-radius: 14px;
+        color: #fff;
     }
     .icon-svg {
         width: 18px;

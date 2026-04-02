@@ -199,8 +199,8 @@
 
         .nav-item.active {
             background: rgba(255,255,255,0.25);
-    border-radius: 14px;
-    color: #fff;
+            border-radius: 14px;
+            color: #fff;
         }
 
         .nav-svg {
