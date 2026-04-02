@@ -172,3 +172,7 @@ Route::get('/doctor/signup/complete', function () {
 Route::get('/login-page', function () {
     return view('login-page');
 })->name('login.page');
+
+Route::get('/home', function () {
+    return view('home');
+})->name('home');

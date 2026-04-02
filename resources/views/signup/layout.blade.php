@@ -368,7 +368,22 @@
             border-radius: 50%;
             z-index: 0;
         }
-    </style>
+        .btn-next {
+        width: 100%;
+        height: 54px;
+        border-radius: 18px;
+        background: #2f80ed;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        cursor: pointer;
+    }
+        </style>
 </head>
 <body>
     <div class="phone">
