@@ -42,8 +42,8 @@
 
         <button class="btn" type="submit">NEXT</button>
 
-        <div class="footer">
-            Already have an account? <a href="#">Log in</a>
-        </div>
+         <div class="footer">
+        Already have an account?
+        <a href="{{ route('login.page') }}">Log in</a>
     </form>
 @endsection

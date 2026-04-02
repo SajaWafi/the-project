@@ -22,8 +22,9 @@
         }
 
         .phone {
-            width: 295px;
-            height: 625px;
+            width: 100%;
+            max-width: 360px; /* هذا المهم */
+            height: 100vh;
             background: url('{{ asset('pics/bg.png') }}') no-repeat center center;
             background-size: cover;
             background-position: center;

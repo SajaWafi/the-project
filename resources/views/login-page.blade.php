@@ -22,9 +22,9 @@
             }
 
         .mobile-screen {
-           width: 100%;
-    max-width: 360px; /* هذا المهم */
-    height: 100vh;
+            width: 100%;
+            max-width: 360px; /* هذا المهم */
+            height: 100vh;
             position: relative;
             overflow: hidden;
             flex-shrink: 0;
@@ -285,7 +285,7 @@
 
             <div class="bottom-text">
                 Don’t have an account?
-                <a href="#">Sign up</a>
+                <a href="{{ route('signup.step1') }}">Sign up</a>
             </div>
 
         </div>

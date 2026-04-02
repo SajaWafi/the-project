@@ -169,3 +169,6 @@ Route::get('/doctor/signup/complete', function () {
     ]);
 })->name('doctor.signup.complete');
 
+Route::get('/login-page', function () {
+    return view('login-page');
+})->name('login.page');

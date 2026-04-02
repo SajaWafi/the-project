@@ -13,7 +13,7 @@
         }
 
         body {
-            background: #1b1b1b;
+            background: #edf1f4;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,8 +22,9 @@
         }
 
         .phone {
-            width: 360px;
-            height: 800px;
+            width: 100%;
+            max-width: 360px; /* هذا المهم */
+            height: 100vh;
             background: url('{{ asset('pics/bg.png') }}') no-repeat;
             background-position: left;
             border-radius: 16px;
@@ -101,14 +102,14 @@
         .field label,
         .dob-label {
             display: block;
-            font-size: 17px;
+            font-size: 20px;
             color: #555;
             margin-bottom: 8px;
         }
 
         .input, .select {
             width: 100%;
-            height: 36px;
+            height: 45px;
             border: none;
             outline: none;
             border-radius: 14px;
@@ -169,7 +170,7 @@
 
         .btn {
             width: 100%;
-            height: 48px;
+            height: 60px;
             border: none;
             border-radius: 16px;
             background: #3680e8;
@@ -182,7 +183,7 @@
         .footer {
             text-align: center;
             margin-top: 10px;
-            font-size: 12px;
+            font-size: 16px;
             color: #777;
         }
 

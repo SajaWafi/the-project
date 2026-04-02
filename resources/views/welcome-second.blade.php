@@ -157,7 +157,7 @@
             </p>
 
             <div class="actions">
-        <button class="btn btn-primary">Sign up</button>
+        <a href="{{ route('signup.step1') }}" class="btn btn-primary">Sign up</a>
         <a href="{{ route('login.page') }}" class="btn btn-outline">Login</a>
         </div>
 
