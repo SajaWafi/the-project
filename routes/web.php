@@ -176,3 +176,18 @@ Route::get('/login-page', function () {
 Route::get('/home', function () {
     return view('home');
 })->name('home');
+Route::get('/notifications', function () {
+    return view('notifications');
+})->name('notifications');
+
+Route::get('/reports', function () {
+    return 'Reports page';
+})->name('reports');
+
+Route::get('/location', function () {
+    return 'Location page';
+})->name('location');
+
+Route::get('/doctor', function () {
+    return 'Doctor page';
+})->name('doctor');

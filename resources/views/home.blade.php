@@ -342,12 +342,14 @@
         }
 
         .bottom-nav {
-        position: sticky;
+        position: absolute;
         bottom: 0;
-        margin-top: auto;
+        left: 0;
+        width: 100%;
+        height: 70px;
+
         background: #2f80ed;
         border-radius: 24px 24px 0 0;
-        height: 64px;
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -372,9 +374,9 @@
 
     /* 🔥 الحالة النشطة */
     .nav-item.active {
-        background: rgba(255,255,255,0.2);
-        color: #ffffff;
-        transform: translateY(-2px);
+        background: rgba(255,255,255,0.25);
+    border-radius: 14px;
+    color: #fff;
     }
     .icon-svg {
         width: 18px;
@@ -549,50 +551,42 @@
                     </div>
                 </div>
             </div>
-        <div class="bottom-nav">
-        <!-- DOCTOR -->
-            <div class="nav-item">
-                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                <!-- الأنبوب -->
-                <path d="M6 3v6a4 4 0 0 0 8 0V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                
-                <!-- النزول للسماعة -->
-                <path d="M10 13v2a4 4 0 0 0 4 4h1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                
-                <!-- رأس السماعة -->
-                <circle cx="18" cy="17" r="2" stroke="currentColor" stroke-width="2"/>
-            </svg>
-            </div>
-            <!-- NOTIFICATION -->
-            <div class="nav-item">
-                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 4a4 4 0 0 0-4 4v2c0 .6-.2 1.2-.6 1.7L6 14h12l-1.4-2.3c-.4-.5-.6-1.1-.6-1.7V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2"/>
-                    <path d="M10 18a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2"/>
-                </svg>
-            </div>
-            <!-- HOME -->
-            <div class="nav-item active">
-                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2"/>
-                </svg>
-            </div>
+          <div class="bottom-nav">
+                <a href="{{ route('doctor') }}" class="nav-item {{ request()->routeIs('doctor') ? 'active' : '' }}">
+                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 4v5a6 6 0 0 0 12 0V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 15v2a4 4 0 0 0 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="18" cy="19" r="2" fill="currentColor"/>
+                    </svg>
+                </a>
 
+                <a href="{{ route('notifications') }}" class="nav-item {{ request()->routeIs('notifications') ? 'active' : '' }}">
+                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </a>
 
-            <!-- FILE -->
-            <div class="nav-item">
-                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
-                    <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2"/>
-                </svg>
-            </div>
+                <a href="{{ route('home') }}" class="nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                </a>
 
-            <!-- LOCATION -->
-            <div class="nav-item">
-                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
-                    <circle cx="12" cy="10" r="2.5" fill="currentColor"/>
-                </svg>
+                <a href="{{ route('reports') }}" class="nav-item {{ request()->routeIs('reports') ? 'active' : '' }}">
+                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                        <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="{{ route('location') }}" class="nav-item {{ request()->routeIs('location') ? 'active' : '' }}">
+                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <circle cx="12" cy="10" r="2.5" fill="currentColor"/>
+                    </svg>
+                </a>
             </div>
 
         </div>
