@@ -199,6 +199,11 @@ Route::get('/paerents/location', function () {
     return view('parents.location');
 })->name('parents.location');
 
+//profile
+Route::get('/profile', function () {
+    return view('profile');
+})->name('profile');
+
 //doctor
 
 
