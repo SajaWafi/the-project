@@ -25,9 +25,10 @@
     }
 
     .mobile-screen {
-         width: 100%;
-    max-width: 360px; /* هذا المهم */
-    height: 100vh;
+        width: 100%;
+        max-width: 360px; /* هذا المهم */
+        max-height: 800px; /* هذا المهم */
+        height: 100vh;
         position: relative;
         overflow: hidden;
         border-radius: 14px;
@@ -84,8 +85,8 @@
         .mobile-screen {
             width: 100%;
             height: 100vh;
-            max-width: 100%;
-            max-height: 100vh;
+            max-width: 360px; /* هذا المهم */
+            max-height: 800px;
             border-radius: 0;
             box-shadow: none;
         }
@@ -103,6 +104,7 @@
             width: 220px;
             margin-bottom: 48px;
         }
+
     }
 </style>
 </head>

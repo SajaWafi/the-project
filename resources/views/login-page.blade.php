@@ -226,6 +226,19 @@
         justify-content: center;
         padding: 0;
     }
+    
+    .mobile-screen {
+            width: 100%;
+            max-width: 360px; /* هذا المهم */
+            max-height: 800px;
+            height: 100vh;
+            background: url('{{ asset('pics/bg.png') }}') no-repeat;
+            background-position: left;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+        }
     </style>
 </head>
 <body>

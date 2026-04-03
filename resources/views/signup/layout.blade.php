@@ -24,6 +24,7 @@
         .phone {
             width: 100%;
             max-width: 360px; /* هذا المهم */
+            max-height: 800px;
             height: 100vh;
             background: url('{{ asset('pics/bg.png') }}') no-repeat;
             background-position: left;
