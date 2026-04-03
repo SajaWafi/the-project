@@ -191,3 +191,8 @@ Route::get('/location', function () {
 Route::get('/doctor', function () {
     return 'Doctor page';
 })->name('doctor');
+
+
+Route::get('/par/location', function () {
+    return view('par.location');
+})->name('par.location');
