@@ -8,16 +8,20 @@ use Illuminate\Support\Facades\Route;
   //  return view('welcome');
 //});
 
-
+//welcome screen
 Route::get('/', function () {
     return view('welcome-screen');
 });
 Route::get('/welcome-second', function () {
     return view('welcome-second');
 })->name('welcome.second');
+
+//login page
 Route::get('/login-page', function () {
     return view('login-page');
 })->name('login.page');
+
+//signup
 Route::get('/signup/step1', function () {
     return view('signup.step1');
 })->name('signup.step1');
@@ -101,7 +105,7 @@ Route::get('/signup/complete', function () {
 
 
 
-
+//doctor signup
 Route::get('/doctor/signup/step1', function () {
     return view('doctor-signup.step1');
 })->name('doctor.signup.step1');
@@ -169,30 +173,71 @@ Route::get('/doctor/signup/complete', function () {
     ]);
 })->name('doctor.signup.complete');
 
+//login page
 Route::get('/login-page', function () {
     return view('login-page');
 })->name('login.page');
 
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
-Route::get('/notifications', function () {
-    return view('notifications');
-})->name('notifications');
+//home
+Route::get('/parents/home', function () {
+    return view('parents.home');
+})->name('parents.home');
 
-Route::get('/reports', function () {
+//notifications
+Route::get('/parents/notifications', function () {
+    return view('parents.notifications');
+})->name('parents.notifications');
+
+//reports
+Route::get('/parents/reports', function () {
     return 'Reports page';
-})->name('reports');
+})->name('parents.reports');
 
-Route::get('/location', function () {
-    return 'Location page';
-})->name('location');
+
+//location
+Route::get('/paerents/location', function () {
+    return view('parents.location');
+})->name('parents.location');
+
+//doctor
+
 
 Route::get('/doctor', function () {
-    return 'Doctor page';
-})->name('doctor');
+    $doctor = [
+        [
+            'id' => 1,
+            'name' => 'Dr. Alexander Bennett',
+            'specialty' => 'Pediatric Neurologist',
+            'image' => 'doctor1.png'
+        ],
+        [
+            'id' => 2,
+            'name' => 'Dr. Michael Davidson',
+            'specialty' => 'Licensed Psychiatrist',
+            'image' => 'doctor2.png'
+        ],
+        [
+            'id' => 3,
+            'name' => 'Dr. Olivia Turner',
+            'specialty' => 'Speech-Language Pathologist',
+            'image' => 'doctor3.png'
+        ],
+        [
+            'id' => 4,
+            'name' => 'Dr. Sophia Martinez',
+            'specialty' => 'ABA Therapist',
+            'image' => 'doctor4.png'
+        ],
+    ];
+
+    return view('parent.doctors', compact('doctors'));
+})->name('parent.doctors');
 
 
-Route::get('/par/location', function () {
-    return view('par.location');
-})->name('par.location');
+Route::get('/doctor/profile/{id}', function ($id) {
+    return "Doctor Profile ID: " . $id;
+})->name('doctor.profile');
+
+Route::get('/doctor/chat/{id}', function ($id) {
+    return "Chat with Doctor ID: " . $id;
+})->name('doctor.chat');
