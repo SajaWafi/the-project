@@ -202,7 +202,7 @@ Route::get('/paerents/location', function () {
 //doctor
 
 
-Route::get('/doctor', function () {
+Route::get('/parents/doctors', function () {
     $doctor = [
         [
             'id' => 1,
@@ -230,8 +230,8 @@ Route::get('/doctor', function () {
         ],
     ];
 
-    return view('parent.doctors', compact('doctors'));
-})->name('parent.doctors');
+    return view('parents.doctors', compact('doctor'));
+})->name('parents.doctors');
 
 
 Route::get('/doctor/profile/{id}', function ($id) {
