@@ -23,7 +23,7 @@
         .phone {
             width: 390px;
             height: 844px;
-            background: #f7f8fb;
+            background: url('{{ asset('images/bg.png') }}') no-repeat center center/cover;
             border-radius: 22px;
             overflow: hidden;
             position: relative;

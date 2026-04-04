@@ -457,13 +457,16 @@
                 </div>
 
                 <div class="header-icons">
-    <button class="circle-icon" type="button">
-        <svg class="icon-svg bell-icon" viewBox="0 0 24 24" fill="none">
-            <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <span class="notif-dot"></span>
-    </button>
+   <button class="circle-icon" type="button"
+        onclick="window.location.href='{{ route('parents.request') }}'">
+
+    <svg class="icon-svg bell-icon" viewBox="0 0 24 24" fill="none">
+        <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/>
+    </svg>
+
+    <span class="notif-dot"></span>
+</button>
 
     <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo-small">
 </div>
