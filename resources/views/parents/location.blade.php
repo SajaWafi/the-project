@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ahmed's location</title>
+    <title>location</title>
 
     <link
         rel="stylesheet"
@@ -33,23 +33,9 @@
             height: 844px;
             background: #fff;
             border-radius: 20px;
-            overflow: hidden;
             position: relative;
             box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-        }
-
-        .status-bar {
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 12px 0;
-            font-size: 13px;
-            font-weight: 700;
-            color: #111;
-            background: #fff;
-            position: relative;
-            z-index: 1000;
+            overflow: hidden;
         }
 
         .page-title {
@@ -142,8 +128,8 @@
             margin-top: -6px;
             position: relative;
             z-index: 20;
-            padding: 10px 14px 92px;
-            min-height: 306px;
+            padding: 10px 14px 150px;
+            min-height: 332px;
         }
 
         .drag-line {
@@ -184,24 +170,56 @@
             margin-bottom: 14px;
         }
 
-        .divider {
-            height: 1px;
-            background: #e8e8e8;
-            margin: 12px 0 16px;
+        .bottom-card {
+            background: #f3f3f3;
+            border-radius: 20px;
+            padding: 14px 10px;
+            margin-top: 18px;
         }
 
-        .radius-box {
-            background: #f3f3f3;
-            border-radius: 14px;
-            padding: 14px 10px;
-            min-height: 74px;
+        .card-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+
+        .card-item {
+            text-align: center;
+        }
+
+        .circle-icon {
+            width: 60px;
+            height: 60px;
+            background: #e6e6e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 0 auto 6px;
+        }
+
+        .circle-icon.active {
+            background: #2f80ed;
+            color: white;
+        }
+
+        .label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .sub {
+            font-size: 14px;
+            color: #777;
         }
 
         .bottom-nav {
             position: absolute;
-            bottom: 0;
             left: 0;
             right: 0;
+            bottom: 0;
             height: 64px;
             background: #2f80ed;
             border-radius: 0 0 20px 20px;
@@ -209,7 +227,7 @@
             justify-content: space-around;
             align-items: center;
             z-index: 1000;
-}
+        }
 
         .nav-item {
             width: 48px;
@@ -218,29 +236,20 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.65);
             transition: 0.2s;
+            text-decoration: none;
         }
 
-        .nav-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f2f2f2;
-            font-size: 18px;
-        }
-
-        .nav-item.active .nav-icon {
-            background: #2f80ed;
-            color: white;
+        .nav-svg {
+            width: 22px;
+            height: 22px;
         }
 
         .nav-item.active {
-            color: #2f80ed;
-            font-weight: 700;
+            background: rgba(255,255,255,0.18);
+            color: #ffffff;
+            transform: translateY(-2px);
         }
 
         .leaflet-control-attribution {
@@ -255,119 +264,10 @@
             border-radius: 50%;
             box-shadow: 0 0 0 3px rgba(24,183,176,0.25);
         }
-
-        /* Bottom Card */
-.bottom-card {
-    background: #f3f3f3;
-    border-radius: 20px;
-    padding: 14px 10px;
-    margin-top: 10px;
-}
-
-.card-items {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.card-item {
-    text-align: center;
-}
-
-.circle-icon {
-    width: 60px;
-    height: 60px;
-    background: #e6e6e6;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    margin: auto;
-    margin-bottom: 6px;
-}
-
-.circle-icon.active {
-    background: #2f80ed;
-    color: white;
-}
-
-.label {
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.sub {
-    font-size: 14px;
-    color: #777;
-}
-
-/* Bottom Nav */
-.bottom-nav2 {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 80px;
-    background: #1f73e8;
-    border-top-left-radius: 28px;
-    border-top-right-radius: 28px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    color: white;
-}
-
-.nav2-item {
-    font-size: 22px;
-}
-
-/* Center Button */
-.nav2-center {
-    position: absolute;
-    top: -18px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #1f73e8;
-    font-size: 22px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
-}
-
-
-
-.nav-item {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: rgba(255,255,255,0.6);
-    transition: 0.2s;
-}
-
-.nav-svg {
-    width: 22px;
-    height: 22px;
-}
-
-/* 🔥 الحالة النشطة */
-.nav-item.active {
-    background: rgba(255,255,255,0.2);
-    color: #ffffff;
-    transform: translateY(-2px);
-}
     </style>
 </head>
 <body>
     <div class="phone">
-        
 
         <div class="page-title">location</div>
 
@@ -376,45 +276,86 @@
 
             <div class="map-actions">
                 <button class="map-btn" id="locateBtn">📍</button>
-                
             </div>
-    <!--
-            
-    <div class="search-bar">
+
+            <div class="search-bar">
                 <div class="search-left">
                     <span>🔍</span>
                     <span>Search Maps</span>
                 </div>
                 <div class="search-right">AA</div>
             </div>
-    
-    -->
-            
         </div>
 
-        <!-- Bottom Card -->
-<div class="bottom-card">
-    <div class="card-items">
+        <div class="panel">
+            <div class="drag-line"></div>
 
-        <div class="card-item">
-            <div class="circle-icon active">🏠</div>
-            <div class="label">Home</div>
+            <div class="section-title">Child Status</div>
+            <div class="status-row">
+                <span class="green-dot"></span>
+                <span>Inside Safe Zone</span>
+            </div>
+            <div class="status-value">Last update: 10 sec</div>
+
+            <div class="bottom-card">
+                <div class="card-items">
+                    <div class="card-item">
+                        <div class="circle-icon active">🏠</div>
+                        <div class="label">Home</div>
+                    </div>
+
+                    <div class="card-item">
+                        <div class="circle-icon">🏫</div>
+                        <div class="label">School</div>
+                    </div>
+
+                    <div class="card-item">
+                        <div class="circle-icon">＋</div>
+                        <div class="label">Add</div>
+                        <div class="sub">&nbsp;</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="card-item">
-            <div class="circle-icon">🏫</div>
-            <div class="label">School</div>
-        </div>
+        <div class="bottom-nav">
+            <a href="{{ route('parents.doctors') }}" class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 4v5a6 6 0 0 0 12 0V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 15v2a4 4 0 0 0 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="18" cy="19" r="2" fill="currentColor"/>
+                </svg>
+            </a>
 
-        <div class="card-item">
-            <div class="circle-icon">＋</div>
-            <div class="label">Add</div>
-            <div class="sub">&nbsp;</div>
-        </div>
+            <a href="{{ route('parents.notifications') }}" class="nav-item {{ request()->routeIs('parents.notifications') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </a>
 
+            <a href="{{ route('parents.home') }}" class="nav-item {{ request()->routeIs('parents.home') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+            </a>
+
+            <a href="{{ route('parents.reports') }}" class="nav-item {{ request()->routeIs('parents.reports') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </a>
+
+            <a href="{{ route('parents.location') }}" class="nav-item {{ request()->routeIs('parents.location') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <circle cx="12" cy="10" r="2.5" fill="currentColor"/>
+                </svg>
+            </a>
+        </div>
     </div>
-</div>
-
 
     <script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -466,13 +407,8 @@
         function updateLocation(lat, lng) {
             map.setView([lat, lng], 17);
 
-            if (userMarker) {
-                userMarker.setLatLng([lat, lng]);
-            }
-
-            if (safeZoneCircle) {
-                safeZoneCircle.setLatLng([lat, lng]);
-            }
+            if (userMarker) userMarker.setLatLng([lat, lng]);
+            if (safeZoneCircle) safeZoneCircle.setLatLng([lat, lng]);
         }
 
         function getCurrentLocation() {
@@ -483,9 +419,7 @@
 
             navigator.geolocation.getCurrentPosition(
                 function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    updateLocation(lat, lng);
+                    updateLocation(position.coords.latitude, position.coords.longitude);
                 },
                 function() {
                     alert('Unable to fetch current location.');
@@ -510,56 +444,10 @@
                     function(position) {
                         updateLocation(position.coords.latitude, position.coords.longitude);
                     },
-                    function() {
-                    }
+                    function() {}
                 );
             }
         });
     </script>
 </body>
-
-        <!-- Navbar --> 
-        <div class="bottom-nav">
-                <a href="{{ route('parents.doctors') }}" class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M6 4v5a6 6 0 0 0 12 0V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M12 15v2a4 4 0 0 0 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <circle cx="18" cy="19" r="2" fill="currentColor"/>
-                    </svg>
-                </a>
-
-                <a href="{{ route('parents.notifications') }}" class="nav-item {{ request()->routeIs('parents.notifications') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </a>
-
-                <a href="{{ route('parents.home') }}" class="nav-item {{ request()->routeIs('parents.home') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                    </svg>
-                </a>
-
-                <a href="{{ route('parents.reports') }}" class="nav-item {{ request()->routeIs('parents.reports') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
-                        <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </a>
-
-                <a href="{{ route('parents.location') }}" class="nav-item {{ request()->routeIs('parents.location') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                        <circle cx="12" cy="10" r="2.5" fill="currentColor"/>
-                    </svg>
-                </a>
-            </div>
-
-        </div>
-
-</body>
-</html>
-
 </html>
