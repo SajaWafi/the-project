@@ -258,6 +258,88 @@
                 padding: 14px 16px 26px;
             }
         }
+                .logout-btn-trigger {
+            width: 100%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .logout-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(130, 160, 210, 0.18);
+            z-index: 20;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0 0 0;
+        }
+
+        .logout-overlay.show {
+            display: flex;
+        }
+
+        .logout-sheet {
+            width: 100%;
+            background: #f7f7f7;
+            border-radius: 28px 28px 0 0;
+            padding: 24px 20px 28px;
+            box-shadow: 0 -8px 24px rgba(0,0,0,0.08);
+            transform: translateY(100%);
+            transition: transform 0.25s ease;
+        }
+
+        .logout-overlay.show .logout-sheet {
+            transform: translateY(0);
+        }
+
+        .logout-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .logout-text {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .logout-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .logout-action-btn {
+            min-width: 96px;
+            height: 36px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .logout-action-btn:active {
+            transform: scale(0.97);
+        }
+
+        .logout-cancel {
+            background: #bcecdf;
+            color: #2f80ed;
+        }
+
+        .logout-confirm {
+            background: #2f80ed;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -299,24 +381,23 @@
                 <div class="profile-id">ID:6s6wn27e</div>
             </div>
 
-            <div class="menu-list">
-                <a href="#" class="menu-item">
-                    <div class="menu-left">
-                        <div class="menu-icon">
-                            <svg viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
-                                <path d="M5 20c0-3.2 3-5 7-5s7 1.8 7 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <div class="menu-text">Profile</div>
-                    </div>
-
-                    <div class="arrow-right">
+            <a href="{{ route('edit.profile') }}" class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">
                         <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M5 20c0-3.2 3-5 7-5s7 1.8 7 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                         </svg>
                     </div>
-                </a>
+                    <div class="menu-text">Profile</div>
+                </div>
+
+                <div class="arrow-right">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </a>
 
                 <a href="#" class="menu-item">
                     <div class="menu-left">
@@ -336,7 +417,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="menu-item">
+               <a href="{{ route('privacy.policy') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="menu-icon">
                             <svg viewBox="0 0 24 24" fill="none">
@@ -354,7 +435,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="menu-item">
+                <a href="{{ route('settings') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="menu-icon">
                             <svg viewBox="0 0 24 24" fill="none">
@@ -372,26 +453,39 @@
                     </div>
                 </a>
 
-                <a href="#" class="menu-item">
-                    <div class="menu-left">
-                        <div class="menu-icon">
-                            <svg viewBox="0 0 24 24" fill="none">
-                                <path d="M10 7V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M14 12H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M7 9L4 12L7 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                        <div class="menu-text">Logout</div>
-                    </div>
-
-                    <div class="arrow-right">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                </a>
+            <button type="button" class="menu-item logout-btn-trigger" onclick="openLogoutModal()">
+            <div class="menu-left">
+                <div class="menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M10 7V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M14 12H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M7 9L4 12L7 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="menu-text">Logout</div>
             </div>
 
+            <div class="arrow-right">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </button>
+
+        </div>
+        <div class="logout-overlay" id="logoutOverlay" onclick="closeLogoutModal(event)">
+            <div class="logout-sheet">
+                <div class="logout-title">Logout</div>
+                <div class="logout-text">are you sure you want to log out?</div>
+
+                <div class="logout-actions">
+                    <button type="button" class="logout-action-btn logout-cancel" onclick="closeLogoutModal()">Cancel</button>
+
+                    <a href="{{ route('login.page') }}" class="logout-action-btn logout-confirm" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">
+                        Yes, Logout
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -409,6 +503,16 @@
             };
             reader.readAsDataURL(file);
         });
+            const logoutOverlay = document.getElementById('logoutOverlay');
+
+    function openLogoutModal() {
+        logoutOverlay.classList.add('show');
+    }
+
+    function closeLogoutModal(event) {
+        if (event && event.target !== logoutOverlay) return;
+        logoutOverlay.classList.remove('show');
+    }
     </script>
 
 </body>
