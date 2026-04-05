@@ -199,9 +199,11 @@ Route::get('/parents/location', function () {
     return view('parents.location');
 })->name('parents.location');
 
-<<<<<<< HEAD
 //parents doctor
-=======
+Route::get('/parents/doctors', function () {
+    return view('parents.doctors');
+})->name('parents.doctors');
+
 //profile
 Route::get('/profile', function () {
     return view('profile');
@@ -272,7 +274,7 @@ Route::get('/reports-settings', function () {
 //doctor
 
 
->>>>>>> ef43eb510d7d2fa3d659bb0bf986f1aa372b79d4
+>>>>>>> ef43eb510d7d2fa3d659bb0bf986f1aa372b79d4  
 Route::get('/parents/doctors', function () {
     $doctor = [
         [
