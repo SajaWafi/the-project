@@ -221,7 +221,7 @@ body {
 
     <div class="title">Appointments</div>
 
-    <a href="#" class="add-btn">Add Appointment</a>
+    <a href="{{ route('doctor.add.appointment') }}" class="add-btn">Add Appointment</a>
 
                 <div class="schedule-card">
                 <div class="appointment-box">
