@@ -273,8 +273,6 @@ Route::get('/reports-settings', function () {
 
 //doctor
 
-
->>>>>>> ef43eb510d7d2fa3d659bb0bf986f1aa372b79d4  
 Route::get('/parents/doctors', function () {
     $doctor = [
         [
