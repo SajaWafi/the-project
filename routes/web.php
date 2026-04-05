@@ -195,13 +195,11 @@ Route::get('/parents/reports', function () {
 
 
 //location
-Route::get('/paerents/location', function () {
+Route::get('/parents/location', function () {
     return view('parents.location');
 })->name('parents.location');
 
-//doctor
-
-
+//parents doctor
 Route::get('/parents/doctors', function () {
     $doctor = [
         [
@@ -234,10 +232,285 @@ Route::get('/parents/doctors', function () {
 })->name('parents.doctors');
 
 
-Route::get('/doctor/profile/{id}', function ($id) {
-    return "Doctor Profile ID: " . $id;
-})->name('doctor.profile');
 
+//parents doctor profile
+Route::get('/parents/doctor-profile/{id}', function ($id) {
+    $doctor = [
+        'id' => $id,
+        'name' => 'Dr. Alexander Bennett',
+        'specialty' => 'Pediatric Neurologist',
+        'image' => 'doctor1.png',
+    ];
+
+    return view('parents.doctor-profile', compact('doctor'));
+})->name('parents.doctor-profile');
+
+//parents chat
+Route::get('/parents/chat/{id}', function ($id) {
+    $doctor = [
+        'id' => $id,
+        'name' => 'Dr. Olivia Turner',
+        'image' => 'doctor3.png',
+    ];
+    return view('parents.chat', compact('doctor'));
+})->name('parents.chat');
+
+
+//parents request
+Route::get('/parents/request', function () {
+    return view('parents.request');
+})->name('parents.request');
+
+//doctor home
+Route::get('/doctor/home', function () {
+    return view('doctor.home');
+})->name('doctor.home');
+
+//doctor request
+Route::get('/doctor/request', function () {
+    return view('doctor.request');
+})->name('doctor.request');
+
+//doctor parents
+Route::get('/doctor/parents', function () {
+    $parents = [
+        [
+            'id' => 1,
+            'name' => 'Ali Salah',
+            'subtitle' => "Ahmed Salah's father",
+            'image' => 'p1.png',
+        ],
+        [
+            'id' => 2,
+            'name' => 'Hifa Jaber',
+            'subtitle' => "Wala Ali's mother",
+            'image' => 'p2.png',
+        ],
+        [
+            'id' => 3,
+            'name' => 'Marwan Hasan',
+            'subtitle' => "Maryam Hasan's father",
+            'image' => 'p3.png',
+        ],
+    ];
+
+    return view('doctor.parents', compact('parents'));
+})->name('doctor.parents');
+
+//doctor parent profile
+Route::get('/doctors/parent-profile/{id}', function ($id) {
+    $parent = [
+        'id' => $id,
+        'name' => 'Ali Saloh',
+        'subtitle' => "Ahmed Salah’s father",
+        'image' => 'p1.png',
+        'phone' => '09X - XXXXXXX',
+        'autism_level' => 'Autism Levels: Mild',
+    ];
+
+    return view('doctor.parent-profile', compact('parent'));
+})->name('doctor.parent.profile');
+
+//doctor chat
 Route::get('/doctor/chat/{id}', function ($id) {
-    return "Chat with Doctor ID: " . $id;
+    $parent = [
+        'id' => $id,
+        'name' => 'Ali Salah',
+        'image' => 'p1.png',
+    ];
+
+    return view('doctor.chat', compact('parent'));
 })->name('doctor.chat');
+
+//doctor appointments
+Route::get('/doctor/appointments', function () {
+    return view('doctor.Appointments');
+})->name('doctor.appointments');
+
+//doctor add appointment
+Route::get('/doctor/add-appointment', function () {
+    return view('doctor.add-appointment');
+})->name('doctor.add.appointment');
+
+Route::post('/doctor/add-appointment', function (Request $request) {
+    $request->validate([
+        'appointment_date' => 'required|date',
+        'from_hour' => 'required',
+        'from_minute' => 'required',
+        'from_period' => 'required|in:AM,PM',
+        'to_hour' => 'required',
+        'to_minute' => 'required',
+        'to_period' => 'required|in:AM,PM',
+        'patient_id' => 'required',
+        'clinic_name' => 'required|string|max:255',
+        'note' => 'nullable|string|max:1000',
+    ]);
+
+    return back()->with('success', 'Appointment added successfully.');
+})->name('doctor.add.appointment.store');
+
+//doctor profile
+Route::get('/doctor/doctor-profile', function () {
+    return view('doctor.doctor-profile');
+})->name('doctor.doctor-profile');
+
+//doctor privacy
+Route::get('/doctor/privacy', function () {
+    return view('doctor.privacy');
+})->name('doctor.privacy');
+
+//doctor settings
+Route::get('/doctor/settings', function () {
+    return view('doctor.settings');
+})->name('doctor.settings');
+
+//doctor edit profile
+Route::get('/doctor/edit-profile', function () {
+    return view('doctor.edit-profile');
+})->name('doctor.edit-profile');
+
+Route::put('/doctor/edit-profile', function (Request $request) {
+    $request->validate([
+        'full_name' => 'required|string|max:255',
+        'phone' => 'required|string|max:30',
+        'email' => 'required|email|max:255',
+        'sex' => 'required|in:Male,Female',
+        'specialize' => 'required|string|max:255',
+        'birth_day' => 'required',
+        'birth_month' => 'required',
+        'birth_year' => 'required',
+        'bio' => 'nullable|string|max:1000',
+    ]);
+
+    return back()->with('success', 'Profile updated successfully');
+})->name('doctor.edit-profile.update');
+
+//doctor workplace
+Route::get('/doctor/workplace-timing', function () {
+    return view('doctor.workplace-timing');
+})->name('doctor.workplace.timing');
+
+Route::get('/doctor/workplace/create', function () {
+    return 'Create workplace page';
+})->name('doctor.workplace.create');
+
+Route::get('/doctor/workplace/edit/{id}', function ($id) {
+    return 'Edit workplace page: ' . $id;
+})->name('doctor.workplace.edit');
+
+Route::delete('/doctor/workplace/delete/{id}', function ($id) {
+    return back()->with('success', 'Workplace deleted');
+})->name('doctor.workplace.delete');
+
+//add workplace
+Route::get('/doctor/add-workplace', function () {
+    return view('doctor.add-workplace');
+})->name('doctor.add.workplace');
+
+Route::post('/doctor/add-workplace', function (Request $request) {
+    $request->validate([
+        'days' => 'required|array|min:1',
+        'days.*' => 'in:SAT,SUN,MON,TUE,WED,THU,FRI',
+        'from_hour' => 'required',
+        'from_minute' => 'required',
+        'from_period' => 'required|in:AM,PM',
+        'to_hour' => 'required',
+        'to_minute' => 'required',
+        'to_period' => 'required|in:AM,PM',
+        'location' => 'required|string|max:255',
+    ]);
+
+    return back()->with('success', 'Workplace added successfully');
+})->name('doctor.add.workplace.store');
+
+//doctor edit workplace
+Route::get('/doctor/edit-workplace/{id}', function ($id) {
+    $workplace = [
+        'id' => $id,
+        'days' => ['MON', 'WED', 'SAT'],
+        'from_hour' => '08',
+        'from_minute' => '30',
+        'from_period' => 'AM',
+        'to_hour' => '10',
+        'to_minute' => '00',
+        'to_period' => 'AM',
+        'location' => 'Tajora',
+    ];
+
+    return view('doctor.edit-workplace', compact('workplace'));
+})->name('doctor.edit-workplace');
+
+Route::put('/doctor/workplace-update/{id}', function (Request $request, $id) {
+    $request->validate([
+        'days' => 'required|array|min:1',
+        'days.*' => 'in:SAT,SUN,MON,TUE,WED,THU,FRI',
+        'from_hour' => 'required',
+        'from_minute' => 'required',
+        'from_period' => 'required|in:AM,PM',
+        'to_hour' => 'required',
+        'to_minute' => 'required',
+        'to_period' => 'required|in:AM,PM',
+        'location' => 'required|string|max:255',
+    ]);
+
+    return back()->with('success', 'Workplace updated successfully');
+})->name('doctor.workplace.update');
+
+//doctor change password
+
+Route::get('/doctor/change-password', function () {
+    return view('doctor.change-password');
+})->name('doctor.password');
+
+Route::post('/doctor/change-password', function (Request $request) {
+
+    $request->validate([
+        'current_password' => 'required',
+        'new_password' => 'required|min:6|confirmed',
+    ]);
+
+    $user = auth()->user(); // أو Doctor::first()
+
+    if (!Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors(['Current password is incorrect']);
+    }
+
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    return back()->with('success', 'Password updated successfully');
+})->name('doctor.password.update');
+
+//doctor alert sounds
+Route::get('/doctor/alert-sounds', function () {
+
+    // بيانات افتراضية
+    $settings = [
+        'notif_sound' => true,
+        'notif_vibrate' => false,
+        'msg_sound' => true,
+        'msg_vibrate' => false,
+    ];
+
+    return view('doctor.alert-sounds', compact('settings'));
+})->name('doctor.alert');
+
+Route::post('/doctor/alert-sounds', function (Request $request) {
+
+    // هنا تخزن في DB لو عندك جدول
+    // مثال:
+    // auth()->user()->update([...]);
+
+    return back()->with('success', 'Settings updated');
+})->name('doctor.alert.update');
+
+//doctor delete account
+Route::delete('/doctor/delete-account', function () {
+    return back()->with('success', 'Account deleted');
+})->name('doctor.delete.account');
+
+//doctor log out
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/login');
+})->name('logout');
