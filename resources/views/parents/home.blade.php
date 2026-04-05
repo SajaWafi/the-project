@@ -441,6 +441,10 @@
                 height: 245px !important;
             }
         }
+        .child-link {
+    display: inline-flex;
+    text-decoration: none;
+}
     </style>
 </head>
 <body>
@@ -452,7 +456,9 @@
 
             <div class="header">
                 <div class="user-box">
-                    <img src="{{ asset('images/child.png') }}" alt="Child">
+                    <a href="{{ route('profile') }}" class="child-link">
+    <img src="{{ asset('images/child.png') }}" alt="Child">
+</a>
                     <div class="hello">Hello, Ahmed!</div>
                 </div>
 
