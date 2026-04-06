@@ -310,7 +310,7 @@
                     </div>
 
                     <div class="card-item">
-                        <div class="circle-icon">＋</div>
+                        <a herf='#' class="circle-icon">+</a>
                         <div class="label">Add</div>
                         <div class="sub">&nbsp;</div>
                     </div>

@@ -47,7 +47,7 @@
 
         <div class="spacer"></div>
 
-       <a href="{{ route('home') }}" class="btn-next">Done</a>
+       <a href="{{ route('parents.home') }}" class="btn-next">Done</a>
 
         <div class="footer">
         Already have an account?

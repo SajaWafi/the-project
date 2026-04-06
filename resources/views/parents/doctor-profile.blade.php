@@ -13,7 +13,7 @@
         }
 
         body {
-            background: #111;
+            background: #f9f9f9ff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -502,7 +502,6 @@
                         <div class="appointment-main">
                             <div class="doctor-row">
                                 <div class="doctor-name">Dr. Olivia Turner</div>
-                                <div class="doctor-actions">×</div>
                             </div>
 
                             <div class="appointment-sub">Periodic review</div>
