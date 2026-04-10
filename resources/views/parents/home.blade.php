@@ -455,8 +455,6 @@
     <div class="mobile-screen">
         <div class="content">
 
-            <div class="top-time">6.3</div>
-
             <div class="header">
                 <div class="user-box">
                     <a href="{{ route('profile') }}" class="child-link">
