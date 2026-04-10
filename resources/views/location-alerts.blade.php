@@ -60,8 +60,6 @@
             margin-bottom: 10px;
         }
 
-  
-
         .header {
             display: flex;
             justify-content: center;
@@ -213,150 +211,6 @@
             left: 22px;
         }
 
-        .interval-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(130, 160, 210, 0.10);
-            z-index: 40;
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .interval-overlay.show {
-            display: flex;
-        }
-
-        .interval-sheet {
-            width: calc(100% - 20px);
-            margin: 0 10px 10px;
-            background: #f7f7f7;
-            border-radius: 18px;
-            padding: 18px 14px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            transform: translateY(100%);
-            transition: 0.25s;
-        }
-
-        .interval-overlay.show .interval-sheet {
-            transform: translateY(0);
-        }
-
-        .interval-title {
-            font-size: 17px;
-            font-weight: 800;
-            margin-bottom: 6px;
-            color: #111;
-        }
-
-        .interval-text {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 14px;
-            line-height: 1.45;
-        }
-
-        .interval-auto {
-            background: #fff;
-            border-radius: 14px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .auto-left {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .auto-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4ecdc4;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-        }
-
-        .auto-title {
-            font-weight: 600;
-            font-size: 14px;
-            color: #111;
-        }
-
-        .auto-sub {
-            font-size: 11px;
-            color: #777;
-        }
-
-        .manual-label {
-            font-size: 12px;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #202020;
-        }
-
-        .interval-slider {
-            width: 100%;
-            height: 4px;
-            background: #2f80ed;
-            border-radius: 999px;
-            appearance: none;
-            -webkit-appearance: none;
-            outline: none;
-        }
-
-        .interval-slider::-webkit-slider-thumb {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            background: #2f80ed;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .interval-slider::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            border: none;
-            background: #2f80ed;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .interval-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            margin-top: 6px;
-            color: #666;
-        }
-
-        .interval-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 18px;
-        }
-
-        .interval-save {
-            background: #bcecdf;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 999px;
-            font-weight: 700;
-            cursor: pointer;
-            color: #111;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-        }
-
         @media (max-width: 480px) {
             body {
                 padding: 0;
@@ -477,71 +331,6 @@
                 <div class="switch active" onclick="toggleSwitch(this)"></div>
             </div>
 
-            <div class="card" onclick="openIntervalModal()">
-                <div class="left">
-                    <div class="icon teal">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="13" r="7" stroke="currentColor" stroke-width="1.8"/>
-                            <path d="M12 13V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                            <path d="M9 3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-
-                    <div class="title">Update Interval</div>
-                </div>
-
-                <div class="right-side">
-                    <div class="small-value" id="intervalDisplay">5 Sec</div>
-
-                    <div class="arrow">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M9 5L16 12L9 19"
-                                  stroke="#e69a4b"
-                                  stroke-width="2.2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="interval-overlay" id="intervalOverlay" onclick="closeIntervalModal(event)">
-            <div class="interval-sheet">
-
-                <div class="interval-title">Tracking Mode</div>
-                <div class="interval-text">
-                    Location updates faster when<br>
-                    the child leaves the safe zone.
-                </div>
-
-                <div class="interval-auto">
-                    <div class="auto-left">
-                        <div class="auto-icon">✓</div>
-                        <div>
-                            <div class="auto-title">Automatic</div>
-                            <div class="auto-sub">switches to faster updates every 10 sec</div>
-                        </div>
-                    </div>
-
-                    <div class="switch active" onclick="toggleSwitch(this)"></div>
-                </div>
-
-                <div class="manual-label">IF Manual:</div>
-
-                <input type="range" min="5" max="60" step="5" value="5" id="intervalSlider" class="interval-slider">
-
-                <div class="interval-labels">
-                    <span>5 sec</span>
-                    <span id="intervalValue">5 sec</span>
-                    <span>60 sec</span>
-                </div>
-
-                <div class="interval-actions">
-                    <button class="interval-save">Save</button>
-                </div>
-
             </div>
         </div>
 
@@ -551,40 +340,6 @@
         function toggleSwitch(el) {
             el.classList.toggle('active');
         }
-
-        const intervalOverlay = document.getElementById('intervalOverlay');
-        const intervalSlider = document.getElementById('intervalSlider');
-        const intervalValue = document.getElementById('intervalValue');
-        const intervalDisplay = document.getElementById('intervalDisplay');
-
-        function openIntervalModal() {
-            intervalOverlay.classList.add('show');
-        }
-
-        function closeIntervalModal(event) {
-            if (event && event.target !== intervalOverlay) return;
-            intervalOverlay.classList.remove('show');
-        }
-
-        intervalSlider.addEventListener('input', function () {
-            intervalValue.textContent = this.value + ' sec';
-        });
-
-        document.querySelector('.interval-save').addEventListener('click', () => {
-            const value = intervalSlider.value;
-            intervalDisplay.textContent = value + ' Sec';
-            localStorage.setItem('interval', value);
-            closeIntervalModal();
-        });
-
-        window.addEventListener('load', function () {
-            const saved = localStorage.getItem('interval');
-            if (saved) {
-                intervalDisplay.textContent = saved + ' Sec';
-                intervalSlider.value = saved;
-                intervalValue.textContent = saved + ' sec';
-            }
-        });
     </script>
 
 </body>

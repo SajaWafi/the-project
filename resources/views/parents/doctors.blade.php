@@ -31,11 +31,40 @@ body {
 
 /* header */
 .header {
-    text-align:center;
-    font-size:28px;
-    font-weight:800;
-    color:#1f567f;
-    padding:20px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1f567f;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+.header-logo {
+    position: absolute;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+.back-btn {
+    position: absolute;
+    left: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #2f80ed;
+    padding: 6px;
+}
+
+.back-btn svg {
+    width: 26px;
+    height: 26px;
+}
+
+.title {
+    text-align: center;
 }
 
 /* doctor cards */
@@ -139,7 +168,16 @@ body {
 
 <div class="phone">
 
-    <div class="header">Doctors</div>
+    <div class="header">
+        <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+
+        <div class="title">Doctors</div>
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="header-logo">
+    </div>
 
     <div class="list">
         @foreach($doctor as $doc)
@@ -151,12 +189,10 @@ body {
                 <div class="specialty">{{ $doc['specialty'] }}</div>
 
                 <div class="actions">
-                    <!-- Profile -->
                     <a href="{{ route('parents.doctor-profile', $doc['id']) }}" class="btn-icon">
                         <i class="fi fi-sr-user"></i>
                     </a>
 
-                    <!-- Chat -->
                     <a href="{{ route('parents.chat', $doc['id']) }}" class="btn-icon">
                         <i class="fi fi-ss-messages"></i>
                     </a>           
@@ -177,7 +213,7 @@ body {
                     </svg>
                 </a>
 
-                <a href="{{ route('parents.notifications') }}" class="nav-item {{ request()->routeIs('parents.notifications') ? 'active' : '' }}">
+                <a href="{{ route('parents.alerts') }}" class="nav-item {{ request()->routeIs('parents.alerts') ? 'active' : '' }}">
                     <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
                         <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -191,7 +227,7 @@ body {
                     </svg>
                 </a>
 
-                <a href="{{ route('parents.reports') }}" class="nav-item {{ request()->routeIs('parents.reports') ? 'active' : '' }}">
+                <a href="{{ route('parents.report') }}" class="nav-item {{ request()->routeIs('parents.report') ? 'active' : '' }}">
                     <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
                         <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
                         <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>

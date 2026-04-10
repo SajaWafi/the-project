@@ -374,10 +374,16 @@
 
             <div class="form-area">
                 <div class="form-group">
-                    <label class="form-label">full name</label>
+                    <label class="form-label">first name</label>
                     <input type="text" class="form-input" value="" name="full_name">
                 </div>
 
+             <div class="form-area">
+                <div class="form-group">
+                    <label class="form-label">last name</label>
+                    <input type="text" class="form-input" value="" name="full_name">
+                </div>
+                
                 <div class="form-group">
                     <label class="form-label">Phone Number</label>
                     <input type="text" class="form-input" value="" name="phone">

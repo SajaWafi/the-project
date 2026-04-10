@@ -93,12 +93,17 @@
             overflow-y: auto;
         }
 
-        .header {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+       .header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1f567f;
+    margin-bottom: 20px;
+    margin-top: 15px; /* 👈 هذا الجديد */
+}
 
 
         .header-left {
@@ -107,13 +112,29 @@
             gap: 10px;
         }
 
-        .back-btn {
-            position: absolute;
-            left: 10px;
-            font-size: 28px;
-            color: #3d78ff;
-            text-decoration: none;
-        }
+       .back-btn {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 38px;
+        height: 38px;
+        border: none;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        color: #3d78ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+    }
+
+    .back-btn svg {
+        width: 24px;
+        height: 24px;
+        display: block;
+    }
 
         .title {
         font-size: 28px;
@@ -122,17 +143,12 @@
         text-align: center;
         }
 
-        .logo {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #2d79ff;
-            font-size: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+       .header-logo {
+            position: absolute;
+            right: 10px;
+            width: 50px;
+            height:50px;
+            object-fit: contain;
         }
 
         .profile-card {
@@ -433,6 +449,128 @@
             color: #555;
             font-size: 14px;
         }
+        .profile-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 3;
+}
+
+.chat-btn,
+.delete-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid #3d78ff;
+    color: #3d78ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 18px;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.delete-icon-btn {
+    border-color: #ff6b6b;
+    color: #ff4d4f;
+}
+
+.chat-btn:hover,
+.delete-icon-btn:hover {
+    transform: scale(1.05);
+    transition: 0.2s ease;
+}
+.delete-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(210, 216, 223, 0.82);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 22px;
+}
+
+.delete-modal-overlay.show {
+    display: flex;
+}
+
+.delete-modal-box {
+    width: 100%;
+    max-width: 340px;
+    background: #f7f7f7;
+    border-radius: 34px;
+    padding: 42px 26px 34px;
+    text-align: center;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.delete-modal-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 22px;
+}
+
+.delete-modal-text {
+    font-size: 22px;
+    line-height: 1.45;
+    color: #55657a;
+    margin-bottom: 34px;
+}
+
+.delete-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.delete-modal-actions form {
+    margin: 0;
+}
+
+.modal-cancel-btn,
+.modal-delete-btn {
+    min-width: 150px;
+    height: 54px;
+    border: none;
+    border-radius: 30px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0 24px;
+}
+
+.modal-cancel-btn {
+    background: #b8e6db;
+    color: #2d63f6;
+}
+
+.modal-delete-btn {
+    background: #3a82f6;
+    color: #ffffff;
+}
+.info-grid {
+    display: flex;
+    gap: 12px;
+}
+.info-col {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.6); /* أخف من الأبيض */
+    border-radius: 14px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* ظل خفيف جدًا */
+    backdrop-filter: blur(4px); /* يعطي نعومة */
+}
+
     </style>
 </head>
 <body>
@@ -445,13 +583,32 @@
         <div class="content">
             <div class="header">
                 <div class="header-left">
-                    <a href="{{ url()->previous() }}" class="back-btn">‹</a>
+                    <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
                     <div class="title">Doctors Profile</div>
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="header-logo">
                 </div>
             </div>
 
             <div class="profile-card">
-                <a href="{{ route('parents.chat', $doctor['id'] ?? 1) }}" class="chat-btn">💬</a>
+                <div class="profile-actions">
+                    <a href="{{ route('parents.chat', $doctor['id'] ?? 1) }}" class="chat-btn" title="Chat">
+                        💬
+                    </a>
+
+                   <button type="button" class="delete-icon-btn" onclick="openDeleteModal()" title="Delete Doctor">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18"></path>
+                        <path d="M8 6V4h8v2"></path>
+                        <path d="M19 6l-1 14H6L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                    </svg>
+                </button>
+                </div>
 
                 <img
                     class="doctor-image"
@@ -539,6 +696,50 @@
 
             <div class="bottom-space"></div>
         </div>
+        <div class="delete-modal-overlay" id="deleteModal">
+    <div class="delete-modal-box">
+        <div class="delete-modal-title">Delete Doctor</div>
+        <div class="delete-modal-text">
+            Are you sure you want to delete this doctor?
+        </div>
+
+        <div class="delete-modal-actions">
+            <button type="button" class="modal-cancel-btn" onclick="closeDeleteModal()">
+                Cancel
+            </button>
+
+            <form action="{{ route('parents.doctors.delete', $doctor['id'] ?? 1) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="modal-delete-btn">
+                    Yes, Delete
+                </button>
+            </form>
+        </div>
     </div>
+</div>
+    </div>
+    <script>
+    function openDeleteModal() {
+        document.getElementById('deleteModal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('show');
+    }
+
+    function confirmDeleteDoctor() {
+        closeDeleteModal();
+        alert('Doctor deleted successfully');
+    }
+
+    document.addEventListener('click', function (event) {
+        const modal = document.getElementById('deleteModal');
+
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    });
+</script>
 </body>
 </html>

@@ -254,12 +254,12 @@
                 <div class="sub">Ahmed Salah's father</div>
 
                 <div class="actions">
-                    <a href="{{ route('doctor.parent.profile', 1) }}" class="btn-icon">
-                        <i class="fi fi-sr-user"></i>
-                    </a>
-                    <a href="#" class="btn-icon">
-                        <i class="fi fi-ss-messages"></i>
-                    </a> 
+                     <a href="{{ route('doctor.parent.profile', 1) }}" class="btn-icon">
+                            <i class="fi fi-sr-user"></i>
+                        </a>
+                        <a href="{{ route('doctor.chat', 1) }}" class="btn-icon">
+                            <i class="fi fi-ss-messages"></i>
+                        </a>
                 </div>
             </div>
         </div>

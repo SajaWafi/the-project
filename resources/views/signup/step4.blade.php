@@ -2,7 +2,11 @@
 
 @section('content')
     <div class="header">
-        <a href="{{ route('signup.step3') }}" class="back-link">‹</a>
+        <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
         <div class="title">Create Account</div>
     </div>
 
@@ -47,7 +51,7 @@
 
         <div class="spacer"></div>
 
-       <a href="{{ route('home') }}" class="btn-next">Done</a>
+       <a href="{{ route('parents.home') }}" class="btn-next">Done</a>
 
         <div class="footer">
         Already have an account?
