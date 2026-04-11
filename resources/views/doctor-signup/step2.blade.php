@@ -6,7 +6,7 @@
         <div class="title">Create Account</div>
     </div>
 
-    <div class="subtitle">Enter Y<span>o</span>ur Details</div>
+    <div class="subtitle">Enter Your Details</div>
 
     @if ($errors->any())
         <div class="error-box">

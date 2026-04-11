@@ -6,7 +6,7 @@
         <div class="title">Create Account</div>
     </div>
 
-    <div class="subtitle">Enter Y<span>o</span>ur Details</div>
+    <div class="subtitle">Enter Your Details</div>
 
     @if ($errors->any())
         <div class="error-box">
@@ -26,7 +26,7 @@
 
         <div class="field">
             <label>Sex:</label>
-            <select class="select-input" name="sex">
+            <select class="select-box" name="sex">
                 <option value="">Select</option>
                 <option value="Male" {{ old('sex', session('doctor_signup.sex')) == 'Male' ? 'selected' : '' }}>Male</option>
                 <option value="Female" {{ old('sex', session('doctor_signup.sex')) == 'Female' ? 'selected' : '' }}>Female</option>
@@ -45,7 +45,9 @@
 
         <div class="spacer"></div>
 
-        <button class="btn" type="submit">NEXT</button>
+        <div class="btn">
+            <a href="{{ route('doctor.home') }}" class="btn-text" type="submit">DONE</a>
+        </div>
 
         <div class="footer">
             Already have an account? <a href="#">Log in</a>

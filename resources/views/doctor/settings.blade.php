@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <title>settings</title>
     <style>
         /* ===== Reset ===== */
         * {
@@ -123,17 +123,18 @@
 
         /* ===== Small category chip ===== */
         .section-chip {
-            display: inline-block;
-            background: #f7f4ef;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 0 16px;
+            background: #ffffff;
             color: #222;
-            border-radius: 16px;
-            padding: 6px 14px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-            position: relative;
-            z-index: 2;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 10px;
         }
 
         /* ===== Menu list ===== */
@@ -266,6 +267,7 @@
 .confirm-delete-btn {
     background: #2f80ed;
     color: white;
+    text-decoration: none;
 }
     </style>
 </head>

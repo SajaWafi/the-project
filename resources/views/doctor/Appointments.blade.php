@@ -209,6 +209,28 @@ body {
             color:#1f567f;
             font-size:18px;
         }
+        .logo {
+            position: absolute;
+            right: 0;
+            width: 100px;
+            height:100px;
+            object-fit: contain;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 6px;
+            margin-bottom: 18px;
+        }
 
 </style>
 </head>
@@ -219,7 +241,10 @@ body {
 
 <div class="content">
 
-    <div class="title">Appointments</div>
+    <div class="header">
+        <div class="title">Appointments</div>
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
+    </div>
 
     <a href="{{ route('doctor.add.appointment') }}" class="add-btn">Add Appointment</a>
 
@@ -239,13 +264,13 @@ body {
 
                         <div class="appointment-main">
                             <div class="doctor-row">
-                                <div class="doctor-name">Dr. Olivia Turner</div>
+                                <div class="doctor-name">Ali hasan</div>
                                 <div class="doctor-actions">
                                     <a href="#" class="appointment-sub">×</a>
                                 </div>
                             </div>
 
-                            <div class="appointment-sub">Periodic review</div>
+                            <div class="appointment-sub">Main Clinic</div>
                         </div>
                     </div>
                 </div>
@@ -268,13 +293,13 @@ body {
 
                         <div class="appointment-main">
                             <div class="doctor-row">
-                                <div class="doctor-name">Dr. Olivia Turner</div>
+                                <div class="doctor-name">Mohammad Ali</div>
                                 <div class="doctor-actions">
                                     <a href="#" class="appointment-sub">×</a>
                                 </div>
                             </div>
 
-                            <div class="appointment-sub">Periodic review</div>
+                            <div class="appointment-sub">Main Clinic</div>
                         </div>
                     </div>
                 </div>

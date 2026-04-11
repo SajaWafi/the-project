@@ -13,7 +13,7 @@
         }
 
         body {
-            background: #1b1b1b;
+            background: #ffffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,9 +22,9 @@
         }
 
         .phone {
-            width: 100%;
+            width: 360px;
             max-width: 360px; /* هذا المهم */
-            height: 100vh;
+            height: 844px;
             background: url('{{ asset('pics/bg.png') }}') no-repeat center center;
             background-size: cover;
             background-position: center;
@@ -98,6 +98,14 @@
             font-size: 17px;
             color: #666;
             margin-bottom: 6px;
+        }
+
+        .select-box {
+            width: 100%;
+            height: 40px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: linear-gradient(to right, #c8ece7, #d5f1ed);
         }
 
         .input,
@@ -231,6 +239,20 @@
             font-size: 18px;
             font-weight: 800;
             cursor: pointer;
+        }
+
+        .btn-text {
+            color: white;
+            text-decoration: none;
+            justify-content: center;
+            padding-right: 10px;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            align-content: center;
         }
 
         .footer {

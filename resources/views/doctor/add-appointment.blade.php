@@ -15,7 +15,7 @@
 
         /* ===== Page background ===== */
         body {
-            background: #ffffffff;
+            background: #edf1f4;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -279,6 +279,34 @@
             margin: 0 22px 12px;
             font-size: 13px;
         }
+
+            .field-block {
+        position: relative;
+    }
+
+    .suggestions-box {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-top: none;
+        max-height: 180px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+        background: #f2f2f2;
+    }
+
     </style>
 </head>
 <body>
@@ -381,12 +409,19 @@
                     <div class="field-block">
                         <div class="field-title">Choose Patient</div>
                         <div class="sub-label">Full Name</div>
-                        <select name="patient_id" class="select-field">
-                            <option value="">Jane Doe</option>
-                            <option value="1" {{ old('patient_id') == '1' ? 'selected' : '' }}>Jane Doe</option>
-                            <option value="2" {{ old('patient_id') == '2' ? 'selected' : '' }}>Ali Salah</option>
-                            <option value="3" {{ old('patient_id') == '3' ? 'selected' : '' }}>Hifa Jaber</option>
-                        </select>
+
+                        <input
+                            type="text"
+                            id="patient_search"
+                            class="select-field"
+                            placeholder="Type patient name"
+                            autocomplete="off"
+                            value="{{ old('patient_name') }}"
+                        >
+
+                        <input type="hidden" name="patient_id" id="patient_id" value="{{ old('patient_id') }}">
+
+                        <div id="patient_suggestions" class="suggestions-box"></div>
                     </div>
 
                     <div class="field-block">
@@ -415,6 +450,57 @@
         </div>
     </div>
 </body>
-</html>
+<script>
+    const patients = [
+        { id: 1, name: 'Jane Doe' },
+        { id: 2, name: 'Ali Salah' },
+        { id: 3, name: 'Hifa Jaber' }
+    ];
 
-    <!--mmmm-->
+    const searchInput = document.getElementById('patient_search');
+    const patientIdInput = document.getElementById('patient_id');
+    const suggestionsBox = document.getElementById('patient_suggestions');
+
+    searchInput.addEventListener('input', function () {
+        const value = this.value.toLowerCase().trim();
+        suggestionsBox.innerHTML = '';
+        patientIdInput.value = '';
+
+        if (value === '') {
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+
+        const filteredPatients = patients.filter(patient =>
+            patient.name.toLowerCase().includes(value)
+        );
+
+        if (filteredPatients.length === 0) {
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+
+        filteredPatients.forEach(patient => {
+            const item = document.createElement('div');
+            item.classList.add('suggestion-item');
+            item.textContent = patient.name;
+
+            item.addEventListener('click', function () {
+                searchInput.value = patient.name;
+                patientIdInput.value = patient.id;
+                suggestionsBox.style.display = 'none';
+            });
+
+            suggestionsBox.appendChild(item);
+        });
+
+        suggestionsBox.style.display = 'block';
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.field-block')) {
+            suggestionsBox.style.display = 'none';
+        }
+    });
+</script>
+</html>

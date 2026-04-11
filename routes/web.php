@@ -422,6 +422,11 @@ Route::post('/doctor/add-appointment', function (Request $request) {
     return back()->with('success', 'Appointment added successfully.');
 })->name('doctor.add.appointment.store');
 
+//apponintment delete
+Route::delete('/doctor/appointments/{id}', function ($id) {
+    return back()->with('success', 'Appointment deleted successfully.');
+})->name('doctor.appointments.delete'); 
+
 //doctor profile
 Route::get('/doctor/doctor-profile', function () {
     return view('doctor.doctor-profile');
