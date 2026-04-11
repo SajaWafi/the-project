@@ -173,95 +173,6 @@
             left: 22px;
         }
 
-        .day-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(130, 160, 210, 0.10);
-            z-index: 40;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .day-overlay.show {
-            display: flex;
-        }
-
-        .day-sheet {
-            width: 100%;
-            max-width: 320px;
-            background: #f7f7f7;
-            border-radius: 18px;
-            padding: 18px 14px 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            transform: scale(0.96);
-            transition: 0.2s ease;
-        }
-
-        .day-overlay.show .day-sheet {
-            transform: scale(1);
-        }
-
-        .day-title {
-            font-size: 17px;
-            font-weight: 800;
-            color: #111;
-            margin-bottom: 18px;
-        }
-
-        .day-options {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .day-option {
-            width: 100%;
-            height: 28px;
-            border: none;
-            border-radius: 14px;
-            background: #c7ebe7;
-            color: #111;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-            transition: 0.2s;
-        }
-
-        .day-option.active {
-            background: #bfeee4;
-        }
-
-        .day-option:active {
-            transform: scale(0.98);
-        }
-
-        .day-actions {
-            display: flex;
-            justify-content: center;
-            gap: 28px;
-        }
-
-        .day-btn {
-            min-width: 72px;
-            height: 32px;
-            border-radius: 999px;
-            border: none;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-        }
-
-        .day-close,
-        .day-save {
-            background: #bcecdf;
-            color: #111;
-        }
-
         @media (max-width: 480px) {
             body {
                 padding: 0;
@@ -304,24 +215,6 @@
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Taif">
             </div>
 
-            <div class="setting-card">
-                <div class="setting-title">Auto Generate Monthly Report</div>
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
-            </div>
-
-            <div class="setting-card" onclick="openDayModal()">
-                <div class="setting-title">Generate Day :</div>
-
-                <div class="arrow-btn">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M9 5L16 12L9 19"
-                              stroke="#e69a4b"
-                              stroke-width="2.2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"/>
-                    </svg>
-                </div>
-            </div>
 
             <div class="setting-card">
                 <div class="setting-title">Include Charts</div>
@@ -350,51 +243,13 @@
 
         </div>
 
-        <div class="day-overlay" id="dayOverlay" onclick="closeDayModal(event)">
-            <div class="day-sheet">
-                <div class="day-title">Generate Day :</div>
-
-                <div class="day-options">
-                    <button type="button" class="day-option">28th of month</button>
-                    <button type="button" class="day-option">29th of month</button>
-                    <button type="button" class="day-option active">Last day of month</button>
-                </div>
-
-                <div class="day-actions">
-                    <button type="button" class="day-btn day-close" onclick="closeDayModal()">Close</button>
-                    <button type="button" class="day-btn day-save">Save</button>
-                </div>
-            </div>
-        </div>
-
+     
     </div>
 
     <script>
         function toggleSwitch(el) {
             el.classList.toggle('active');
         }
-
-        const dayOverlay = document.getElementById('dayOverlay');
-
-        function openDayModal() {
-            dayOverlay.classList.add('show');
-        }
-
-        function closeDayModal(event) {
-            if (event && event.target !== dayOverlay) return;
-            dayOverlay.classList.remove('show');
-        }
-
-        document.querySelectorAll('.day-option').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.day-option').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
-
-        document.querySelector('.day-save').addEventListener('click', () => {
-            closeDayModal();
-        });
     </script>
 </body>
 </html>

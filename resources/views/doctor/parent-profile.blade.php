@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parent Profile</title>
+
     <style>
         * {
             box-sizing: border-box;
@@ -28,28 +29,6 @@
             overflow: hidden;
             position: relative;
             box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-        }
-
-        .star {
-            position: absolute;
-            left: -2px;
-            top: 108px;
-            color: #f3d467;
-            font-size: 26px;
-            z-index: 1;
-        }
-
-        .status-bar {
-            height: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 10px 12px 0;
-            font-size: 13px;
-            font-weight: 700;
-            color: #111;
-            position: relative;
-            z-index: 3;
         }
 
         .content {
@@ -84,7 +63,12 @@
             color: #1fc9a8;
             text-decoration: none;
         }
-
+         .title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #1d567e;
+        text-align: center;
+        }
         .logo {
             position: absolute;
             right: 0;
@@ -109,21 +93,63 @@
             margin-bottom: 20px;
         }
 
-        .chat-btn {
+        /* stacked actions */
+        .profile-actions-stack {
             position: absolute;
             top: 12px;
             right: 12px;
-            width: 34px;
-            height: 34px;
+            width: 48px;
+            height: 48px;
+            z-index: 5;
+        }
+
+        .stack-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: #fff;
-            border: 1.8px solid #20d0b0;
-            color: #20d0b0;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            font-size: 17px;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        .chat-btn {
+            border: 2px solid #6f7d73;
+            color: #6f7d73;
+            font-size: 18px;
+            z-index: 2;
+            transform: translate(0, 0) scale(1);
+        }
+
+        .delete-btn {
+            border: 2px solid #ef8a8a;
+            color: #ef8a8a;
+            z-index: 1;
+            transform: translate(-8px, 8px) scale(0.92);
+        }
+
+        .profile-actions-stack:hover .chat-btn {
+            z-index: 1;
+            transform: translate(-8px, 8px) scale(0.92);
+        }
+
+        .profile-actions-stack:hover .delete-btn {
+            z-index: 2;
+            transform: translate(0, 0) scale(1);
+        }
+
+        .delete-svg {
+            width: 18px;
+            height: 18px;
+            display: block;
         }
 
         .parent-image {
@@ -169,37 +195,7 @@
             color: #2bc7af;
             line-height: 1.2;
         }
-
-        .pdf-btn {
-            width: 180px;
-            height: 42px;
-            margin: 0 auto;
-            background: #16d0b2;
-            border-radius: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: white;
-            text-decoration: none;
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .pdf-icon {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: #fff;
-            color: #f25c3b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            font-weight: 800;
-            flex-shrink: 0;
-        }
-
+     
         .section-chip {
             display: inline-block;
             background: #44c9b2;
@@ -278,18 +274,85 @@
             font-size: 12px;
         }
 
-        .mini-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ffffff;
-            border: 1px solid #89b9af;
-        }
-
         .appointment-sub {
             color: #2f2f2f;
             font-size: 14px;
             text-decoration: none;
+<<<<<<< HEAD
+=======
+        }
+
+        .delete-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(210, 216, 223, 0.82);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 22px;
+        }
+
+        .delete-modal-overlay.show {
+            display: flex;
+        }
+
+        .delete-modal-box {
+            width: 100%;
+            max-width: 340px;
+            background: #f7f7f7;
+            border-radius: 34px;
+            padding: 42px 26px 34px;
+            text-align: center;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .delete-modal-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 22px;
+        }
+
+        .delete-modal-text {
+            font-size: 22px;
+            line-height: 1.45;
+            color: #55657a;
+            margin-bottom: 34px;
+        }
+
+        .delete-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .delete-modal-actions form {
+            margin: 0;
+        }
+
+        .modal-cancel-btn,
+        .modal-delete-btn {
+            min-width: 150px;
+            height: 54px;
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0 24px;
+        }
+
+        .modal-cancel-btn {
+            background: #b8e6db;
+            color: #2d63f6;
+        }
+
+        .modal-delete-btn {
+            background: #3a82f6;
+            color: #ffffff;
+>>>>>>> a7a7fdf170374a336a315793b833851ee0b5d82d
         }
     </style>
 </head>
@@ -298,14 +361,28 @@
         <div class="content">
             <div class="header">
                 <a href="{{ url()->previous() }}" class="back-btn">‹</a>
-
+                <div class="title">Parent Profile</div>
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
                 </div>
             </div>
 
             <div class="profile-card">
-                <a href="#" class="chat-btn">💬</a>
+                <div class="profile-actions-stack">
+                    <button type="button" class="stack-btn delete-btn" onclick="openDeleteModal()" title="Delete Parent">
+                        <svg class="delete-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M4 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M9 4H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M18 7L17.2 18.2C17.13 19.18 16.31 19.94 15.33 19.94H8.67C7.69 19.94 6.87 19.18 6.8 18.2L6 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M10 10.5V16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M14 10.5V16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+
+                    <a href="{{ route('doctor.chat', $doctor['id'] ?? 1) }}" class="stack-btn chat-btn" title="Chat">
+                        💬
+                    </a>
+                </div>
 
                 <img
                     class="parent-image"
@@ -321,7 +398,10 @@
                     <div class="info-pill">{{ $parent['autism_level'] ?? 'Autism Levels: Mild' }}</div>
                     <div class="info-pill">{{ $parent['age'] ?? 'child age: 10' }}</div>
                 </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> a7a7fdf170374a336a315793b833851ee0b5d82d
             </div>
 
             <div class="section-chip">Appointment</div>
@@ -353,8 +433,48 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div class="delete-modal-overlay" id="deleteModal">
+            <div class="delete-modal-box">
+                <div class="delete-modal-title">Delete Parent</div>
+                <div class="delete-modal-text">
+                    Are you sure you want to delete this parent?
+                </div>
+
+                <div class="delete-modal-actions">
+                    <button type="button" class="modal-cancel-btn" onclick="closeDeleteModal()">
+                        Cancel
+                    </button>
+
+                    <form action="{{ route('parents.doctors.delete', $doctor['id'] ?? 1) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="modal-delete-btn">
+                            Yes, Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        document.addEventListener('click', function (event) {
+            const modal = document.getElementById('deleteModal');
+
+            if (event.target === modal) {
+                closeDeleteModal();
+            }
+        });
+    </script>
 </body>
 </html>

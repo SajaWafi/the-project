@@ -23,18 +23,17 @@
         }
 
         .mobile-screen {
-            width: 390px;
-            max-width: 100%;
-            height: 844px;
-            max-height: 95vh;
-            position: relative;
-            overflow-y: auto;
-            overflow-x: hidden;
-            border-radius: 30px;
-            background: #f9f9f9;
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
-            scrollbar-width: none;
-        }
+        width: 390px;
+        max-width: 100%;
+        height: 844px;
+        max-height: 95vh;
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+        background: #f9f9f9;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
+        scrollbar-width: none;
+    }
 
         .mobile-screen::-webkit-scrollbar {
             display: none;
@@ -56,12 +55,17 @@
         .content {
             position: relative;
             z-index: 1;
-            min-height: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             padding: 16px 14px 90px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none;
         }
-
+        .content::-webkit-scrollbar {
+            display: none;
+        }
         .top-time {
             font-size: 14px;
             font-weight: 700;
@@ -242,7 +246,7 @@
         .schedule-card {
             background: #f3e2d0;
             border-radius: 24px;
-            padding: 14px 12px;
+            padding: 10px 12px 14px;
             margin-bottom: 18px;
         }
 
@@ -341,21 +345,20 @@
             font-size: 14px;
         }
 
-        .bottom-nav {
-         position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-
-        height: 70px;
-
-        background: #2f80ed;
-        border-radius: 24px 24px 0 0;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        padding: 0 10px;
-    }
+     .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: #2f80ed;
+            border-radius: 24px 24px 0 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 5;
+        }
 
     .nav-item {
             width: 48px;
@@ -528,16 +531,6 @@
     </div>
 </div>
 
-            <div class="schedule-card">
-                <div class="days-row">
-                    <div class="day-pill"><strong>9</strong><span>MON</span></div>
-                    <div class="day-pill"><strong>10</strong><span>TUE</span></div>
-                    <div class="day-pill active"><strong>11</strong><span>WED</span></div>
-                    <div class="day-pill"><strong>12</strong><span>THU</span></div>
-                    <div class="day-pill active"><strong>13</strong><span>FRI</span></div>
-                    <div class="day-pill active"><strong>14</strong><span>SAT</span></div>
-                </div>
-
                 <div class="appointment-box">
                     <div class="times">
                         <div>9 AM</div>
@@ -552,7 +545,6 @@
                         <div class="appointment-main">
                             <div class="doctor-row">
                                 <div class="doctor-name">Dr. Olivia Turner</div>
-                                <div class="doctor-actions">♡ ×</div>
                             </div>
 
                             <div class="appointment-sub">Periodic review</div>
@@ -571,7 +563,7 @@
                     </svg>
                 </a>
 
-                <a href="{{ route('parents.notifications') }}" class="nav-item {{ request()->routeIs('parents.notifications') ? 'active' : '' }}">
+                <a href="{{ route('parents.alerts') }}" class="nav-item {{ request()->routeIs('parents.alerts') ? 'active' : '' }}">
                     <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
                         <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -585,7 +577,7 @@
                     </svg>
                 </a>
 
-                <a href="{{ route('parents.reports') }}" class="nav-item {{ request()->routeIs('parents.reports') ? 'active' : '' }}">
+                <a href="{{ route('parents.report') }}" class="nav-item {{ request()->routeIs('parents.report') ? 'active' : '' }}">
                     <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
                         <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
                         <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -631,7 +623,7 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['12:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00'],
+                labels: ['08:00', '09:00', '10:00', '11:00', '12:00', '01:00', '02:00'],
                 datasets: [
                     {
                         type: 'bar',

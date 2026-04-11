@@ -38,8 +38,8 @@
             overflow: hidden;
         }
 
-        .page-title {
-            height: 42px;
+      .page-title {
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -50,6 +50,30 @@
             position: relative;
             z-index: 1000;
             border-bottom: 1px solid #f0f0f0;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2f80ed;
+            text-decoration: none;
+        }
+
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+
+        .logo {
+            position: absolute;
+            right: 10px;
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
         }
 
         .map-wrapper {
@@ -84,6 +108,16 @@
             font-size: 18px;
             cursor: pointer;
             box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-icon-svg {
+            width: 20px;
+            height: 20px;
+            color: #ffffff;
+            display: block;
         }
 
         .search-bar {
@@ -107,6 +141,13 @@
             gap: 8px;
             color: #9a9a9a;
             font-size: 16px;
+        }
+
+        .search-icon {
+            width: 18px;
+            height: 18px;
+            color: #9a9a9a;
+            display: block;
         }
 
         .search-right {
@@ -197,11 +238,19 @@
             justify-content: center;
             font-size: 26px;
             margin: 0 auto 6px;
+            color: #555;
         }
 
         .circle-icon.active {
             background: #2f80ed;
             color: white;
+        }
+
+        .panel-icon-svg {
+            width: 26px;
+            height: 26px;
+            display: block;
+            color: currentColor;
         }
 
         .label {
@@ -222,7 +271,7 @@
             bottom: 0;
             height: 64px;
             background: #2f80ed;
-            border-radius: 0 0 20px 20px;
+            border-radius: 24px 24px 0 0;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -264,60 +313,106 @@
             border-radius: 50%;
             box-shadow: 0 0 0 3px rgba(24,183,176,0.25);
         }
+        .add-link {
+            text-decoration: none;
+            color: inherit;
+        }
     </style>
 </head>
 <body>
     <div class="phone">
 
-        <div class="page-title">location</div>
+    <div class="page-title">
+        <a href="{{ route('parents.home') }}" class="back-btn" aria-label="Back to home">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+            </svg>
+        </a>
 
-        <div class="map-wrapper">
-            <div id="map"></div>
+        <span>location</span>
 
-            <div class="map-actions">
-                <button class="map-btn" id="locateBtn">📍</button>
-            </div>
+        <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo">
+    </div>
 
-            <div class="search-bar">
-                <div class="search-left">
-                    <span>🔍</span>
-                    <span>Search Maps</span>
-                </div>
-                <div class="search-right">AA</div>
-            </div>
+    <div class="map-wrapper">
+        <div id="map"></div>
+
+        <div class="map-actions">
+            <button class="map-btn" id="locateBtn" aria-label="Locate">
+                <svg class="map-icon-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 21s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="12" cy="10" r="3" fill="currentColor"/>
+                </svg>
+            </button>
         </div>
 
-        <div class="panel">
-            <div class="drag-line"></div>
-
-            <div class="section-title">Child Status</div>
-            <div class="status-row">
-                <span class="green-dot"></span>
-                <span>Inside Safe Zone</span>
+        <div class="search-bar">
+            <div class="search-left">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none">
+                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                    <path d="M20 20L17 17" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>Search Maps</span>
             </div>
-            <div class="status-value">Last update: 10 sec</div>
+            <div class="search-right">AA</div>
+        </div>
+    </div>
 
-            <div class="bottom-card">
-                <div class="card-items">
-                    <div class="card-item">
-                        <div class="circle-icon active">🏠</div>
-                        <div class="label">Home</div>
-                    </div>
+    <div class="panel">
+        <div class="drag-line"></div>
 
-                    <div class="card-item">
-                        <div class="circle-icon">🏫</div>
-                        <div class="label">School</div>
-                    </div>
+        <div class="section-title">Child Status</div>
+        <div class="status-row">
+            <span class="green-dot"></span>
+            <span>Inside Safe Zone</span>
+        </div>
+        <div class="status-value">Last update: 10 sec</div>
+        <div class="status-value">Your child is currently 12 meters above ground level</div>
 
+<<<<<<< HEAD
+        <div class="bottom-card">
+            <div class="card-items">
+                <div class="card-item">
+                    <div class="circle-icon active">
+                        <svg class="panel-icon-svg" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+=======
                     <div class="card-item">
                         <a herf='#' class="circle-icon">+</a>
                         <div class="label">Add</div>
                         <div class="sub">&nbsp;</div>
+>>>>>>> d9bf8ae7a6fe8fc9fbe7e2eb333b8dfdbb1f659c
                     </div>
+                    <div class="label">Home</div>
                 </div>
+
+                <div class="card-item">
+                    <div class="circle-icon">
+                        <svg class="panel-icon-svg" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 10 12 5l9 5-9 5-9-5Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="label">School</div>
+                </div>
+
+                <a href="{{ route('safe.zone.settings') }}" class="card-item add-link">
+                    <div class="circle-icon">
+                        <svg class="panel-icon-svg" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="label">Add</div>
+                    <div class="sub">&nbsp;</div>
+                </a>
             </div>
         </div>
-
+    </div>
         <div class="bottom-nav">
             <a href="{{ route('parents.doctors') }}" class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
@@ -327,7 +422,7 @@
                 </svg>
             </a>
 
-            <a href="{{ route('parents.notifications') }}" class="nav-item {{ request()->routeIs('parents.notifications') ? 'active' : '' }}">
+            <a href="{{ route('parents.alerts') }}" class="nav-item {{ request()->routeIs('parents.alerts') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
                     <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -341,7 +436,7 @@
                 </svg>
             </a>
 
-            <a href="{{ route('parents.reports') }}" class="nav-item {{ request()->routeIs('parents.reports') ? 'active' : '' }}">
+            <a href="{{ route('parents.report') }}" class="nav-item {{ request()->routeIs('parents.report') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
                     <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
                     <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>

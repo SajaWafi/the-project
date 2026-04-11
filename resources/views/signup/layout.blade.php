@@ -54,25 +54,38 @@
             flex-direction: column;
         }
 
-        .header {
+      .header {
+            position: relative;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center; /* يخلي العنوان بالنص */
             margin-top: 8px;
         }
 
         .back-link {
+            position: absolute;
+            left: 0;
+            font-size: 28px;
+            color: #3680e8;
             text-decoration: none;
-            font-size: 40px;
-            color: #ea9747;
-            line-height: 1;
-            transform: translateY(-2px);
+        }
+        .logo {
+            position: absolute;
+            right: 0;
         }
 
-        .title {
-            font-size: 28px;
+        .logo img {
+            width: 100px;
+            margin-bottom: 15px;
+            align-self: flex-start;
+        }
+
+       .title {
+            font-size: 26px;
             font-weight: 800;
             color: #1f567f;
+            text-align: center;
+            margin-top: 10px;
         }
 
         .subtitle {
@@ -384,6 +397,22 @@
         border: none;
         cursor: pointer;
     }
+        .back-btn {
+            position: absolute;
+            left: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #2f80ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+        }
         </style>
 </head>
 <body>

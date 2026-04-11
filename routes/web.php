@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ReportController;
 
 //Route::get('/', function () {
   //  return view('welcome');
@@ -29,7 +29,8 @@ Route::get('/signup/step1', function () {
 Route::post('/signup/step1', function (Request $request) {
     $request->validate([
         'email' => 'required|email',
-        'full_name' => 'required|string|max:255',
+        'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
         'phone' => 'required|string|max:30',
         'agree' => 'required',
     ]);
@@ -103,7 +104,9 @@ Route::get('/signup/complete', function () {
     ]);
 })->name('signup.complete');
 
-
+Route::get('/', function () {
+    return view('parents.home');
+})->name('home');
 
 //doctor signup
 Route::get('/doctor/signup/step1', function () {
@@ -184,9 +187,9 @@ Route::get('/parents/home', function () {
 })->name('parents.home');
 
 //notifications
-Route::get('/parents/notifications', function () {
-    return view('parents.notifications');
-})->name('parents.notifications');
+Route::get('/parents/alerts', function () {
+    return view('parents.alerts');
+})->name('parents.alerts');
 
 //reports
 Route::get('/parents/reports', function () {
@@ -271,6 +274,7 @@ Route::get('/reports-settings', function () {
     return view('reports-settings');
 })->name('reports.settings');
 
+Route::delete('/parents/doctors/{id}', [DoctorController::class, 'destroy'])->name('parents.doctors.delete');
 //doctor
 
 Route::get('/parents/doctors', function () {
@@ -395,6 +399,9 @@ Route::get('/doctor/chat/{id}', function ($id) {
     return view('doctor.chat', compact('parent'));
 })->name('doctor.chat');
 
+Route::delete('/doctor/parent/{id}', [DoctorController::class, 'deleteParent'])
+    ->name('doctor.parent.delete');
+    
 //doctor appointments
 Route::get('/doctor/appointments', function () {
     return view('doctor.Appointments');
@@ -592,3 +599,8 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect('/login');
 })->name('logout');
+
+
+
+Route::get('/parents/report', [ReportController::class, 'show'])->name('parents.report');
+Route::get('/parents/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('parents.report.download-pdf');

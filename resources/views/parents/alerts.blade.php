@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications</title>
+    <title>Alerts</title>
 
     <style>
         * {
@@ -28,39 +28,27 @@
             height: 844px;
             max-height: 95vh;
             position: relative;
-            overflow-y: auto;
-            overflow-x: hidden;
+            overflow: hidden;
             border-radius: 30px;
-            background: #f9f9f9;
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
-            scrollbar-width: none;
-        }
-
-        .mobile-screen::-webkit-scrollbar {
-            display: none;
-        }
-
-        .mobile-screen::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image: url('{{ asset('images/bg.png') }}');
-            background-repeat: no-repeat;
+            background: #f9f9f9 url('{{ asset('images/bg.png') }}') no-repeat left bottom;
             background-size: 165% 100%;
-            background-position: left bottom;
-            opacity: 0.92;
-            z-index: 0;
-            pointer-events: none;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
         }
 
         .content {
             position: relative;
             z-index: 1;
-            min-height: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 12px 14px 100px; /* زيدنا تحت */
-             
+            padding: 12px 14px 100px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
         }
 
         .header {
@@ -69,7 +57,32 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 10px;
-            min-height: 44px;
+            min-height: 54px;
+            margin-top: 6px;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            color: #2f80ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            display: block;
         }
 
         .page-title {
@@ -80,10 +93,10 @@
         }
 
         .logo {
-           position: absolute;
+            position: absolute;
             right: 0;
-            width: 100px;
-            height:100px;
+            width: 38px;
+            height: 38px;
             object-fit: contain;
         }
 
@@ -91,18 +104,14 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-
             height: 26px;
             padding: 0 14px;
-
             border-radius: 999px;
             background: #4fcbb9;
-
             color: #fff;
             font-size: 13px;
             font-weight: 700;
-
-            width: fit-content; /* مهم */
+            width: fit-content;
             margin: 4px 0 10px;
         }
 
@@ -171,18 +180,17 @@
 
         .bottom-nav {
             position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-
-        height: 70px;
-
-        background: #2f80ed;
-        border-radius: 24px 24px 0 0;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        padding: 0 10px;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: #2f80ed;
+            border-radius: 24px 24px 0 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 5;
         }
 
         .nav-item {
@@ -199,7 +207,6 @@
 
         .nav-item.active {
             background: rgba(255,255,255,0.25);
-            border-radius: 14px;
             color: #fff;
         }
 
@@ -236,7 +243,14 @@
         <div class="content">
 
             <div class="header">
+                <a href="{{ route('parents.home') }}" class="back-btn" aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+
                 <div class="page-title">Alerts</div>
+
                 <img src="{{ asset('images/logo.png') }}" alt="Taif" class="logo">
             </div>
 
@@ -286,45 +300,44 @@
                 </div>
             </div>
 
-            <!-- navbar -->
-            <div class="bottom-nav">
-                <a href="{{ route('parents.doctors') }}" class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M6 4v5a6 6 0 0 0 12 0V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M12 15v2a4 4 0 0 0 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <circle cx="18" cy="19" r="2" fill="currentColor"/>
-                    </svg>
-                </a>
+        </div>
 
-                <a href="{{ route('parents.notifications') }}" class="nav-item {{ request()->routeIs('parents.notifications') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </a>
+        <div class="bottom-nav">
+            <a href="{{ route('parents.doctors') }}" class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 4v5a6 6 0 0 0 12 0V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 15v2a4 4 0 0 0 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="18" cy="19" r="2" fill="currentColor"/>
+                </svg>
+            </a>
 
-                <a href="{{ route('parents.home') }}" class="nav-item {{ request()->routeIs('parents.home') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                    </svg>
-                </a>
+            <a href="{{ route('parents.alerts') }}" class="nav-item {{ request()->routeIs('parents.alerts') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </a>
 
-                <a href="{{ route('parents.reports') }}" class="nav-item {{ request()->routeIs('parents.reports') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
-                        <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </a>
+            <a href="{{ route('parents.home') }}" class="nav-item {{ request()->routeIs('parents.home') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+            </a>
 
-                <a href="{{ route('parents.location') }}" class="nav-item {{ request()->routeIs('parents.location') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                        <circle cx="12" cy="10" r="2.5" fill="currentColor"/>
-                    </svg>
-                </a>
-            </div>
+            <a href="{{ route('parents.report') }}" class="nav-item {{ request()->routeIs('parents.report') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </a>
 
+            <a href="{{ route('parents.location') }}" class="nav-item {{ request()->routeIs('parents.location') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <circle cx="12" cy="10" r="2.5" fill="currentColor"/>
+                </svg>
+            </a>
         </div>
     </div>
 
