@@ -278,8 +278,7 @@
             color: #2f2f2f;
             font-size: 14px;
             text-decoration: none;
-<<<<<<< HEAD
-=======
+
         }
 
         .delete-modal-overlay {
@@ -352,7 +351,6 @@
         .modal-delete-btn {
             background: #3a82f6;
             color: #ffffff;
->>>>>>> a7a7fdf170374a336a315793b833851ee0b5d82d
         }
     </style>
 </head>
