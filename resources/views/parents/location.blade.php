@@ -373,7 +373,7 @@
         <div class="status-value">Last update: 10 sec</div>
         <div class="status-value">Your child is currently 12 meters above ground level</div>
 
-<<<<<<< HEAD
+
         <div class="bottom-card">
             <div class="card-items">
                 <div class="card-item">
@@ -382,12 +382,7 @@
                             <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2"/>
                             <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2"/>
                         </svg>
-=======
-                    <div class="card-item">
-                        <a herf='#' class="circle-icon">+</a>
-                        <div class="label">Add</div>
-                        <div class="sub">&nbsp;</div>
->>>>>>> d9bf8ae7a6fe8fc9fbe7e2eb333b8dfdbb1f659c
+
                     </div>
                     <div class="label">Home</div>
                 </div>
