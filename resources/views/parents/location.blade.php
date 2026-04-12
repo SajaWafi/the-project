@@ -21,7 +21,7 @@
         }
 
         body {
-            background: #111;
+            background: #edf1f4;
             display: flex;
             justify-content: center;
             align-items: center;

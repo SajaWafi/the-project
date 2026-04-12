@@ -15,7 +15,7 @@
         }
 
         body {
-            background: #ffffffff;
+            background: #edf1f4;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -89,7 +89,7 @@
             border: none;
             border-radius: 18px;
             padding: 0 14px;
-            background: linear-gradient(to right, #bde6e1, #8fd3cc);
+            background: #cfeeee;
             font-size: 16px;
             outline: none;
         }

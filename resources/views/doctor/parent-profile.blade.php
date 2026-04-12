@@ -86,7 +86,7 @@
         }
 
         .profile-card {
-            background: #b7e1d9;
+            background: #a8d3cc;
             border-radius: 22px;
             padding: 16px 16px 18px;
             position: relative;
@@ -208,7 +208,7 @@
         }
 
         .schedule-card {
-            background: #b7e1d9;
+            background: #a8d3cc;
             border-radius: 22px;
             padding: 16px 12px;
         }
@@ -245,7 +245,7 @@
         }
 
         .appointment-main {
-            background: #b7e1d9;
+            background: #a8d3cc;
             border-radius: 14px;
             padding: 10px 12px;
             margin-top: 12px;
@@ -278,6 +278,8 @@
             color: #2f2f2f;
             font-size: 14px;
             text-decoration: none;
+<<<<<<< HEAD
+=======
         }
 
         .delete-modal-overlay {
@@ -350,6 +352,7 @@
         .modal-delete-btn {
             background: #3a82f6;
             color: #ffffff;
+>>>>>>> a7a7fdf170374a336a315793b833851ee0b5d82d
         }
     </style>
 </head>
@@ -393,7 +396,12 @@
                 <div class="info-row">
                     <div class="info-pill">{{ $parent['phone'] ?? '09X - XXXXXXX' }}</div>
                     <div class="info-pill">{{ $parent['autism_level'] ?? 'Autism Levels: Mild' }}</div>
+                    <div class="info-pill">{{ $parent['age'] ?? 'child age: 10' }}</div>
                 </div>
+<<<<<<< HEAD
+
+=======
+>>>>>>> a7a7fdf170374a336a315793b833851ee0b5d82d
             </div>
 
             <div class="section-chip">Appointment</div>
@@ -414,7 +422,7 @@
 
                         <div class="appointment-main">
                             <div class="doctor-row">
-                                <div class="doctor-name">Dr. Olivia Turner</div>
+                                <div class="doctor-name">Ali Salah</div>
                                 <div class="doctor-actions">
                                     <a href="#" class="appointment-sub">×</a>
                                 </div>

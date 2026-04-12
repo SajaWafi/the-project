@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctors Profile</title>
@@ -83,14 +84,10 @@
 
         .logo {
             position: absolute;
-            right: 6px;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            right: 0;
+            width: 100px;
+            height:100px;
+            object-fit: contain;
         }
 
         .logo img {
@@ -122,6 +119,12 @@
             text-decoration: none;
             font-size: 17px;
             background: #fff;
+        }
+
+        .chat-svg {
+            width: 20px;
+            height: 20px;
+            color: #3d78ff;
         }
 
         .top-profile {
@@ -167,6 +170,7 @@
             color: #2b2b2b;
             font-size: 15px;
             font-weight: 400;
+            text-decoration: none;
         }
 
         .specialize-label {
@@ -371,15 +375,32 @@
             border-radius: 50%;
             box-shadow: 0 0 0 3px rgba(24,183,176,0.25);
         }
+
+        .title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: #1d567e;
+            margin-bottom: 10px;
+        }
 </style>
 </head>
 <body>
     <div class="phone">
 
         <div class="content">
+            <div class="header">
+                <div class="title">Home</div>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
+            </div>
 
             <div class="profile-card">
-                <a href="{{ route('doctor.request') }}" class="chat-btn">🔔</a>
+                <a href="{{ route('doctor.request') }}" class="chat-btn">
+                    <svg class="chat-svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </a>
 
                 <div class="top-profile">
                     <img
@@ -391,7 +412,9 @@
                     <div class="profile-info">
                         <div class="welcome-box">
                             <div class="welcome-text">Hi, WelcomeBack</div>
-                            <div class="patient-name">John Doe</div>
+                            <a href="{{ route('doctor.doctor-profile') }} " class="patient-name">
+                                <div class="patient-name">John Doe</div>
+                            </a>
                         </div>
 
                         <div class="specialty-box">
@@ -447,7 +470,7 @@
                                 <div class="doctor-actions"></div>
                             </div>
 
-                            <div class="appointment-sub">Periodic review</div>
+                            <div class="appointment-sub">Child Care Center</div>
                         </div>
                     </div>
                 </div>
