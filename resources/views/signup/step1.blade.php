@@ -21,27 +21,27 @@
         </div>
     @endif
 
-    <form action="{{ route('signup.step1.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('parent.signup.store') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
 
         <div class="field">
             <label>Your email:</label>
-            <input class="input" type="email" name="email" value="{{ old('email', session('signup.email')) }}">
+            <input class="input" type="email" name="email" value="{{ old('email', session('email')) }}">
         </div>
 
         <div class="field">
             <label>First Name:</label>
-            <input class="input" type="text" name="first_name" value="{{ old('first_name', session('signup.first_name')) }}">
+            <input class="input" type="text" name="first_name" value="{{ old('first_name', session('first_name')) }}">
         </div>
 
             <div class="field">
             <label>Last Name:</label>
-            <input class="input" type="text" name="last_name" value="{{ old('last_name', session('signup.last_name')) }}">
+            <input class="input" type="text" name="last_name" value="{{ old('last_name', session('last_name')) }}">
         </div>
 
         <div class="field">
             <label>Phone Number:</label>
-            <input class="input" type="text" name="phone" value="{{ old('phone', session('signup.phone')) }}">
+            <input class="input" type="text" name="phone" value="{{ old('phone', session('phone')) }}">
         </div>
 
         <div class="terms">

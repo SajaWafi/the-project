@@ -20,7 +20,7 @@
         </div>
     @endif
 
-    <form action="{{ route('signup.step4.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('parent.signup.store') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
 
         <div class="field">
@@ -29,21 +29,21 @@
             <div class="select-box">
                 <select name="autism_level">
                     <option value="">Select level</option>
-                    <option value="Mild" {{ old('autism_level', session('signup.autism_level')) == 'Mild' ? 'selected' : '' }}>Mild</option>
-                    <option value="Moderate" {{ old('autism_level', session('signup.autism_level')) == 'Moderate' ? 'selected' : '' }}>Moderate</option>
-                    <option value="Severe" {{ old('autism_level', session('signup.autism_level')) == 'Severe' ? 'selected' : '' }}>Severe</option>
+                    <option value="Mild" {{ old('autism_level') == 'Mild' ? 'selected' : '' }}>Mild</option>
+                    <option value="Moderate" {{ old('autism_level') == 'Moderate' ? 'selected' : '' }}>Moderate</option>
+                    <option value="Severe" {{ old('autism_level') == 'Severe' ? 'selected' : '' }}>Severe</option>
                 </select>
             </div>
 
             <label>Kinship:</label>
 
             <div class="select-box">
-                <select name="kinship">
+                <select name="relation_to_child">
                     <option value="">Select </option>
-                    <option value="Father" {{ old('kinship', session('signup.kinship')) == 'Father' ? 'selected' : '' }}>Father</option>
-                    <option value="Mother" {{ old('kinship', session('signup.kinship')) == 'Mother' ? 'selected' : '' }}>Mother</option>
-                    <option value="Relative" {{ old('kinship', session('signup.kinship')) == 'Relative' ? 'selected' : '' }}>Relative</option>
-                    <option value="Other" {{ old('kinship', session('signup.kinship')) == 'Other' ? 'selected' : '' }}>Other</option>
+                    <option value="Father" {{ old('relation_to_child') == 'Father' ? 'selected' : '' }}>Father</option>
+                    <option value="Mother" {{ old('relation_to_child') == 'Mother' ? 'selected' : '' }}>Mother</option>
+                    <option value="Relative" {{ old('relation_to_child') == 'Relative' ? 'selected' : '' }}>Relative</option>
+                    <option value="Other" {{ old('relation_to_child') == 'Other' ? 'selected' : '' }}>Other</option>
                 </select>
             </div>
 
