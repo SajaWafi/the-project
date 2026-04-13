@@ -20,20 +20,20 @@
         </div>
     @endif
 
-    <form action="{{ route('signup.step3.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('parent.signup.store') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
 
         <div class="field">
             <label>Child’ Name:</label>
-            <input class="input" type="text" name="child_name" value="{{ old('child_name', session('signup.child_name')) }}">
+            <input class="input" type="text" name="child_name" value="{{ old('child_name', session('child_name')) }}">
         </div>
 
         <div class="field">
             <label>Sex:</label>
-            <select class="input" name="sex">
-                <option value="" disabled {{ old('sex', session('signup.sex')) ? '' : 'selected' }}>Select option...</option>
-                <option value="male" {{ old('sex', session('signup.sex')) == 'male' ? 'selected' : '' }}>Male</option>
-                <option value="female" {{ old('sex', session('signup.sex')) == 'female' ? 'selected' : '' }}>Female</option>
+            <select class="input" name="gender">
+                <option value="" disabled {{ old('gender', session('gender')) ? '' : 'selected' }}>Select option...</option>
+                <option value="male" {{ old('gender', session('gender')) == 'male' ? 'selected' : '' }}>Male</option>
+                <option value="female" {{ old('gender', session('gender')) == 'female' ? 'selected' : '' }}>Female</option>
             </select>
         </div>
 
