@@ -1,13 +1,17 @@
 <?php
-
+require __DIR__ . '/auth.php';
+require __DIR__ . '/parent.php';
+require __DIR__ . '/doctor.php';
+/*
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
+*/
 
 //Route::get('/', function () {
   //  return view('welcome');
 //});
-
+/*
 //welcome screen
 Route::get('/', function () {
     return view('welcome-screen');
@@ -603,4 +607,4 @@ Route::post('/logout', function () {
 
 
 Route::get('/parents/report', [ReportController::class, 'show'])->name('parents.report');
-Route::get('/parents/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('parents.report.download-pdf');
+Route::get('/parents/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('parents.report.download-pdf');*/
