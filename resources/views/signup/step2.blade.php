@@ -22,7 +22,7 @@
         </div>
     @endif
 
-    <form action="{{ route('parent.signup.store') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('signup.step2.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
 
         <div class="field">
