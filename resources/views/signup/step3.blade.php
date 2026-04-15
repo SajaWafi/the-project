@@ -29,7 +29,7 @@
     </div>
 
     <div class="field">
-        <label>Sex:</label>
+        <label>Gender:</label>
         <select class="input" name="gender">
             <option value="" disabled {{ old('gender', session('signup.gender')) ? '' : 'selected' }}>Select option...</option>
             <option value="Male" {{ old('gender', session('signup.gender')) == 'Male' ? 'selected' : '' }}>Male</option>

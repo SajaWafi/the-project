@@ -21,13 +21,8 @@
         </div>
     @endif
 
-    <form action="{{ route('signup.step1.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('step1.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
-
-        <div class="field">
-            <label>Your email:</label>
-            <input class="input" type="email" name="email" value="{{ old('email', session('email')) }}">
-        </div>
 
         <div class="field">
             <label>First Name:</label>
@@ -42,6 +37,18 @@
         <div class="field">
             <label>Phone Number:</label>
             <input class="input" type="text" name="phone" value="{{ old('phone', session('phone')) }}">
+        </div>
+
+        <label>Kinship:</label>
+
+        <div class="select-box">
+            <select name="relation_to_child">
+                <option value="">Select </option>
+                <option value="Father" {{ old('relation_to_child') == 'Father' ? 'selected' : '' }}>Father</option>
+                <option value="Mother" {{ old('relation_to_child') == 'Mother' ? 'selected' : '' }}>Mother</option>
+                <option value="Relative" {{ old('relation_to_child') == 'Relative' ? 'selected' : '' }}>Relative</option>
+                <option value="Other" {{ old('relation_to_child') == 'Other' ? 'selected' : '' }}>Other</option>
+            </select>
         </div>
 
         <div class="terms">

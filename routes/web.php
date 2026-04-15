@@ -1,8 +1,13 @@
 <?php
-
+require __DIR__ . '/auth.php';
+require __DIR__ . '/parent.php';
+require __DIR__ . '/doctor.php';
+/*
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
+
+/*
 use App\Models\User;
 use App\Models\Child;
 use App\Models\ParentProfile;
@@ -10,10 +15,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
+
 //Route::get('/', function () {
   //  return view('welcome');
 //});
-
+/*
 //welcome screen
 Route::get('/', function () {
     return view('welcome-screen');
@@ -647,4 +653,4 @@ Route::post('/logout', function () {
 
 
 Route::get('/parents/report', [ReportController::class, 'show'])->name('parents.report');
-Route::get('/parents/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('parents.report.download-pdf');
+Route::get('/parents/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('parents.report.download-pdf');*/
