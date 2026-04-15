@@ -20,7 +20,7 @@
         </div>
     @endif
 
-    <form action="{{ route('parent.signup.store') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('signup.step4.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
 
         <div class="field">
@@ -35,23 +35,11 @@
                 </select>
             </div>
 
-            <label>Kinship:</label>
-
-            <div class="select-box">
-                <select name="relation_to_child">
-                    <option value="">Select </option>
-                    <option value="Father" {{ old('relation_to_child') == 'Father' ? 'selected' : '' }}>Father</option>
-                    <option value="Mother" {{ old('relation_to_child') == 'Mother' ? 'selected' : '' }}>Mother</option>
-                    <option value="Relative" {{ old('relation_to_child') == 'Relative' ? 'selected' : '' }}>Relative</option>
-                    <option value="Other" {{ old('relation_to_child') == 'Other' ? 'selected' : '' }}>Other</option>
-                </select>
-            </div>
-
         </div>
 
         <div class="spacer"></div>
 
-       <a href="{{ route('parents.home') }}" class="btn-next">Done</a>
+       <button type="submit" class="btn-next">Done</button>
 
         <div class="footer">
         Already have an account?

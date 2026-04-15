@@ -13,6 +13,10 @@ class DoctorProfile extends Model
         'bio',
     ];
 
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
+
     public function children()
     {
         return $this->belongsToMany(
@@ -21,5 +25,10 @@ class DoctorProfile extends Model
             'doctor_id',
             'child_id'
         )->withPivot('status', 'assigned_at')->withTimestamps();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -6,7 +6,15 @@ require __DIR__ . '/doctor.php';
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
-*/
+
+/*
+use App\Models\User;
+use App\Models\Child;
+use App\Models\ParentProfile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
 
 //Route::get('/', function () {
   //  return view('welcome');
@@ -20,29 +28,30 @@ Route::get('/welcome-second', function () {
     return view('welcome-second');
 })->name('welcome.second');
 
-//login page
-Route::get('/login-page', function () {
-    return view('login-page');
-})->name('login.page');
+// signup - parent
 
-//signup
 Route::get('/signup/step1', function () {
     return view('signup.step1');
 })->name('signup.step1');
 
 Route::post('/signup/step1', function (Request $request) {
     $request->validate([
-        'email' => 'required|email',
+        'email' => 'required|email|unique:users,email',
         'first_name' => 'required|string|max:255',
         'last_name' => 'required|string|max:255',
         'phone' => 'required|string|max:30',
+        'gender' => 'nullable|in:Male,Female',
+        'relation_to_child' => 'nullable|string|max:255',
         'agree' => 'required',
     ]);
 
     session([
         'signup.email' => $request->email,
-        'signup.full_name' => $request->full_name,
+        'signup.first_name' => $request->first_name,
+        'signup.last_name' => $request->last_name,
         'signup.phone' => $request->phone,
+        'signup.gender' => $request->gender,
+        'signup.relation_to_child' => $request->relation_to_child,
     ]);
 
     return redirect()->route('signup.step2');
@@ -54,8 +63,8 @@ Route::get('/signup/step2', function () {
 
 Route::post('/signup/step2', function (Request $request) {
     $request->validate([
-        'password' => 'required|min:6|same:password_confirmation',
-        'password_confirmation' => 'required|min:6',
+        'password' => 'required|string|min:6|same:password_confirmation',
+        'password_confirmation' => 'required|string|min:6',
     ]);
 
     session([
@@ -72,14 +81,14 @@ Route::get('/signup/step3', function () {
 Route::post('/signup/step3', function (Request $request) {
     $request->validate([
         'child_name' => 'required|string|max:255',
-        'sex' => 'required|string|max:50',
+        'gender' => 'required|in:Male,Female',
         'dob' => 'required|date',
     ]);
 
     session([
         'signup.child_name' => $request->child_name,
-        'signup.sex' => $request->sex,
-        'signup.dob' => $request->dob,
+        'signup.child_gender' => $request->gender,
+        'signup.child_birth_date' => $request->dob,
     ]);
 
     return redirect()->route('signup.step4');
@@ -98,19 +107,56 @@ Route::post('/signup/step4', function (Request $request) {
         'signup.autism_level' => $request->autism_level,
     ]);
 
-    return redirect()->route('signup.complete');
+    $signup = session('signup', []);
+
+    if (
+        empty($signup['email']) ||
+        empty($signup['first_name']) ||
+        empty($signup['last_name']) ||
+        empty($signup['phone']) ||
+        empty($signup['password']) ||
+        empty($signup['child_name']) ||
+        empty($signup['child_gender']) ||
+        empty($signup['child_birth_date']) ||
+        empty($signup['autism_level'])
+    ) {
+        return redirect()->route('signup.step1')
+            ->withErrors(['Please complete all signup steps first.']);
+    }
+
+    $user = null;
+
+    DB::transaction(function () use ($signup, &$user) {
+        $user = User::create([
+            'role' => 'parent',
+            'first_name' => $signup['first_name'],
+            'last_name' => $signup['last_name'],
+            'email' => $signup['email'],
+            'phone' => $signup['phone'],
+            'gender' => $signup['gender'] ?? null,
+            'password' => Hash::make($signup['password']),
+        ]);
+
+        $parentProfile = ParentProfile::create([
+            'user_id' => $user->id,
+            'relation_to_child' => $signup['relation_to_child'] ?? null,
+        ]);
+
+        Child::create([
+            'parent_id' => $parentProfile->id,
+            'name' => $signup['child_name'],
+            'gender' => $signup['child_gender'],
+            'birth_date' => $signup['child_birth_date'],
+            'autism_level' => $signup['autism_level'],
+        ]);
+    });
+
+    session()->forget('signup');
+
+    Auth::login($user);
+
+    return redirect()->route('parents.home')->with('success', 'Account created successfully.');
 })->name('signup.step4.post');
-
-Route::get('/signup/complete', function () {
-    return response()->json([
-        'message' => 'Signup completed',
-        'data' => session('signup')
-    ]);
-})->name('signup.complete');
-
-Route::get('/', function () {
-    return view('parents.home');
-})->name('home');
 
 //doctor signup
 Route::get('/doctor/signup/step1', function () {

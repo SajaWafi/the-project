@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Child extends Model
 {
+    protected $table = 'children';
+
     protected $fillable = [
         'parent_id',
         'name',

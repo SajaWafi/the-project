@@ -20,31 +20,30 @@
         </div>
     @endif
 
-    <form action="{{ route('parent.signup.store') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
-        @csrf
+<form action="{{ route('signup.step3.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    @csrf
 
-        <div class="field">
-            <label>Child’ Name:</label>
-            <input class="input" type="text" name="child_name" value="{{ old('child_name', session('child_name')) }}">
-        </div>
+    <div class="field">
+        <label>Child’ Name:</label>
+        <input class="input" type="text" name="child_name" value="{{ old('child_name', session('signup.child_name')) }}">
+    </div>
 
-        <div class="field">
-            <label>Sex:</label>
-            <select class="input" name="gender">
-                <option value="" disabled {{ old('gender', session('gender')) ? '' : 'selected' }}>Select option...</option>
-                <option value="male" {{ old('gender', session('gender')) == 'male' ? 'selected' : '' }}>Male</option>
-                <option value="female" {{ old('gender', session('gender')) == 'female' ? 'selected' : '' }}>Female</option>
-            </select>
-        </div>
+    <div class="field">
+        <label>Gender:</label>
+        <select class="input" name="gender">
+            <option value="" disabled {{ old('gender', session('signup.gender')) ? '' : 'selected' }}>Select option...</option>
+            <option value="Male" {{ old('gender', session('signup.gender')) == 'Male' ? 'selected' : '' }}>Male</option>
+            <option value="Female" {{ old('gender', session('signup.gender')) == 'Female' ? 'selected' : '' }}>Female</option>
+        </select>
+    </div>
 
-        <div class="field">
-            <label>Date of Birth:</label>
-            <input class="input" type="date" name="dob" value="{{ old('dob', session('signup.dob')) }}">
-        </div>
+    <div class="field">
+        <label>Date of Birth:</label>
+        <input class="input" type="date" name="dob" value="{{ old('dob', session('signup.child_birth_date')) }}">
+    </div>
 
-        <div class="spacer"></div>
-
-        <button class="btn" type="submit">NEXT</button>
+    <button class="btn" type="submit">NEXT</button>
+</form>
 
          <div class="footer">
         Already have an account?

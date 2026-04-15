@@ -194,6 +194,27 @@
             cursor: pointer;
         }
 
+                .btn1 {
+            width: 80%;
+            height: 50px;
+            margin-left: 10%;
+            margin-right: 10%;
+            border: none;
+            border-radius: 16px;
+            background: #3680e8;
+            color: white;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+        }
+
         .footer {
             text-align: center;
             margin-top: 10px;
@@ -201,6 +222,18 @@
             color: #777;
         }
 
+                .footer1 {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 16px;
+            color: #777;
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+
+        }
+        
         .error-box {
             background: #ffe7e7;
             color: #b60000;
@@ -412,6 +445,14 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+        }
+
+        .bdy{
+            height: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         </style>
 </head>
