@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="header">
-        <a href="{{ route('doctor.signup.step1') }}" class="back-link">‹</a>
+        <a href="javascript:void(0)" class="back-link">‹</a>
         <div class="title">Create Account</div>
     </div>
 
@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <form action="{{ route('doctor.signup.step2.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('doctor.step2.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
 
         <div class="field">
@@ -40,7 +40,7 @@
         <button class="btn" type="submit">NEXT</button>
 
         <div class="footer">
-            Already have an account? <a href="#">Log in</a>
+            Already have an account? <a href="{{ route('login.page') }}">Log in</a>
         </div>
     </form>
 @endsection

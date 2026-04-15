@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <form action="{{ route('doctor.signup.step1.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('doctor.step1.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
 
         <div class="field">
@@ -48,7 +48,7 @@
         <div class="spacer"></div>
 
         <div class="footer">
-            Already have an account? <a href="#">Log in</a>
+            Already have an account? <a href="{{ route('login.page') }}">Log in</a>
         </div>
     </form>
 @endsection

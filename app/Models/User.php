@@ -29,4 +29,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(ParentProfile::class);
     }
+
+    public function doctorProfile()
+    {
+        return $this->hasOne(DoctorProfile::class);
+    }
 }

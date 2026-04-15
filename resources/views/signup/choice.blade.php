@@ -15,7 +15,7 @@
 
         <a href="{{ route('signup.step1') }}" class="btn1">Parent</a>
 
-        <a href="{{ route('doctor.signup.step1') }}" class="btn1">Doctor</a>
+        <a href="{{ route('doctor.step1') }}" class="btn1">Doctor</a>
 
         <div class="footer1">
         Already have an account?

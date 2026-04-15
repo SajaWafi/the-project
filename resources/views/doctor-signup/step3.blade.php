@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="header">
-        <a href="{{ route('doctor.signup.step2') }}" class="back-link">‹</a>
+        <a href="javascript:void(0)" class="back-link">‹</a>
         <div class="title">Create Account</div>
     </div>
 
@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <form action="{{ route('doctor.signup.step3.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+    <form action="{{ route('doctor.step3.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
         @csrf
 
         <div class="field">
@@ -25,11 +25,11 @@
         </div>
 
         <div class="field">
-            <label>Sex:</label>
-            <select class="select-box" name="sex">
+            <label>Gender:</label>
+            <select class="select-box" name="gender">
                 <option value="">Select</option>
-                <option value="Male" {{ old('sex', session('doctor_signup.sex')) == 'Male' ? 'selected' : '' }}>Male</option>
-                <option value="Female" {{ old('sex', session('doctor_signup.sex')) == 'Female' ? 'selected' : '' }}>Female</option>
+                <option value="Male" {{ old('gender', session('doctor_signup.gender')) == 'Male' ? 'selected' : '' }}>Male</option>
+                <option value="Female" {{ old('gender', session('doctor_signup.gender')) == 'Female' ? 'selected' : '' }}>Female</option>
             </select>
         </div>
 
@@ -46,11 +46,11 @@
         <div class="spacer"></div>
 
         <div class="btn">
-            <a href="{{ route('doctor.home') }}" class="btn-text" type="submit">DONE</a>
+            <button class="btn" type="submit">DONE</button>
         </div>
 
         <div class="footer">
-            Already have an account? <a href="#">Log in</a>
+            Already have an account? <a href="{{ route('login.page') }}">Log in</a>
         </div>
     </form>
 @endsection

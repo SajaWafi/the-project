@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Models\ParentProfile;
 use App\Models\Child;
+use App\Models\DoctorProfile;
 
 // Welcome
 Route::get('/', function () {
@@ -175,74 +176,110 @@ Route::post('/step4', function (Request $request) {
 })->name('signup.step4.post');
 
 // Doctor signup
-Route::prefix('doctor/signup')->name('doctor.signup.')->group(function () {
-    Route::get('/step1', function () {
-        return view('doctor-signup.step1');
-    })->name('step1');
 
-    Route::post('/step1', function (Request $request) {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'agree' => 'required',
-        ]);
+// step1
+Route::get('/doctor/signup/step1', function () {
+    session()->forget('doctor_signup');
 
-        session([
-            'doctor_signup.first_name' => $request->first_name,
-            'doctor_signup.last_name' => $request->last_name,
-            'doctor_signup.email' => $request->email,
-        ]);
+    return view('doctor-signup.step1');
+})->name('doctor.step1');
 
-        return redirect()->route('doctor.signup.step2');
-    })->name('step1.post');
+Route::post('/doctor/signup/step1', function (Request $request) {
+    $request->validate([
+        'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'email' => 'required|email|max:255|unique:users,email',
+    ]);
 
-    Route::get('/step2', function () {
-        return view('doctor-signup.step2');
-    })->name('step2');
+    session([
+        'doctor_signup.first_name' => $request->first_name,
+        'doctor_signup.last_name' => $request->last_name,
+        'doctor_signup.email' => $request->email,
+    ]);
 
-    Route::post('/step2', function (Request $request) {
-        $request->validate([
-            'password' => 'required|min:6|same:password_confirmation',
-            'password_confirmation' => 'required|min:6',
-        ]);
+    return redirect()->route('doctor.step2');
+})->name('doctor.step1.post');
 
-        session([
-            'doctor_signup.password' => $request->password,
-        ]);
 
-        return redirect()->route('doctor.signup.step3');
-    })->name('step2.post');
+// step2
+Route::get('/doctor/signup/step2', function () {
+    return view('doctor-signup.step2');
+})->name('doctor.step2');
 
-    Route::get('/step3', function () {
-        return view('doctor-signup.step3');
-    })->name('step3');
+Route::post('/doctor/signup/step2', function (Request $request) {
+    $request->validate([
+        'password' => 'required|string|min:6|same:password_confirmation',
+        'password_confirmation' => 'required|string|min:6',
+    ]);
 
-    Route::post('/step3', function (Request $request) {
-        $request->validate([
-            'phone' => 'required|string|max:30',
-            'sex' => 'required|in:Male,Female',
-            'specialize' => 'required|string|max:255',
-            'dob' => 'required|date',
-        ]);
+    session([
+        'doctor_signup.password' => $request->password,
+    ]);
 
-        session([
-            'doctor_signup.phone' => $request->phone,
-            'doctor_signup.sex' => $request->sex,
-            'doctor_signup.specialize' => $request->specialize,
-            'doctor_signup.dob' => $request->dob,
-        ]);
+    return redirect()->route('doctor.step3');
+})->name('doctor.step2.post');
 
-        return redirect()->route('doctor.signup.complete');
-    })->name('step3.post');
 
-    Route::get('/complete', function () {
-        return response()->json([
-            'message' => 'Doctor signup completed',
-            'data' => session('doctor_signup'),
-        ]);
-    })->name('complete');
-});
+// step3
+Route::get('/doctor/signup/step3', function () {
+    return view('doctor-signup.step3');
+})->name('doctor.step3');
+
+Route::post('/doctor/signup/step3', function (Request $request) {
+    $request->validate([
+        'phone' => 'required|string|max:30',
+        'gender' => 'required|in:Male,Female',
+        'specialize' => 'required|string|max:255',
+        'dob' => 'required|date',
+    ]);
+
+    session([
+        'doctor_signup.phone' => $request->phone,
+        'doctor_signup.gender' => $request->gender,
+        'doctor_signup.specialization' => $request->specialize,
+        'doctor_signup.birth_date' => $request->dob,
+        'doctor_signup.bio' => $request->bio,
+    ]);
+
+    $signup = session('doctor_signup', []);
+
+    if (
+        empty($signup['first_name']) ||
+        empty($signup['last_name']) ||
+        empty($signup['email']) ||
+        empty($signup['password'])
+    ) {
+        return redirect()->route('doctor.signup.step1')
+            ->withErrors(['Please complete step 1 first.']);
+    }
+
+    $user = User::create([
+        'role' => 'doctor',
+        'first_name' => $signup['first_name'],
+        'last_name' => $signup['last_name'],
+        'email' => $signup['email'],
+        'phone' => $signup['phone'],
+        'gender' => $signup['gender'],
+        'password' => Hash::make($signup['password']),
+    ]);
+
+    $doctorProfile = DoctorProfile::create([
+        'user_id' => $user->id,
+        'birth_date' => $signup['birth_date'],
+        'specialization' => $signup['specialization'],
+        'bio' => $signup['bio'] ?? null,
+    ]);
+
+    session([
+        'doctor_signup.user_id' => $user->id,
+        'doctor_signup.doctor_profile_id' => $doctorProfile->id,
+    ]);
+
+    Auth::login($user);
+    session()->forget('doctor_signup');
+
+    return redirect()->route('doctor.home');
+})->name('doctor.step3.post');
 
 // Logout
 Route::post('/logout', function () {
