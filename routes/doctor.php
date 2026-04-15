@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Doctor\ChildController;
 
 Route::prefix('doctor')->name('doctor.')->group(function () {
     Route::get('/home', function () {
@@ -12,6 +13,10 @@ Route::prefix('doctor')->name('doctor.')->group(function () {
     Route::get('/request', function () {
         return view('doctor.request');
     })->name('request');
+    
+    Route::get('/doctor/settings', function () {
+    return view('doctor.settings');
+})->name('doctor.settings');
 
     Route::get('/parents', function () {
         $parents = [
@@ -230,4 +235,10 @@ Route::prefix('doctor')->name('doctor.')->group(function () {
     Route::delete('/delete-account', function () {
         return back()->with('success', 'Account deleted');
     })->name('delete.account');
+});
+
+Route::prefix('doctor')->name('doctor.')->group(function () {
+    Route::get('/children/search', [ChildController::class, 'searchPage'])->name('children.search');
+    Route::get('/children/find', [ChildController::class, 'find'])->name('children.find');
+    Route::post('/children/{id}/attach', [ChildController::class, 'attach'])->name('children.attach');
 });

@@ -240,7 +240,7 @@
         </div>
 
         <div class="top-bar">
-            <a href="#" class="add-btn">+</a>
+            <a href="{{ route('doctor.children.search') }}" class="add-btn">+</a>
             <div class="search">
                 <span>🔍</span>
                 <input type="text" placeholder="Search..." name="search">
