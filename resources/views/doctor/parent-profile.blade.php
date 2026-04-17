@@ -185,16 +185,29 @@
             flex-wrap: wrap;
         }
 
-        .info-pill {
-            min-width: 118px;
-            background: #fff8f2;
-            border-radius: 14px;
-            padding: 4px 12px;
-            text-align: center;
-            font-size: 14px;
-            color: #2bc7af;
-            line-height: 1.2;
-        }
+      .info-pill {
+    min-width: 118px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 6px 12px;
+    text-align: center;
+    font-size: 14px;
+    color: #0f766e; /* أخضر أوضح */
+    line-height: 1.2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+    fill: #14b8a6; /* لون الأيقونة */
+}
      
         .section-chip {
             display: inline-block;
@@ -391,15 +404,35 @@
                 <div class="parent-name">{{ $parent['name'] ?? 'Ali Saloh' }}</div>
                 <div class="parent-subtitle">{{ $parent['subtitle'] ?? "Ahmed Salah’s father" }}</div>
 
-                <div class="info-row">
-                    <div class="info-pill">{{ $parent['phone'] ?? '09X - XXXXXXX' }}</div>
-                    <div class="info-pill">{{ $parent['autism_level'] ?? 'Autism Levels: Mild' }}</div>
-                    <div class="info-pill">{{ $parent['age'] ?? 'child age: 10' }}</div>
-                </div>
-<<<<<<< HEAD
+               <div class="info-row">
 
-=======
->>>>>>> a7a7fdf170374a336a315793b833851ee0b5d82d
+    <!-- Phone -->
+    <div class="info-pill">
+        <svg viewBox="0 0 24 24" class="icon">
+            <path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.24c1.1.36 2.3.56 3.6.56a1 1 0 011 1V21a1 1 0 01-1 1C10.3 22 2 13.7 2 3a1 1 0 011-1h3.5a1 1 0 011 1c0 1.3.2 2.5.56 3.6a1 1 0 01-.25 1L6.6 10.8z"/>
+        </svg>
+        {{ $parent['phone'] ?? '09X - XXXXXXX' }}
+    </div>
+
+    <!-- Autism -->
+    <div class="info-pill">
+        <svg viewBox="0 0 24 24" class="icon">
+            <path d="M12 2C8 2 6 5 6 8c0 1.5.5 2.5 1.5 3.5C6.5 12.5 6 13.5 6 15c0 3 2 5 6 5s6-2 6-5c0-1.5-.5-2.5-1.5-3.5C17.5 10.5 18 9.5 18 8c0-3-2-6-6-6z"/>
+        </svg>
+        {{ $parent['autism_level'] ?? 'Mild' }}
+    </div>
+
+    <!-- Age -->
+    <div class="info-pill">
+        <svg viewBox="0 0 24 24" class="icon">
+            <path d="M12 12c2.7 0 5-2.3 5-5S14.7 2 12 2 7 4.3 7 7s2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/>
+        </svg>
+        {{ $parent['age'] ?? 'child age: 10' }}
+    </div>
+
+</div>
+
+
             </div>
 
             <div class="section-chip">Appointment</div>
@@ -445,7 +478,7 @@
                         Cancel
                     </button>
 
-                    <form action="{{ route('parents.doctors.delete', $doctor['id'] ?? 1) }}" method="POST">
+                    <<form action="#" method="POST" onsubmit="event.preventDefault(); closeDeleteModal();">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="modal-delete-btn">

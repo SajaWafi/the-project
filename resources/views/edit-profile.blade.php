@@ -67,18 +67,11 @@
             margin-bottom: 8px;
         }
 
-        .time {
-            font-size: 14px;
-            font-weight: 700;
-            color: #111827;
-        }
-
         .top-right {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
 
         .header {
             position: relative;
@@ -115,7 +108,7 @@
         .app-logo {
             position: absolute;
             right: 0;
-           width:100px;
+            width: 100px;
             height: 100px;
             object-fit: contain;
         }
@@ -241,45 +234,52 @@
             pointer-events: none;
         }
 
-        .dob-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .dob-item {
-            position: relative;
-            min-width: 48px;
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-size: 15px;
-            color: #2d2d2d;
-        }
-
-        .dob-item select {
+        .save-btn {
+            width: 45%;
+            height: 52px;
+            background: #2f80ed;
+            color: #fff;
             border: none;
-            background: transparent;
-            outline: none;
-            font-size: 15px;
-            color: #2d2d2d;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            padding-right: 10px;
+            border-radius: 18px;
+            font-size: 18px;
+            font-weight: 700;
             cursor: pointer;
-            text-decoration: underline;
+            margin-top: 20px;
+            box-shadow: 0 6px 18px rgba(47,128,237,0.3);
+            transition: 0.2s;
         }
 
-        .dob-item::after {
-            content: "˅";
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-55%);
-            color: #e6903f;
-            font-size: 13px;
-            pointer-events: none;
+        .save-btn:active {
+            transform: scale(0.97);
+        }
+
+        .alert-success,
+        .alert-error,
+        .alert-warning {
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .alert-warning ul {
+            padding-left: 18px;
+            margin: 0;
         }
 
         @media (max-width: 480px) {
@@ -301,61 +301,64 @@
                 padding: 14px 16px 24px;
             }
         }
-                .save-btn {
-            width: 45%;
-            height: 52px;
-
-            background: #2f80ed; /* أزرق */
-            color: #fff; /* أبيض */
-
-            border: none;
-            border-radius: 18px;
-
-            font-size: 18px;
-            font-weight: 700;
-
-            cursor: pointer;
-
-            margin-top: 20px;
-
-            box-shadow: 0 6px 18px rgba(47,128,237,0.3);
-            transition: 0.2s;
-        }
-
-        .save-btn:active {
-            transform: scale(0.97);
-        }
-        
     </style>
 </head>
 <body>
 
-    <div class="mobile-screen">
-        <div class="content">
+@php
+    $user = auth()->user();
+    $child = $user?->child;
+@endphp
 
-            <div class="top-bar">
-                <div class="top-right">
-                    <div class="status-icon">
-                    </div>
-                   
-                </div>
+<div class="mobile-screen">
+    <div class="content">
+
+        @if(session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert-error">{{ session('error') }}</div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert-warning">
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
+        @endif
 
-            <div class="header">
-                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-
-                <div class="page-title">Profile</div>
-
-                <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
+        <div class="top-bar">
+            <div class="top-right">
+                <div class="status-icon"></div>
             </div>
+        </div>
+
+        <div class="header">
+            <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <div class="page-title">Profile</div>
+            <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
+        </div>
+
+        <form action="{{ route('parent.profile.update') }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
             <div class="profile-top">
                 <div class="avatar-wrap">
-                    <img id="profileAvatar" src="{{ asset('images/child.png') }}" alt="Profile" class="avatar">
+                    <img
+                        id="profileAvatar"
+                        src="{{ $user && $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/child.png') }}"
+                        alt="Profile"
+                        class="avatar"
+                    >
 
                     <div class="avatar-star">★</div>
 
@@ -366,97 +369,95 @@
                         </svg>
                     </button>
 
-                    <input type="file" id="avatarInput" accept="image/*">
+                    <input type="file" id="avatarInput" name="profile_image" accept="image/*">
                 </div>
 
-                <div class="profile-name">Ahmed Salah</div>
+                <div class="profile-name">
+                    {{ $user?->first_name ?? '' }} {{ $user?->last_name ?? '' }}
+                </div>
             </div>
 
             <div class="form-area">
                 <div class="form-group">
                     <label class="form-label">first name</label>
-                    <input type="text" class="form-input" value="" name="full_name">
+                    <input type="text" class="form-input" name="first_name" value="{{ old('first_name', $user?->first_name ?? '') }}">
                 </div>
 
-             <div class="form-area">
                 <div class="form-group">
                     <label class="form-label">last name</label>
-                    <input type="text" class="form-input" value="" name="full_name">
+                    <input type="text" class="form-input" name="last_name" value="{{ old('last_name', $user?->last_name ?? '') }}">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Phone Number</label>
-                    <input type="text" class="form-input" value="" name="phone">
+                    <input type="text" class="form-input" name="phone" value="{{ old('phone', $user?->phone ?? '') }}">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Email</label>
-                    <input type="email" class="form-input" value="" name="phone">
+                    <input type="email" class="form-input" name="email" value="{{ old('email', $user?->email ?? '') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Child’ Name</label>
-                    <input type="text" class="form-input" value="" name="email">
+                    <label class="form-label">Child Name</label>
+                    <input type="text" class="form-input" name="child_name" value="{{ old('child_name', $child?->name ?? '') }}">
                 </div>
 
-           
-                    <div class="form-group">
-                    <label class="form-label">Sex</label>
-
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
                     <div class="select-wrap">
-                        <select class="form-select" name="sex">
+                        <select class="form-select" name="gender">
                             <option value="">Select</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
+                            <option value="male" {{ old('gender', $child?->gender ?? '') == 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ old('gender', $child?->gender ?? '') == 'female' ? 'selected' : '' }}>Female</option>
                         </select>
                     </div>
-                </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Autism Levels</label>
                     <div class="select-wrap">
                         <select class="form-select" name="autism_level">
-                            <option selected>Select level</option>
-                            <option>Mild</option>
-                            <option>Moderate</option>
-                            <option>Severe</option>
+                            <option value="">Select level</option>
+                            <option value="Mild" {{ old('autism_level', $child?->autism_level ?? '') == 'Mild' ? 'selected' : '' }}>Mild</option>
+                            <option value="Moderate" {{ old('autism_level', $child?->autism_level ?? '') == 'Moderate' ? 'selected' : '' }}>Moderate</option>
+                            <option value="Severe" {{ old('autism_level', $child?->autism_level ?? '') == 'Severe' ? 'selected' : '' }}>Severe</option>
                         </select>
                     </div>
                 </div>
 
-                                <div class="form-group">
+                <div class="form-group">
                     <label class="form-label">Date of Birth</label>
-
-                    <input 
-                        type="date" 
-                        class="form-input date-input"
-                        id="dob"
+                    <input
+                        type="date"
+                        class="form-input"
+                        name="birth_date"
+                        value="{{ old('birth_date', $child?->birth_date ? \Carbon\Carbon::parse($child->birth_date)->format('Y-m-d') : '') }}"
                     >
-                    <button type="submit" class="save-btn">Save</button>
                 </div>
-                    </div>
-                </div>
+
+                <button type="submit" class="save-btn">Save</button>
             </div>
+        </form>
 
-        </div>
     </div>
+</div>
 
-    <script>
-        const avatarInput = document.getElementById('avatarInput');
-        const profileAvatar = document.getElementById('profileAvatar');
+<script>
+    const avatarInput = document.getElementById('avatarInput');
+    const profileAvatar = document.getElementById('profileAvatar');
 
-        avatarInput.addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
+    avatarInput.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                profileAvatar.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-    </script>
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            profileAvatar.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
 
 </body>
 </html>

@@ -33,7 +33,7 @@
         }
 
         .content {
-            padding: 14px;
+            padding: 16px;
             height: 100%;
             overflow-y: auto;
         }
@@ -43,7 +43,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
         }
 
         .back-btn {
@@ -64,34 +64,30 @@
         .logo {
             position: absolute;
             right: 0;
-            width: 40px;
+            width: 42px;
             height: 28px;
         }
 
         .subtitle {
             text-align: center;
-            color: #4d6a79;
+            color: #55717f;
             font-size: 13px;
-            margin-bottom: 16px;
-        }
-
-        .search-wrapper {
             margin-bottom: 18px;
         }
 
+        .search-wrapper {
+            margin-bottom: 16px;
+        }
+
         .search-box {
-            height: 48px;
-            border-radius: 24px;
-            background: rgba(34,193,166,0.22);
+            height: 50px;
+            border-radius: 25px;
+            background: rgba(34,193,166,0.20);
             display: flex;
             align-items: center;
             padding: 0 14px;
             gap: 8px;
-        }
-
-        .search-icon {
-            font-size: 16px;
-            color: #1d567e;
+            border: 1px solid rgba(34,193,166,0.15);
         }
 
         .search-box input {
@@ -104,40 +100,28 @@
         }
 
         .search-box input::placeholder {
-            color: #6a7c88;
+            color: #728590;
         }
 
         .search-btn {
             border: none;
             background: #22c1a6;
             color: white;
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(34,193,166,0.25);
         }
 
-        .helper-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .top-note {
+            font-size: 12px;
+            color: #607581;
             margin-bottom: 14px;
-            padding: 0 4px;
-        }
-
-        .helper-text {
-            font-size: 12px;
-            color: #5f7481;
-        }
-
-        .create-link {
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: bold;
-            color: #22c1a6;
+            padding-left: 4px;
         }
 
         .msg {
@@ -166,13 +150,14 @@
         }
 
         .child-card {
-            background: #a8d3cc;
+            background: linear-gradient(180deg, #abd8d0 0%, #9ecac3 100%);
             border-radius: 22px;
-            padding: 12px;
+            padding: 13px;
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 14px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
         }
 
         .child-avatar {
@@ -196,21 +181,21 @@
             font-weight: bold;
             color: white;
             font-size: 16px;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
 
         .child-sub {
             font-size: 13px;
-            color: #2f3d46;
-            margin-bottom: 2px;
+            color: #23343d;
+            margin-bottom: 3px;
         }
 
         .badge {
             display: inline-block;
-            margin-top: 6px;
+            margin-top: 7px;
             padding: 4px 10px;
             border-radius: 12px;
-            background: rgba(255,255,255,0.75);
+            background: rgba(255,255,255,0.82);
             color: #1d567e;
             font-size: 11px;
             font-weight: bold;
@@ -218,35 +203,34 @@
 
         .action-side {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
         }
 
         .add-btn {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             border: none;
             background: white;
             color: #1d567e;
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s;
+            transition: 0.2s ease;
         }
 
         .add-btn:hover {
             background: #22c1a6;
             color: white;
-            transform: scale(1.05);
+            transform: scale(1.06);
         }
 
         .added-label {
-            min-width: 64px;
+            min-width: 66px;
             text-align: center;
-            padding: 6px 8px;
-            border-radius: 12px;
+            padding: 7px 10px;
+            border-radius: 13px;
             background: #e7f8ef;
             color: #1f8b5c;
             font-size: 11px;
@@ -255,9 +239,9 @@
 
         .empty-box {
             margin-top: 24px;
-            background: rgba(255,255,255,0.75);
+            background: rgba(255,255,255,0.78);
             border-radius: 20px;
-            padding: 22px 16px;
+            padding: 24px 16px;
             text-align: center;
         }
 
@@ -268,25 +252,13 @@
         }
 
         .empty-box p {
-            color: #657985;
+            color: #6b7f8a;
             font-size: 13px;
-            margin-bottom: 14px;
             line-height: 1.5;
         }
 
-        .empty-btn {
-            display: inline-block;
-            text-decoration: none;
-            background: #22c1a6;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 18px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
         .spacer {
-            height: 18px;
+            height: 16px;
         }
     </style>
 </head>
@@ -326,7 +298,7 @@
         <div class="search-wrapper">
             <form action="{{ route('doctor.children.find') }}" method="GET">
                 <div class="search-box">
-                    <span class="search-icon">🔍</span>
+                    <span>🔍</span>
                     <input
                         type="text"
                         name="search"
@@ -338,9 +310,8 @@
             </form>
         </div>
 
-        <div class="helper-row">
-            <div class="helper-text">Make sure you choose the correct child</div>
-            <a href="#" class="create-link">+ New child</a>
+        <div class="top-note">
+            Check the parent name before adding the child
         </div>
 
         @if(isset($children) && $children->count() > 0)
@@ -364,7 +335,8 @@
                         </div>
 
                         <div class="child-sub">
-                            Parent ID: {{ $child->parent_id }}
+                            Parent:
+                            {{ $child->parent?->user?->first_name ?? 'No parent name' }}
                         </div>
 
                         <span class="badge">
@@ -373,15 +345,7 @@
                     </div>
 
                     <div class="action-side">
-                        @php
-                            $alreadyAdded = false;
-
-                            if (isset($linkedChildIds)) {
-                                $alreadyAdded = in_array($child->id, $linkedChildIds);
-                            }
-                        @endphp
-
-                        @if($alreadyAdded)
+                        @if(isset($linkedChildIds) && in_array($child->id, $linkedChildIds))
                             <div class="added-label">Added</div>
                         @else
                             <form action="{{ route('doctor.children.attach', $child->id) }}" method="POST">
@@ -396,18 +360,12 @@
         @elseif(request()->has('search'))
             <div class="empty-box">
                 <h3>No child found</h3>
-                <p>
-                    We couldn’t find any child with this name.
-                    Try another spelling or add a new child later.
-                </p>
-                <a href="#" class="empty-btn">Create New Child</a>
+                <p>Try another name or spelling.</p>
             </div>
         @else
             <div class="empty-box">
                 <h3>Start searching</h3>
-                <p>
-                    Search by child name to link them to the doctor account.
-                </p>
+                <p>Search by child name to link them to the doctor account.</p>
             </div>
         @endif
 

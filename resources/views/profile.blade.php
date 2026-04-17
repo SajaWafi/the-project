@@ -360,28 +360,42 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
             </div>
 
-            <div class="profile-top">
-                <div class="avatar-wrap">
-                    <img id="profileAvatar" src="{{ asset('images/child.png') }}" alt="Profile" class="avatar">
+           <div class="profile-top">
+    <div class="avatar-wrap">
+        <img 
+            id="profileAvatar"
+            src="{{ auth()->user()->profile_image 
+                ? asset('storage/' . auth()->user()->profile_image) 
+                : asset('images/child.png') 
+            }}"
+            alt="Profile"
+            class="avatar"
+        >
 
-                    <div class="avatar-star">★</div>
+        <div class="avatar-star">★</div>
 
-                    <button class="edit-avatar-btn" type="button" onclick="document.getElementById('avatarInput').click()">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                            <path d="M12.5 5.5 16.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        </svg>
-                    </button>
+        <button class="edit-avatar-btn" type="button" onclick="window.location='{{ route('parent.profile.edit') }}'">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M12.5 5.5 16.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
 
-                    <input type="file" id="avatarInput" accept="image/*">
-                </div>
+    <div class="name-en">
+        {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+    </div>
 
-                <div class="name-ar">Ali Salah</div>
-                <div class="name-en">Ahmed Salah</div>
-                <div class="profile-id">ID:6s6wn27e</div>
-            </div>
+    <div class="name-ar">
+        {{ optional(auth()->user()->child)->name ?? 'No Child' }}
+    </div>
 
-            <a href="{{ route('edit.profile') }}" class="menu-item">
+    <div class="profile-id">
+        ID: {{ auth()->user()->id }}
+    </div>
+</div>
+
+            <a href="{{ route('parent.profile.edit') }}" class="menu-item">
                 <div class="menu-left">
                     <div class="menu-icon">
                         <svg viewBox="0 0 24 24" fill="none">

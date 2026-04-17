@@ -12,7 +12,17 @@ class ChildController extends Controller
 {
     public function searchPage()
     {
-        return view('doctor.search-child');
+        $doctor = DoctorProfile::where('user_id', auth()->id())->first();
+
+        if (!$doctor) {
+            return back()->withErrors(['doctor' => 'Doctor profile not found.']);
+        }
+
+        $linkedChildIds = ChildDoctor::where('doctor_id', $doctor->id)
+            ->pluck('child_id')
+            ->toArray();
+
+        return view('doctor.search-child', compact('linkedChildIds'));
     }
 
     public function find(Request $request)
@@ -21,16 +31,26 @@ class ChildController extends Controller
             'search' => 'nullable|string|max:255',
         ]);
 
+        $doctor = DoctorProfile::where('user_id', auth()->id())->first();
+
+        if (!$doctor) {
+            return back()->withErrors(['doctor' => 'Doctor profile not found.']);
+        }
+
         $search = $request->search;
 
-        $children = Child::query()
-            ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->latest()
-            ->get();
+       $children = Child::with('parent.user')
+        ->when($search, function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })
+        ->orderBy('name')
+        ->get();
 
-        return view('doctor.search-child', compact('children', 'search'));
+        $linkedChildIds = ChildDoctor::where('doctor_id', $doctor->id)
+            ->pluck('child_id')
+            ->toArray();
+
+        return view('doctor.search-child', compact('children', 'search', 'linkedChildIds'));
     }
 
     public function attach($id)

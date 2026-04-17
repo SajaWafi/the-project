@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat from doctor to parent</title>
+    <title>Doctor Chat</title>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
         * {
@@ -64,19 +66,6 @@
             z-index: 0;
         }
 
-        .status-bar {
-            height: 28px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            padding: 10px 12px 0;
-            font-size: 13px;
-            font-weight: 700;
-            color: #111;
-            position: relative;
-            z-index: 2;
-        }
-
         .header {
             height: 62px;
             background: #c9defa;
@@ -122,7 +111,7 @@
         .chat-area {
             position: relative;
             z-index: 1;
-            height: calc(100% - 28px - 62px - 84px);
+            height: calc(100% - 62px - 84px);
             overflow-y: auto;
             padding: 18px 14px 10px;
         }
@@ -148,7 +137,6 @@
             font-size: 14px;
             line-height: 1.35;
             color: #6a7482;
-            position: relative;
             word-wrap: break-word;
         }
 
@@ -168,67 +156,11 @@
             margin-top: 6px;
         }
 
-        .voice-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #cfe0ff;
-            padding: 8px 12px;
-            border-radius: 18px;
-            width: 215px;
-        }
-
-        .small-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .play-btn {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 2px solid #6f6f6f;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-            color: #6f6f6f;
-            flex-shrink: 0;
-        }
-
-        .audio-bar {
-            flex: 1;
-            height: 3px;
-            background: #111;
-            border-radius: 10px;
-            position: relative;
-        }
-
-        .audio-bar::after {
-            content: "";
-            width: 8px;
-            height: 8px;
-            background: #111;
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 68%;
-            transform: translate(-50%, -50%);
-        }
-
-        .audio-time {
-            font-size: 11px;
-            color: #8c8c8c;
-        }
-
-        .typing {
-            font-size: 15px;
+        .empty-state {
+            text-align: center;
             color: #666;
-            padding: 0 18px 8px;
-            position: relative;
-            z-index: 2;
+            margin-top: 40px;
+            font-size: 14px;
         }
 
         .input-bar-wrap {
@@ -292,6 +224,12 @@
         }
     </style>
 </head>
+
+@php
+    $parentName = $parent['name'] ?? 'Parent';
+    $parentImage = asset('images/' . ($parent['image'] ?? 'p1.png'));
+@endphp
+
 <body>
     <div class="phone">
         <div class="bg-top"></div>
@@ -299,118 +237,139 @@
         <div class="bg-bottom-right"></div>
 
         <div class="header">
-            <a href="{{ url()->previous() }}" class="back-btn">‹</a>
+            <a href="{{ route('doctor.parents') }}" class="back-btn">‹</a>
 
-            <img
-                src="{{ asset('images/' . ($parent['image'] ?? 'p1.png')) }}"
-                alt="Parent"
-                class="parent-avatar"
-            >
+            <img src="{{ $parentImage }}" alt="Parent" class="parent-avatar">
 
             <div class="header-info">
-                <div class="parent-name">{{ $parent['name'] ?? 'Ali Salah' }}</div>
+                <div class="parent-name">{{ $parentName }}</div>
                 <div class="online-status">• Online</div>
             </div>
         </div>
 
         <div class="chat-area" id="chatArea">
-            <div class="message-row me">
-                <div class="bubble me">
-                    lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore at dolore magna aliquot.
-                </div>
-                <div class="time">09:00</div>
-            </div>
-
-            <div class="message-row other">
-                <div class="bubble other">
-                    lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore magna aliqua
-                </div>
-                <div class="time">09:30</div>
-            </div>
-
-            <div class="message-row me">
-                <div class="bubble me">
-                    lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                </div>
-                <div class="time">09:43</div>
-            </div>
-
-            <div class="message-row other">
-                <div class="voice-row">
-                    <img
-                        src="{{ asset('images/' . ($parent['image'] ?? 'p1.png')) }}"
-                        alt="Parent"
-                        class="small-avatar"
-                    >
-                    <div class="play-btn">▶</div>
-                    <div class="audio-bar"></div>
-                    <div class="audio-time">02:50</div>
-                </div>
-                <div class="time">09:50</div>
-            </div>
-
-            <div class="message-row me">
-                <div class="bubble me">
-                    lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </div>
-                <div class="time">09:55</div>
-            </div>
+            <div class="empty-state" id="emptyState">Loading messages...</div>
         </div>
 
-        <div class="typing">{{ $parent['name'] ?? 'Ali' }} is typing...</div>
-
-        <form class="input-bar-wrap" onsubmit="sendMessage(event)">
+       <form class="input-bar-wrap" id="chatForm">
             <button type="button" class="icon-btn">📎</button>
 
             <input
                 type="text"
+                name="message"
                 class="message-input"
                 id="messageInput"
                 placeholder="Write Here..."
             >
 
-            <button type="button" class="icon-btn">🎤</button>
+            <button type="button" class="icon-btn" id="voiceBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 15a3 3 0 0 0 3-3V7a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M19 11a7 7 0 0 1-14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M9 21h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </button>
             <button type="submit" class="send-btn">➤</button>
         </form>
     </div>
 
     <script>
-        function sendMessage(event) {
-            event.preventDefault();
+        const chatArea = document.getElementById('chatArea');
+        const chatForm = document.getElementById('chatForm');
+        const messageInput = document.getElementById('messageInput');
+        const emptyState = document.getElementById('emptyState');
 
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if (!text) return;
+        const parentId = @json($parent['id']);
+        const messagesUrl = @json(route('doctor.chat.messages', ['parentId' => $parent['id']]));
+        const sendUrl = @json(route('doctor.chat.send', ['parentId' => $parent['id']]));
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            const chatArea = document.getElementById('chatArea');
-
+        function renderMessage(message) {
             const row = document.createElement('div');
-            row.className = 'message-row me';
+            row.className = 'message-row ' + (message.is_me ? 'me' : 'other');
 
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble me';
-            bubble.textContent = text;
+            if (message.type === 'text') {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble ' + (message.is_me ? 'me' : 'other');
+                bubble.textContent = message.message;
+                row.appendChild(bubble);
+            }
 
             const time = document.createElement('div');
             time.className = 'time';
-
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2, '0');
-            const mm = String(now.getMinutes()).padStart(2, '0');
-            time.textContent = hh + ':' + mm;
-
-            row.appendChild(bubble);
+            time.textContent = message.time ?? '';
             row.appendChild(time);
-            chatArea.appendChild(row);
 
-            input.value = '';
+            chatArea.appendChild(row);
+        }
+
+        function scrollToBottom() {
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        window.onload = function () {
-            const chatArea = document.getElementById('chatArea');
-            chatArea.scrollTop = chatArea.scrollHeight;
-        };
+        async function loadMessages() {
+            try {
+                const response = await fetch(messagesUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                chatArea.innerHTML = '';
+
+                if (!data.messages || data.messages.length === 0) {
+                    chatArea.innerHTML = '<div class="empty-state">No messages yet. Start the conversation.</div>';
+                    return;
+                }
+
+                data.messages.forEach(renderMessage);
+                scrollToBottom();
+            } catch (error) {
+                chatArea.innerHTML = '<div class="empty-state">Failed to load messages.</div>';
+            }
+        }
+
+        chatForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            try {
+                const response = await fetch(sendUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: text
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.message) {
+                    const currentEmpty = document.getElementById('emptyState');
+                    if (currentEmpty) currentEmpty.remove();
+
+                    renderMessage(data.message);
+                    messageInput.value = '';
+                    scrollToBottom();
+                }
+            } catch (error) {
+                alert('Failed to send message.');
+            }
+        });
+
+        loadMessages();
+        
     </script>
 </body>
 </html>

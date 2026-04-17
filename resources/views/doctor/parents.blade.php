@@ -241,65 +241,48 @@
 
         <div class="top-bar">
             <a href="{{ route('doctor.children.search') }}" class="add-btn">+</a>
-            <div class="search">
+
+            <form class="search" onsubmit="return false;">
                 <span>🔍</span>
-                <input type="text" placeholder="Search..." name="search">
-            </div>
+                <input
+                    type="text"
+                    placeholder="Search by parent or child name..."
+                    name="search"
+                    id="searchInput"
+                    value="{{ $search ?? '' }}"
+                >
+            </form>
         </div>
 
-        <!-- Parent Card -->
+        <div id="parentsList">
+    @forelse($parents as $parent)
         <div class="parent-card">
-            <img src="{{ asset('images/p1.png') }}">
+            <img src="{{ asset('images/' . ($parent['image'] ?? 'p1.png')) }}">
+
             <div class="info">
-                <div class="name">Ali Salah</div>
-                <div class="sub">Ahmed Salah's father</div>
+                <div class="name">{{ $parent['name'] }}</div>
+                <div class="sub">{{ $parent['subtitle'] }}</div>
 
                 <div class="actions">
-                     <a href="{{ route('doctor.parent.profile', 1) }}" class="btn-icon">
-                            <i class="fi fi-sr-user"></i>
-                        </a>
-                        <a href="{{ route('doctor.chat', 1) }}" class="btn-icon">
-                            <i class="fi fi-ss-messages"></i>
-                        </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="parent-card">
-            <img src="{{ asset('images/p2.png') }}">
-            <div class="info">
-                <div class="name">Hifa Jaber</div>
-                <div class="sub">Wala Ali's mother</div>
-
-                <div class="actions">
-                    <a href="{{ route('doctor.parent.profile', 1) }}" class="btn-icon">
+                    <a href="{{ route('doctor.parent.profile', ['id' => $parent['id']]) }}" class="btn-icon">
                         <i class="fi fi-sr-user"></i>
                     </a>
-                    <a href="#" class="btn-icon">
+
+                    <a href="{{ route('doctor.chat', ['parentId' => $parent['id']]) }}" class="btn-icon">
                         <i class="fi fi-ss-messages"></i>
-                    </a> 
-                </div>
-            </div>
-        </div>
-
-        <div class="parent-card">
-            <img src="{{ asset('images/p3.png') }}">
-            <div class="info">
-                <div class="name">Marwan Hasan</div>
-                <div class="sub">Maryam Hasan's father</div>
-
-                <div class="actions">
-                    <a href="{{ route('doctor.parent.profile', 1) }}" class="btn-icon">
-                        <i class="fi fi-sr-user"></i>
                     </a>
-                    <a href="#" class="btn-icon">
-                        <i class="fi fi-ss-messages"></i>
-                    </a> 
                 </div>
             </div>
         </div>
+    @empty
+        <p style="text-align:center; color:#1d567e; margin-top:20px;">
+            No parents found
+        </p>
+    @endforelse
+</div>
 
     </div>
+
 
             <!-- navbar -->
         <div class="bottom-nav">
@@ -329,6 +312,76 @@
     </div>
 
 </div>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const parentsList = document.getElementById('parentsList');
+    const searchUrl = @json(route('doctor.parents.search.ajax'));
 
+    let searchTimeout = null;
+
+    function renderParents(parents) {
+        if (!parents.length) {
+            parentsList.innerHTML = `
+                <p style="text-align:center; color:#1d567e; margin-top:20px;">
+                    No parents found
+                </p>
+            `;
+            return;
+        }
+
+        let html = '';
+
+        parents.forEach(parent => {
+            html += `
+                <div class="parent-card">
+                    <img src="${parent.image}" alt="parent image">
+
+                    <div class="info">
+                        <div class="name">${parent.name}</div>
+                        <div class="sub">${parent.subtitle}</div>
+
+                        <div class="actions">
+                            <a href="${parent.profile_url}" class="btn-icon">
+                                <i class="fi fi-sr-user"></i>
+                            </a>
+
+                            <a href="${parent.chat_url}" class="btn-icon">
+                                <i class="fi fi-ss-messages"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        parentsList.innerHTML = html;
+    }
+
+    async function searchParents(value) {
+        try {
+            const response = await fetch(`${searchUrl}?search=${encodeURIComponent(value)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            renderParents(data.parents || []);
+        } catch (error) {
+            console.error('Search failed:', error);
+        }
+    }
+
+    searchInput.addEventListener('input', function () {
+        const value = this.value;
+
+        clearTimeout(searchTimeout);
+
+        searchTimeout = setTimeout(() => {
+            searchParents(value);
+        }, 300);
+    });
+</script>
 </body>
 </html>

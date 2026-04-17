@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Parent\ProfileController;
 
 Route::prefix('parents')->name('parents.')->group(function () {
     Route::get('/home', function () {
@@ -142,3 +143,8 @@ Route::get('/reports-history/{id}', function ($id) {
 Route::get('/reports-settings', function () {
     return view('reports-settings');
 })->name('reports.settings');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
+    Route::post('/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
+});
