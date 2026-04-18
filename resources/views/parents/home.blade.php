@@ -456,12 +456,19 @@
         <div class="content">
 
             <div class="header">
-                <div class="user-box">
-                    <a href="{{ route('profile') }}" class="child-link">
-    <img src="{{ asset('images/child.png') }}" alt="Child">
-</a>
-                    <div class="hello">Hello, Ahmed!</div>
-                </div>
+         <div class="user-box">
+    <a href="{{ route('profile') }}" class="child-link">
+  @php
+    $image = auth()->user()->profile_image;
+@endphp
+
+<img src="{{ $image ? asset('storage/' . $image) : asset('images/child.png') }}">
+    </a>
+
+    <div class="hello">
+       <div class="hello">Hello, {{ auth()->user()->first_name }}!</div>
+    </div>
+</div>
 
                 <div class="header-icons">
    <button class="circle-icon" type="button"

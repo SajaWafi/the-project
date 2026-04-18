@@ -8,17 +8,20 @@ class DoctorProfile extends Model
 {
     protected $fillable = [
         'user_id',
-        'birth_date',
+        'phone',
+        'gender',
         'specialization',
+        'birth_date',
         'bio',
     ];
 
-    protected $casts = [
-        'birth_date' => 'date',
-    ];
-
-    public function user()
+    public function children()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(
+            Child::class,
+            'child_doctor',
+            'doctor_id',
+            'child_id'
+        )->withPivot('status', 'assigned_at')->withTimestamps();
     }
 }

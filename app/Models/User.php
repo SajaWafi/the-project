@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ParentModule\Child;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
-        'role',
         'first_name',
         'last_name',
         'email',
@@ -18,6 +19,7 @@ class User extends Authenticatable
         'gender',
         'profile_image',
         'password',
+        'role',
     ];
 
     protected $hidden = [
@@ -25,13 +27,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function parentProfile()
+    public function child()
     {
-        return $this->hasOne(ParentProfile::class);
+       return $this->hasOne(\App\Models\ParentModule\Child::class, 'parent_id');
     }
 
-    public function doctorProfile()
-    {
-        return $this->hasOne(DoctorProfile::class);
-    }
+   
 }
+
+   
+    

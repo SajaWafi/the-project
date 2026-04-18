@@ -126,6 +126,10 @@
             height: 20px;
             color: #3d78ff;
         }
+        .chat-btn:hover {
+        background: #3d78ff;
+        color: #fff;
+    }
 
         .top-profile {
             display: flex;
@@ -383,6 +387,26 @@
             color: #1d567e;
             margin-bottom: 10px;
         }
+        .settings-btn {
+    position: absolute;
+    top: 50px; /* تحت الجرس */
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #3d78ff;
+    color: #3d78ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 18px;
+    background: #fff;
+}
+.settings-btn:hover {
+    background: #3d78ff;
+    color: #fff;
+}
 </style>
 </head>
 <body>
@@ -401,7 +425,9 @@
                         <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                 </a>
-
+                <a href="{{ route('doctor.settings') }}" class="settings-btn">
+                    <i class="ri-settings-3-line"></i>
+                </a>
                 <div class="top-profile">
                     <img
                         class="doctor-image"

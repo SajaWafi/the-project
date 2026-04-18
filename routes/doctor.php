@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Doctor\ChildController;
+use App\Http\Controllers\Doctor\ParentController;
+use App\Http\Controllers\Doctor\ChatController;
 
 Route::prefix('doctor')->name('doctor.')->group(function () {
     Route::get('/home', function () {
@@ -12,8 +15,12 @@ Route::prefix('doctor')->name('doctor.')->group(function () {
     Route::get('/request', function () {
         return view('doctor.request');
     })->name('request');
+    
+    Route::get('/doctor/settings', function () {
+    return view('doctor.settings');
+})->name('doctor.settings');
 
-    Route::get('/parents', function () {
+  /*  Route::get('/parents', function () {
         $parents = [
             [
                 'id' => 1,
@@ -59,7 +66,16 @@ Route::prefix('doctor')->name('doctor.')->group(function () {
         ];
 
         return view('doctor.chat', compact('parent'));
-    })->name('chat');
+    })->name('chat'); */
+
+    Route::get('/parents', [ParentController::class, 'index'])->name('parents');
+Route::get('/parent-profile/{id}', [ParentController::class, 'show'])->name('parent.profile');
+
+
+Route::get('/chat/{parentId}', [ChatController::class, 'show'])->name('chat');
+Route::get('/chat/{parentId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
+Route::post('/chat/{parentId}/send', [ChatController::class, 'send'])->name('chat.send');
+Route::get('/parents/search/ajax', [ParentController::class, 'searchAjax'])->name('parents.search.ajax');
 
     Route::get('/appointments', function () {
         return view('doctor.Appointments');
@@ -230,4 +246,10 @@ Route::prefix('doctor')->name('doctor.')->group(function () {
     Route::delete('/delete-account', function () {
         return back()->with('success', 'Account deleted');
     })->name('delete.account');
+});
+
+Route::prefix('doctor')->name('doctor.')->group(function () {
+    Route::get('/children/search', [ChildController::class, 'searchPage'])->name('children.search');
+    Route::get('/children/find', [ChildController::class, 'find'])->name('children.find');
+    Route::post('/children/{id}/attach', [ChildController::class, 'attach'])->name('children.attach');
 });
