@@ -1,89 +1,32 @@
 <?php
 
-namespace App\Http\Controllers\Parent;
+namespace App\Http\Requests\Parent;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Parent\UpdateProfileRequest;
-use App\Models\ParentModule\Child;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Http\FormRequest;
 
-class ProfileController extends Controller
+class UpdateProfileRequest extends FormRequest
 {
-    public function edit()
+    public function authorize(): bool
     {
-        return view('edit-profile');
+        return auth()->check();
     }
 
-    public function update(UpdateProfileRequest $request)
+    public function rules(): array
     {
-        $user = Auth::user();
+        $userId = auth()->id();
 
-        DB::beginTransaction();
+        return [
+            'first_name'    => ['nullable', 'string', 'max:255'],
+            'last_name'     => ['nullable', 'string', 'max:255'],
+            'phone'         => ['nullable', 'string', 'max:20'],
+            'email'         => ['nullable', 'email', 'max:255', 'unique:users,email,' . $userId],
 
-        try {
-            $userData = [];
+            'child_name'    => ['nullable', 'string', 'max:255'],
+            'gender'        => ['nullable', 'in:male,female'],
+            'autism_level'  => ['nullable', 'string', 'max:255'],
+            'birth_date'    => ['nullable', 'date'],
 
-            if ($request->filled('first_name')) {
-                $userData['first_name'] = $request->first_name;
-            }
-
-            if ($request->filled('last_name')) {
-                $userData['last_name'] = $request->last_name;
-            }
-
-            if ($request->filled('phone')) {
-                $userData['phone'] = $request->phone;
-            }
-
-            if ($request->filled('email')) {
-                $userData['email'] = $request->email;
-            }
-
-            if ($request->hasFile('profile_image')) {
-                if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
-                    Storage::disk('public')->delete($user->profile_image);
-                }
-
-                $userData['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
-            }
-
-            if (!empty($userData)) {
-                $user->update($userData);
-            }
-
-            $childData = [];
-
-            if ($request->filled('child_name')) {
-                $childData['name'] = $request->child_name;
-            }
-
-            if ($request->filled('gender')) {
-                $childData['gender'] = $request->gender;
-            }
-
-            if ($request->filled('birth_date')) {
-                $childData['birth_date'] = $request->birth_date;
-            }
-
-            if ($request->filled('autism_level')) {
-                $childData['autism_level'] = $request->autism_level;
-            }
-
-            if (!empty($childData)) {
-                Child::updateOrCreate(
-                    ['parent_id' => $user->id],
-                    $childData
-                );
-            }
-
-            DB::commit();
-
-            return redirect()->back()->with('success', 'تم تحديث البيانات بنجاح');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
-        }
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ];
     }
 }

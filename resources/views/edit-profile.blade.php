@@ -353,13 +353,14 @@
 
             <div class="profile-top">
                 <div class="avatar-wrap">
-                    <img
-                        id="profileAvatar"
-                        src="{{ $user && $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/child.png') }}"
-                        alt="Profile"
-                        class="avatar"
-                    >
-
+                  <img 
+                id="profilePreview"
+                src="{{ !empty(auth()->user()->profile_image)
+                    ? asset('storage/' . auth()->user()->profile_image)
+                    : asset('images/default-user.png') }}"
+                alt="Profile"
+                class="avatar"
+            >
                     <div class="avatar-star">★</div>
 
                     <button class="edit-avatar-btn" type="button" onclick="document.getElementById('avatarInput').click()">
@@ -445,7 +446,7 @@
 
 <script>
     const avatarInput = document.getElementById('avatarInput');
-    const profileAvatar = document.getElementById('profileAvatar');
+    const profilePreview = document.getElementById('profilePreview');
 
     avatarInput.addEventListener('change', function (event) {
         const file = event.target.files[0];
@@ -453,7 +454,7 @@
 
         const reader = new FileReader();
         reader.onload = function (e) {
-            profileAvatar.src = e.target.result;
+            profilePreview.src = e.target.result;
         };
         reader.readAsDataURL(file);
     });

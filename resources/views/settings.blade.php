@@ -494,14 +494,18 @@
                 </div>
 
                 <div class="delete-actions">
-                    <button type="button" class="delete-action-btn delete-cancel" onclick="closeDeleteModal()">
-                        Cancel
-                    </button>
+            <button type="button" class="delete-action-btn delete-cancel" onclick="closeDeleteModal()">
+                Cancel
+            </button>
 
-                    <a href="#" class="delete-action-btn delete-confirm" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">
-                        Yes, Delete
-                    </a>
-                </div>
+            <form action="{{ route('delete.account') }}" method="POST" style="margin:0;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="delete-action-btn delete-confirm">
+                    Yes, Delete
+                </button>
+            </form>
+        </div>
             </div>
         </div>
     </div>

@@ -409,6 +409,11 @@
 }
 </style>
 </head>
+@php
+    $user = auth()->user();
+    $doctorProfile = $user?->doctorProfile;
+@endphp
+
 <body>
     <div class="phone">
 
@@ -425,27 +430,37 @@
                         <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                 </a>
+
                 <a href="{{ route('doctor.settings') }}" class="settings-btn">
                     <i class="ri-settings-3-line"></i>
                 </a>
+
                 <div class="top-profile">
-                    <img
-                        class="doctor-image"
-                        src="{{ asset('images/doctor1.png') }}"
-                        alt="Doctor"
-                    >
+                  <a href="{{ route('doctor.doctor-profile') }}">
+                       <img
+                class="doctor-image"
+                src="{{ !empty(auth()->user()->profile_image)
+                    ? asset('storage/' . auth()->user()->profile_image)
+                    : asset('images/default-user.png') }}"
+                alt="Doctor"
+            >
 
                     <div class="profile-info">
                         <div class="welcome-box">
                             <div class="welcome-text">Hi, WelcomeBack</div>
-                            <a href="{{ route('doctor.doctor-profile') }} " class="patient-name">
-                                <div class="patient-name">John Doe</div>
+
+                            <a href="{{ route('doctor.doctor-profile') }}" class="patient-name">
+                                <div class="patient-name">
+                                    {{ $user?->first_name }} {{ $user?->last_name }}
+                                </div>
                             </a>
                         </div>
 
                         <div class="specialty-box">
                             <div class="specialize-label">Specialize In</div>
-                            <div class="specialty-text">Pediatric Neurologist</div>
+                            <div class="specialty-text">
+                                {{ $doctorProfile?->specialization ?? 'No specialization yet' }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -469,8 +484,7 @@
             </div>
 
             <div class="about-box">
-                The impact of hormonal imbalances on skin conditions,
-                specializing in acne, hirsutism, and other skin disorders.
+                {{ $doctorProfile?->bio ?? 'No bio yet' }}
             </div>
 
             <div class="section-chip">Today Appointment</div>

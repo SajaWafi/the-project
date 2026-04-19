@@ -462,7 +462,12 @@
     $image = auth()->user()->profile_image;
 @endphp
 
-<img src="{{ $image ? asset('storage/' . $image) : asset('images/child.png') }}">
+        <img 
+            src="{{ !empty(auth()->user()->profile_image)
+                ? asset('storage/' . auth()->user()->profile_image)
+                : asset('images/default-user.png') }}"
+            alt="Profile"
+        >
     </a>
 
     <div class="hello">

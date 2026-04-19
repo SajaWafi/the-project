@@ -39,12 +39,12 @@ class ChildController extends Controller
 
         $search = $request->search;
 
-       $children = Child::with('parent.user')
-        ->when($search, function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        })
-        ->orderBy('name')
-        ->get();
+    $children = Child::with('parent')
+    ->when($search, function ($query) use ($search) {
+        $query->where('name', 'like', '%' . $search . '%');
+    })
+    ->orderBy('name')
+    ->get();
 
         $linkedChildIds = ChildDoctor::where('doctor_id', $doctor->id)
             ->pluck('child_id')

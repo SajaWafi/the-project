@@ -178,7 +178,7 @@
             <div class="field">
                 <label>Current Password</label>
                 <div class="input-wrapper">
-                    <input type="password" name="current_password" class="input" id="current">
+                    <input type="password" name="current_password" class="input" id="current" value="{{ old('current_password') }}">
                     <span class="eye" onclick="toggle('current')">👁</span>
                 </div>
             </div>
@@ -186,7 +186,7 @@
             <div class="field">
                 <label>New Password</label>
                 <div class="input-wrapper">
-                    <input type="password" name="new_password" class="input" id="new">
+                    <input type="password" name="new_password" class="input" id="new" value="{{ old('new_password') }}">
                     <span class="eye" onclick="toggle('new')">👁</span>
                 </div>
             </div>
@@ -194,7 +194,7 @@
             <div class="field">
                 <label>Confirm New Password</label>
                 <div class="input-wrapper">
-                    <input type="password" name="new_password_confirmation" class="input" id="confirm">
+                    <input type="password" name="new_password_confirmation" class="input" id="confirm" value="{{ old('new_password_confirmation') }}">
                     <span class="eye" onclick="toggle('confirm')">👁</span>
                 </div>
             </div>

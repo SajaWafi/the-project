@@ -95,6 +95,7 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
         return view('settings');
     })->name('settings');
 
+<<<<<<< HEAD
     Route::get('/password-manager', function () {
         return view('password-manager');
     })->name('password.manager');
@@ -102,6 +103,36 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/panic-alert', function () {
         return view('panic-alert');
     })->name('panic.alert');
+=======
+
+Route::get('/password-manager', function () {
+    return view('password-manager');
+})->name('password.manager');
+
+Route::post('/password-manager', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'current_password' => 'required',
+        'new_password' => 'required|min:6|confirmed',
+    ]);
+
+    $user = auth()->user();
+
+    if (!$user || !Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors([
+            'current_password' => 'Current password is incorrect'
+        ]);
+    }
+
+    $user->password = Illuminate\Support\Facades\Hash::make($request->new_password);
+    $user->save();
+
+    return back()->with('success', 'Password updated successfully');
+})->name('password.manager.update');
+
+Route::get('/panic-alert', function () {
+    return view('panic-alert');
+})->name('panic.alert');
+>>>>>>> 32430d76775c2256dea2acdf9252796e2db0ae09
 
     Route::get('/location-alerts', function () {
         return view('location-alerts');
@@ -145,6 +176,42 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
         return view('reports-settings');
     })->name('reports.settings');
 
+<<<<<<< HEAD
     Route::get('/parent/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
     Route::post('/parent/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
 });
+=======
+Route::middleware('auth')->group(function () {
+    Route::get('/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
+    Route::post('/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
+});
+
+Route::delete('/delete-account', function () {
+    $user = Auth::user();
+
+    DB::beginTransaction();
+
+    try {
+        if ($user?->parentProfile?->child) {
+            $user->parentProfile->child()->delete();
+        }
+
+        if ($user?->parentProfile) {
+            $user->parentProfile()->delete();
+        }
+
+        Auth::logout();
+
+        if ($user) {
+            $user->delete();
+        }
+
+        DB::commit();
+
+        return redirect('/login-page')->with('success', 'Account deleted successfully');
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        return back()->with('error', $e->getMessage());
+    }
+})->name('delete.account');
+>>>>>>> 32430d76775c2256dea2acdf9252796e2db0ae09

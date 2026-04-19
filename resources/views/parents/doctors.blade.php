@@ -180,7 +180,7 @@ body {
     </div>
 
     <div class="list">
-        @foreach($doctor as $doc)
+        @foreach($doctors as $doc)
         <div class="card">
             <img src="{{ asset('pics/bg.png') }}">
 
