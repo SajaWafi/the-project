@@ -59,13 +59,8 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('login.page');
 })->name('logout');
 
-// Login
-/*Route::get('/login-page', function () {
-    return view('login-page');
-})->name('login.page');
-*/
 
-//login chosing
+//signup chosing
 Route::get('/signup/choice', function () {
     return view('signup.choice');
 })->name('signup.choice');
@@ -326,7 +321,7 @@ Route::post('/doctor/signup/step3', function (Request $request) {
 /* Logout
 Route::post('/logout', function () {
     Auth::logout();
-    return redirect()->route('login.page');
+    return redirect()->route('login');
 })->name('logout');
 
 */

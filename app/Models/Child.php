@@ -30,4 +30,9 @@ class Child extends Model
             'doctor_id'
         )->withPivot('status', 'assigned_at')->withTimestamps();
     }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'child_id');
+    }
 }

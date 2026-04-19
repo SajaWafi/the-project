@@ -353,8 +353,6 @@
                     @endforeach
                 </div>
 
-                <div class="star">★</div>
-
                 @if ($errors->any())
                     <div class="error-box">
                         @foreach ($errors->all() as $error)
@@ -448,12 +446,12 @@
                     </div>
 
                     <div class="field-block no-border">
-                        <div class="field-title" style="font-size:16px; color:#555; margin-bottom:8px;">Location</div>
+                        <div class="field-title" style="font-size:16px; color:#555; margin-bottom:8px;">Clinic Name</div>
                         <input
                             type="text"
-                            name="location"
+                            name="place_name"
                             class="text-input"
-                            value="{{ old('location') }}"
+                            value="{{ old('place_name') }}"
                             placeholder=""
                         >
                     </div>

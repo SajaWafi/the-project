@@ -15,7 +15,7 @@
 
         /* ===== Page background ===== */
         body {
-            background: #edf1f4;
+            background: #ffffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -327,126 +327,140 @@
                     @endforeach
                 </div>
             @endif
-<div class="date-section">
 
-    <div class="field-title">Select Date</div>
+    <form action="{{ route('doctor.add.appointment.store') }}" method="POST">
+        @csrf
 
-    <!-- 🔥 تقويم -->
-    <input type="date"
-           id="appointmentDate"
-           name="appointment_date"
-           value="{{ old('appointment_date') }}"
-           class="date-picker">
+        <div class="date-section">
+            <div class="field-title">Select Date</div>
 
-</div>
+            <input
+                type="date"
+                id="appointmentDate"
+                name="date"
+                value="{{ old('date') }}"
+                class="date-picker"
+            >
+        </div>
 
-                <div class="form-wrap">
+        <div class="form-wrap">
 
-                    <div class="field-block">
-                        <div class="field-title">Time Since</div>
-                        <div class="time-row">
-                            <div class="time-select-wrap">
-                                <select name="from_hour" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
-                                    @for ($i = 1; $i <= 12; $i++)
-                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ old('from_hour', '08') == str_pad($i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>
-                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-
-                            <div class="time-select-wrap">
-                                <select name="from_minute" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
-                                    @foreach (['00','15','30','45'] as $minute)
-                                        <option value="{{ $minute }}" {{ old('from_minute', '30') == $minute ? 'selected' : '' }}>
-                                            {{ $minute }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="time-select-wrap">
-                                <select name="from_period" class="select-field" style="width:92px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
-                                    <option value="AM" {{ old('from_period', 'AM') == 'AM' ? 'selected' : '' }}>AM</option>
-                                    <option value="PM" {{ old('from_period') == 'PM' ? 'selected' : '' }}>PM</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="field-block">
-                        <div class="field-title">Time to</div>
-                        <div class="time-row">
-                            <div class="time-select-wrap">
-                                <select name="to_hour" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
-                                    @for ($i = 1; $i <= 12; $i++)
-                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ old('to_hour', '10') == str_pad($i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>
-                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-
-                            <div class="time-select-wrap">
-                                <select name="to_minute" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
-                                    @foreach (['00','15','30','45'] as $minute)
-                                        <option value="{{ $minute }}" {{ old('to_minute', '00') == $minute ? 'selected' : '' }}>
-                                            {{ $minute }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="time-select-wrap">
-                                <select name="to_period" class="select-field" style="width:92px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
-                                    <option value="AM" {{ old('to_period', 'AM') == 'AM' ? 'selected' : '' }}>AM</option>
-                                    <option value="PM" {{ old('to_period') == 'PM' ? 'selected' : '' }}>PM</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="field-block">
-                        <div class="field-title">Choose Patient</div>
-                        <div class="sub-label">Full Name</div>
-
-                        <input
-                            type="text"
-                            id="patient_search"
-                            class="select-field"
-                            placeholder="Type patient name"
-                            autocomplete="off"
-                            value="{{ old('patient_name') }}"
-                        >
-
-                        <input type="hidden" name="patient_id" id="patient_id" value="{{ old('patient_id') }}">
-
-                        <div id="patient_suggestions" class="suggestions-box"></div>
-                    </div>
-
-                    <div class="field-block">
-                        <div class="field-title">Choose Clinic</div>
-                        <select name="clinic_name" class="select-field">
-                            <option value="">-----------</option>
-                            <option value="Main Clinic" {{ old('clinic_name') == 'Main Clinic' ? 'selected' : '' }}>Main Clinic</option>
-                            <option value="Neurology Clinic" {{ old('clinic_name') == 'Neurology Clinic' ? 'selected' : '' }}>Neurology Clinic</option>
-                            <option value="Child Care Center" {{ old('clinic_name') == 'Child Care Center' ? 'selected' : '' }}>Child Care Center</option>
+            <div class="field-block">
+                <div class="field-title">Time Since</div>
+                <div class="time-row">
+                    <div class="time-select-wrap">
+                        <select name="from_hour" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                            @for ($i = 1; $i <= 12; $i++)
+                                @php $hour = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
+                                <option value="{{ $i }}" {{ old('from_hour', 8) == $i ? 'selected' : '' }}>
+                                    {{ $hour }}
+                                </option>
+                            @endfor
                         </select>
                     </div>
 
-                    <div class="field-block no-border">
-                        <div class="field-title">Add note</div>
-                        <textarea name="note" class="textarea-field" placeholder="Enter Your Note Here..">{{ old('note') }}</textarea>
+                    <div class="time-select-wrap">
+                        <select name="from_minute" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                            @foreach ([0,15,30,45] as $minute)
+                                <option value="{{ $minute }}" {{ old('from_minute', 30) == $minute ? 'selected' : '' }}>
+                                    {{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
-                    <div class="actions">
-                        <button type="submit" class="primary-btn">Add new Appointment</button>
-                        <a href="{{ route('doctor.appointments') }}" class="secondary-btn" style="display:flex; align-items:center; justify-content:center;">
-                            Cancel Adding
-                        </a>
+                    <div class="time-select-wrap">
+                        <select name="from_period" class="select-field" style="width:92px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                            <option value="AM" {{ old('from_period', 'AM') == 'AM' ? 'selected' : '' }}>AM</option>
+                            <option value="PM" {{ old('from_period') == 'PM' ? 'selected' : '' }}>PM</option>
+                        </select>
                     </div>
                 </div>
-            </form>
+            </div>
+
+            <div class="field-block">
+                <div class="field-title">Time to</div>
+                <div class="time-row">
+                    <div class="time-select-wrap">
+                        <select name="to_hour" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                            @for ($i = 1; $i <= 12; $i++)
+                                @php $hour = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
+                                <option value="{{ $i }}" {{ old('to_hour', 10) == $i ? 'selected' : '' }}>
+                                    {{ $hour }}
+                                </option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div class="time-select-wrap">
+                        <select name="to_minute" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                            @foreach ([0,15,30,45] as $minute)
+                                <option value="{{ $minute }}" {{ old('to_minute', 0) == $minute ? 'selected' : '' }}>
+                                    {{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="time-select-wrap">
+                        <select name="to_period" class="select-field" style="width:92px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                            <option value="AM" {{ old('to_period', 'AM') == 'AM' ? 'selected' : '' }}>AM</option>
+                            <option value="PM" {{ old('to_period') == 'PM' ? 'selected' : '' }}>PM</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-title">Choose Parent</div>
+                <div class="sub-label">Full Name</div>
+
+                <select name="parent_id" id="parent_id" class="select-field">
+                    <option value="">Select parent</option>
+                    @foreach($parents as $parent)
+                        <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
+                            {{ $parent->user->first_name ?? '' }} {{ $parent->user->last_name ?? '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="field-block">
+                <div class="field-title">Choose Child</div>
+                <div class="sub-label">Child Name</div>
+
+                <select name="child_id" id="child_id" class="select-field">
+                    <option value="">Select child</option>
+                    @foreach($parents as $parent)
+                        @foreach($parent->children as $child)
+                            <option
+                                value="{{ $child->id }}"
+                                data-parent="{{ $parent->id }}"
+                                {{ old('child_id') == $child->id ? 'selected' : '' }}
+                            >
+                                {{ $child->name }}
+                            </option>
+                        @endforeach
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="field-block no-border">
+                <div class="field-title">Add note</div>
+                <textarea name="note" class="textarea-field" placeholder="Enter Your Note Here..">{{ old('note') }}</textarea>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="primary-btn">Add new Appointment</button>
+
+                <a href="{{ route('doctor.appointments') }}" class="secondary-btn" style="display:flex; align-items:center; justify-content:center;">
+                    Cancel Adding
+                </a>
+            </div>
+
+        </div>
+    </form>
+
         </div>
     </div>
 </body>
@@ -502,6 +516,32 @@
             suggestionsBox.style.display = 'none';
         }
     });
+
+    
+    const parentSelect = document.getElementById('parent_id');
+    const childSelect = document.getElementById('child_id');
+
+    function filterChildren() {
+        const selectedParent = parentSelect.value;
+        const options = childSelect.querySelectorAll('option');
+
+        options.forEach(option => {
+            if (!option.value) {
+                option.hidden = false;
+                return;
+            }
+
+            option.hidden = option.dataset.parent !== selectedParent;
+        });
+
+        const selectedOption = childSelect.options[childSelect.selectedIndex];
+        if (selectedOption && selectedOption.value && selectedOption.dataset.parent !== selectedParent) {
+            childSelect.value = '';
+        }
+    }
+
+    parentSelect.addEventListener('change', filterChildren);
+    window.addEventListener('load', filterChildren);
 </script>
 </body>
 </html>

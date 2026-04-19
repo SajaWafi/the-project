@@ -304,7 +304,6 @@ body {
                     </div>
                 </div>
             </div>
-
         </div>
 
             <!-- navbar -->

@@ -32,6 +32,10 @@ class User extends Authenticatable
        return $this->hasOne(\App\Models\ParentModule\Child::class, 'parent_id');
     }
 
+    public function doctorProfile()
+    {
+        return $this->hasOne(\App\Models\DoctorProfile::class);
+    }
    
 }
 

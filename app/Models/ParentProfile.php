@@ -20,4 +20,9 @@ class ParentProfile extends Model
     {
         return $this->hasMany(Child::class, 'parent_id');
     }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'parent_id');
+    }
 }

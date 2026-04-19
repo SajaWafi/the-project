@@ -24,4 +24,15 @@ class DoctorProfile extends Model
             'child_id'
         )->withPivot('status', 'assigned_at')->withTimestamps();
     }
+
+    public function workplaces()
+    {
+        return $this->hasMany(Workplace::class, 'doctor_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    } 
+
 }

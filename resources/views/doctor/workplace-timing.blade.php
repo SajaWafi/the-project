@@ -231,101 +231,65 @@
                 <a href="{{ route('doctor.add.workplace') }}" class="add-btn">+</a>
             </div>
 
-            <div class="work-list">
-                <!-- place 1 -->
-                <div class="work-item">
-                    <div class="place-chip">place 1</div>
+<div class="work-list">
+    @forelse($workplaces as $workplace)
+        <div class="work-item">
+            <div class="place-chip">{{ $workplace->place_name }}</div>
 
-                    <div class="actions">
-                        <form action="{{ route('doctor.workplace.delete', 1) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="action-btn">×</button>
-                        </form>
+            <div class="actions">
+                <form action="{{ route('doctor.workplace.delete', $workplace->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="action-btn">×</button>
+                </form>
 
-                        <a href="{{ route('doctor.edit-workplace', 1) }}" class="action-btn">
-                            ✎
-                        </a>
-                    </div>
+                <a href="{{ route('doctor.edit-workplace', $workplace->id) }}" class="action-btn">
+                    ✎
+                </a>
+            </div>
 
-                    <div class="info-row">
-                        <div class="info-icon">
-                            <svg viewBox="0 0 24 24" fill="none">
-                                <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
-                                <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/>
-                            </svg>
-                        </div>
-                        <div>Tajora</div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-icon">
-                            <svg viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-                                <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <div>9:00AM - 5:00PM</div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-icon">
-                            <svg viewBox="0 0 24 24" fill="none">
-                                <rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
-                                <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <div>Sun - Tue - Thu</div>
-                    </div>
+            <div class="info-row">
+                <div class="info-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/>
+                    </svg>
                 </div>
+                <div>{{ $workplace->place_name }}</div>
+            </div>
 
-                <!-- place 2 -->
-                <div class="work-item">
-                    <div class="place-chip">place 2</div>
-
-                    <div class="actions">
-                        <form action="{{ route('doctor.workplace.delete', 2) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="action-btn">×</button>
-                        </form>
-
-                        <a href="{{ route('doctor.edit-workplace', 2) }}" class="action-btn">
-                            ✎
-                        </a>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-icon">
-                            <svg viewBox="0 0 24 24" fill="none">
-                                <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
-                                <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/>
-                            </svg>
-                        </div>
-                        <div>Tajora</div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-icon">
-                            <svg viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-                                <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <div>9:00AM - 5:00PM</div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-icon">
-                            <svg viewBox="0 0 24 24" fill="none">
-                                <rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
-                                <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <div>Sun - Tue - Thu</div>
-                    </div>
+            <div class="info-row">
+                <div class="info-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    {{ $workplace->from_hour }}:{{ str_pad($workplace->from_minute, 2, '0', STR_PAD_LEFT) }}{{ $workplace->from_period }}
+                    -
+                    {{ $workplace->to_hour }}:{{ str_pad($workplace->to_minute, 2, '0', STR_PAD_LEFT) }}{{ $workplace->to_period }}
                 </div>
             </div>
+
+            <div class="info-row">
+                <div class="info-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    {{ is_array($workplace->days) ? implode(' - ', $workplace->days) : '' }}
+                </div>
+            </div>
+        </div>
+    @empty
+        <div class="work-item" style="text-align:center;">
+            <div class="place-chip">No workplaces yet</div>
+        </div>
+    @endforelse
+</div>
         </div>
     </div>
 </body>

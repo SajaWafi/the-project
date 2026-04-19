@@ -4,7 +4,7 @@ use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Parent\ProfileController;
 
-Route::prefix('parents')->name('parents.')->group(function () {
+Route::prefix('parents')->name('parents.')->middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/home', function () {
         return view('parents.home');
     })->name('home');
@@ -78,73 +78,73 @@ Route::prefix('parents')->name('parents.')->group(function () {
 });
 
 // General parent-related pages outside /parents prefix
-Route::get('/profile', function () {
-    return view('profile');
-})->name('profile');
+Route::middleware(['auth', 'role:parent'])->group(function () {
+    Route::get('/profile', function () {
+        return view('profile');
+    })->name('profile');
 
-Route::get('/edit-profile', function () {
-    return view('edit-profile');
-})->name('edit.profile');
+    Route::get('/edit-profile', function () {
+        return view('edit-profile');
+    })->name('edit.profile');
 
-Route::get('/privacy-policy', function () {
-    return view('privacy-policy');
-})->name('privacy.policy');
+    Route::get('/privacy-policy', function () {
+        return view('privacy-policy');
+    })->name('privacy.policy');
 
-Route::get('/settings', function () {
-    return view('settings');
-})->name('settings');
+    Route::get('/settings', function () {
+        return view('settings');
+    })->name('settings');
 
-Route::get('/password-manager', function () {
-    return view('password-manager');
-})->name('password.manager');
+    Route::get('/password-manager', function () {
+        return view('password-manager');
+    })->name('password.manager');
 
-Route::get('/panic-alert', function () {
-    return view('panic-alert');
-})->name('panic.alert');
+    Route::get('/panic-alert', function () {
+        return view('panic-alert');
+    })->name('panic.alert');
 
-Route::get('/location-alerts', function () {
-    return view('location-alerts');
-})->name('location.alerts');
+    Route::get('/location-alerts', function () {
+        return view('location-alerts');
+    })->name('location.alerts');
 
-Route::get('/safe-zone-settings', function () {
-    return view('safe-zone-settings');
-})->name('safe.zone.settings');
+    Route::get('/safe-zone-settings', function () {
+        return view('safe-zone-settings');
+    })->name('safe.zone.settings');
 
-Route::get('/alert-sounds', function () {
-    return view('alert-sounds');
-})->name('alert.sounds');
+    Route::get('/alert-sounds', function () {
+        return view('alert-sounds');
+    })->name('alert.sounds');
 
-Route::get('/reports-history', function () {
-    $reports = [
-        ['id' => 1, 'title' => 'Jan Report'],
-        ['id' => 2, 'title' => 'Feb Report'],
-        ['id' => 3, 'title' => 'Mar Report'],
-    ];
+    Route::get('/reports-history', function () {
+        $reports = [
+            ['id' => 1, 'title' => 'Jan Report'],
+            ['id' => 2, 'title' => 'Feb Report'],
+            ['id' => 3, 'title' => 'Mar Report'],
+        ];
 
-    return view('reports-history', compact('reports'));
-})->name('reports.history');
+        return view('reports-history', compact('reports'));
+    })->name('reports.history');
 
-Route::get('/reports-history/{id}', function ($id) {
-    $reports = [
-        1 => ['title' => 'Jan Report'],
-        2 => ['title' => 'Feb Report'],
-        3 => ['title' => 'Mar Report'],
-    ];
+    Route::get('/reports-history/{id}', function ($id) {
+        $reports = [
+            1 => ['title' => 'Jan Report'],
+            2 => ['title' => 'Feb Report'],
+            3 => ['title' => 'Mar Report'],
+        ];
 
-    $report = $reports[$id] ?? null;
+        $report = $reports[$id] ?? null;
 
-    if (!$report) {
-        abort(404);
-    }
+        if (!$report) {
+            abort(404);
+        }
 
-    return view('report-details', compact('report'));
-})->name('reports.details');
+        return view('report-details', compact('report'));
+    })->name('reports.details');
 
-Route::get('/reports-settings', function () {
-    return view('reports-settings');
-})->name('reports.settings');
+    Route::get('/reports-settings', function () {
+        return view('reports-settings');
+    })->name('reports.settings');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
-    Route::post('/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
+    Route::get('/parent/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
+    Route::post('/parent/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
 });
