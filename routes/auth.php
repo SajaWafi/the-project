@@ -18,10 +18,52 @@ Route::get('/welcome-second', function () {
     return view('welcome-second');
 })->name('welcome.second');
 
-// Login
-Route::get('/login-page', function () {
+//login page
+Route::get('/login', function () {
     return view('login-page');
 })->name('login.page');
+
+Route::post('/login', function (Request $request) {
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
+
+    if (!Auth::attempt($credentials)) {
+        return back()->withErrors([
+            'email' => 'Invalid email or password.',
+        ])->onlyInput('email');
+    }
+
+    $request->session()->regenerate();
+
+    $user = Auth::user();
+
+    if ($user->role === 'parent') {
+        return redirect()->route('parents.home');
+    }
+
+    if ($user->role === 'doctor') {
+        return redirect()->route('doctor.home');
+    }
+
+    return redirect('/');
+})->name('login.post');
+
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('login.page');
+})->name('logout');
+
+// Login
+/*Route::get('/login-page', function () {
+    return view('login-page');
+})->name('login.page');
+*/
 
 //login chosing
 Route::get('/signup/choice', function () {
@@ -281,9 +323,10 @@ Route::post('/doctor/signup/step3', function (Request $request) {
     return redirect()->route('doctor.home');
 })->name('doctor.step3.post');
 
-// Logout
+
 Route::post('/logout', function () {
     Auth::logout();
+
 
     request()->session()->invalidate();
     request()->session()->regenerateToken();
@@ -291,11 +334,7 @@ Route::post('/logout', function () {
     return redirect('/login'); // أو الصفحة الرئيسية
 })->name('logout');
 
-Route::post('/logout', function () {
-    Auth::logout();
 
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
 
-    return redirect('/login-page');
-})->name('logout');
+
+
