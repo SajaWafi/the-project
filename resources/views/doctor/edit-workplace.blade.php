@@ -314,11 +314,6 @@
     <div class="phone">
         <div class="content">
 
-            <div class="status-bar">
-                <span>6.3</span>
-                <span>▮▮▮◖</span>
-            </div>
-
             <div class="header">
                 <a href="{{ route('doctor.workplace.timing') }}" class="back-btn">‹</a>
 
@@ -333,12 +328,12 @@
                 @csrf
                 @method('PUT')
 
-                <div class="days-bar">
-                    @php
-                        $selectedDays = old('days', $workplace['days'] ?? []);
-                        $weekDays = ['SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI'];
-                    @endphp
+                @php
+                    $selectedDays = old('days', $workplace['days'] ?? []);
+                    $weekDays = ['SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI'];
+                @endphp
 
+                <div class="days-bar">
                     @foreach($weekDays as $day)
                         <label class="day-pill {{ in_array($day, $selectedDays) ? 'active' : '' }}">
                             <input
@@ -351,8 +346,6 @@
                         </label>
                     @endforeach
                 </div>
-
-                <div class="star">★</div>
 
                 @if ($errors->any())
                     <div class="error-box">
@@ -377,10 +370,10 @@
                             <div class="time-select-wrap">
                                 <select name="from_hour" class="time-select">
                                     @for ($i = 1; $i <= 12; $i++)
-                                        @php $value = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
-                                        <option value="{{ $value }}"
-                                            {{ old('from_hour', $workplace['from_hour']) == $value ? 'selected' : '' }}>
-                                            {{ $value }}
+                                        @php $hour = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
+                                        <option value="{{ $hour }}"
+                                            {{ old('from_hour', str_pad($workplace['from_hour'], 2, '0', STR_PAD_LEFT)) == $hour ? 'selected' : '' }}>
+                                            {{ $hour }}
                                         </option>
                                     @endfor
                                 </select>
@@ -391,7 +384,7 @@
                                 <select name="from_minute" class="time-select">
                                     @foreach (['00','15','30','45'] as $minute)
                                         <option value="{{ $minute }}"
-                                            {{ old('from_minute', $workplace['from_minute']) == $minute ? 'selected' : '' }}>
+                                            {{ old('from_minute', str_pad($workplace['from_minute'], 2, '0', STR_PAD_LEFT)) == $minute ? 'selected' : '' }}>
                                             {{ $minute }}
                                         </option>
                                     @endforeach
@@ -416,10 +409,10 @@
                             <div class="time-select-wrap">
                                 <select name="to_hour" class="time-select">
                                     @for ($i = 1; $i <= 12; $i++)
-                                        @php $value = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
-                                        <option value="{{ $value }}"
-                                            {{ old('to_hour', $workplace['to_hour']) == $value ? 'selected' : '' }}>
-                                            {{ $value }}
+                                        @php $hour = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
+                                        <option value="{{ $hour }}"
+                                            {{ old('to_hour', str_pad($workplace['to_hour'], 2, '0', STR_PAD_LEFT)) == $hour ? 'selected' : '' }}>
+                                            {{ $hour }}
                                         </option>
                                     @endfor
                                 </select>
@@ -430,7 +423,7 @@
                                 <select name="to_minute" class="time-select">
                                     @foreach (['00','15','30','45'] as $minute)
                                         <option value="{{ $minute }}"
-                                            {{ old('to_minute', $workplace['to_minute']) == $minute ? 'selected' : '' }}>
+                                            {{ old('to_minute', str_pad($workplace['to_minute'], 2, '0', STR_PAD_LEFT)) == $minute ? 'selected' : '' }}>
                                             {{ $minute }}
                                         </option>
                                     @endforeach
@@ -449,17 +442,18 @@
                     </div>
 
                     <div class="field-block no-border">
-                        <div class="field-title" style="font-size:16px; color:#555; margin-bottom:8px;">Location</div>
+                        <div class="field-title" style="font-size:16px; color:#555; margin-bottom:8px;">Clinic Name</div>
                         <input
                             type="text"
-                            name="location"
+                            name="place_name"
                             class="text-input"
-                            value="{{ old('location', $workplace['location']) }}"
+                            value="{{ old('place_name', $workplace['place_name']) }}"
+                            placeholder=""
                         >
                     </div>
 
                     <div class="actions">
-                        <button type="submit" class="primary-btn">Save Changes</button>
+                        <button type="submit" class="primary-btn">Update workplace</button>
 
                         <a href="{{ route('doctor.workplace.timing') }}" class="secondary-btn">
                             Cancel

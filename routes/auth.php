@@ -59,13 +59,8 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('login.page');
 })->name('logout');
 
-// Login
-/*Route::get('/login-page', function () {
-    return view('login-page');
-})->name('login.page');
-*/
 
-//login chosing
+//signup chosing
 Route::get('/signup/choice', function () {
     return view('signup.choice');
 })->name('signup.choice');
@@ -326,12 +321,16 @@ Route::post('/doctor/signup/step3', function (Request $request) {
 
 Route::post('/logout', function () {
     Auth::logout();
+<<<<<<< HEAD
+    return redirect()->route('login');
+=======
 
 
     request()->session()->invalidate();
     request()->session()->regenerateToken();
 
     return redirect('/login'); // أو الصفحة الرئيسية
+>>>>>>> 32430d76775c2256dea2acdf9252796e2db0ae09
 })->name('logout');
 
 

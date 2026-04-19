@@ -34,6 +34,11 @@ class User extends Authenticatable
 
     public function doctorProfile()
     {
+<<<<<<< HEAD
+        return $this->hasOne(\App\Models\DoctorProfile::class);
+    }
+   
+=======
         return $this->hasOne(\App\Models\DoctorProfile::class, 'user_id');
     }
     protected static function booted()
@@ -47,6 +52,7 @@ class User extends Authenticatable
 {
     return $this->hasOne(\App\Models\ParentProfile::class, 'user_id');
 }
+>>>>>>> 32430d76775c2256dea2acdf9252796e2db0ae09
 }
 
    

@@ -36,4 +36,9 @@ class Appointment extends Model
     {
         return $this->belongsTo(Child::class, 'child_id');
     }
+
+    public function workplace()
+    {
+        return $this->belongsTo(Workplace::class, 'workplace_id');
+    }
 }
