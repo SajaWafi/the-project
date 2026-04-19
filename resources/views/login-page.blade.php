@@ -12,25 +12,25 @@
             box-sizing: border-box;
         }
 
-            body {
+        body {
             min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #edf1f4;
-        font-family: Arial, sans-serif;
-            }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #edf1f4;
+            font-family: Arial, sans-serif;
+        }
 
         .mobile-screen {
             width: 100%;
-            max-width: 360px; /* هذا المهم */
+            max-width: 360px;
             height: 100vh;
+            max-height: 800px;
             position: relative;
             overflow: hidden;
-            flex-shrink: 0;
-            border-radius: 32px;
+            border-radius: 20px;
             background: #f8f8f8;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.20);
         }
 
         .mobile-screen::before {
@@ -39,9 +39,9 @@
             inset: 0;
             background-image: url('{{ asset('images/bg.png') }}');
             background-repeat: no-repeat;
-            background-size: 150% 100%;
-            background-position: right top;
-            opacity: 0.95;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.96;
             z-index: 0;
         }
 
@@ -50,38 +50,96 @@
             z-index: 1;
             width: 100%;
             height: 100%;
-            padding: 28px 24px 26px;
+            padding: 24px 22px 24px;
             display: flex;
             flex-direction: column;
         }
 
-        .top-logo {
-            width: 100px;
-            margin-bottom: 15px;
-            align-self: flex-start;
+        .header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            min-height: 40px;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #2f80ed;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn svg {
+            width: 22px;
+            height: 22px;
         }
 
         .title {
-            font-size: 30px;
-            font-weight: 700;
-            color: #424242;
+            font-size: 20px;
+            font-weight: 800;
+            color: #1d567e;
             text-align: center;
-            margin-bottom: 20px;
         }
-        .form-group {
-            margin-bottom: 30px;
+
+        .subtitle {
+            text-align: center;
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .top-logo {
+            width: 75px;
+            margin: 0 auto 16px;
+            display: block;
+        }
+
+        .error-box {
+            background: #fde8e8;
+            color: #c53030;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .success-box {
+            background: #e6ffed;
+            color: #1f7a39;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-bottom: 20px;
         }
 
         .label {
             display: block;
-            font-size: 20px;
+            font-size: 17px;
             color: #4b5563;
-            margin-bottom: 22px;
+            margin-bottom: 10px;
+            font-weight: 500;
         }
 
         .input {
             width: 100%;
-            height: 45px;
+            height: 48px;
             border: none;
             outline: none;
             border-radius: 14px;
@@ -91,13 +149,34 @@
             color: #374151;
         }
 
+        .input-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-wrap .input {
+            padding-right: 50px;
+        }
+
+        .eye-btn {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 18px;
+            color: #555;
+        }
+
         .check-row {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin: 4px 0 22px;
+            margin: 2px 0 20px;
             color: #6b7280;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .check-row input[type="checkbox"] {
@@ -107,18 +186,17 @@
         }
 
         .btn-login {
-             width: 100%;
-            height: 60px;  
-            border-radius: 16px;
-            font-size: 18px;
+            width: 100%;
+            height: 54px;
             border: none;
-            border-radius: 14px;
+            border-radius: 16px;
             background: #2f80ed;
             color: #fff;
             font-size: 18px;
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 6px 14px rgba(47, 128, 237, 0.25);
+            margin-top: 6px;
             margin-bottom: 18px;
         }
 
@@ -143,7 +221,7 @@
 
         .google-btn {
             width: 100%;
-            height: 60px;
+            height: 56px;
             border-radius: 16px;
             border: 1.5px solid #87d7cc;
             background: #fff;
@@ -156,24 +234,14 @@
             font-size: 15px;
             font-weight: 700;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            margin-bottom: auto;
-        }
-
-        .google-icon {
-            width: 22px;
-            height: 22px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
         }
 
         .bottom-text {
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             color: #6b7280;
-            margin-top: 18px;
+            margin-top: auto;
+            padding-top: 20px;
         }
 
         .bottom-text a {
@@ -196,61 +264,113 @@
                 border-radius: 0;
                 box-shadow: none;
             }
-
-            .mobile-screen::before {
-                background-size: 155% 100%;
-                background-position: right top;
-            }
-        }
-          
-    .password-wrapper {
-        position: relative;
-        width: 100%;
-    }
-
-    .password-input {
-        width: 100%;
-        padding-right: 48px;
-    }
-
-    .toggle-password {
-        position: absolute;
-        top: 50%;
-        right: 14px;
-        transform: translateY(-50%);
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-    }
-    
-    .mobile-screen {
-            width: 100%;
-            max-width: 360px; /* هذا المهم */
-            max-height: 800px;
-            height: 100vh;
-            background: url('{{ asset('pics/bg.png') }}') no-repeat;
-            background-position: left;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
         }
     </style>
 </head>
 <body>
+<div class="mobile-screen">
+    <div class="content">
+
+
+    <div class="header">
+        <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+
+        <div class="title">Login with Email</div>
+        
+    </div>        
+
+        <div class="subtitle">Login to continue</div>
+
+        @if (session('success'))
+            <div class="success-box">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="error-box">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
+
+        <form action="{{ route('login.post') }}" method="POST" style="display:flex; flex-direction:column; flex:1;">
+            @csrf
+
+            <div class="field">
+                <label class="label" for="email">Email:</label>
+                <input
+                    class="input"
+                    id="email"
+                    type="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label class="label" for="password">Password:</label>
+                <div class="input-wrap">
+                    <input
+                        class="input"
+                        id="password"
+                        type="password"
+                        name="password"
+                        required
+                    >
+                    <button type="button" class="eye-btn" onclick="togglePassword()">👁</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">Login</button>
+
+            <div class="divider">or</div>
+
+            <a href="#" class="google-btn">
+                <svg width="20" height="20" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.69 1.22 9.18 3.6l6.85-6.85C35.91 2.32 30.36 0 24 0 14.82 0 6.73 5.2 2.69 12.81l7.98 6.2C12.3 13.6 17.69 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.5 24.5c0-1.63-.15-3.2-.43-4.71H24v9.02h12.7c-.55 2.96-2.22 5.47-4.74 7.15l7.29 5.67C43.98 37.5 46.5 31.47 46.5 24.5z"/>
+                    <path fill="#FBBC05" d="M10.67 28.99A14.5 14.5 0 0 1 9.5 24c0-1.73.3-3.41.84-4.99l-7.98-6.2A23.93 23.93 0 0 0 0 24c0 3.87.93 7.52 2.59 10.81l8.08-5.82z"/>
+                    <path fill="#34A853" d="M24 48c6.36 0 11.71-2.1 15.61-5.7l-7.29-5.67c-2.02 1.36-4.6 2.17-8.32 2.17-6.31 0-11.7-4.1-13.63-9.52l-8.08 5.82C6.73 42.8 14.82 48 24 48z"/>
+                </svg>
+                <span>Login with Google</span>
+            </a>
+        </form>
+
+        <div class="bottom-text">
+            Don’t have an account?
+            <a href="{{ route('signup.choice') }}">Sign up</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    }
+</script>
+</body>
+</html>
+
+<!--
 
     <div class="mobile-screen">
         <div class="content">
+            <form action="{{ route('step1.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
+                @csrf
 
-            <img src="{{ asset('images/logo.png') }}" alt="Top Logo" class="top-logo">
 
+            </form>
             <h1 class="title">Log in with Email</h1>
 
-            <div class="form-group">
+            <div class="form-group" >
                 <label class="label" for="email">Your email:</label>
                 <input type="email" id="email" class="input">
             </div>
@@ -286,39 +406,13 @@
             <div class="divider">or</div>
 
             <a href="#" class="google-btn">
-    <svg width="20" height="20" viewBox="0 0 48 48">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.69 1.22 9.18 3.6l6.85-6.85C35.91 2.32 30.36 0 24 0 14.82 0 6.73 5.2 2.69 12.81l7.98 6.2C12.3 13.6 17.69 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.5 24.5c0-1.63-.15-3.2-.43-4.71H24v9.02h12.7c-.55 2.96-2.22 5.47-4.74 7.15l7.29 5.67C43.98 37.5 46.5 31.47 46.5 24.5z"/>
-        <path fill="#FBBC05" d="M10.67 28.99A14.5 14.5 0 0 1 9.5 24c0-1.73.3-3.41.84-4.99l-7.98-6.2A23.93 23.93 0 0 0 0 24c0 3.87.93 7.52 2.59 10.81l8.08-5.82z"/>
-        <path fill="#34A853" d="M24 48c6.36 0 11.71-2.1 15.61-5.7l-7.29-5.67c-2.02 1.36-4.6 2.17-8.32 2.17-6.31 0-11.7-4.1-13.63-9.52l-8.08 5.82C6.73 42.8 14.82 48 24 48z"/>
-    </svg>
+            <svg width="20" height="20" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.69 1.22 9.18 3.6l6.85-6.85C35.91 2.32 30.36 0 24 0 14.82 0 6.73 5.2 2.69 12.81l7.98 6.2C12.3 13.6 17.69 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.5 24.5c0-1.63-.15-3.2-.43-4.71H24v9.02h12.7c-.55 2.96-2.22 5.47-4.74 7.15l7.29 5.67C43.98 37.5 46.5 31.47 46.5 24.5z"/>
+                <path fill="#FBBC05" d="M10.67 28.99A14.5 14.5 0 0 1 9.5 24c0-1.73.3-3.41.84-4.99l-7.98-6.2A23.93 23.93 0 0 0 0 24c0 3.87.93 7.52 2.59 10.81l8.08-5.82z"/>
+                <path fill="#34A853" d="M24 48c6.36 0 11.71-2.1 15.61-5.7l-7.29-5.67c-2.02 1.36-4.6 2.17-8.32 2.17-6.31 0-11.7-4.1-13.63-9.52l-8.08 5.82C6.73 42.8 14.82 48 24 48z"/>
+            </svg>
 
     <span>Login with Google</span>
 </a>
-
-            <div class="bottom-text">
-                Don’t have an account?
-                <a href="{{ route('signup.step1') }}">Sign up</a>
-            </div>
-
-        </div>
-    </div>
-<script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = document.getElementById('eyeIcon');
-        const eyeSlashIcon = document.getElementById('eyeSlashIcon');
-
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeSlashIcon.style.display = 'none';
-            eyeIcon.style.display = 'block';
-        } else {
-            passwordInput.type = 'password';
-            eyeSlashIcon.style.display = 'block';
-            eyeIcon.style.display = 'none';
-        }
-    }
-</script>
-</body>
-</html>
+-->
