@@ -69,8 +69,6 @@
             margin-bottom: 8px;
         }
 
-    
-
         .top-right {
             display: flex;
             align-items: center;
@@ -208,6 +206,28 @@
             box-shadow: 0 6px 14px rgba(0,0,0,0.05);
         }
 
+        .success-box,
+        .error-box {
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error-box {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .error-box div + div {
+            margin-top: 4px;
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 0;
@@ -236,8 +256,7 @@
 
             <div class="top-bar">
                 <div class="top-right">
-                    <div class="status-icon">
-                    </div>
+                    <div class="status-icon"></div>
                 </div>
             </div>
 
@@ -253,72 +272,108 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
             </div>
 
-            <div class="form-area">
-                <div class="form-group">
-                    <label class="form-label">Current Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="currentPassword" class="form-input" value="************">
-                        <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', 'eye1', 'eyeSlash1')">
-                            <svg id="eyeSlash1" viewBox="0 0 24 24" fill="none">
-                                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M1 1l22 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                            </svg>
+            @if(session('success'))
+                <div class="success-box">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                            <svg id="eye1" viewBox="0 0 24 24" fill="none" style="display:none;">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/>
-                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
-                            </svg>
-                        </button>
+            @if($errors->any())
+                <div class="error-box">
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
+
+            <form action="{{ route('password.manager.update') }}" method="POST">
+                @csrf
+
+                <div class="form-area">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <div class="password-wrapper">
+                            <input
+                                type="password"
+                                id="currentPassword"
+                                name="current_password"
+                                class="form-input"
+                                value="{{ old('current_password') }}"
+                            >
+                            <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', 'eye1', 'eyeSlash1')">
+                                <svg id="eyeSlash1" viewBox="0 0 24 24" fill="none">
+                                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M1 1l22 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+
+                                <svg id="eye1" viewBox="0 0 24 24" fill="none" style="display:none;">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/>
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <div class="password-wrapper">
+                            <input
+                                type="password"
+                                id="newPassword"
+                                name="new_password"
+                                class="form-input"
+                                value="{{ old('new_password') }}"
+                            >
+                            <button type="button" class="toggle-password" onclick="togglePassword('newPassword', 'eye2', 'eyeSlash2')">
+                                <svg id="eyeSlash2" viewBox="0 0 24 24" fill="none">
+                                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M1 1l22 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+
+                                <svg id="eye2" viewBox="0 0 24 24" fill="none" style="display:none;">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/>
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <div class="password-wrapper">
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="new_password_confirmation"
+                                class="form-input"
+                                value="{{ old('new_password_confirmation') }}"
+                            >
+                            <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', 'eye3', 'eyeSlash3')">
+                                <svg id="eyeSlash3" viewBox="0 0 24 24" fill="none">
+                                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    <path d="M1 1l22 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+
+                                <svg id="eye3" viewBox="0 0 24 24" fill="none" style="display:none;">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/>
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">New Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="newPassword" class="form-input" value="************">
-                        <button type="button" class="toggle-password" onclick="togglePassword('newPassword', 'eye2', 'eyeSlash2')">
-                            <svg id="eyeSlash2" viewBox="0 0 24 24" fill="none">
-                                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M1 1l22 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                            </svg>
-
-                            <svg id="eye2" viewBox="0 0 24 24" fill="none" style="display:none;">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/>
-                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
-                            </svg>
-                        </button>
-                    </div>
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                    <button class="btn btn-secondary" onclick="history.back()" type="button">Cancel</button>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">Confirm New Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="confirmPassword" class="form-input" value="************">
-                        <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', 'eye3', 'eyeSlash3')">
-                            <svg id="eyeSlash3" viewBox="0 0 24 24" fill="none">
-                                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <path d="M1 1l22 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                            </svg>
-
-                            <svg id="eye3" viewBox="0 0 24 24" fill="none" style="display:none;">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/>
-                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions">
-                <button class="btn btn-primary">Change Password</button>
-                <button class="btn btn-secondary" onclick="history.back()" type="button">Cancel</button>
-            </div>
+            </form>
 
         </div>
     </div>

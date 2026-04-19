@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile</title>
     <style>
-        /* ===== Reset ===== */
         * {
             margin: 0;
             padding: 0;
@@ -13,16 +12,14 @@
             font-family: Arial, sans-serif;
         }
 
-        /* ===== Page background ===== */
         body {
-            background: #ffffffff;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* ===== Phone frame ===== */
         .phone {
             width: 390px;
             height: 844px;
@@ -33,7 +30,6 @@
             box-shadow: 0 12px 30px rgba(0,0,0,0.35);
         }
 
-        /* ===== Content wrapper ===== */
         .content {
             height: 100%;
             overflow-y: auto;
@@ -49,20 +45,6 @@
             border-radius: 10px;
         }
 
-        /* ===== Status bar ===== */
-        .status-bar {
-            height: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 10px 12px 0;
-            font-size: 13px;
-            font-weight: 700;
-            color: #111;
-            margin-bottom: 6px;
-        }
-
-        /* ===== Header ===== */
         .header {
             position: relative;
             display: flex;
@@ -71,18 +53,6 @@
             margin-bottom: 8px;
         }
 
-        /* ===== Back button ===== */
-        .back-btn {
-            position: absolute;
-            left: 4px;
-            top: 0;
-            font-size: 30px;
-            line-height: 1;
-            color: #3d78ff;
-            text-decoration: none;
-        }
-
-        /* ===== Page title ===== */
         .title {
             font-size: 28px;
             font-weight: 800;
@@ -90,7 +60,6 @@
             text-align: center;
         }
 
-        /* ===== Logo ===== */
         .logo {
             position: absolute;
             right: 0;
@@ -107,14 +76,22 @@
             object-fit: cover;
         }
 
-        /* ===== Profile image wrapper ===== */
+        .add-btn {
+            position: absolute;
+            left: 4px;
+            top: 0;
+            font-size: 30px;
+            line-height: 1;
+            color: #3d78ff;
+            text-decoration: none;
+        }
+
         .profile-image-wrap {
             position: relative;
             width: fit-content;
             margin: 12px auto 24px;
         }
 
-        /* ===== Doctor image ===== */
         .profile-image {
             width: 150px;
             height: 150px;
@@ -124,17 +101,6 @@
             background: #d9d9d9;
         }
 
-        /* ===== Star near image ===== */
-        .star {
-            position: absolute;
-            left: -14px;
-            top: 74px;
-            color: #f0d46a;
-            font-size: 34px;
-            line-height: 1;
-        }
-
-        /* ===== Doctor name ===== */
         .doctor-name {
             text-align: center;
             font-size: 29px;
@@ -143,14 +109,12 @@
             margin-bottom: 26px;
         }
 
-        /* ===== Menu list ===== */
         .menu-list {
             display: flex;
             flex-direction: column;
             gap: 14px;
         }
 
-        /* ===== Each row is a full button/link ===== */
         .menu-item {
             display: flex;
             align-items: center;
@@ -160,6 +124,7 @@
             padding: 6px 0;
             border-radius: 16px;
             transition: all 0.15s ease;
+            cursor: pointer;
         }
 
         .menu-item:hover {
@@ -173,14 +138,12 @@
             background: rgba(255,255,255,0.28);
         }
 
-        /* ===== Left section of row ===== */
         .menu-left {
             display: flex;
             align-items: center;
             gap: 14px;
         }
 
-        /* ===== Rounded icon background ===== */
         .icon-circle {
             width: 42px;
             height: 42px;
@@ -193,21 +156,18 @@
             flex-shrink: 0;
         }
 
-        /* ===== SVG icon style ===== */
         .menu-icon {
             width: 22px;
             height: 22px;
             color: #2f7cff;
         }
 
-        /* ===== Text label ===== */
         .menu-text {
             font-size: 18px;
             font-weight: 500;
             color: #111;
         }
 
-        /* ===== Right arrow ===== */
         .menu-arrow {
             font-size: 30px;
             line-height: 1;
@@ -215,95 +175,89 @@
             padding-right: 4px;
         }
 
-        /* ===== Overlay ===== */
-.logout-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(120,150,200,0.35);
-    z-index: 20;
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.25s ease;
-}
+        .logout-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(120,150,200,0.35);
+            z-index: 20;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.25s ease;
+        }
 
-/* ===== Modal ===== */
-.logout-modal {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -300px;
-    background: #fff;
-    border-top-left-radius: 28px;
-    border-top-right-radius: 28px;
-    padding: 26px 20px 34px;
-    z-index: 25;
-    text-align: center;
-    transition: 0.3s ease;
-}
+        .logout-modal {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -300px;
+            background: #fff;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            padding: 26px 20px 34px;
+            z-index: 25;
+            text-align: center;
+            transition: 0.3s ease;
+        }
 
-/* ===== Active ===== */
-.logout-overlay.show {
-    opacity: 1;
-    visibility: visible;
-}
+        .logout-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
 
-.logout-modal.show {
-    bottom: 0;
-}
+        .logout-modal.show {
+            bottom: 0;
+        }
 
-/* ===== Title ===== */
-.logout-modal-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
+        .logout-modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
 
-/* ===== Text ===== */
-.logout-modal-text {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 18px;
-}
+        .logout-modal-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 18px;
+        }
 
-/* ===== Buttons ===== */
-.logout-modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-}
+        .logout-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            align-items: center;
+        }
 
-.cancel-logout-btn,
-.confirm-logout-btn {
-    min-width: 140px;
-    height: 40px;
-    border-radius: 20px;
-    border: none;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-}
+        .logout-modal-actions form {
+            margin: 0;
+        }
 
-.cancel-logout-btn {
-    background: #c8ebe6;
-    color: #2f80ed;
-}
+        .cancel-logout-btn,
+        .confirm-logout-btn {
+            min-width: 140px;
+            height: 40px;
+            border-radius: 20px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
 
-.cancel-logout-btn1 {
-    color: #ffffffff;
-}
+        .cancel-logout-btn {
+            background: #c8ebe6;
+            color: #2f80ed;
+        }
 
-.confirm-logout-btn {
-    background: #2f80ed;
-    color: white;
-}
+        .confirm-logout-btn {
+            background: #2f80ed;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="phone">
-        <!-- Overlay -->
+
         <div class="logout-overlay" id="logoutOverlay" onclick="closeLogoutModal()"></div>
 
-        <!-- Logout Modal -->
         <div class="logout-modal" id="logoutModal">
             <div class="logout-modal-title">Logout</div>
             <div class="logout-modal-text">
@@ -311,12 +265,14 @@
             </div>
 
             <div class="logout-modal-actions">
-                <button type="button" class="cancel-logout-btn" onclick="closeLogoutModal()">Cancel</button>
+                <button type="button" class="cancel-logout-btn" onclick="closeLogoutModal()">
+                    Cancel
+                </button>
 
-                <form action="{{ route('logout') }}" method="POST">
+                <form action="{{ route('doctor.logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="confirm-logout-btn">
-                        <a href="{{ route('welcome.second') }}" class="cancel-logout-btn1">Yes,Logout</a>
+                        Yes, Logout
                     </button>
                 </form>
             </div>
@@ -335,31 +291,20 @@
             </div>
 
             <div class="profile-image-wrap">
-                <img
-                    src="{{ asset('images/doctor1.png') }}"
-                    alt="Doctor"
-                    class="profile-image"
-                >
+              <img 
+            src="{{ !empty(auth()->user()->profile_image)
+                ? asset('storage/' . auth()->user()->profile_image)
+                : asset('images/default-user.png') }}"
+            class="profile-image"
+            alt="Profile"
+        >
             </div>
 
-            <div class="doctor-name">Alexander Bennett</div>
+            <div class="doctor-name">
+                {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+            </div>
 
             <div class="menu-list">
-                <!-- Profile 
-                <a href="#" class="menu-item">
-                    <div class="menu-left">
-                        <div class="icon-circle">
-                            <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
-                                <path d="M4 20c1.7-4 4.7-6 8-6s6.3 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <div class="menu-text">Profile</div>
-                    </div>
-                    <div class="menu-arrow">›</div>
-                </a>
--->
-                <!-- Privacy Policy -->
                 <a href="{{ route('doctor.privacy') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="icon-circle">
@@ -373,7 +318,6 @@
                     <div class="menu-arrow">›</div>
                 </a>
 
-                <!-- Settings -->
                 <a href="{{ route('doctor.settings') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="icon-circle">
@@ -387,7 +331,6 @@
                     <div class="menu-arrow">›</div>
                 </a>
 
-                <!-- Logout -->
                 <a href="javascript:void(0)" class="menu-item" onclick="openLogoutModal()">
                     <div class="menu-left">
                         <div class="icon-circle">
@@ -405,16 +348,17 @@
 
         </div>
     </div>
-</body>
-<script>
-function openLogoutModal() {
-    document.getElementById('logoutOverlay').classList.add('show');
-    document.getElementById('logoutModal').classList.add('show');
-}
 
-function closeLogoutModal() {
-    document.getElementById('logoutOverlay').classList.remove('show');
-    document.getElementById('logoutModal').classList.remove('show');
-}
-</script>
+    <script>
+        function openLogoutModal() {
+            document.getElementById('logoutOverlay').classList.add('show');
+            document.getElementById('logoutModal').classList.add('show');
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutOverlay').classList.remove('show');
+            document.getElementById('logoutModal').classList.remove('show');
+        }
+    </script>
+</body>
 </html>

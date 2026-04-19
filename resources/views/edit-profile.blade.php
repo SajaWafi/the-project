@@ -353,12 +353,14 @@
 
             <div class="profile-top">
                 <div class="avatar-wrap">
-                    <img
-                        id="profileAvatar"
-                        src="{{ $user && $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/child.png') }}"
-                        alt="Profile"
-                        class="avatar"
-                    >
+                      <img 
+                    src="{{ !empty(auth()->user()->profile_image)
+                        ? asset('storage/' . auth()->user()->profile_image)
+                        : asset('images/default-user.png') }}"
+                    alt="Profile"
+                    class="avatar"
+                >
+
 
                     <div class="avatar-star">★</div>
 

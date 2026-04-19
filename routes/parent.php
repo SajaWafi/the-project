@@ -94,9 +94,30 @@ Route::get('/settings', function () {
     return view('settings');
 })->name('settings');
 
+
 Route::get('/password-manager', function () {
     return view('password-manager');
 })->name('password.manager');
+
+Route::post('/password-manager', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'current_password' => 'required',
+        'new_password' => 'required|min:6|confirmed',
+    ]);
+
+    $user = auth()->user();
+
+    if (!$user || !Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors([
+            'current_password' => 'Current password is incorrect'
+        ]);
+    }
+
+    $user->password = Illuminate\Support\Facades\Hash::make($request->new_password);
+    $user->save();
+
+    return back()->with('success', 'Password updated successfully');
+})->name('password.manager.update');
 
 Route::get('/panic-alert', function () {
     return view('panic-alert');
@@ -148,3 +169,32 @@ Route::middleware('auth')->group(function () {
     Route::get('/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
     Route::post('/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
 });
+
+Route::delete('/delete-account', function () {
+    $user = Auth::user();
+
+    DB::beginTransaction();
+
+    try {
+        if ($user?->parentProfile?->child) {
+            $user->parentProfile->child()->delete();
+        }
+
+        if ($user?->parentProfile) {
+            $user->parentProfile()->delete();
+        }
+
+        Auth::logout();
+
+        if ($user) {
+            $user->delete();
+        }
+
+        DB::commit();
+
+        return redirect('/login-page')->with('success', 'Account deleted successfully');
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        return back()->with('error', $e->getMessage());
+    }
+})->name('delete.account');

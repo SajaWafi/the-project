@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
     <style>
-        /* ===== Reset ===== */
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +12,6 @@
             font-family: Arial, sans-serif;
         }
 
-        /* ===== Body ===== */
         body {
             background: #111;
             min-height: 100vh;
@@ -22,7 +20,6 @@
             align-items: center;
         }
 
-        /* ===== Mobile frame ===== */
         .phone {
             width: 390px;
             height: 844px;
@@ -33,7 +30,6 @@
             box-shadow: 0 12px 30px rgba(0,0,0,0.35);
         }
 
-        /* ===== Scroll area ===== */
         .content {
             height: 100%;
             overflow-y: auto;
@@ -50,8 +46,6 @@
             border-radius: 10px;
         }
 
- 
-        /* ===== Header ===== */
         .header {
             position: relative;
             display: flex;
@@ -93,7 +87,6 @@
             object-fit: cover;
         }
 
-        /* ===== Profile image area ===== */
         .profile-image-wrap {
             position: relative;
             width: fit-content;
@@ -126,7 +119,6 @@
             border: 2px solid #fff;
         }
 
-        /* ===== Form ===== */
         .form-wrap {
             padding: 0 2px;
         }
@@ -176,7 +168,6 @@
             color: #6e6e6e;
         }
 
-        /* ===== Custom DOB row ===== */
         .dob-row {
             display: flex;
             gap: 16px;
@@ -219,7 +210,6 @@
             pointer-events: none;
         }
 
-        /* ===== Bio ===== */
         .textarea-input {
             min-height: 120px;
             resize: none;
@@ -229,7 +219,6 @@
             border: 1.5px solid #a8dfda;
         }
 
-        /* ===== Submit button ===== */
         .submit-btn {
             display: block;
             width: 180px;
@@ -244,12 +233,10 @@
             cursor: pointer;
         }
 
-        /* ===== Hidden file input ===== */
         .hidden-file {
             display: none;
         }
 
-        /* ===== Error box ===== */
         .error-box {
             background: #ffe7e7;
             color: #b60000;
@@ -258,9 +245,23 @@
             margin-bottom: 14px;
             font-size: 13px;
         }
+
+        .success-box {
+            background: #dff6dd;
+            color: #146c2e;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
+    @php
+        $doctorProfile = $user->doctorProfile ?? null;
+        $birthDate = $doctorProfile?->birth_date;
+    @endphp
+
     <div class="phone">
         <div class="content">
 
@@ -274,19 +275,19 @@
                 </div>
             </div>
 
-            <div class="profile-image-wrap">
-                <img
-                    src="{{ asset('images/doctor1.png') }}"
-                    alt="Doctor"
-                    class="profile-image"
-                    id="profilePreview"
-                >
-
-                <label for="profileImage" class="edit-image-btn">✎</label>
-                <input type="file" id="profileImage" class="hidden-file" accept="image/*">
-            </div>
-
             <div class="form-wrap">
+                @if(session('success'))
+                    <div class="success-box">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="error-box">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 @if ($errors->any())
                     <div class="error-box">
                         @foreach ($errors->all() as $error)
@@ -299,13 +300,27 @@
                     @csrf
                     @method('PUT')
 
+                    <div class="profile-image-wrap">
+                      <img
+                    src="{{ !empty($user->profile_image)
+                        ? asset('storage/' . $user->profile_image)
+                        : asset('images/default-user.png') }}"
+                    alt="Doctor"
+                    class="profile-image"
+                    id="profilePreview"
+                >
+
+                        <label for="profileImage" class="edit-image-btn">✎</label>
+                        <input type="file" id="profileImage" name="profile_image" class="hidden-file" accept="image/*">
+                    </div>
+
                     <div class="field">
                         <label>full name</label>
                         <input
                             type="text"
                             name="full_name"
                             class="text-input"
-                            value="{{ old('full_name', 'Alexander Bennett') }}"
+                            value="{{ old('full_name', trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''))) }}"
                         >
                     </div>
 
@@ -315,7 +330,7 @@
                             type="text"
                             name="phone"
                             class="text-input"
-                            value="{{ old('phone', '0912345678') }}"
+                            value="{{ old('phone', $user->phone ?? '') }}"
                         >
                     </div>
 
@@ -325,16 +340,16 @@
                             type="email"
                             name="email"
                             class="text-input"
-                            value="{{ old('email', 'alexander@example.com') }}"
+                            value="{{ old('email', $user->email ?? '') }}"
                         >
                     </div>
 
                     <div class="field">
-                        <label>Sex</label>
-                        <select name="sex" class="select-input">
+                        <label>Gender</label>
+                        <select name="gender" class="select-input">
                             <option value="">Select</option>
-                            <option value="Male" {{ old('sex', 'Male') == 'Male' ? 'selected' : '' }}>Male</option>
-                            <option value="Female" {{ old('sex') == 'Female' ? 'selected' : '' }}>Female</option>
+                            <option value="Male" {{ old('gender', $user->gender ?? '') == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ old('gender', $user->gender ?? '') == 'Female' ? 'selected' : '' }}>Female</option>
                         </select>
                     </div>
 
@@ -344,7 +359,7 @@
                             type="text"
                             name="specialize"
                             class="text-input"
-                            value="{{ old('specialize', 'Pediatric Neurologist') }}"
+                            value="{{ old('specialize', $doctorProfile?->specialization ?? '') }}"
                         >
                     </div>
 
@@ -354,10 +369,12 @@
                         <div class="dob-row">
                             <div class="dob-item">
                                 <select name="birth_day">
+                                    <option value=""></option>
                                     @for ($i = 1; $i <= 31; $i++)
-                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
-                                            {{ old('birth_day', '01') == str_pad($i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>
-                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+                                        @php $day = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
+                                        <option value="{{ $day }}"
+                                            {{ old('birth_day', $birthDate ? \Carbon\Carbon::parse($birthDate)->format('d') : '') == $day ? 'selected' : '' }}>
+                                            {{ $day }}
                                         </option>
                                     @endfor
                                 </select>
@@ -366,10 +383,12 @@
 
                             <div class="dob-item">
                                 <select name="birth_month">
+                                    <option value=""></option>
                                     @for ($i = 1; $i <= 12; $i++)
-                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}"
-                                            {{ old('birth_month', '01') == str_pad($i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>
-                                            {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+                                        @php $month = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
+                                        <option value="{{ $month }}"
+                                            {{ old('birth_month', $birthDate ? \Carbon\Carbon::parse($birthDate)->format('m') : '') == $month ? 'selected' : '' }}>
+                                            {{ $month }}
                                         </option>
                                     @endfor
                                 </select>
@@ -378,8 +397,10 @@
 
                             <div class="dob-item">
                                 <select name="birth_year">
+                                    <option value=""></option>
                                     @for ($y = date('Y'); $y >= 1950; $y--)
-                                        <option value="{{ $y }}" {{ old('birth_year', '2026') == $y ? 'selected' : '' }}>
+                                        <option value="{{ $y }}"
+                                            {{ old('birth_year', $birthDate ? \Carbon\Carbon::parse($birthDate)->format('Y') : '') == $y ? 'selected' : '' }}>
                                             {{ $y }}
                                         </option>
                                     @endfor
@@ -395,7 +416,7 @@
                             name="bio"
                             class="textarea-input"
                             placeholder="Enter Your Bio Here..."
-                        >{{ old('bio') }}</textarea>
+                        >{{ old('bio', $doctorProfile?->bio ?? '') }}</textarea>
                     </div>
 
                     <button type="submit" class="submit-btn">Accept Changes</button>

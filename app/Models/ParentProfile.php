@@ -20,4 +20,8 @@ class ParentProfile extends Model
     {
         return $this->hasMany(Child::class, 'parent_id');
     }
+    public function child()
+    {
+        return $this->hasOne(\App\Models\ParentModule\Child::class, 'parent_id');
+    }
 }

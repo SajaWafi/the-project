@@ -162,17 +162,17 @@
 
         .name-ar {
             font-size: 22px;
-            font-weight: 800;
+            font-weight: 200;
             color: #111;
-            margin-bottom: 2px;
+            margin-bottom: 5px;
             text-align: center;
         }
 
         .name-en {
-            font-size: 18px;
-            font-weight: 800;
+            font-size: 25px;
+            font-weight: 500;
             color: #111;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             text-align: center;
         }
 
@@ -362,12 +362,10 @@
 
            <div class="profile-top">
     <div class="avatar-wrap">
-        <img 
-            id="profileAvatar"
-            src="{{ auth()->user()->profile_image 
-                ? asset('storage/' . auth()->user()->profile_image) 
-                : asset('images/child.png') 
-            }}"
+            <img 
+            src="{{ !empty(auth()->user()->profile_image)
+                ? asset('storage/' . auth()->user()->profile_image)
+                : asset('images/default-user.png') }}"
             alt="Profile"
             class="avatar"
         >
@@ -387,7 +385,7 @@
     </div>
 
     <div class="name-ar">
-        {{ optional(auth()->user()->child)->name ?? 'No Child' }}
+        {{ optional(optional(auth()->user()->parentProfile)->child)->name ?? 'No Child' }}
     </div>
 
     <div class="profile-id">
@@ -467,40 +465,46 @@
                     </div>
                 </a>
 
-            <button type="button" class="menu-item logout-btn-trigger" onclick="openLogoutModal()">
-            <div class="menu-left">
-                <div class="menu-icon">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M10 7V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        <path d="M14 12H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        <path d="M7 9L4 12L7 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div class="menu-text">Logout</div>
-            </div>
-
-            <div class="arrow-right">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-        </button>
-
+           <button type="button" class="menu-item logout-btn-trigger" onclick="openLogoutModal()">
+    <div class="menu-left">
+        <div class="menu-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M10 7V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M14 12H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M7 9L4 12L7 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
         </div>
-        <div class="logout-overlay" id="logoutOverlay" onclick="closeLogoutModal(event)">
-            <div class="logout-sheet">
-                <div class="logout-title">Logout</div>
-                <div class="logout-text">are you sure you want to log out?</div>
+        <div class="menu-text">Logout</div>
+    </div>
 
-                <div class="logout-actions">
-                    <button type="button" class="logout-action-btn logout-cancel" onclick="closeLogoutModal()">Cancel</button>
+    <div class="arrow-right">
+        <svg viewBox="0 0 24 24" fill="none">
+            <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+</button>
 
-                    <a href="{{ route('login.page') }}" class="logout-action-btn logout-confirm" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">
-                        Yes, Logout
-                    </a>
-                </div>
-            </div>
+</div>
+
+<div class="logout-overlay" id="logoutOverlay" onclick="closeLogoutModal(event)">
+    <div class="logout-sheet" onclick="event.stopPropagation()">
+        <div class="logout-title">Logout</div>
+        <div class="logout-text">Are you sure you want to log out?</div>
+
+        <div class="logout-actions">
+            <button type="button" class="logout-action-btn logout-cancel" onclick="closeLogoutModal()">
+                Cancel
+            </button>
+
+            <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                @csrf
+                <button type="submit" class="logout-action-btn logout-confirm">
+                    Yes, Logout
+                </button>
+            </form>
         </div>
+    </div>
+</div>
     </div>
 
     <script>
@@ -520,12 +524,13 @@
             const logoutOverlay = document.getElementById('logoutOverlay');
 
     function openLogoutModal() {
-        logoutOverlay.classList.add('show');
+        document.getElementById('logoutOverlay').classList.add('show');
     }
 
     function closeLogoutModal(event) {
-        if (event && event.target !== logoutOverlay) return;
-        logoutOverlay.classList.remove('show');
+        if (!event || event.target.id === 'logoutOverlay') {
+            document.getElementById('logoutOverlay').classList.remove('show');
+        }
     }
     </script>
 

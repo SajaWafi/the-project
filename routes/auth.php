@@ -284,5 +284,18 @@ Route::post('/doctor/signup/step3', function (Request $request) {
 // Logout
 Route::post('/logout', function () {
     Auth::logout();
-    return redirect()->route('login.page');
+
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect('/login'); // أو الصفحة الرئيسية
+})->name('logout');
+
+Route::post('/logout', function () {
+    Auth::logout();
+
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect('/login-page');
 })->name('logout');

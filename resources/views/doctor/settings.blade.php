@@ -291,9 +291,11 @@
             <form action="{{ route('doctor.delete.account') }}" method="POST">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="confirm-delete-btn">
-                    <a href="{{ route('welcome.second') }}" class="confirm-delete-btn">Yes,Delete</a>
-                </button>
+                <form action="{{ route('doctor.delete.account') }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="confirm-delete-btn">Yes, Delete</button>
+                </form>
             </form>
         </div>
     </div>
