@@ -3,6 +3,7 @@
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Parent\ProfileController;
+use App\Http\Controllers\Parent\DoctorController;
 
 Route::prefix('parents')->name('parents.')->group(function () {
     Route::get('/home', function () {
@@ -21,57 +22,9 @@ Route::prefix('parents')->name('parents.')->group(function () {
         return view('parents.request');
     })->name('request');
 
-    Route::get('/doctors', function () {
-        $doctors = [
-            [
-                'id' => 1,
-                'name' => 'Dr. Alexander Bennett',
-                'specialty' => 'Pediatric Neurologist',
-                'image' => 'doctor1.png'
-            ],
-            [
-                'id' => 2,
-                'name' => 'Dr. Michael Davidson',
-                'specialty' => 'Licensed Psychiatrist',
-                'image' => 'doctor2.png'
-            ],
-            [
-                'id' => 3,
-                'name' => 'Dr. Olivia Turner',
-                'specialty' => 'Speech-Language Pathologist',
-                'image' => 'doctor3.png'
-            ],
-            [
-                'id' => 4,
-                'name' => 'Dr. Sophia Martinez',
-                'specialty' => 'ABA Therapist',
-                'image' => 'doctor4.png'
-            ],
-        ];
-
-        return view('parents.doctors', compact('doctors'));
-    })->name('doctors');
-
-    Route::get('/doctor-profile/{id}', function ($id) {
-        $doctor = [
-            'id' => $id,
-            'name' => 'Dr. Alexander Bennett',
-            'specialty' => 'Pediatric Neurologist',
-            'image' => 'doctor1.png',
-        ];
-
-        return view('parents.doctor-profile', compact('doctor'));
-    })->name('doctor-profile');
-
-    Route::get('/chat/{id}', function ($id) {
-        $doctor = [
-            'id' => $id,
-            'name' => 'Dr. Olivia Turner',
-            'image' => 'doctor3.png',
-        ];
-
-        return view('parents.chat', compact('doctor'));
-    })->name('chat');
+Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
+Route::get('/doctor-profile/{id}', [DoctorController::class, 'show'])->name('doctor-profile');
+Route::get('/chat/{id}', [DoctorController::class, 'chat'])->name('chat');
 
     Route::get('/report', [ReportController::class, 'show'])->name('report');
     Route::get('/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('report.download-pdf');

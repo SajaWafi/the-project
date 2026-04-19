@@ -28,4 +28,13 @@ class Child extends Model
     {
         return $this->belongsTo(User::class, 'parent_id');
     }
+    public function doctors()
+{
+    return $this->belongsToMany(
+        DoctorProfile::class,
+        'child_doctor',
+        'child_id',
+        'doctor_id'
+    )->withPivot('status', 'assigned_at')->withTimestamps();
+}
 }
