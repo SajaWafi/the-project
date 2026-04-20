@@ -426,21 +426,18 @@
             </div>
 
             <div class="field-block">
-                <div class="field-title">Choose Child</div>
-                <div class="sub-label">Child Name</div>
+                <div class="field-title">Choose Workplace</div>
+                <div class="sub-label">Place Name</div>
 
-                <select name="child_id" id="child_id" class="select-field">
-                    <option value="">Select child</option>
-                    @foreach($parents as $parent)
-                        @foreach($parent->children as $child)
-                            <option
-                                value="{{ $child->id }}"
-                                data-parent="{{ $parent->id }}"
-                                {{ old('child_id') == $child->id ? 'selected' : '' }}
-                            >
-                                {{ $child->name }}
-                            </option>
-                        @endforeach
+                <select name="workplace_id" id="workplace_id" class="select-field">
+                    <option value="">Select workplace</option>
+                    @foreach($workplaces as $workplace)
+                        <option
+                            value="{{ $workplace->id }}"
+                            {{ old('workplace_id') == $workplace->id ? 'selected' : '' }}
+                        >
+                            {{ $workplace->place_name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
