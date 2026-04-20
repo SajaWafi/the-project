@@ -302,7 +302,7 @@
         <div class="content">
 
             <div class="header">
-                <a href="{{ route('doctor.doctor-profile') }}" class="back-btn">‹</a>
+                <a href="{{ url()->previous() }}" class="back-btn">‹</a>
 
                 <div class="title">Settings</div>
 

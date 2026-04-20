@@ -281,7 +281,6 @@
         <div class="content">
 
             <div class="header">
-                <a href="{{ route('doctor.children.search') }}" class="add-btn">+</a>
 
                 <div class="title">My Profile</div>
 
