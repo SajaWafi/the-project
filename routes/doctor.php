@@ -134,7 +134,12 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             abort(404, 'Doctor profile not found.');
         }
 
-        $parents = ParentProfile::with('user', 'children')->get();
+        $parents = ParentProfile::with(['user', 'children'])
+            ->whereHas('children.doctors', function ($query) use ($doctorProfile) {
+                $query->where('doctor_profiles.id', $doctorProfile->id);
+            })
+            ->get();
+
         $workplaces = Workplace::where('doctor_id', $doctorProfile->id)->get();
 
         return view('doctor.add-appointment', compact('parents', 'workplaces'));
@@ -161,7 +166,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             ]);
         }
 
-        $parent = ParentProfile::with('children')->find($request->parent_id);
+        $parent = ParentProfile::with(['children.doctors'])
+            ->find($request->parent_id);
 
         if (!$parent) {
             return back()->withErrors([
@@ -169,11 +175,13 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             ])->withInput();
         }
 
-        $child = $parent->children->first();
+        $child = $parent->children->first(function ($child) use ($doctorProfile) {
+            return $child->doctors->contains('id', $doctorProfile->id);
+        });
 
         if (!$child) {
             return back()->withErrors([
-                'parent_id' => 'This parent has no child linked.'
+                'parent_id' => 'This parent is not linked to this doctor.'
             ])->withInput();
         }
 

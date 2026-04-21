@@ -571,6 +571,35 @@
     backdrop-filter: blur(4px); /* يعطي نعومة */
 }
 
+        .workplace-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .workplace-pill {
+        flex: 1 1 48%;
+        min-width: 0;
+        background: #fff;
+        border-radius: 16px;
+        padding: 10px 12px;
+    }
+
+    .workplace-name {
+        color: #2d63f6;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .workplace-meta {
+        color: #5b5b5b;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+
+
     </style>
 </head>
 <body>
@@ -578,7 +607,6 @@
         <div class="bg-shape-top"></div>
         <div class="bg-shape-left"></div>
         <div class="bg-shape-bottom"></div>
-        <div class="star">★</div> 
 
         <div class="content">
             <div class="header">
@@ -622,18 +650,26 @@
                     <div class="doctor-specialty">{{ $doctor['specialty'] ?? 'Pediatric Neurologist' }}</div>
                 </div>
 
-                <div class="info-grid">
-                    <div class="info-col">
-                        <div class="time-text">9:00AM - 5:00PM</div>
-                        <div class="days-text">Mon-Sat - sun</div>
-                        <div class="location-pill"></div>
-                    </div>
+                <div class="workplace-row">
+                    @forelse($workplaces as $workplace)
+                        <div class="workplace-pill">
+                            <div class="workplace-name">{{ $workplace->place_name }}</div>
 
-                    <div class="info-col">
-                        <div class="time-text">9:00AM - 5:00PM</div>
-                        <div class="days-text">Mon-Sat - sun</div>
-                        <div class="location-pill"></div>
-                    </div>
+                            <div class="workplace-meta">
+                                {{ is_array($workplace->days) ? implode(' - ', $workplace->days) : '' }}
+                            </div>
+
+                            <div class="workplace-meta">
+                                {{ str_pad($workplace->from_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($workplace->from_minute, 2, '0', STR_PAD_LEFT) }} {{ $workplace->from_period }}
+                                -
+                                {{ str_pad($workplace->to_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($workplace->to_minute, 2, '0', STR_PAD_LEFT) }} {{ $workplace->to_period }}
+                            </div>
+                        </div>
+                    @empty
+                        <div class="workplace-pill">
+                            <div class="workplace-name">No workplace</div>
+                        </div>
+                    @endforelse
                 </div>
 
                 <div class="phone-pill">{{ $doctor['phone'] ?? 'No Phone' }}</div>
@@ -643,58 +679,63 @@
                 {{ $doctor['bio'] ?? 'No bio available.' }}
             </div>
 
-            <div class="schedule-card">
+<!--schedule-card -->
 
-                <div class="appointment-box">
-                    <div class="times">
-                        <div>9 AM</div>
-                        <div>10 AM</div>
-                        <div>11 AM</div>
-                        <div>12 AM</div>
-                    </div>
+@forelse($appointments as $appointment)
+    @php
+        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+        $isToday = $appointmentDate->isToday();
+        $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+    @endphp
 
-                    <div class="appointment-content">
-                        <div class="appointment-header">11 Wednesday - Today</div>
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="times">
+                <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                <div>|</div>
+                <div>|</div>
+                <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
+            </div>
 
-                        <div class="appointment-main">
-                            <div class="doctor-row">
-                                <div class="doctor-name">Dr. Olivia Turner</div>
-                            </div>
+            <div class="appointment-content">
+                <div class="appointment-header">
+                    <span>{{ $headerText }}</span>
+                </div>
 
-                            <div class="appointment-sub">Periodic review</div>
+                <div class="appointment-main">
+                    <div class="appointment-info">
+                        <div class="appointment-sub">
+                            Child: {{ $appointment->child->name ?? 'N/A' }}
+                        </div>
+
+                        <div class="appointment-sub">
+                            Time:
+                            {{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($appointment->from_minute, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}
+                            -
+                            {{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($appointment->to_minute, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}
+                        </div>
+
+                        <div class="note">
+                            {{ $appointment->note ?: 'No note' }}
                         </div>
                     </div>
                 </div>
             </div>
-
-
-            <div class="schedule-card">
-
-                <div class="appointment-box">
-                    <div class="times">
-                        <div>9 AM</div>
-                        <div>10 AM</div>
-                        <div>11 AM</div>
-                        <div>12 AM</div>
-                    </div>
-
-                    <div class="appointment-content">
-                        <div class="appointment-header">11 Wednesday - Today</div>
-
-                        <div class="appointment-main">
-                            <div class="doctor-row">
-                                <div class="doctor-name">Dr. Olivia Turner</div>
-                                <div class="doctor-actions">×</div>
-                            </div>
-
-                            <div class="appointment-sub">Periodic review</div>
-                        </div>
-                    </div>
-                </div>
+        </div>
+    </div>
+@empty
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="appointment-content">
+                <span class="mmm">No upcoming appointments with this doctor</span>
             </div>
+        </div>
+    </div>
+@endforelse
 
             <div class="bottom-space"></div>
         </div>
+        
         <div class="delete-modal-overlay" id="deleteModal">
     <div class="delete-modal-box">
         <div class="delete-modal-title">Delete Doctor</div>

@@ -186,6 +186,14 @@ body {
     opacity: 0.7;
 }
 
+.mmm {
+    color: #e28c3d;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 auto;
+}
+
 /* navbar */
 .bottom-nav {
             position: absolute;
@@ -350,8 +358,8 @@ body {
     <div class="schedule-card">
         <div class="appointment-box">
             <div class="appointment-content">
-                <div class="appointment-header">
-                    <span>No upcoming appointments</span>
+                <div class="appointment-content">
+                    <span class="mmm" >No upcoming appointments</span>
                 </div>
             </div>
         </div>
