@@ -32,9 +32,12 @@ class DoctorProfile extends Model
     {
         return $this->hasMany(Workplace::class, 'doctor_id');
     }
+
     public function user()
 {
     return $this->belongsTo(\App\Models\User::class, 'user_id');
 }
+
+
 
 }

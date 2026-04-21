@@ -17,19 +17,29 @@ class ParentProfile extends Model
     }
 
     public function children()
+
 {
     return $this->hasMany(\App\Models\Child::class, 'parent_id');
 }
 
+  
 
     public function appointments()
     {
         return $this->hasMany(Appointment::class, 'parent_id');
     }
+
     /*
     public function child()
     {
         return $this->hasOne(\App\Models\ParentModule\Child::class, 'parent_id');
 
+
+
+    // إذا نظامكم طفل واحد فقط لكل ولي أمر
+    public function child()
+    {
+        return $this->hasOne(Child::class, 'parent_id');
     } */
+
 }

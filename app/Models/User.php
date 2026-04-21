@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\ParentModule\Child;
 
 class User extends Authenticatable
 {
@@ -33,9 +32,10 @@ class User extends Authenticatable
     |----------------------------------------------------------------------
     */
 
-    public function child()
+    // ⚠️ إذا عندك أكثر من طفل خليه hasMany مش hasOne
+    public function children()
     {
-        return $this->hasOne(\App\Models\ParentModule\Child::class, 'parent_id');
+        return $this->hasMany(\App\Models\Child::class, 'parent_id');
     }
 
     public function doctorProfile()
@@ -55,15 +55,25 @@ class User extends Authenticatable
     */
 
     protected static function booted()
-
     {
         static::deleting(function ($user) {
-            $user->doctorProfile()?->delete();
-            $user->parentProfile()?->delete();
+
+            // حذف بيانات الطبيب
+            if ($user->doctorProfile) {
+                $user->doctorProfile()->delete();
+            }
+
+            // حذف الأطفال المرتبطين
+            if ($user->children) {
+                $user->children()->delete();
+            }
+
+            // حذف parent profile
+            if ($user->parentProfile) {
+                $user->parentProfile()->delete();
+            }
         });
     }
-
 }
 
-   
-    
+

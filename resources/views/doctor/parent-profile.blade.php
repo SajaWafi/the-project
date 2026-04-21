@@ -14,7 +14,7 @@
         }
 
         body {
-            background: #111;
+            background: #ffffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -365,6 +365,15 @@
             background: #3a82f6;
             color: #ffffff;
         }
+
+        .mmm{
+            color: #30b9a6;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+        }
     </style>
 </head>
 <body>
@@ -437,33 +446,52 @@
 
             <div class="section-chip">Appointment</div>
 
-            <div class="schedule-card">
-                <div class="appointment-box">
-                    <div class="times">
-                        <div>9 AM</div>
-                        <div>10 AM</div>
-                        <div>11 AM</div>
-                        <div>12 AM</div>
-                    </div>
+<!--schedule-card -->
+@forelse($appointments as $appointment)
+    @php
+        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+        $isToday = $appointmentDate->isToday();
+        $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+    @endphp
 
-                    <div class="appointment-content">
-                        <div class="appointment-header">
-                            <span>11 Wednesday - Today</span>
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="times">
+                <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                <div>|</div>
+                <div>|</div>
+                <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
+            </div>
+
+            <div class="appointment-content">
+                <div class="appointment-header">
+                    <span>{{ $headerText }}</span>
+                </div>
+
+                <div class="appointment-main">
+                    <div class="appointment-info">
+                        <div class="appointment-sub">
+                            Child: {{ $appointment->child->name ?? 'N/A' }}
                         </div>
 
-                        <div class="appointment-main">
-                            <div class="doctor-row">
-                                <div class="doctor-name">Ali Salah</div>
-                                <div class="doctor-actions">
-                                    <a href="#" class="appointment-sub">×</a>
-                                </div>
-                            </div>
-
-                            <div class="appointment-sub">Periodic review</div>
+                        <div class="note">
+                            {{ $appointment->note }}
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+@empty
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="appointment-content">
+                <span class="mmm">No upcoming appointments with this parent</span>
+            </div>
+        </div>
+    </div>
+@endforelse
+
         </div>
 
         <div class="delete-modal-overlay" id="deleteModal">

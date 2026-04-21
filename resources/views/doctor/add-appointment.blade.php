@@ -415,7 +415,7 @@
                 <div class="field-title">Choose Parent</div>
                 <div class="sub-label">Full Name</div>
 
-                <select name="parent_id" id="parent_id" class="select-field">
+               <select name="parent_id" id="parent_id" class="select-field">
                     <option value="">Select parent</option>
                     @foreach($parents as $parent)
                         <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>

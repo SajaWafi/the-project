@@ -318,15 +318,12 @@ Route::post('/doctor/signup/step3', function (Request $request) {
     return redirect()->route('doctor.home');
 })->name('doctor.step3.post');
 
-
 Route::post('/logout', function (Request $request) {
     Auth::logout();
+
     return redirect()->route('login');
-
-
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-
 
     return redirect()->route('login.page');
 
@@ -338,6 +335,5 @@ Route::post('/logout', function (Request $request) {
 })->name('logout');
 
 
-
-
+  
 

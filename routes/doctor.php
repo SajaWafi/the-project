@@ -71,6 +71,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
         return view('doctor.privacy');
     })->name('privacy');
 
+
     /*
     |--------------------------------------------------------------------------
     | Parents
@@ -80,6 +81,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/parents', [ParentController::class, 'index'])->name('parents');
     Route::get('/parent-profile/{id}', [ParentController::class, 'show'])->name('parent.profile');
     Route::get('/parents/search/ajax', [ParentController::class, 'searchAjax'])->name('parents.search.ajax');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -91,6 +93,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/chat/{parentId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
     Route::post('/chat/{parentId}/send', [ChatController::class, 'send'])->name('chat.send');
     Route::delete('/chat/message/{messageId}', [ChatController::class, 'deleteMessage'])->name('chat.message.delete');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -130,7 +133,16 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             abort(404, 'Doctor profile not found.');
         }
 
+
         $parents = ParentProfile::with('user', 'children')->get();
+
+        $parents = ParentProfile::with(['user', 'children'])
+            ->whereHas('children.doctors', function ($query) use ($doctorProfile) {
+                $query->where('doctor_profiles.id', $doctorProfile->id);
+            })
+            ->get();
+
+
         $workplaces = Workplace::where('doctor_id', $doctorProfile->id)->get();
 
         return view('doctor.add-appointment', compact('parents', 'workplaces'));
@@ -157,7 +169,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             ]);
         }
 
-        $parent = ParentProfile::with('children')->find($request->parent_id);
+        $parent = ParentProfile::with(['children.doctors'])
+            ->find($request->parent_id);
 
         if (!$parent) {
             return back()->withErrors([
@@ -165,11 +178,13 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             ])->withInput();
         }
 
-        $child = $parent->children->first();
+        $child = $parent->children->first(function ($child) use ($doctorProfile) {
+            return $child->doctors->contains('id', $doctorProfile->id);
+        });
 
         if (!$child) {
             return back()->withErrors([
-                'parent_id' => 'This parent has no child linked.'
+                'parent_id' => 'This parent is not linked to this doctor.'
             ])->withInput();
         }
 
@@ -195,6 +210,12 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/edit-appointment/{id}', function ($id) {
         $doctorProfile = auth()->user()->doctorProfile;
 
+
+        if (!$doctorProfile) {
+            abort(404, 'Doctor profile not found.');
+        }
+
+
         $appointment = Appointment::where('doctor_id', $doctorProfile->id)
             ->findOrFail($id);
 
@@ -218,6 +239,13 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
         ]);
 
         $doctorProfile = auth()->user()->doctorProfile;
+
+        if (!$doctorProfile) {
+            return back()->withErrors([
+                'doctor' => 'Doctor profile not found.'
+            ]);
+        }
+
 
         $appointment = Appointment::where('doctor_id', $doctorProfile->id)
             ->findOrFail($id);
@@ -271,6 +299,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
         return back()->with('success', 'Appointment deleted successfully.');
     })->name('appointments.delete');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -363,6 +392,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             return back()->with('error', $e->getMessage());
         }
     })->name('edit-profile.update');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -513,6 +543,41 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
         return back()->with('success', 'Workplace deleted');
     })->name('workplace.delete');
 
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Password
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/change-password', function () {
+        return view('doctor.change-password');
+    })->name('password');
+
+    Route::post('/change-password', function (Request $request) {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!$user || !Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors([
+                'current_password' => 'Current password is incorrect'
+            ]);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Password updated successfully');
+    })->name('password.update');
+
+
+
     /*
     |--------------------------------------------------------------------------
     | Alert Sounds
@@ -534,6 +599,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
         return back()->with('success', 'Settings updated');
     })->name('alert.update');
 
+
     /*
     |--------------------------------------------------------------------------
     | Delete Account
@@ -542,6 +608,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
     Route::delete('/delete-account', function () {
         $user = Auth::user();
+
+
 
         DB::beginTransaction();
 
@@ -565,6 +633,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
         }
     })->name('delete.account');
 
+
     /*
     |--------------------------------------------------------------------------
     | Children Search / Attach
@@ -574,6 +643,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/children/search', [ChildController::class, 'searchPage'])->name('children.search');
     Route::get('/children/find', [ChildController::class, 'find'])->name('children.find');
     Route::post('/children/{id}/attach', [ChildController::class, 'attach'])->name('children.attach');
+
 
     /*
     |--------------------------------------------------------------------------

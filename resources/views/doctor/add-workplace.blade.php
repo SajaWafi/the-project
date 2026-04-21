@@ -15,7 +15,7 @@
 
         /* ===== خلفية الصفحة ===== */
         body {
-            background: #111;
+            background: #ffffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;

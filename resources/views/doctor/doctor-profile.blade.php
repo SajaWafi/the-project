@@ -36,6 +36,16 @@
             padding: 10px 18px 24px;
         }
 
+        .back-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 30px;
+            line-height: 1;
+            color: #3d78ff;
+            text-decoration: none;
+        }
+
         .content::-webkit-scrollbar {
             width: 5px;
         }
@@ -281,6 +291,7 @@
         <div class="content">
 
             <div class="header">
+                <a href="{{ url()->previous() }}" class="back-btn">‹</a>
 
                 <div class="title">My Profile</div>
 
