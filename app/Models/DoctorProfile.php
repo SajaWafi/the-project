@@ -18,11 +18,6 @@ class DoctorProfile extends Model
         'birth_date' => 'date',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function children()
     {
         return $this->belongsToMany(

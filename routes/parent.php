@@ -56,7 +56,10 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
         return view('settings');
     })->name('settings');
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
     Route::get('/password-manager', function () {
         return view('password-manager');
     })->name('password.manager');
@@ -64,7 +67,10 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/panic-alert', function () {
         return view('panic-alert');
     })->name('panic.alert');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 
 Route::get('/password-manager', function () {
     return view('password-manager');
@@ -93,7 +99,10 @@ Route::post('/password-manager', function (Illuminate\Http\Request $request) {
 Route::get('/panic-alert', function () {
     return view('panic-alert');
 })->name('panic.alert');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 
     Route::get('/location-alerts', function () {
         return view('location-alerts');
@@ -137,11 +146,17 @@ Route::get('/panic-alert', function () {
         return view('reports-settings');
     })->name('reports.settings');
 
+<<<<<<< HEAD
 
     Route::get('/parent/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
     Route::post('/parent/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
 });
 
+=======
+    Route::get('/parent/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
+    Route::post('/parent/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
+});
+>>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 Route::middleware('auth')->group(function () {
     Route::get('/edit-profile', [ProfileController::class, 'edit'])->name('parent.profile.edit');
     Route::post('/edit-profile/update', [ProfileController::class, 'update'])->name('parent.profile.update');
@@ -175,4 +190,7 @@ Route::delete('/delete-account', function () {
         return back()->with('error', $e->getMessage());
     }
 })->name('delete.account');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7

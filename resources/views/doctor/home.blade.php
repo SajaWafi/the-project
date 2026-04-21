@@ -183,57 +183,37 @@
             margin-bottom: 2px;
         }
 
-        .specialty-text {
+    .specialty-text {
             color: #4b4b4b;
             font-size: 15px;
         }
 
-        .location-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
+        .workplace-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
 
-        .location-pill {
-            width: 100%;
-            height: 22px;
-            background: #2f64f3;
-            border-radius: 12px;
-            position: relative;
-        }
+    .workplace-pill {
+        flex: 1 1 48%;
+        min-width: 0;
+        background: #fff;
+        border-radius: 16px;
+        padding: 10px 12px;
+    }
 
-        .location-pill::before {
-            content: "◉";
-            position: absolute;
-            left: 9px;
-            top: 50%;
-            transform: translateY(-55%);
-            color: #ffffff;
-            font-size: 10px;
-        }
+    .workplace-name {
+        color: #2d63f6;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
 
-        .schedule-mini-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .schedule-mini-col {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .mini-pill {
-            background: #f6f4ef;
-            border-radius: 14px;
-            text-align: center;
-            padding: 4px 8px;
-            font-size: 13px;
-            color: #4f82ff;
-            line-height: 1.15;
-        }
+    .workplace-meta {
+        color: #5b5b5b;
+        font-size: 12px;
+        line-height: 1.5;
+    }
 
         .about-box {
             background: #2d63f6;
@@ -294,6 +274,15 @@
             border-bottom: 2px dotted #73a0ff;
         }
 
+        .mmm{
+            color: #2d63f6;
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+        }
+
         .appointment-main {
             background: #bfc8f0;
             border-radius: 14px;
@@ -329,8 +318,8 @@
             font-size: 14px;
         }
 
-/* navbar */
-.bottom-nav {
+    /* navbar */
+    .bottom-nav {
             position: absolute;
             left: 0;
             right: 0;
@@ -387,26 +376,28 @@
             color: #1d567e;
             margin-bottom: 10px;
         }
+
         .settings-btn {
-    position: absolute;
-    top: 50px; /* تحت الجرس */
-    right: 10px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 2px solid #3d78ff;
-    color: #3d78ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-size: 18px;
-    background: #fff;
-}
-.settings-btn:hover {
-    background: #3d78ff;
-    color: #fff;
-}
+        position: absolute;
+        top: 50px; /* تحت الجرس */
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 2px solid #3d78ff;
+        color: #3d78ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 18px;
+        background: #fff;
+    }
+    .settings-btn:hover {
+        background: #3d78ff;
+        color: #fff;
+    }
+
 </style>
 </head>
 @php
@@ -465,22 +456,27 @@
                     </div>
                 </div>
 
-                <div class="location-row">
-                    <div class="location-pill"></div>
-                    <div class="location-pill"></div>
-                </div>
+                <div class="workplace-row">
+                @forelse($workplaces as $workplace)
+                    <div class="workplace-pill">
+                        <div class="workplace-name">{{ $workplace->place_name }}</div>
 
-                <div class="schedule-mini-row">
-                    <div class="schedule-mini-col">
-                        <div class="mini-pill">9:00AM - 5:00PM</div>
-                        <div class="mini-pill">Sat - Mon - Wed</div>
-                    </div>
+                        <div class="workplace-meta">
+                            {{ is_array($workplace->days) ? implode(' - ', $workplace->days) : '' }}
+                        </div>
 
-                    <div class="schedule-mini-col">
-                        <div class="mini-pill">9:00AM - 5:00PM</div>
-                        <div class="mini-pill">Sun - Tue - Thu</div>
+                        <div class="workplace-meta">
+                            {{ str_pad($workplace->from_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($workplace->from_minute, 2, '0', STR_PAD_LEFT) }} {{ $workplace->from_period }}
+                            -
+                            {{ str_pad($workplace->to_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($workplace->to_minute, 2, '0', STR_PAD_LEFT) }} {{ $workplace->to_period }}
+                        </div>
                     </div>
-                </div>
+                @empty
+                    <div class="workplace-pill">
+                        <div class="workplace-name">No workplace</div>
+                    </div>
+                @endforelse
+            </div>
             </div>
 
             <div class="about-box">
@@ -489,33 +485,64 @@
 
             <div class="section-chip">Today Appointment</div>
 
-            <div class="schedule-card">
-                <div class="appointment-box">
-                    <div class="times">
-                        <div>9 AM</div>
-                        <div>10 AM</div>
-                        <div>11 AM</div>
-                        <div>12 AM</div>
-                    </div>
+            <!--schedule-card -->
+            @php
+                $todayAppointments = $appointments->filter(function ($appointment) {
+                    return \Carbon\Carbon::parse($appointment->date)->isToday();
+                });
+            @endphp
 
-                    <div class="appointment-content">
-                        <div class="appointment-header">
-                            <span>11 Wednesday</span>
-                            <span>Today</span>
+            @forelse($todayAppointments as $appointment)
+                @php
+                    $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+                    $isToday = $appointmentDate->isToday();
+
+                    $parentName = trim(
+                        ($appointment->parent->user->first_name ?? '') . ' ' . ($appointment->parent->user->last_name ?? '')
+                    );
+
+                    $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+                @endphp
+
+                <div class="schedule-card">
+                    <div class="appointment-box">
+                        <div class="times">
+                            <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                            <div>|</div>
+                            <div>|</div>
+                            <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
                         </div>
 
-                        <div class="appointment-main">
-                            <div class="doctor-row">
-                                <div class="appointment-doctor-name">Ali Salah</div>
-                                <div class="doctor-actions"></div>
+                        <div class="appointment-content">
+                            <div class="appointment-header">
+                                <span>{{ $headerText }}</span>
                             </div>
 
-                            <div class="appointment-sub">Child Care Center</div>
+                            <div class="appointment-main">
+                                <div class="appointment-info">
+                                    <div class="appointment-sub">
+                                        Child: {{ $appointment->child->name ?? 'N/A' }}
+                                    </div>
+
+                                    <div class="note">
+                                        {{ $appointment->note }}
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            @empty
+                <div class="schedule-card">
+                    <div class="appointment-box">
+                        <div class="appointment-content">
+                            <span class="mmm" >No appointments for today</span>
+                        </div>
+                    </div>
+                </div>
+            @endforelse
+       </div>
 
         <!-- navbar -->
         <div class="bottom-nav">

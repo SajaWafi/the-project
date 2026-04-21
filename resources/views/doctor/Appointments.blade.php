@@ -64,89 +64,129 @@ body {
     font-weight: bold;
 }
 
-/* appointment card*/
-        .schedule-card {
-            background: #efd7b8;
-            border-radius: 22px;
-            padding: 16px 12px;
-        }
+/* appointment card */
+.schedule-card {
+    background: #efd7b8;
+    border-radius: 24px;
+    padding: 16px 12px;
+    margin-bottom: 18px;
+}
 
-        .appointment-box {
-            background: #fffaf4;
-            border-radius: 18px;
-            padding: 12px 10px;
-            display: grid;
-            grid-template-columns: 44px 1fr;
-            gap: 8px;
-        }
+.appointment-box {
+    background: #fffaf4;
+    border-radius: 18px;
+    padding: 14px 12px;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+    align-items: start;
+}
 
-        .times {
-            color: #e28c3d;
-            font-size: 12px;
-            line-height: 2;
-            padding-top: 10px;
-        }
+.times {
+    color: #e28c3d;
+    font-size: 14px;
+    line-height: 2.1;
+    padding-top: 14px;
+    font-weight: 500;
+    text-align: left;
+    text-align: center;
+}
 
-        .appointment-content {
-            min-width: 0;
-        }
+.appointment-content {
+    min-width: 0;
+}
 
-        .appointment-header {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            color: #e28c3d;
-            font-size: 13px;
-            margin-bottom: 10px;
-            padding-bottom: 4px;
-            border-bottom: 2px dotted #e28c3d;
-        }
+.appointment-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    color: #e28c3d;
+    font-size: 14px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px dotted #e28c3d;
+    font-weight: 500;
+}
 
-        .appointment-main {
-            background: #efd7b8;
-            border-radius: 14px;
-            padding: 10px 12px;
-            margin-top: 12px;
-            position: relative;
-        }
+.appointment-main {
+    background: #e9cfac;
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
 
-        .doctor-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 4px;
-        }
+.appointment-info {
+    flex: 1;
+    min-width: 0;
+}
 
-        .doctor-name {
-            color: #e28c3d;
-            font-size: 16px;
-            font-weight: 700;
-        }
+.doctor-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
 
-        .doctor-actions {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #8b8b8b;
-            font-size: 12px;
-        }
+.doctor-name {
+    color: #e28c3d;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+}
 
-        .mini-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ffffff;
-            border: 1px solid #efd7b8;
-        }
+.appointment-sub {
+    color: #2f2f2f;
+    font-size: 15px;
+    line-height: 1.5;
+}
 
-        .appointment-sub {
-            color: #2f2f2f;
-            font-size: 14px;
-        }
+.appointment-time {
+    color: #2f2f2f;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-top: 2px;
+}
 
+.doctor-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
 
-        /* navbar */
+.action-icon-btn,
+.action-icon-link {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: #2f2f2f;
+    font-size: 18px;
+    line-height: 1;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+.action-icon-link {
+    font-size: 15px;
+}
+
+.action-icon-btn:hover,
+.action-icon-link:hover {
+    opacity: 0.7;
+}
+
+/* navbar */
 .bottom-nav {
             position: absolute;
             left: 0;
@@ -248,63 +288,75 @@ body {
 
     <a href="{{ route('doctor.add.appointment') }}" class="add-btn">Add Appointment</a>
 
-                <div class="schedule-card">
-                <div class="appointment-box">
-                    <div class="times">
-                        <div>9 AM</div>
-                        <div>10 AM</div>
-                        <div>11 AM</div>
-                        <div>12 AM</div>
+    @forelse($appointments as $appointment)
+    @php
+        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+        $isToday = $appointmentDate->isToday();
+
+        $parentName = trim(
+            ($appointment->parent->user->first_name ?? '') . ' ' . ($appointment->parent->user->last_name ?? '')
+        );
+
+        $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+    @endphp
+
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="times">
+                <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                <div>|</div>
+                <div>|</div>
+
+                <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
+            </div>
+
+            <div class="appointment-content">
+                <div class="appointment-header">
+                    <span>{{ $headerText }}</span>
+                </div>
+
+                <div class="appointment-main">
+                    <div class="appointment-info">
+                        <div class="doctor-row">
+                            <div class="doctor-name">{{ $parentName ?: 'Parent not found' }}</div>
+                        </div>
+
+                        <div class="appointment-sub">
+                            Child: {{ $appointment->child->name ?? 'N/A' }}
+                        </div>
+
+                        <div class="note">
+                            {{ $appointment->note }}
+                        </div>
                     </div>
 
-                    <div class="appointment-content">
-                        <div class="appointment-header">
-                            <span>11 Wednesday - Today</span>
-                        </div>
+                    <div class="doctor-actions">
+                        <form action="{{ route('doctor.appointments.delete', $appointment->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="action-icon-btn">×</button>
+                        </form>
 
-                        <div class="appointment-main">
-                            <div class="doctor-row">
-                                <div class="doctor-name">Ali hasan</div>
-                                <div class="doctor-actions">
-                                    <a href="#" class="appointment-sub">×</a>
-                                </div>
-                            </div>
-
-                            <div class="appointment-sub">Main Clinic</div>
-                        </div>
+                        <a href="{{ route('doctor.edit.appointment', $appointment->id) }}" class="action-icon-link">
+                            ✎
+                        </a>
                     </div>
                 </div>
             </div>
-<br>
-
-                    <div class="schedule-card">
-                <div class="appointment-box">
-                    <div class="times">
-                        <div>9 AM</div>
-                        <div>10 AM</div>
-                        <div>11 AM</div>
-                        <div>12 AM</div>
-                    </div>
-
-                    <div class="appointment-content">
-                        <div class="appointment-header">
-                            <span>11 Wednesday - Today</span>
-                        </div>
-
-                        <div class="appointment-main">
-                            <div class="doctor-row">
-                                <div class="doctor-name">Mohammad Ali</div>
-                                <div class="doctor-actions">
-                                    <a href="#" class="appointment-sub">×</a>
-                                </div>
-                            </div>
-
-                            <div class="appointment-sub">Main Clinic</div>
-                        </div>
-                    </div>
+    
+        </div>
+    </div>
+@empty
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="appointment-content">
+                <div class="appointment-header">
+                    <span>No upcoming appointments</span>
                 </div>
             </div>
         </div>
+    </div>
+@endforelse
 
             <!-- navbar -->
         <div class="bottom-nav">
