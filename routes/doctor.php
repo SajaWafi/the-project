@@ -5,26 +5,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
-use Illuminate\Support\Facades\DB;
-=======
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\User;
-use App\Models\Child;
 use App\Models\Appointment;
-use App\Models\Workplace;
 use App\Models\DoctorProfile;
 use App\Models\ParentProfile;
+use App\Models\Workplace;
 
 use App\Http\Controllers\Doctor\ParentController;
 use App\Http\Controllers\Doctor\ChatController;
 use App\Http\Controllers\Doctor\ChildController;
-<<<<<<< HEAD
-=======
-use App\Http\Controllers\Doctor\ParentController;
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 
 Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->group(function () {
 
@@ -34,37 +24,36 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     |--------------------------------------------------------------------------
     */
 
-Route::get('/home', function () {
+    Route::get('/home', function () {
+        $user = auth()->user();
 
-    $user = auth()->user();
+        if (!$user || !$user->doctorProfile) {
+            abort(404, 'Doctor profile not found.');
+        }
 
-    if (!$user || !$user->doctorProfile) {
-        abort(404, 'Doctor profile not found.');
-    }
+        $doctorProfile = $user->doctorProfile;
 
-    $doctorProfile = $user->doctorProfile;
+        $workplaces = Workplace::where('doctor_id', $doctorProfile->id)
+            ->latest()
+            ->get();
 
-    $workplaces = \App\Models\Workplace::where('doctor_id', $doctorProfile->id)
-        ->latest()
-        ->get();
+        $appointments = Appointment::with(['parent.user', 'child'])
+            ->where('doctor_id', $doctorProfile->id)
+            ->whereDate('date', '>=', now()->toDateString())
+            ->orderBy('date')
+            ->orderByRaw("
+                CASE 
+                    WHEN from_period = 'AM' AND from_hour = 12 THEN 0
+                    WHEN from_period = 'AM' THEN from_hour
+                    WHEN from_period = 'PM' AND from_hour = 12 THEN 12
+                    ELSE from_hour + 12
+                END
+            ")
+            ->orderBy('from_minute')
+            ->get();
 
-    $appointments = \App\Models\Appointment::with(['parent.user', 'child'])
-        ->where('doctor_id', $doctorProfile->id)
-        ->whereDate('date', '>=', now()->toDateString())
-        ->orderBy('date')
-        ->orderByRaw("
-            CASE 
-                WHEN from_period = 'AM' AND from_hour = 12 THEN 0
-                WHEN from_period = 'AM' THEN from_hour
-                WHEN from_period = 'PM' AND from_hour = 12 THEN 12
-                ELSE from_hour + 12
-            END
-        ")
-        ->orderBy('from_minute')
-        ->get();
-
-    return view('doctor.home', compact('workplaces', 'appointments'));
-})->name('home');
+        return view('doctor.home', compact('workplaces', 'appointments'));
+    })->name('home');
 
     Route::get('/request', function () {
         return view('doctor.request');
@@ -82,10 +71,6 @@ Route::get('/home', function () {
         return view('doctor.privacy');
     })->name('privacy');
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
     /*
     |--------------------------------------------------------------------------
     | Parents
@@ -105,6 +90,7 @@ Route::get('/home', function () {
     Route::get('/chat/{parentId}', [ChatController::class, 'show'])->name('chat');
     Route::get('/chat/{parentId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
     Route::post('/chat/{parentId}/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::delete('/chat/message/{messageId}', [ChatController::class, 'deleteMessage'])->name('chat.message.delete');
 
     /*
     |--------------------------------------------------------------------------
@@ -119,7 +105,7 @@ Route::get('/home', function () {
             abort(404, 'Doctor profile not found.');
         }
 
-        $appointments = \App\Models\Appointment::with(['parent.user', 'child'])
+        $appointments = Appointment::with(['parent.user', 'child'])
             ->where('doctor_id', $doctorProfile->id)
             ->whereDate('date', '>=', now()->toDateString())
             ->orderBy('date')
@@ -134,7 +120,7 @@ Route::get('/home', function () {
             ->orderBy('from_minute')
             ->get();
 
-        return view('doctor.Appointments', compact('appointments'));
+        return view('doctor.appointments', compact('appointments'));
     })->name('appointments');
 
     Route::get('/add-appointment', function () {
@@ -145,14 +131,9 @@ Route::get('/home', function () {
         }
 
         $parents = ParentProfile::with('user', 'children')->get();
-<<<<<<< HEAD
-        return view('doctor.add-appointment', compact('parents'));
-=======
-
         $workplaces = Workplace::where('doctor_id', $doctorProfile->id)->get();
 
         return view('doctor.add-appointment', compact('parents', 'workplaces'));
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
     })->name('add.appointment');
 
     Route::post('/add-appointment', function (Request $request) {
@@ -214,11 +195,11 @@ Route::get('/home', function () {
     Route::get('/edit-appointment/{id}', function ($id) {
         $doctorProfile = auth()->user()->doctorProfile;
 
-        $appointment = \App\Models\Appointment::where('doctor_id', $doctorProfile->id)
+        $appointment = Appointment::where('doctor_id', $doctorProfile->id)
             ->findOrFail($id);
 
-        $parents = \App\Models\ParentProfile::with('user')->get();
-        $workplaces = \App\Models\Workplace::where('doctor_id', $doctorProfile->id)->get();
+        $parents = ParentProfile::with('user')->get();
+        $workplaces = Workplace::where('doctor_id', $doctorProfile->id)->get();
 
         return view('doctor.edit-appointment', compact('appointment', 'parents', 'workplaces'));
     })->name('edit.appointment');
@@ -238,10 +219,10 @@ Route::get('/home', function () {
 
         $doctorProfile = auth()->user()->doctorProfile;
 
-        $appointment = \App\Models\Appointment::where('doctor_id', $doctorProfile->id)
+        $appointment = Appointment::where('doctor_id', $doctorProfile->id)
             ->findOrFail($id);
 
-        $parent = \App\Models\ParentProfile::with('children')->find($request->parent_id);
+        $parent = ParentProfile::with('children')->find($request->parent_id);
 
         if (!$parent) {
             return back()->withErrors([
@@ -270,7 +251,8 @@ Route::get('/home', function () {
             'note' => $request->note,
         ]);
 
-        return redirect()->route('doctor.appointments')->with('success', 'Appointment updated successfully.');
+        return redirect()->route('doctor.appointments')
+            ->with('success', 'Appointment updated successfully.');
     })->name('update.appointment');
 
     Route::delete('/appointments/{id}', function ($id) {
@@ -314,7 +296,6 @@ Route::get('/home', function () {
             'bio'           => 'nullable|string|max:1000',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
-<<<<<<< HEAD
 
         $user = Auth::user();
 
@@ -409,75 +390,6 @@ Route::get('/home', function () {
 
         $user->password = Hash::make($request->new_password);
         $user->save();
-=======
-
-        $user = Auth::user();
-
-        DB::beginTransaction();
-
-        try {
-            $userData = [];
-
-            if ($request->filled('full_name')) {
-                $parts = explode(' ', trim($request->full_name), 2);
-                $userData['first_name'] = $parts[0] ?? '';
-                $userData['last_name'] = $parts[1] ?? '';
-            }
-
-            if ($request->filled('phone')) {
-                $userData['phone'] = $request->phone;
-            }
-
-            if ($request->filled('email')) {
-                $userData['email'] = $request->email;
-            }
-
-            if ($request->filled('gender')) {
-                $userData['gender'] = $request->gender;
-            }
-
-            if ($request->hasFile('profile_image')) {
-                if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
-                    Storage::disk('public')->delete($user->profile_image);
-                }
-
-                $userData['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
-            }
-
-            if (!empty($userData)) {
-                $user->update($userData);
-            }
-
-            $doctorData = [];
-
-            if ($request->filled('specialize')) {
-                $doctorData['specialization'] = $request->specialize;
-            }
-
-            if ($request->filled('bio')) {
-                $doctorData['bio'] = $request->bio;
-            }
-
-            if ($request->filled('birth_day') && $request->filled('birth_month') && $request->filled('birth_year')) {
-                $doctorData['birth_date'] = $request->birth_year . '-' . $request->birth_month . '-' . $request->birth_day;
-            }
-
-            if (!empty($doctorData)) {
-                DoctorProfile::updateOrCreate(
-                    ['user_id' => $user->id],
-                    $doctorData
-                );
-            }
-
-            DB::commit();
-
-            return back()->with('success', 'Profile updated successfully');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            return back()->with('error', $e->getMessage());
-        }
-    })->name('edit-profile.update');
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 
         return back()->with('success', 'Password updated successfully');
     })->name('password.update');
@@ -601,41 +513,6 @@ Route::get('/home', function () {
         return back()->with('success', 'Workplace deleted');
     })->name('workplace.delete');
 
-<<<<<<< HEAD
-=======
-
-    /*
-    |--------------------------------------------------------------------------
-    | Password
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/change-password', function () {
-        return view('doctor.change-password');
-    })->name('password');
-
-    Route::post('/change-password', function (Request $request) {
-        $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|min:6|confirmed',
-        ]);
-
-        $user = auth()->user();
-
-        if (!$user || !Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors([
-                'current_password' => 'Current password is incorrect'
-            ]);
-        }
-
-        $user->password = Hash::make($request->new_password);
-        $user->save();
-
-        return back()->with('success', 'Password updated successfully');
-    })->name('password.update');
-
-
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
     /*
     |--------------------------------------------------------------------------
     | Alert Sounds
@@ -665,31 +542,6 @@ Route::get('/home', function () {
 
     Route::delete('/delete-account', function () {
         $user = Auth::user();
-<<<<<<< HEAD
-=======
-
-        DB::beginTransaction();
-
-        try {
-            if ($user?->doctorProfile) {
-                $user->doctorProfile()->delete();
-            }
-
-            Auth::logout();
-
-            if ($user) {
-                $user->delete();
-            }
-
-            DB::commit();
-
-            return redirect('/')->with('success', 'Account deleted successfully');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            return back()->with('error', $e->getMessage());
-        }
-    })->name('delete.account');
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 
         DB::beginTransaction();
 
@@ -722,9 +574,6 @@ Route::get('/home', function () {
     Route::get('/children/search', [ChildController::class, 'searchPage'])->name('children.search');
     Route::get('/children/find', [ChildController::class, 'find'])->name('children.find');
     Route::post('/children/{id}/attach', [ChildController::class, 'attach'])->name('children.attach');
-<<<<<<< HEAD
-=======
-
 
     /*
     |--------------------------------------------------------------------------
@@ -732,21 +581,12 @@ Route::get('/home', function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::post('/logout', function () {
+    Route::post('/logout', function (Request $request) {
         Auth::logout();
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 
-    /*
-    |--------------------------------------------------------------------------
-    | Logout
-    |--------------------------------------------------------------------------
-    */
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect()->route('login.page');
-})->name('logout');
+        return redirect()->route('login.page');
+    })->name('logout');
 });

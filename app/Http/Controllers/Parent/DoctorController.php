@@ -120,4 +120,5 @@ class DoctorController extends Controller
 
         return view('parents.chat', ['doctor' => $data]);
     }
+    
 }

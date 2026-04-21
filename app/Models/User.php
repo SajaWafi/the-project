@@ -55,25 +55,14 @@ class User extends Authenticatable
     */
 
     protected static function booted()
-<<<<<<< HEAD
+
     {
         static::deleting(function ($user) {
             $user->doctorProfile()?->delete();
-            $user->child()?->delete();
+            $user->parentProfile()?->delete();
         });
     }
-=======
-        {
-            static::deleting(function ($user) {
-                $user->doctorProfile()->delete();
-                $user->child()->delete();
-            });
-        }
-        public function parentProfile()
-{
-    return $this->hasOne(\App\Models\ParentProfile::class, 'user_id');
-}
->>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
+
 }
 
    
