@@ -213,13 +213,13 @@
             word-wrap: break-word;
         }
 
-        .bubble.me {
-            background: #cfe0ff;
+
+          .bubble.me {
+            background:  #c9efe9;
             border-bottom-right-radius: 8px;
         }
-
         .bubble.other {
-            background: #c9efe9;
+            background:#cfe0ff;
             border-bottom-left-radius: 8px;
         }
 
@@ -371,26 +371,31 @@
     </style>
 </head>
 <body>
+    @php
+        $doctorName = $doctor['name'] ?? 'Doctor';
+        $doctorImage = asset('pics/' . ($doctor['image'] ?? 'doctor3.png'));
+    @endphp
+
     <div class="phone">
         <div class="bg-top"></div>
         <div class="bg-bottom-left"></div>
         <div class="bg-bottom-right"></div>
 
         <div class="header">
-             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
+            <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
 
             <img
-                src="{{ asset('pics/' . ($doctor['image'] ?? 'doctor3.png')) }}"
+                src="{{ $doctorImage }}"
                 alt="Doctor"
                 class="doctor-avatar"
             >
 
             <div class="header-info">
-                <div class="doctor-name">{{ $doctor['name'] ?? 'Dr. Olivia Turner' }}</div>
+                <div class="doctor-name">{{ $doctorName }}</div>
                 <div class="online-status" id="doctorStatus">• Online</div>
             </div>
 
@@ -407,177 +412,274 @@
             </div>
         </div>
 
-        <div class="chat-area" id="chatArea">
-            <div class="message-row me">
-                <div class="bubble me">
-                    lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore at dolore magna aliquot.
-                </div>
-                <div class="time">09:00</div>
-            </div>
+ <div class="chat-area" id="chatArea">
+    @forelse(($messages ?? []) as $message)
+        @php
+            $isMe = $message->user_id == auth()->id();
+        @endphp
 
-            <div class="message-row other">
-                <div class="bubble other">
-                    lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore at dolore magna aliqua
+        <div class="message-row {{ $isMe ? 'me' : 'other' }}">
+            @if(($message->type ?? 'text') === 'text')
+                <div class="bubble {{ $isMe ? 'me' : 'other' }}">
+                    {{ $message->message }}
                 </div>
-                <div class="time">09:30</div>
-            </div>
 
-            <div class="message-row me">
-                <div class="bubble me">
-                    lorem ipsum dolor sit amet, consectetur adipisicing elit.
+            @elseif(($message->type ?? '') === 'image')
+                <div class="bubble {{ $isMe ? 'me' : 'other' }}">
+                    <img src="{{ asset('storage/' . $message->file_path) }}" style="max-width:140px; border-radius:12px;">
                 </div>
-                <div class="time">09:43</div>
-            </div>
 
-            <div class="message-row other">
-                <div class="voice-row">
-                    <img
-                        src="{{ asset('pics/' . ($doctor['image'] ?? 'doctor3.png')) }}"
-                        alt="Doctor"
-                        class="small-avatar"
-                    >
-                    <div class="play-btn">▶</div>
-                    <div class="audio-bar"></div>
-                    <div class="audio-time">02:50</div>
+            @elseif(($message->type ?? '') === 'file')
+                <div class="bubble {{ $isMe ? 'me' : 'other' }}">
+                    <a href="{{ asset('storage/' . $message->file_path) }}" target="_blank" style="color:inherit; text-decoration:underline;">
+                        {{ basename($message->file_path) }}
+                    </a>
                 </div>
-                <div class="time">09:50</div>
-            </div>
+            @endif
 
-            <div class="message-row me">
-                <div class="bubble me">
-                    lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </div>
-                <div class="time">09:55</div>
-            </div>
+            <div class="time">{{ $message->created_at?->format('H:i') }}</div>
         </div>
+    @empty
+        <div class="empty-chat" id="emptyChat" style="text-align:center; color:#777; margin-top:20px;">
+            No messages yet. Start the conversation.
+        </div>
+    @endforelse
+</div>
 
-        <div class="typing">Dr. Olivia is typing...</div>
+       <form class="input-bar-wrap" id="chatForm" enctype="multipart/form-data">
+            <input
+                type="file"
+                id="fileInput"
+                name="file"
+                hidden
+                accept="image/*,.pdf,.doc,.docx,.txt"
+            >
 
-        <form class="input-bar-wrap" onsubmit="sendMessage(event)">
-            <button type="button" class="icon-btn">📎</button>
+            <button type="button" class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
 
             <input
                 type="text"
                 class="message-input"
                 id="messageInput"
                 placeholder="Write Here..."
+                autocomplete="off"
             >
 
-            <button type="button" class="icon-btn">🎤</button>
+            <button type="button" class="icon-btn" id="voiceBtn">🎤</button>
             <button type="submit" class="send-btn">➤</button>
         </form>
     </div>
 
-    <script>
-        let muteUntil = null;
+<script>
+    let muteUntil = null;
 
-        function toggleMuteMenu() {
-            const menu = document.getElementById('muteMenu');
-            menu.classList.toggle('show');
+    function toggleMuteMenu() {
+        const menu = document.getElementById('muteMenu');
+        menu.classList.toggle('show');
+    }
+
+    function muteNotifications(duration) {
+        const now = new Date();
+
+        if (duration === '1hour') {
+            muteUntil = new Date(now.getTime() + 60 * 60 * 1000);
+        } else if (duration === '1day') {
+            muteUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        } else if (duration === '1month') {
+            muteUntil = new Date(now);
+            muteUntil.setMonth(muteUntil.getMonth() + 1);
+        } else if (duration === 'forever') {
+            muteUntil = 'forever';
         }
 
-        function muteNotifications(duration) {
-            const now = new Date();
+        localStorage.setItem(
+            'parentDoctorMuteUntil',
+            muteUntil === 'forever' ? 'forever' : muteUntil.toISOString()
+        );
 
-            if (duration === '1hour') {
-                muteUntil = new Date(now.getTime() + 60 * 60 * 1000);
-            } else if (duration === '1day') {
-                muteUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-            } else if (duration === '1month') {
-                muteUntil = new Date(now);
-                muteUntil.setMonth(muteUntil.getMonth() + 1);
-            } else if (duration === 'forever') {
-                muteUntil = 'forever';
+        document.getElementById('muteMenu').classList.remove('show');
+        updateDoctorStatus();
+    }
+
+    function unmuteNotifications() {
+        muteUntil = null;
+        localStorage.removeItem('parentDoctorMuteUntil');
+        document.getElementById('muteMenu').classList.remove('show');
+        updateDoctorStatus();
+    }
+
+    function isMuted() {
+        const savedMute = localStorage.getItem('parentDoctorMuteUntil');
+
+        if (!savedMute) return false;
+        if (savedMute === 'forever') return true;
+
+        const muteDate = new Date(savedMute);
+        return new Date() < muteDate;
+    }
+
+    function updateDoctorStatus() {
+        const status = document.getElementById('doctorStatus');
+
+        if (isMuted()) {
+            status.textContent = '• Notifications muted';
+            status.style.color = '#ff9500';
+        } else {
+            status.textContent = '• Online';
+            status.style.color = '#34c759';
+        }
+    }
+
+    function scrollChatToBottom() {
+        const chatArea = document.getElementById('chatArea');
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function createTextMessage(text, timeText, isMe = true) {
+        const chatArea = document.getElementById('chatArea');
+
+        const row = document.createElement('div');
+        row.className = 'message-row ' + (isMe ? 'me' : 'other');
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (isMe ? 'me' : 'other');
+        bubble.textContent = text;
+
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = timeText;
+
+        row.appendChild(bubble);
+        row.appendChild(time);
+        chatArea.appendChild(row);
+    }
+
+    function createImageMessage(imageUrl, timeText, isMe = true) {
+        const chatArea = document.getElementById('chatArea');
+
+        const row = document.createElement('div');
+        row.className = 'message-row ' + (isMe ? 'me' : 'other');
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (isMe ? 'me' : 'other');
+
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.style.maxWidth = '140px';
+        img.style.borderRadius = '12px';
+
+        bubble.appendChild(img);
+
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = timeText;
+
+        row.appendChild(bubble);
+        row.appendChild(time);
+        chatArea.appendChild(row);
+    }
+
+    function createFileMessage(fileUrl, fileName, timeText, isMe = true) {
+        const chatArea = document.getElementById('chatArea');
+
+        const row = document.createElement('div');
+        row.className = 'message-row ' + (isMe ? 'me' : 'other');
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (isMe ? 'me' : 'other');
+
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.target = '_blank';
+        link.textContent = fileName || 'Open file';
+        link.style.color = 'inherit';
+        link.style.textDecoration = 'underline';
+
+        bubble.appendChild(link);
+
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = timeText;
+
+        row.appendChild(bubble);
+        row.appendChild(time);
+        chatArea.appendChild(row);
+    }
+
+    async function sendMessage(event) {
+        event.preventDefault();
+
+        const input = document.getElementById('messageInput');
+        const fileInput = document.getElementById('fileInput');
+        const text = input.value.trim();
+        const file = fileInput.files[0];
+
+        if (!text && !file) return;
+
+        try {
+            const formData = new FormData();
+            formData.append('message', text);
+            if (file) {
+                formData.append('file', file);
             }
 
-            localStorage.setItem(
-                'doctorMuteUntil',
-                muteUntil === 'forever' ? 'forever' : muteUntil.toISOString()
-            );
+            const response = await fetch("{{ route('parents.chat.send', $doctor['id']) }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: formData
+            });
 
-            document.getElementById('muteMenu').classList.remove('show');
-            updateDoctorStatus();
-        }
+            const data = await response.json();
 
-        function unmuteNotifications() {
-            muteUntil = null;
-            localStorage.removeItem('doctorMuteUntil');
-            document.getElementById('muteMenu').classList.remove('show');
-            updateDoctorStatus();
-        }
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to send message');
+            }
 
-        function isMuted() {
-            const savedMute = localStorage.getItem('doctorMuteUntil');
+            const emptyChat = document.getElementById('emptyChat');
+            if (emptyChat) {
+                emptyChat.remove();
+            }
 
-            if (!savedMute) return false;
-            if (savedMute === 'forever') return true;
-
-            const muteDate = new Date(savedMute);
-            return new Date() < muteDate;
-        }
-
-        function updateDoctorStatus() {
-            const status = document.getElementById('doctorStatus');
-
-            if (isMuted()) {
-                status.textContent = '• Notifications muted';
-                status.style.color = '#ff9500';
+            if (data.type === 'image') {
+                createImageMessage(data.file_url, data.time, true);
+            } else if (data.type === 'file') {
+                createFileMessage(data.file_url, data.file_name, data.time, true);
             } else {
-                status.textContent = '• Online';
-                status.style.color = '#34c759';
+                createTextMessage(data.message ?? text, data.time ?? '', true);
             }
-        }
-
-        function scrollChatToBottom() {
-            const chatArea = document.getElementById('chatArea');
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
-
-        function sendMessage(event) {
-            event.preventDefault();
-
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const chatArea = document.getElementById('chatArea');
-
-            const row = document.createElement('div');
-            row.className = 'message-row me';
-
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble me';
-            bubble.textContent = text;
-
-            const time = document.createElement('div');
-            time.className = 'time';
-
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2, '0');
-            const mm = String(now.getMinutes()).padStart(2, '0');
-            time.textContent = hh + ':' + mm;
-
-            row.appendChild(bubble);
-            row.appendChild(time);
-            chatArea.appendChild(row);
 
             input.value = '';
+            fileInput.value = '';
             scrollChatToBottom();
+        } catch (error) {
+            alert(error.message || 'Failed to send message.');
+            console.error(error);
         }
+    }
 
-        document.addEventListener('click', function (event) {
-            const menu = document.getElementById('muteMenu');
-            const button = document.querySelector('.menu-btn');
+    document.getElementById('chatForm').addEventListener('submit', sendMessage);
 
-            if (!menu.contains(event.target) && !button.contains(event.target)) {
-                menu.classList.remove('show');
-            }
-        });
+    document.getElementById('voiceBtn').addEventListener('click', function () {
+        alert('Voice messages will be added later.');
+    });
 
-        window.onload = function () {
-            updateDoctorStatus();
-            scrollChatToBottom();
-        };
-    </script>
+    document.addEventListener('click', function (event) {
+        const menu = document.getElementById('muteMenu');
+        const button = document.querySelector('.menu-btn');
+
+        if (!menu.contains(event.target) && !button.contains(event.target)) {
+            menu.classList.remove('show');
+        }
+    });
+
+    window.onload = function () {
+        updateDoctorStatus();
+        scrollChatToBottom();
+    };
+</script>
 </body>
 </html>

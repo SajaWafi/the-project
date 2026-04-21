@@ -319,15 +319,24 @@ Route::post('/doctor/signup/step3', function (Request $request) {
 })->name('doctor.step3.post');
 
 
-Route::post('/logout', function () {
+Route::post('/logout', function (Request $request) {
     Auth::logout();
+<<<<<<< HEAD
+=======
     return redirect()->route('login');
+>>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
+<<<<<<< HEAD
+    return redirect()->route('login.page');
+=======
     request()->session()->invalidate();
     request()->session()->regenerateToken();
 
     return redirect('/login'); // أو الصفحة الرئيسية
+>>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 })->name('logout');
 
 

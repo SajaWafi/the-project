@@ -27,16 +27,42 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    /*
+    |----------------------------------------------------------------------
+    | Relationships
+    |----------------------------------------------------------------------
+    */
+
     public function child()
     {
-       return $this->hasOne(\App\Models\ParentModule\Child::class, 'parent_id');
+        return $this->hasOne(\App\Models\ParentModule\Child::class, 'parent_id');
     }
 
     public function doctorProfile()
     {
         return $this->hasOne(\App\Models\DoctorProfile::class, 'user_id');
     }
+
+    public function parentProfile()
+    {
+        return $this->hasOne(\App\Models\ParentProfile::class, 'user_id');
+    }
+
+    /*
+    |----------------------------------------------------------------------
+    | Model Events
+    |----------------------------------------------------------------------
+    */
+
     protected static function booted()
+<<<<<<< HEAD
+    {
+        static::deleting(function ($user) {
+            $user->doctorProfile()?->delete();
+            $user->child()?->delete();
+        });
+    }
+=======
         {
             static::deleting(function ($user) {
                 $user->doctorProfile()->delete();
@@ -47,6 +73,7 @@ class User extends Authenticatable
 {
     return $this->hasOne(\App\Models\ParentProfile::class, 'user_id');
 }
+>>>>>>> 88c2a8cecd71617fb87e2e367d1b90a2772dcee7
 }
 
    
