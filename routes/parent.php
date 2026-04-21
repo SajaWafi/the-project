@@ -5,8 +5,39 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Parent\ProfileController;
 
 Route::prefix('parents')->name('parents.')->middleware(['auth', 'role:parent'])->group(function () {
+
     Route::get('/home', function () {
-        return view('parents.home');
+        $user = auth()->user();
+
+        if (!$user || !$user->parentProfile) {
+            abort(404, 'Parent profile not found.');
+        }
+
+        $parentProfile = $user->parentProfile;
+
+        $child = $parentProfile->children()->first();
+
+        $appointments = collect();
+
+        if ($child) {
+            $appointments = \App\Models\Appointment::with(['child', 'doctor.user'])
+                ->where('parent_id', $parentProfile->id)
+                ->where('child_id', $child->id)
+                ->whereDate('date', '>=', now()->toDateString())
+                ->orderBy('date')
+                ->orderByRaw("
+                    CASE 
+                        WHEN from_period = 'AM' AND from_hour = 12 THEN 0
+                        WHEN from_period = 'AM' THEN from_hour
+                        WHEN from_period = 'PM' AND from_hour = 12 THEN 12
+                        ELSE from_hour + 12
+                    END
+                ")
+                ->orderBy('from_minute')
+                ->get();
+        }
+
+        return view('parents.home', compact('appointments', 'child'));
     })->name('home');
 
     Route::get('/alerts', function () {

@@ -447,7 +447,19 @@
         .child-link {
     display: inline-flex;
     text-decoration: none;
-}
+    }
+
+    .section-chip {
+            width: 40%;
+            display: inline-block;
+            background: #e29244;
+            color: #fff;
+            border-radius: 14px;
+            padding: 4px 12px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -493,7 +505,6 @@
 
             <div class="section-title-row">
                 <div class="section-title">daily activities</div>
-                <div class="small-round-icon">〰</div>
             </div>
 
             <div class="chart-card">
@@ -543,27 +554,62 @@
     </div>
 </div>
 
-                <div class="appointment-box">
-                    <div class="times">
-                        <div>9 AM</div>
-                        <div>10 AM</div>
-                        <div>11 AM</div>
-                        <div>12 AM</div>
-                    </div>
+<div class="section-chip">Appointment</div>
+<!--schedule-card -->
 
-                    <div class="appointment-content">
-                        <div class="appointment-header">11 Wednesday - Today</div>
+@forelse($appointments as $appointment)
+    @php
+        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+        $isToday = $appointmentDate->isToday();
 
-                        <div class="appointment-main">
-                            <div class="doctor-row">
-                                <div class="doctor-name">Dr. Olivia Turner</div>
-                            </div>
+        $doctorName = trim(
+            ($appointment->doctor->user->first_name ?? '') . ' ' . ($appointment->doctor->user->last_name ?? '')
+        );
 
-                            <div class="appointment-sub">Periodic review</div>
+        $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+    @endphp
+
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="times">
+                <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                <div>|</div>
+                <div>|</div>
+                <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
+            </div>
+
+            <div class="appointment-content">
+                <div class="appointment-header">
+                    <span>{{ $headerText }}</span>
+                </div>
+
+                <div class="appointment-main">
+                    <div class="appointment-info">
+                        <div class="appointment-sub">
+                            Doctor: {{ $doctorName ?: 'N/A' }}
+                        </div>
+
+                        <div class="appointment-sub">
+                            Child: {{ $appointment->child->name ?? 'N/A' }}
+                        </div>
+
+                        <div class="note">
+                            {{ $appointment->note }}
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+@empty
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="appointment-content">
+                <span class="mmm">No upcoming appointments</span>
+            </div>
+        </div>
+    </div>
+@endforelse
 
             <!-- navbar -->
           <div class="bottom-nav">
