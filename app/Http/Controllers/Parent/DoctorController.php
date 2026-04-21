@@ -44,45 +44,45 @@ class DoctorController extends Controller
         return view('parents.doctors', compact('doctors'));
     }
 
-    public function show($id)
-    {
-        $parent = ParentProfile::with(['children.doctors.user'])
-            ->where('user_id', auth()->id())
-            ->first();
+   public function show($id)
+{
+    $parent = ParentProfile::with(['children.doctors.user'])
+        ->where('user_id', auth()->id())
+        ->first();
 
-        if (!$parent) {
-            return back()->withErrors(['parent' => 'Parent profile not found.']);
-        }
-
-        $doctor = DoctorProfile::with('user')->findOrFail($id);
-
-        $isLinked = $parent->children->contains(function ($child) use ($doctor) {
-            return $child->doctors->contains('id', $doctor->id);
-        });
-
-        if (!$isLinked) {
-            abort(404);
-        }
-
-        $doctorName = trim(
-            ($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? '')
-        );
-
-        if ($doctorName === '') {
-            $doctorName = 'No Name';
-        }
-
-        $data = [
-            'id' => $doctor->id,
-            'name' => $doctorName,
-            'specialty' => $doctor->specialization ?? 'No Specialty',
-            'image' => 'doctor1.png',
-            'phone' => $doctor->user->phone ?? 'No Phone',
-            'bio' => $doctor->bio ?? 'No bio available',
-        ];
-
-        return view('parents.doctor-profile', ['doctor' => $data]);
+    if (!$parent) {
+        return back()->withErrors(['parent' => 'Parent profile not found.']);
     }
+
+    $doctor = DoctorProfile::with('user')->findOrFail($id);
+
+    $isLinked = $parent->children->contains(function ($child) use ($doctor) {
+        return $child->doctors->contains('id', $doctor->id);
+    });
+
+    if (!$isLinked) {
+        abort(404);
+    }
+
+    $doctorName = trim(
+        ($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? '')
+    );
+
+    if ($doctorName === '') {
+        $doctorName = 'No Name';
+    }
+
+    $data = [
+        'id' => $doctor->id,
+        'name' => $doctorName,
+        'specialty' => $doctor->specialization ?? 'No Specialty',
+        'image' => $doctor->user->profile_image ?? null,
+        'phone' => $doctor->user->phone ?? 'No Phone',
+        'bio' => $doctor->bio ?? 'No bio available',
+    ];
+
+    return view('parents.doctor-profile', ['doctor' => $data]);
+}
 
     public function chat($id)
     {

@@ -610,11 +610,12 @@
                 </button>
                 </div>
 
-                <img
-                    class="doctor-image"
-                    src="{{ asset('images/bg.png') }}"
-                    alt="Doctor"
-                >
+               <img
+                 
+                class="doctor-image"
+                src="{{ $doctor['image'] ? asset('storage/' . $doctor['image']) : asset('images/default-user.png') }}"
+                alt="Doctor"
+            >
 
                 <div class="name-box">
                     <div class="doctor-name">{{ $doctor['name'] ?? 'Dr. Alexander Bennett' }}</div>
@@ -635,12 +636,11 @@
                     </div>
                 </div>
 
-                <div class="phone-pill">091-xxx xxx x</div>
+                <div class="phone-pill">{{ $doctor['phone'] ?? 'No Phone' }}</div>
             </div>
 
             <div class="about-box">
-                The impact of hormonal imbalances on skin conditions,
-                specializing in acne, hirsutism, and other skin disorders.
+                {{ $doctor['bio'] ?? 'No bio available.' }}
             </div>
 
             <div class="schedule-card">

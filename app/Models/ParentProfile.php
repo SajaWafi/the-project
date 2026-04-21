@@ -20,15 +20,15 @@ class ParentProfile extends Model
     {
         return $this->hasMany(Child::class, 'parent_id');
     }
-<<<<<<< HEAD
+
 
     public function appointments()
     {
         return $this->hasMany(Appointment::class, 'parent_id');
-=======
+    }
     public function child()
     {
         return $this->hasOne(\App\Models\ParentModule\Child::class, 'parent_id');
->>>>>>> 32430d76775c2256dea2acdf9252796e2db0ae09
+
     }
 }
