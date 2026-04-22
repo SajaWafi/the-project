@@ -257,7 +257,18 @@
         <div id="parentsList">
     @forelse($parents as $parent)
         <div class="parent-card">
-            <img src="{{ asset('images/' . ($parent['image'] ?? 'p1.png')) }}">
+            @php
+    $parentImage = !empty($parent['image'])
+        ? asset('storage/' . ltrim($parent['image'], '/'))
+        : asset('images/default-user.png');
+@endphp
+
+<img
+    src="{{ $parentImage }}"
+    alt="Parent"
+    onerror="this.onerror=null;this.src='{{ asset('images/default-user.png') }}';"
+    style="width:38px; height:38px; border-radius:50%; object-fit:cover;"
+>
 
             <div class="info">
                 <div class="name">{{ $parent['name'] }}</div>

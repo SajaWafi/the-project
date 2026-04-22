@@ -180,9 +180,15 @@ body {
     </div>
 
     <div class="list">
-        @foreach($doctors as $doc)
-        <div class="card">
-            <img src="{{ asset('pics/bg.png') }}">
+            @foreach($doctors as $doc)
+            <div class="card">
+                @php
+        $doctorImage = !empty($doc->user->profile_image)
+            ? asset('storage/' . $doc->user->profile_image)
+            : asset('images/default-user.png');
+    @endphp
+
+    <img src="{{ $doctorImage }}" class="doctor-img">
 
             <div class="card-info">
                 <div class="name">{{ $doc['name'] }}</div>

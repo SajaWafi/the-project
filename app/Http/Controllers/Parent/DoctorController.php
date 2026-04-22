@@ -155,4 +155,5 @@ public function show($id)
 
         return view('parents.chat', ['doctor' => $data]);
     }
+    
 }

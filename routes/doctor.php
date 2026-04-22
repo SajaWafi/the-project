@@ -7,12 +7,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\User;
-use App\Models\Child;
 use App\Models\Appointment;
-use App\Models\Workplace;
 use App\Models\DoctorProfile;
 use App\Models\ParentProfile;
+use App\Models\Workplace;
 
 use App\Http\Controllers\Doctor\ParentController;
 use App\Http\Controllers\Doctor\ChatController;
@@ -94,6 +92,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/chat/{parentId}', [ChatController::class, 'show'])->name('chat');
     Route::get('/chat/{parentId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
     Route::post('/chat/{parentId}/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::delete('/chat/message/{messageId}', [ChatController::class, 'deleteMessage'])->name('chat.message.delete');
 
 
     /*
@@ -124,7 +123,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             ->orderBy('from_minute')
             ->get();
 
-        return view('doctor.Appointments', compact('appointments'));
+        return view('doctor.appointments', compact('appointments'));
     })->name('appointments');
 
     Route::get('/add-appointment', function () {
@@ -134,11 +133,15 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
             abort(404, 'Doctor profile not found.');
         }
 
+
+        $parents = ParentProfile::with('user', 'children')->get();
+
         $parents = ParentProfile::with(['user', 'children'])
             ->whereHas('children.doctors', function ($query) use ($doctorProfile) {
                 $query->where('doctor_profiles.id', $doctorProfile->id);
             })
             ->get();
+
 
         $workplaces = Workplace::where('doctor_id', $doctorProfile->id)->get();
 
@@ -207,9 +210,11 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/edit-appointment/{id}', function ($id) {
         $doctorProfile = auth()->user()->doctorProfile;
 
+
         if (!$doctorProfile) {
             abort(404, 'Doctor profile not found.');
         }
+
 
         $appointment = Appointment::where('doctor_id', $doctorProfile->id)
             ->findOrFail($id);
@@ -240,6 +245,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
                 'doctor' => 'Doctor profile not found.'
             ]);
         }
+
 
         $appointment = Appointment::where('doctor_id', $doctorProfile->id)
             ->findOrFail($id);
@@ -390,6 +396,36 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
     /*
     |--------------------------------------------------------------------------
+    | Change Password
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/change-password', function () {
+        return view('doctor.change-password');
+    })->name('password');
+
+    Route::post('/change-password', function (Request $request) {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!$user || !Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors([
+                'current_password' => 'Current password is incorrect'
+            ]);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Password updated successfully');
+    })->name('password.update');
+
+    /*
+    |--------------------------------------------------------------------------
     | Workplace Timing
     |--------------------------------------------------------------------------
     */
@@ -508,6 +544,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     })->name('workplace.delete');
 
 
+
+
     /*
     |--------------------------------------------------------------------------
     | Password
@@ -537,6 +575,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
         return back()->with('success', 'Password updated successfully');
     })->name('password.update');
+
 
 
     /*
@@ -569,6 +608,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
     Route::delete('/delete-account', function () {
         $user = Auth::user();
+
+
 
         DB::beginTransaction();
 

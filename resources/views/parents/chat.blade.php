@@ -81,13 +81,21 @@
         }
 
         .back-btn {
-            text-decoration: none;
-            color: #4b79ff;
-            font-size: 28px;
-            line-height: 1;
+            position: absolute;
+            left: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
         }
 
         .doctor-avatar {
@@ -96,6 +104,7 @@
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
+            margin-left: 26px;
         }
 
         .header-info {
@@ -188,7 +197,17 @@
             scroll-behavior: smooth;
         }
 
+        .chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.14);
+            border-radius: 10px;
+        }
+
         .message-row {
+            position: relative;
             margin-bottom: 18px;
             display: flex;
             flex-direction: column;
@@ -209,17 +228,16 @@
             font-size: 14px;
             line-height: 1.45;
             color: #6a7482;
-            position: relative;
             word-wrap: break-word;
         }
 
-
-          .bubble.me {
-            background:  #c9efe9;
+        .bubble.me {
+            background: #c9efe9;
             border-bottom-right-radius: 8px;
         }
+
         .bubble.other {
-            background:#cfe0ff;
+            background: #cfe0ff;
             border-bottom-left-radius: 8px;
         }
 
@@ -229,68 +247,56 @@
             margin-top: 6px;
         }
 
-        .voice-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #c9efe9;
-            padding: 8px 12px;
-            border-radius: 18px;
-            width: 215px;
+        .image-message {
+            max-width: 170px;
         }
 
-        .small-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+        .image-message.me {
+            align-self: flex-end;
+        }
+
+        .image-message.other {
+            align-self: flex-start;
+        }
+
+        .chat-image {
+            width: 100%;
+            max-width: 170px;
+            border-radius: 14px;
+            display: block;
             object-fit: cover;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+            cursor: pointer;
         }
 
-        .play-btn {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 2px solid #6f6f6f;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-            color: #6f6f6f;
-            flex-shrink: 0;
-        }
-
-        .audio-bar {
-            flex: 1;
-            height: 3px;
-            background: #111;
-            border-radius: 10px;
-            position: relative;
-        }
-
-        .audio-bar::after {
-            content: "";
-            width: 8px;
-            height: 8px;
-            background: #111;
-            border-radius: 50%;
+        .message-action-menu {
             position: absolute;
-            top: 50%;
-            left: 68%;
-            transform: translate(-50%, -50%);
+            top: -6px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            padding: 6px;
+            display: none;
+            z-index: 20;
         }
 
-        .audio-time {
-            font-size: 11px;
-            color: #8c8c8c;
+        .message-action-menu.show {
+            display: block;
         }
 
-        .typing {
-            font-size: 15px;
-            color: #666;
-            padding: 0 18px 8px;
-            position: relative;
-            z-index: 2;
-            flex-shrink: 0;
+        .message-action-btn {
+            border: none;
+            background: transparent;
+            color: #ff5c5c;
+            font-size: 13px;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .message-action-btn:hover {
+            background: #fff1f1;
         }
 
         .input-bar-wrap {
@@ -320,6 +326,14 @@
             cursor: pointer;
         }
 
+        .input-preview-wrap {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+
         .message-input {
             flex: 1;
             height: 38px;
@@ -330,6 +344,50 @@
             padding: 0 18px;
             font-size: 14px;
             color: #666;
+            width: 100%;
+        }
+
+        .message-input.has-file {
+            color: transparent;
+            caret-color: transparent;
+        }
+
+        .message-input.has-file::placeholder {
+            color: transparent;
+        }
+
+        .selected-file-preview {
+            position: absolute;
+            left: 18px;
+            right: 42px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+            display: none;
+        }
+
+        .clear-file-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background: #ff6b6b;
+            color: white;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
         }
 
         .send-btn {
@@ -346,34 +404,55 @@
             flex-shrink: 0;
         }
 
-        .chat-area::-webkit-scrollbar {
-            width: 6px;
+        .image-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
         }
 
-        .chat-area::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.14);
-            border-radius: 10px;
+        .image-modal.show {
+            display: flex;
         }
-        .back-btn {
+
+        .image-modal img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+        }
+
+        .image-modal-close {
             position: absolute;
-            left: 0;
-            background: transparent;
+            top: 18px;
+            right: 22px;
+            background: rgba(255,255,255,0.15);
+            color: white;
             border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 22px;
             cursor: pointer;
-            color: #2f80ed;
-            padding: 6px;
-        }
-
-        .back-btn svg {
-            width: 26px;
-            height: 26px;
         }
     </style>
 </head>
 <body>
+    @if ($errors->any())
+        <div style="color:red; font-size:13px; padding:8px;">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
     @php
         $doctorName = $doctor['name'] ?? 'Doctor';
-        $doctorImage = asset('pics/' . ($doctor['image'] ?? 'doctor3.png'));
+        $doctorImage = !empty($doctor['image'])
+            ? asset('storage/' . $doctor['image'])
+            : asset('images/default-user.png');
     @endphp
 
     <div class="phone">
@@ -388,15 +467,11 @@
                 </svg>
             </button>
 
-            <img
-                src="{{ $doctorImage }}"
-                alt="Doctor"
-                class="doctor-avatar"
-            >
+            <img src="{{ $doctorImage }}" alt="Doctor" class="doctor-avatar">
 
             <div class="header-info">
                 <div class="doctor-name">{{ $doctorName }}</div>
-                <div class="online-status" id="doctorStatus">• Online</div>
+                <div class="online-status">• Online</div>
             </div>
 
             <div class="menu-wrapper">
@@ -412,41 +487,84 @@
             </div>
         </div>
 
- <div class="chat-area" id="chatArea">
-    @forelse(($messages ?? []) as $message)
-        @php
-            $isMe = $message->user_id == auth()->id();
-        @endphp
+        <div class="chat-area" id="chatArea">
+            @forelse(($messages ?? []) as $message)
+                @php
+                    $isMe = $message->user_id == auth()->id();
+                @endphp
 
-        <div class="message-row {{ $isMe ? 'me' : 'other' }}">
-            @if(($message->type ?? 'text') === 'text')
-                <div class="bubble {{ $isMe ? 'me' : 'other' }}">
-                    {{ $message->message }}
+                <div class="message-row {{ $isMe ? 'me' : 'other' }}" data-message-id="{{ $message->id }}">
+                    @if(($message->type ?? 'text') === 'text')
+                        <div class="bubble {{ $isMe ? 'me' : 'other' }}"
+                            @if($isMe)
+                                oncontextmenu="openMessageMenu(event, this)"
+                                ontouchstart="startPress(event, this)"
+                                ontouchend="cancelPress()"
+                            @endif
+                        >
+                            {{ $message->message }}
+                        </div>
+
+                    @elseif(($message->type ?? '') === 'image')
+                        <div class="image-message {{ $isMe ? 'me' : 'other' }}"
+                            @if($isMe)
+                                oncontextmenu="openMessageMenu(event, this)"
+                                ontouchstart="startPress(event, this)"
+                                ontouchend="cancelPress()"
+                            @endif
+                        >
+                            <img
+                                src="{{ asset('storage/' . $message->file_path) }}"
+                                alt="image"
+                                class="chat-image"
+                                onclick="openImageModal(this.src)"
+                            >
+                        </div>
+
+                    @elseif(($message->type ?? '') === 'file')
+                        <div class="bubble {{ $isMe ? 'me' : 'other' }}"
+                            @if($isMe)
+                                oncontextmenu="openMessageMenu(event, this)"
+                                ontouchstart="startPress(event, this)"
+                                ontouchend="cancelPress()"
+                            @endif
+                        >
+                            <a
+                                href="{{ asset('storage/' . $message->file_path) }}"
+                                target="_blank"
+                                style="color:inherit; text-decoration:underline; word-break: break-all;"
+                            >
+                                {{ basename($message->file_path) }}
+                            </a>
+                        </div>
+                    @endif
+
+                    @if($isMe)
+                        <div class="message-action-menu">
+                            <button type="button" class="message-action-btn" onclick="deleteMessage({{ $message->id }}, this)">
+                                Delete
+                            </button>
+                        </div>
+                    @endif
+
+                    <div class="time">{{ $message->created_at?->format('H:i') }}</div>
                 </div>
-
-            @elseif(($message->type ?? '') === 'image')
-                <div class="bubble {{ $isMe ? 'me' : 'other' }}">
-                    <img src="{{ asset('storage/' . $message->file_path) }}" style="max-width:140px; border-radius:12px;">
+            @empty
+                <div class="empty-chat" id="emptyChat" style="text-align:center; color:#777; margin-top:20px;">
+                    No messages yet. Start the conversation.
                 </div>
-
-            @elseif(($message->type ?? '') === 'file')
-                <div class="bubble {{ $isMe ? 'me' : 'other' }}">
-                    <a href="{{ asset('storage/' . $message->file_path) }}" target="_blank" style="color:inherit; text-decoration:underline;">
-                        {{ basename($message->file_path) }}
-                    </a>
-                </div>
-            @endif
-
-            <div class="time">{{ $message->created_at?->format('H:i') }}</div>
+            @endforelse
         </div>
-    @empty
-        <div class="empty-chat" id="emptyChat" style="text-align:center; color:#777; margin-top:20px;">
-            No messages yet. Start the conversation.
-        </div>
-    @endforelse
-</div>
 
-       <form class="input-bar-wrap" id="chatForm" enctype="multipart/form-data">
+        <form
+            class="input-bar-wrap"
+            id="chatForm"
+            method="POST"
+            action="{{ route('parents.chat.send', ['doctorId' => $doctor['id']]) }}"
+            enctype="multipart/form-data"
+        >
+            @csrf
+
             <input
                 type="file"
                 id="fileInput"
@@ -455,231 +573,372 @@
                 accept="image/*,.pdf,.doc,.docx,.txt"
             >
 
-            <button type="button" class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
-
-            <input
-                type="text"
-                class="message-input"
-                id="messageInput"
-                placeholder="Write Here..."
-                autocomplete="off"
+            <button
+                type="button"
+                class="icon-btn"
+                onclick="document.getElementById('fileInput').click()"
             >
+                📎
+            </button>
+
+            <div class="input-preview-wrap">
+                <input
+                    type="text"
+                    name="message"
+                    class="message-input"
+                    id="messageInput"
+                    placeholder="Write Here..."
+                    autocomplete="off"
+                >
+                <div id="selectedFilePreview" class="selected-file-preview"></div>
+                <button type="button" id="clearSelectedFile" class="clear-file-btn">×</button>
+            </div>
 
             <button type="button" class="icon-btn" id="voiceBtn">🎤</button>
             <button type="submit" class="send-btn">➤</button>
         </form>
     </div>
 
-<script>
-    let muteUntil = null;
+    <div class="image-modal" id="imageModal">
+        <button class="image-modal-close" type="button" onclick="closeImageModal()">×</button>
+        <img id="imageModalPreview" src="" alt="Preview">
+    </div>
 
-    function toggleMuteMenu() {
-        const menu = document.getElementById('muteMenu');
-        menu.classList.toggle('show');
-    }
+    <script>
+        let muteUntil = null;
+        let pressTimer = null;
 
-    function muteNotifications(duration) {
-        const now = new Date();
-
-        if (duration === '1hour') {
-            muteUntil = new Date(now.getTime() + 60 * 60 * 1000);
-        } else if (duration === '1day') {
-            muteUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        } else if (duration === '1month') {
-            muteUntil = new Date(now);
-            muteUntil.setMonth(muteUntil.getMonth() + 1);
-        } else if (duration === 'forever') {
-            muteUntil = 'forever';
+        function toggleMuteMenu() {
+            const menu = document.getElementById('muteMenu');
+            menu.classList.toggle('show');
         }
 
-        localStorage.setItem(
-            'parentDoctorMuteUntil',
-            muteUntil === 'forever' ? 'forever' : muteUntil.toISOString()
-        );
+        function muteNotifications(duration) {
+            const now = new Date();
 
-        document.getElementById('muteMenu').classList.remove('show');
-        updateDoctorStatus();
-    }
+            if (duration === '1hour') {
+                muteUntil = new Date(now.getTime() + 60 * 60 * 1000);
+            } else if (duration === '1day') {
+                muteUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            } else if (duration === '1month') {
+                muteUntil = new Date(now);
+                muteUntil.setMonth(muteUntil.getMonth() + 1);
+            } else if (duration === 'forever') {
+                muteUntil = 'forever';
+            }
 
-    function unmuteNotifications() {
-        muteUntil = null;
-        localStorage.removeItem('parentDoctorMuteUntil');
-        document.getElementById('muteMenu').classList.remove('show');
-        updateDoctorStatus();
-    }
+            localStorage.setItem(
+                'parentDoctorMuteUntil',
+                muteUntil === 'forever' ? 'forever' : muteUntil.toISOString()
+            );
 
-    function isMuted() {
-        const savedMute = localStorage.getItem('parentDoctorMuteUntil');
-
-        if (!savedMute) return false;
-        if (savedMute === 'forever') return true;
-
-        const muteDate = new Date(savedMute);
-        return new Date() < muteDate;
-    }
-
-    function updateDoctorStatus() {
-        const status = document.getElementById('doctorStatus');
-
-        if (isMuted()) {
-            status.textContent = '• Notifications muted';
-            status.style.color = '#ff9500';
-        } else {
-            status.textContent = '• Online';
-            status.style.color = '#34c759';
+            document.getElementById('muteMenu').classList.remove('show');
+            updateDoctorStatus();
         }
-    }
 
-    function scrollChatToBottom() {
-        const chatArea = document.getElementById('chatArea');
-        chatArea.scrollTop = chatArea.scrollHeight;
-    }
+        function unmuteNotifications() {
+            muteUntil = null;
+            localStorage.removeItem('parentDoctorMuteUntil');
+            document.getElementById('muteMenu').classList.remove('show');
+            updateDoctorStatus();
+        }
 
-    function createTextMessage(text, timeText, isMe = true) {
-        const chatArea = document.getElementById('chatArea');
+        function isMuted() {
+            const savedMute = localStorage.getItem('parentDoctorMuteUntil');
 
-        const row = document.createElement('div');
-        row.className = 'message-row ' + (isMe ? 'me' : 'other');
+            if (!savedMute) return false;
+            if (savedMute === 'forever') return true;
 
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble ' + (isMe ? 'me' : 'other');
-        bubble.textContent = text;
+            const muteDate = new Date(savedMute);
+            return new Date() < muteDate;
+        }
 
-        const time = document.createElement('div');
-        time.className = 'time';
-        time.textContent = timeText;
+        function updateDoctorStatus() {
+            const status = document.querySelector('.online-status');
+            if (!status) return;
 
-        row.appendChild(bubble);
-        row.appendChild(time);
-        chatArea.appendChild(row);
-    }
+            if (isMuted()) {
+                status.textContent = '• Notifications muted';
+                status.style.color = '#ff9500';
+            } else {
+                status.textContent = '• Online';
+                status.style.color = '#34c759';
+            }
+        }
 
-    function createImageMessage(imageUrl, timeText, isMe = true) {
-        const chatArea = document.getElementById('chatArea');
+        function scrollChatToBottom() {
+            const chatArea = document.getElementById('chatArea');
+            if (chatArea) {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
 
-        const row = document.createElement('div');
-        row.className = 'message-row ' + (isMe ? 'me' : 'other');
+        function openImageModal(src) {
+            const modal = document.getElementById('imageModal');
+            const preview = document.getElementById('imageModalPreview');
+            preview.src = src;
+            modal.classList.add('show');
+        }
 
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble ' + (isMe ? 'me' : 'other');
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            const preview = document.getElementById('imageModalPreview');
+            modal.classList.remove('show');
+            preview.src = '';
+        }
 
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.style.maxWidth = '140px';
-        img.style.borderRadius = '12px';
+        function clearSelectedFile() {
+            const input = document.getElementById('messageInput');
+            const fileInput = document.getElementById('fileInput');
+            const filePreview = document.getElementById('selectedFilePreview');
+            const clearBtn = document.getElementById('clearSelectedFile');
 
-        bubble.appendChild(img);
+            fileInput.value = '';
+            filePreview.textContent = '';
+            filePreview.style.display = 'none';
+            clearBtn.style.display = 'none';
+            input.classList.remove('has-file');
+        }
 
-        const time = document.createElement('div');
-        time.className = 'time';
-        time.textContent = timeText;
+        function closeAllMessageMenus() {
+            document.querySelectorAll('.message-action-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
 
-        row.appendChild(bubble);
-        row.appendChild(time);
-        chatArea.appendChild(row);
-    }
+        function openMessageMenu(event, element) {
+            event.preventDefault();
+            closeAllMessageMenus();
 
-    function createFileMessage(fileUrl, fileName, timeText, isMe = true) {
-        const chatArea = document.getElementById('chatArea');
+            const row = element.closest('.message-row');
+            if (!row) return;
 
-        const row = document.createElement('div');
-        row.className = 'message-row ' + (isMe ? 'me' : 'other');
+            const menu = row.querySelector('.message-action-menu');
+            if (menu) {
+                menu.classList.add('show');
+            }
+        }
 
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble ' + (isMe ? 'me' : 'other');
+        function startPress(event, element) {
+            pressTimer = setTimeout(() => {
+                openMessageMenu(event, element);
+            }, 500);
+        }
 
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.target = '_blank';
-        link.textContent = fileName || 'Open file';
-        link.style.color = 'inherit';
-        link.style.textDecoration = 'underline';
+        function cancelPress() {
+            clearTimeout(pressTimer);
+        }
 
-        bubble.appendChild(link);
+        function createTextMessage(text, timeText) {
+            const chatArea = document.getElementById('chatArea');
 
-        const time = document.createElement('div');
-        time.className = 'time';
-        time.textContent = timeText;
+            const row = document.createElement('div');
+            row.className = 'message-row me';
 
-        row.appendChild(bubble);
-        row.appendChild(time);
-        chatArea.appendChild(row);
-    }
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble me';
+            bubble.textContent = text;
 
-    async function sendMessage(event) {
-        event.preventDefault();
+            const time = document.createElement('div');
+            time.className = 'time';
+            time.textContent = timeText;
 
-        const input = document.getElementById('messageInput');
-        const fileInput = document.getElementById('fileInput');
-        const text = input.value.trim();
-        const file = fileInput.files[0];
+            row.appendChild(bubble);
+            row.appendChild(time);
+            chatArea.appendChild(row);
+        }
 
-        if (!text && !file) return;
+        function createImageMessage(imageUrl, timeText) {
+            const chatArea = document.getElementById('chatArea');
+
+            const row = document.createElement('div');
+            row.className = 'message-row me';
+
+            const imageWrap = document.createElement('div');
+            imageWrap.className = 'image-message me';
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.className = 'chat-image';
+            img.onclick = function () {
+                openImageModal(imageUrl);
+            };
+
+            imageWrap.appendChild(img);
+
+            const time = document.createElement('div');
+            time.className = 'time';
+            time.textContent = timeText;
+
+            row.appendChild(imageWrap);
+            row.appendChild(time);
+            chatArea.appendChild(row);
+        }
+
+        function createFileMessage(fileUrl, fileName, timeText) {
+            const chatArea = document.getElementById('chatArea');
+
+            const row = document.createElement('div');
+            row.className = 'message-row me';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble me';
+
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.target = '_blank';
+            link.textContent = fileName || 'Open file';
+            link.style.color = 'inherit';
+            link.style.textDecoration = 'underline';
+            link.style.wordBreak = 'break-all';
+
+            bubble.appendChild(link);
+
+            const time = document.createElement('div');
+            time.className = 'time';
+            time.textContent = timeText;
+
+            row.appendChild(bubble);
+            row.appendChild(time);
+            chatArea.appendChild(row);
+        }
+
+     async function sendMessage(event) {
+    event.preventDefault();
+
+    const chatForm = document.getElementById('chatForm');
+    const input = document.getElementById('messageInput');
+    const fileInput = document.getElementById('fileInput');
+
+    const text = input.value.trim();
+    const file = fileInput.files[0];
+
+    if (!text && !file) return;
+
+    try {
+        const formData = new FormData(chatForm);
+
+        const response = await fetch(chatForm.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+
+        const raw = await response.text();
+        let data;
 
         try {
-            const formData = new FormData();
-            formData.append('message', text);
-            if (file) {
-                formData.append('file', file);
-            }
-
-            const response = await fetch("{{ route('parents.chat.send', $doctor['id']) }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json",
-                    "X-Requested-With": "XMLHttpRequest"
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to send message');
-            }
-
-            const emptyChat = document.getElementById('emptyChat');
-            if (emptyChat) {
-                emptyChat.remove();
-            }
-
-            if (data.type === 'image') {
-                createImageMessage(data.file_url, data.time, true);
-            } else if (data.type === 'file') {
-                createFileMessage(data.file_url, data.file_name, data.time, true);
-            } else {
-                createTextMessage(data.message ?? text, data.time ?? '', true);
-            }
-
-            input.value = '';
-            fileInput.value = '';
-            scrollChatToBottom();
-        } catch (error) {
-            alert(error.message || 'Failed to send message.');
-            console.error(error);
+            data = JSON.parse(raw);
+        } catch {
+            throw new Error(raw);
         }
-    }
 
-    document.getElementById('chatForm').addEventListener('submit', sendMessage);
-
-    document.getElementById('voiceBtn').addEventListener('click', function () {
-        alert('Voice messages will be added later.');
-    });
-
-    document.addEventListener('click', function (event) {
-        const menu = document.getElementById('muteMenu');
-        const button = document.querySelector('.menu-btn');
-
-        if (!menu.contains(event.target) && !button.contains(event.target)) {
-            menu.classList.remove('show');
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to send message');
         }
-    });
 
-    window.onload = function () {
-        updateDoctorStatus();
+        const emptyChat = document.getElementById('emptyChat');
+        if (emptyChat) emptyChat.remove();
+
+        if (data.type === 'image') {
+            createImageMessage(data.file_url, data.time);
+        } else if (data.type === 'file') {
+            createFileMessage(data.file_url, data.file_name, data.time);
+        } else {
+            createTextMessage(data.message ?? text, data.time ?? '');
+        }
+
+        input.value = '';
+        clearSelectedFile();
         scrollChatToBottom();
-    };
-</script>
+
+    } catch (error) {
+        alert(error.message || 'Failed to send message.');
+        console.error(error);
+    }
+}
+
+        async function deleteMessage(messageId, button) {
+            try {
+                const url = "{{ route('parents.chat.message.delete', ['messageId' => '__ID__']) }}".replace('__ID__', messageId);
+
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to delete message');
+                }
+
+                const row = button.closest('.message-row');
+                if (row) row.remove();
+
+                closeAllMessageMenus();
+            } catch (error) {
+                alert(error.message || 'Failed to delete message.');
+                console.error(error);
+            }
+        }
+
+        document.getElementById('chatForm').addEventListener('submit', sendMessage);
+
+        document.getElementById('fileInput').addEventListener('change', function () {
+            const input = document.getElementById('messageInput');
+            const filePreview = document.getElementById('selectedFilePreview');
+            const clearBtn = document.getElementById('clearSelectedFile');
+
+            if (this.files[0]) {
+                input.value = '';
+                filePreview.textContent = this.files[0].name;
+                filePreview.style.display = 'block';
+                clearBtn.style.display = 'flex';
+                input.classList.add('has-file');
+            } else {
+                clearSelectedFile();
+            }
+        });
+
+        document.getElementById('clearSelectedFile').addEventListener('click', clearSelectedFile);
+
+        document.getElementById('voiceBtn').addEventListener('click', function () {
+            alert('Voice messages will be added later.');
+        });
+
+        document.getElementById('imageModal').addEventListener('click', function (e) {
+            if (e.target.id === 'imageModal') {
+                closeImageModal();
+            }
+        });
+
+        document.addEventListener('click', function (event) {
+            const muteMenu = document.getElementById('muteMenu');
+            const muteBtn = document.querySelector('.menu-btn');
+
+            if (muteMenu && muteBtn && !muteMenu.contains(event.target) && !muteBtn.contains(event.target)) {
+                muteMenu.classList.remove('show');
+            }
+
+            if (!event.target.closest('.message-action-menu') &&
+                !event.target.closest('.bubble') &&
+                !event.target.closest('.image-message')) {
+                closeAllMessageMenus();
+            }
+        });
+
+        window.onload = function () {
+            updateDoctorStatus();
+            scrollChatToBottom();
+        };
+    </script>
 </body>
 </html>
