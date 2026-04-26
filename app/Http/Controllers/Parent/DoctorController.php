@@ -156,4 +156,26 @@ public function show($id)
         return view('parents.chat', ['doctor' => $data]);
     }
     
+    public function delete($doctorId)
+{
+    $parent = \App\Models\ParentProfile::with('children.doctors')
+        ->where('user_id', auth()->id())
+        ->first();
+
+    if (!$parent) {
+        return back()->withErrors(['parent' => 'Parent profile not found.']);
+    }
+
+    $doctor = \App\Models\DoctorProfile::findOrFail($doctorId);
+
+    foreach ($parent->children as $child) {
+        if ($child->doctors->contains('id', $doctor->id)) {
+            $child->doctors()->detach($doctor->id);
+        }
+    }
+
+    return redirect()
+        ->route('parents.doctors')
+        ->with('success', 'Doctor removed successfully.');
+}
 }
