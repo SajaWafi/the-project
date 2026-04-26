@@ -11,6 +11,7 @@ use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use App\Models\ParentProfile;
 use App\Models\Workplace;
+use App\Models\DoctorRequest;
 
 use App\Http\Controllers\Doctor\ParentController;
 use App\Http\Controllers\Doctor\ChatController;
@@ -545,40 +546,6 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     })->name('workplace.delete');
 
 
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Password
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/change-password', function () {
-        return view('doctor.change-password');
-    })->name('password');
-
-    Route::post('/change-password', function (Request $request) {
-        $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|min:6|confirmed',
-        ]);
-
-        $user = auth()->user();
-
-        if (!$user || !Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors([
-                'current_password' => 'Current password is incorrect'
-            ]);
-        }
-
-        $user->password = Hash::make($request->new_password);
-        $user->save();
-
-        return back()->with('success', 'Password updated successfully');
-    })->name('password.update');
-
-
-
     /*
     |--------------------------------------------------------------------------
     | Alert Sounds
@@ -643,7 +610,47 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
     Route::get('/children/search', [ChildController::class, 'searchPage'])->name('children.search');
     Route::get('/children/find', [ChildController::class, 'find'])->name('children.find');
-    Route::post('/children/{id}/attach', [ChildController::class, 'attach'])->name('children.attach');
+
+    Route::post('/children/{id}/attach', function ($id) {
+        $doctor = auth()->user()->doctorProfile;
+
+        if (!$doctor) {
+            return back()->withErrors(['doctor' => 'Doctor profile not found.']);
+        }
+
+        $child = \App\Models\Child::findOrFail($id);
+        $parent = \App\Models\ParentProfile::findOrFail($child->parent_id);
+
+        $alreadyLinked = DB::table('child_doctor')
+            ->where('child_id', $child->id)
+            ->where('doctor_id', $doctor->id)
+            ->exists();
+
+        if ($alreadyLinked) {
+            return back()->withErrors([
+                'link' => 'This parent is already linked to this doctor.'
+            ]);
+        }
+
+        $pendingRequest = DoctorRequest::where('doctor_id', $doctor->id)
+            ->where('parent_id', $parent->id)
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($pendingRequest) {
+            return back()->withErrors([
+                'request' => 'A pending request has already been sent.'
+            ]);
+        }
+
+        DoctorRequest::create([
+            'doctor_id' => $doctor->id,
+            'parent_id' => $parent->id,
+            'status' => 'pending',
+        ]);
+
+        return back()->with('success', 'Request sent successfully.');
+    })->name('children.attach');
 
 
     /*

@@ -14,7 +14,7 @@
 }
 
 body {
-    background: #111;
+    background: #ffffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -221,19 +221,38 @@ body {
         </div>
 
         <div class="list">
-            <div class="card">
-                <img src="{{ asset('pics/bg.png') }}">
+            @forelse($requests as $request)
+                <div class="card">
+                    <img src="{{ $request->doctor->user->profile_image ? asset('storage/' . $request->doctor->user->profile_image) : asset('images/default-user.png') }}">
 
-                <div class="card-info">
-                    <div class="name">Dr. Alexander Bennett</div>
-                    <div class="specialty">Is sending request</div>
+                    <div class="card-info">
+                        <div class="name">
+                            Dr. {{ $request->doctor->user->first_name ?? '' }} {{ $request->doctor->user->last_name ?? '' }}
+                        </div>
 
-                    <div class="actions">
-                        <button class="btn-icon" type="button">accept</button>
-                        <button class="btn-icon" type="button">reject</button>
+                        <div class="specialty">Is sending request</div>
+
+                        <div class="actions">
+                            <form action="{{ route('parents.requests.accept', $request->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button class="btn-icon" type="submit">accept</button>
+                            </form>
+
+                            <form action="{{ route('parents.requests.reject', $request->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button class="btn-icon" type="submit">reject</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @empty
+                <div class="card">
+                    <div class="card-info">
+                        <div class="name">No requests</div>
+                        <div class="specialty">There are no pending requests right now</div>
+                    </div>
+                </div>
+            @endforelse   
         </div>
 
     </div>

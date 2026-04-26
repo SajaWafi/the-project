@@ -329,7 +329,10 @@
             </div>
 
             <button type="submit" class="btn-login">Login</button>
-
+    <!--
+    
+    
+    
             <div class="divider">or</div>
 
             <a href="#" class="google-btn">
@@ -341,6 +344,8 @@
                 </svg>
                 <span>Login with Google</span>
             </a>
+    
+    -->
         </form>
 
         <div class="bottom-text">
