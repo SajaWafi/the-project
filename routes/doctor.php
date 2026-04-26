@@ -93,7 +93,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/chat/{parentId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
     Route::post('/chat/{parentId}/send', [ChatController::class, 'send'])->name('chat.send');
     Route::delete('/chat/message/{messageId}', [ChatController::class, 'deleteMessage'])->name('chat.message.delete');
-
+    Route::post('/chat/{parentId}/send-audio', [ChatController::class, 'sendAudio'])
+    ->name('chat.sendAudio');
 
     /*
     |--------------------------------------------------------------------------

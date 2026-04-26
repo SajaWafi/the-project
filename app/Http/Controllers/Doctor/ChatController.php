@@ -133,6 +133,60 @@ class ChatController extends Controller
         }
     }
 
+    public function sendAudio(Request $request, $parentId)
+    {
+        try {
+            $request->validate([
+                'audio' => 'required|file|max:10240',
+            ]);
+
+            $doctor = DoctorProfile::where('user_id', auth()->id())->first();
+
+            if (!$doctor) {
+                return response()->json(['message' => 'Doctor profile not found.'], 403);
+            }
+
+            $parent = ParentProfile::with('children.doctors')->findOrFail($parentId);
+
+            $linkedChild = $parent->children->first(function ($child) use ($doctor) {
+                return $child->doctors->contains('id', $doctor->id);
+            });
+
+            if (!$linkedChild) {
+                return response()->json(['message' => 'Parent is not linked to this doctor.'], 404);
+            }
+
+            $conversation = Conversation::firstOrCreate([
+                'doctor_id' => $doctor->id,
+                'parent_id' => $parent->id,
+                'child_id'  => $linkedChild->id,
+            ]);
+
+            $audioFile = $request->file('audio');
+            $filePath = $audioFile->store('chat-audio', 'public');
+
+            $message = Message::create([
+                'conversation_id' => $conversation->id,
+                'user_id' => auth()->id(),
+                'type' => 'audio',
+                'message' => null,
+                'file_path' => $filePath,
+                'read_at' => null,
+            ]);
+
+            return response()->json([
+                'id' => $message->id,
+                'type' => 'audio',
+                'file_url' => asset('storage/' . $filePath),
+                'time' => $message->created_at->format('H:i'),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function deleteMessage($messageId)
     {
         $doctor = DoctorProfile::where('user_id', auth()->id())->first();

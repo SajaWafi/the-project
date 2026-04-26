@@ -222,12 +222,12 @@
         }
 
         .bubble {
-            max-width: 68%;
+            max-width: 72%;
             padding: 14px 16px;
             border-radius: 22px;
             font-size: 14px;
             line-height: 1.45;
-            color: #6a7482;
+            color: #55606f;
             word-wrap: break-word;
         }
 
@@ -299,6 +299,41 @@
             background: #fff1f1;
         }
 
+        .audio-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 220px;
+            max-width: 240px;
+            padding: 10px 12px;
+            border-radius: 18px;
+        }
+
+        .audio-card.me {
+            background: #c9efe9;
+        }
+
+        .audio-card.other {
+            background: #cfe0ff;
+        }
+
+        .audio-play-btn {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 50%;
+            background: #fff;
+            color: #2f80ed;
+            cursor: pointer;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .audio-player {
+            width: 170px;
+            height: 34px;
+        }
+
         .input-bar-wrap {
             min-height: 84px;
             background: #c9defa;
@@ -324,6 +359,12 @@
             font-size: 18px;
             flex-shrink: 0;
             cursor: pointer;
+        }
+
+        .icon-btn.recording {
+            background: #ff4d4f;
+            color: #fff;
+            border-color: #ff4d4f;
         }
 
         .input-preview-wrap {
@@ -404,6 +445,39 @@
             flex-shrink: 0;
         }
 
+        .recording-status {
+            position: absolute;
+            left: 58px;
+            bottom: 92px;
+            background: rgba(255,255,255,0.95);
+            color: #444;
+            padding: 8px 12px;
+            border-radius: 14px;
+            font-size: 13px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            z-index: 5;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+        }
+
+        .recording-status.show {
+            display: flex;
+        }
+
+        .recording-dot {
+            width: 10px;
+            height: 10px;
+            background: #ff4d4f;
+            border-radius: 50%;
+            animation: pulseDot 1s infinite;
+        }
+
+        .recording-time {
+            font-weight: 700;
+            color: #1d567e;
+        }
+
         .image-modal {
             position: fixed;
             inset: 0;
@@ -439,15 +513,15 @@
             font-size: 22px;
             cursor: pointer;
         }
+
+        @keyframes pulseDot {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.15); }
+            100% { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
-    @if ($errors->any())
-        <div style="color:red; font-size:13px; padding:8px;">
-            {{ $errors->first() }}
-        </div>
-    @endif
-
     @php
         $parentName = $parent['name'] ?? 'Parent';
         $parentImage = !empty($parent['image'])
@@ -529,13 +603,23 @@
                                 ontouchend="cancelPress()"
                             @endif
                         >
-                            <a
-                                href="{{ asset('storage/' . $message->file_path) }}"
-                                target="_blank"
-                                style="color:inherit; text-decoration:underline; word-break: break-all;"
-                            >
+                            <a href="{{ asset('storage/' . $message->file_path) }}" target="_blank" style="color:inherit; text-decoration:underline; word-break: break-all;">
                                 {{ basename($message->file_path) }}
                             </a>
+                        </div>
+
+                    @elseif(($message->type ?? '') === 'audio')
+                        <div class="audio-card {{ $isMe ? 'me' : 'other' }}"
+                            @if($isMe)
+                                oncontextmenu="openMessageMenu(event, this)"
+                                ontouchstart="startPress(event, this)"
+                                ontouchend="cancelPress()"
+                            @endif
+                        >
+                            <button type="button" class="audio-play-btn">▶</button>
+                            <audio controls class="audio-player">
+                                <source src="{{ asset('storage/' . $message->file_path) }}">
+                            </audio>
                         </div>
                     @endif
 
@@ -554,6 +638,12 @@
                     No messages yet. Start the conversation.
                 </div>
             @endforelse
+        </div>
+
+        <div class="recording-status" id="recordingStatus">
+            <span class="recording-dot"></span>
+            <span>Recording...</span>
+            <span class="recording-time" id="recordingTime">00:00</span>
         </div>
 
         <form
@@ -607,6 +697,12 @@
     <script>
         let muteUntil = null;
         let pressTimer = null;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordingStream = null;
+        let recordingSeconds = 0;
+        let recordingInterval = null;
 
         function toggleMuteMenu() {
             const menu = document.getElementById('muteMenu');
@@ -729,149 +825,168 @@
             clearTimeout(pressTimer);
         }
 
-      function createTextMessage(text, timeText, messageId = null) {
-    const chatArea = document.getElementById('chatArea');
+        function createTextMessage(text, timeText) {
+            const chatArea = document.getElementById('chatArea');
 
-    const row = document.createElement('div');
-    row.className = 'message-row me';
-    if (messageId) row.setAttribute('data-message-id', messageId);
+            const row = document.createElement('div');
+            row.className = 'message-row me';
 
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble me';
-    bubble.textContent = text;
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble me';
+            bubble.textContent = text;
 
-    if (messageId) {
-        bubble.setAttribute('oncontextmenu', 'openMessageMenu(event, this)');
-        bubble.setAttribute('ontouchstart', 'startPress(event, this)');
-        bubble.setAttribute('ontouchend', 'cancelPress()');
-    }
+            const time = document.createElement('div');
+            time.className = 'time';
+            time.textContent = timeText;
 
-    row.appendChild(bubble);
+            row.appendChild(bubble);
+            row.appendChild(time);
+            chatArea.appendChild(row);
+        }
 
-    if (messageId) {
-        const menu = document.createElement('div');
-        menu.className = 'message-action-menu';
+        function createImageMessage(imageUrl, timeText) {
+            const chatArea = document.getElementById('chatArea');
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'message-action-btn';
-        btn.textContent = 'Delete';
-        btn.onclick = function () {
-            deleteMessage(messageId, btn);
-        };
+            const row = document.createElement('div');
+            row.className = 'message-row me';
 
-        menu.appendChild(btn);
-        row.appendChild(menu);
-    }
+            const imageWrap = document.createElement('div');
+            imageWrap.className = 'image-message me';
 
-    const time = document.createElement('div');
-    time.className = 'time';
-    time.textContent = timeText;
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.className = 'chat-image';
+            img.onclick = function () {
+                openImageModal(imageUrl);
+            };
 
-    row.appendChild(time);
-    chatArea.appendChild(row);
-}
+            imageWrap.appendChild(img);
 
-        function createImageMessage(imageUrl, timeText, messageId = null) {
-    const chatArea = document.getElementById('chatArea');
+            const time = document.createElement('div');
+            time.className = 'time';
+            time.textContent = timeText;
 
-    const row = document.createElement('div');
-    row.className = 'message-row me';
-    if (messageId) row.setAttribute('data-message-id', messageId);
+            row.appendChild(imageWrap);
+            row.appendChild(time);
+            chatArea.appendChild(row);
+        }
 
-    const imageWrap = document.createElement('div');
-    imageWrap.className = 'image-message me';
+        function createFileMessage(fileUrl, fileName, timeText) {
+            const chatArea = document.getElementById('chatArea');
 
-    if (messageId) {
-        imageWrap.setAttribute('oncontextmenu', 'openMessageMenu(event, this)');
-        imageWrap.setAttribute('ontouchstart', 'startPress(event, this)');
-        imageWrap.setAttribute('ontouchend', 'cancelPress()');
-    }
+            const row = document.createElement('div');
+            row.className = 'message-row me';
 
-    const img = document.createElement('img');
-    img.src = imageUrl;
-    img.className = 'chat-image';
-    img.onclick = function () {
-        openImageModal(imageUrl);
-    };
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble me';
 
-    imageWrap.appendChild(img);
-    row.appendChild(imageWrap);
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.target = '_blank';
+            link.textContent = fileName || 'Open file';
+            link.style.color = 'inherit';
+            link.style.textDecoration = 'underline';
+            link.style.wordBreak = 'break-all';
 
-    if (messageId) {
-        const menu = document.createElement('div');
-        menu.className = 'message-action-menu';
+            bubble.appendChild(link);
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'message-action-btn';
-        btn.textContent = 'Delete';
-        btn.onclick = function () {
-            deleteMessage(messageId, btn);
-        };
+            const time = document.createElement('div');
+            time.className = 'time';
+            time.textContent = timeText;
 
-        menu.appendChild(btn);
-        row.appendChild(menu);
-    }
+            row.appendChild(bubble);
+            row.appendChild(time);
+            chatArea.appendChild(row);
+        }
 
-    const time = document.createElement('div');
-    time.className = 'time';
-    time.textContent = timeText;
+        function createAudioMessage(audioUrl, timeText, messageId = null) {
+            const chatArea = document.getElementById('chatArea');
 
-    row.appendChild(time);
-    chatArea.appendChild(row);
-}
+            const row = document.createElement('div');
+            row.className = 'message-row me';
+            if (messageId) {
+                row.setAttribute('data-message-id', messageId);
+            }
 
-    function createFileMessage(fileUrl, fileName, timeText, messageId = null) {
-    const chatArea = document.getElementById('chatArea');
+            const card = document.createElement('div');
+            card.className = 'audio-card me';
 
-    const row = document.createElement('div');
-    row.className = 'message-row me';
-    if (messageId) row.setAttribute('data-message-id', messageId);
+            if (messageId) {
+                card.setAttribute('oncontextmenu', 'openMessageMenu(event, this)');
+                card.setAttribute('ontouchstart', 'startPress(event, this)');
+                card.setAttribute('ontouchend', 'cancelPress()');
+            }
 
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble me';
+            const playBtn = document.createElement('button');
+            playBtn.type = 'button';
+            playBtn.className = 'audio-play-btn';
+            playBtn.textContent = '▶';
 
-    if (messageId) {
-        bubble.setAttribute('oncontextmenu', 'openMessageMenu(event, this)');
-        bubble.setAttribute('ontouchstart', 'startPress(event, this)');
-        bubble.setAttribute('ontouchend', 'cancelPress()');
-    }
+            const audio = document.createElement('audio');
+            audio.controls = true;
+            audio.className = 'audio-player';
 
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.target = '_blank';
-    link.textContent = fileName || 'Open file';
-    link.style.color = 'inherit';
-    link.style.textDecoration = 'underline';
-    link.style.wordBreak = 'break-all';
+            const source = document.createElement('source');
+            source.src = audioUrl;
 
-    bubble.appendChild(link);
-    row.appendChild(bubble);
+            audio.appendChild(source);
+            card.appendChild(playBtn);
+            card.appendChild(audio);
 
-    if (messageId) {
-        const menu = document.createElement('div');
-        menu.className = 'message-action-menu';
+            playBtn.onclick = function () {
+                if (audio.paused) {
+                    audio.play();
+                    playBtn.textContent = '❚❚';
+                } else {
+                    audio.pause();
+                    playBtn.textContent = '▶';
+                }
+            };
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'message-action-btn';
-        btn.textContent = 'Delete';
-        btn.onclick = function () {
-            deleteMessage(messageId, btn);
-        };
+            audio.onended = function () {
+                playBtn.textContent = '▶';
+            };
 
-        menu.appendChild(btn);
-        row.appendChild(menu);
-    }
+            audio.onpause = function () {
+                playBtn.textContent = '▶';
+            };
 
-    const time = document.createElement('div');
-    time.className = 'time';
-    time.textContent = timeText;
+            audio.onplay = function () {
+                playBtn.textContent = '❚❚';
+            };
 
-    row.appendChild(time);
-    chatArea.appendChild(row);
-}
+            row.appendChild(card);
+
+            if (messageId) {
+                const menu = document.createElement('div');
+                menu.className = 'message-action-menu';
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'message-action-btn';
+                btn.textContent = 'Delete';
+                btn.onclick = function () {
+                    deleteMessage(messageId, btn);
+                };
+
+                menu.appendChild(btn);
+                row.appendChild(menu);
+            }
+
+            const time = document.createElement('div');
+            time.className = 'time';
+            time.textContent = timeText;
+
+            row.appendChild(time);
+            chatArea.appendChild(row);
+        }
+
+        function updateRecordingTime() {
+            recordingSeconds++;
+            const mins = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
+            const secs = String(recordingSeconds % 60).padStart(2, '0');
+            document.getElementById('recordingTime').textContent = `${mins}:${secs}`;
+        }
 
         async function sendMessage(event) {
             event.preventDefault();
@@ -911,9 +1026,7 @@
                 }
 
                 const emptyChat = document.getElementById('emptyChat');
-                if (emptyChat) {
-                    emptyChat.remove();
-                }
+                if (emptyChat) emptyChat.remove();
 
                 if (data.type === 'image') {
                     createImageMessage(data.file_url, data.time);
@@ -929,6 +1042,96 @@
             } catch (error) {
                 alert(error.message || 'Failed to send message.');
                 console.error(error);
+            }
+        }
+
+        async function sendAudioBlob(audioBlob) {
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'voice-message.webm');
+
+                const response = await fetch("{{ route('doctor.chat.sendAudio', ['parentId' => $parent['id']]) }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+
+                const raw = await response.text();
+                let data;
+
+                try {
+                    data = JSON.parse(raw);
+                } catch {
+                    throw new Error(raw);
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to send audio');
+                }
+
+                const emptyChat = document.getElementById('emptyChat');
+                if (emptyChat) emptyChat.remove();
+
+                createAudioMessage(data.file_url, data.time, data.id);
+                scrollChatToBottom();
+            } catch (error) {
+                alert(error.message || 'Failed to send audio');
+                console.error(error);
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                recordingStream = stream;
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                recordingSeconds = 0;
+
+                mediaRecorder.ondataavailable = e => {
+                    if (e.data.size > 0) {
+                        audioChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    await sendAudioBlob(audioBlob);
+
+                    if (recordingStream) {
+                        recordingStream.getTracks().forEach(track => track.stop());
+                    }
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+
+                document.getElementById('voiceBtn').classList.add('recording');
+                document.getElementById('voiceBtn').textContent = '⏹';
+                document.getElementById('recordingStatus').classList.add('show');
+
+                recordingInterval = setInterval(updateRecordingTime, 1000);
+            } catch (error) {
+                alert('اسم الخطأ: ' + error.name + '\nالرسالة: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+
+                document.getElementById('voiceBtn').classList.remove('recording');
+                document.getElementById('voiceBtn').textContent = '🎤';
+                document.getElementById('recordingStatus').classList.remove('show');
+
+                clearInterval(recordingInterval);
             }
         }
 
@@ -982,7 +1185,11 @@
         document.getElementById('clearSelectedFile').addEventListener('click', clearSelectedFile);
 
         document.getElementById('voiceBtn').addEventListener('click', function () {
-            alert('Voice messages will be added later.');
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
         });
 
         document.getElementById('imageModal').addEventListener('click', function (e) {
@@ -1001,7 +1208,8 @@
 
             if (!event.target.closest('.message-action-menu') &&
                 !event.target.closest('.bubble') &&
-                !event.target.closest('.image-message')) {
+                !event.target.closest('.image-message') &&
+                !event.target.closest('.audio-card')) {
                 closeAllMessageMenus();
             }
         });
