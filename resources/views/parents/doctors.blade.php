@@ -180,32 +180,38 @@ body {
     </div>
 
     <div class="list">
-            @foreach($doctors as $doc)
-            <div class="card">
-                @php
-        $doctorImage = !empty($doc->user->profile_image)
-            ? asset('storage/' . $doc->user->profile_image)
+  @foreach($doctors as $doc)
+<div class="card">
+
+    @php
+        $doctorImage = !empty($doc['image'])
+            ? asset('storage/' . $doc['image'])
             : asset('images/default-user.png');
     @endphp
 
-    <img src="{{ $doctorImage }}" class="doctor-img">
+    <img src="{{ $doctorImage }}" class="doctor-img" alt="Doctor">
 
-            <div class="card-info">
-                <div class="name">{{ $doc['name'] }}</div>
-                <div class="specialty">{{ $doc['specialty'] }}</div>
-
-                <div class="actions">
-                    <a href="{{ route('parents.doctor-profile', $doc['id']) }}" class="btn-icon">
-                        <i class="fi fi-sr-user"></i>
-                    </a>
-
-                    <a href="{{ route('parents.chat', $doc['id']) }}" class="btn-icon">
-                        <i class="fi fi-ss-messages"></i>
-                    </a>           
-                </div>
-            </div>
+    <div class="card-info">
+        <div class="name">
+            {{ $doc['name'] ?? 'Doctor' }}
         </div>
-        @endforeach
+
+        <div class="specialty">
+            {{ $doc['specialty'] ?? 'No specialization' }}
+        </div>
+
+        <div class="actions">
+            <a href="{{ route('parents.doctor-profile', $doc['id']) }}" class="btn-icon">
+                <i class="fi fi-sr-user"></i>
+            </a>
+
+            <a href="{{ route('parents.chat', $doc['id']) }}" class="btn-icon">
+                <i class="fi fi-ss-messages"></i>
+            </a>           
+        </div>
+    </div>
+</div>
+@endforeach
     </div>
 
     <!-- navbar -->

@@ -228,6 +228,20 @@
             margin: 0 22px 12px;
             font-size: 13px;
         }
+           .back-btn {
+            position: absolute;
+            left: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+        }
+
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
+        }
     </style>
 </head>
 <body>
@@ -235,6 +249,11 @@
         <div class="content">
 
             <div class="header">
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
                 <div class="page-title">Edit Appointment</div>
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">

@@ -104,13 +104,11 @@
         }
 
         .logo {
-            position: absolute;
-            right: 36px;
-            top: -2px;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            overflow: hidden;
+           position: absolute;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
         }
 
         .logo img {
@@ -136,6 +134,12 @@
             font-size: 24px;
             line-height: 1;
         }
+        .add-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateY(40px); /* 🔥 ينزل لتحت */
+}
 
         /* ===== Workplace list ===== */
         .work-list {
@@ -213,6 +217,44 @@
             width: 100%;
             height: 100%;
         }
+         .back-btn {
+            position: absolute;
+            left: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+        }
+
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
+        }
+        /* 🔥 زر عائم تحت */
+.fab-btn {
+    position: absolute;
+    right: 16px;
+    bottom: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #3d78ff;
+    color: #fff;
+    font-size: 30px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(61, 120, 255, 0.4);
+    z-index: 5;
+    transition: 0.2s;
+}
+
+/* تأثير ضغط */
+.fab-btn:active {
+    transform: scale(0.95);
+}
     </style>
 </head>
 <body>
@@ -220,7 +262,11 @@
         <div class="content">
 
             <div class="header">
-                <a href="{{ route('doctor.settings') }}" class="back-btn">‹</a>
+                         <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
 
                 <div class="title">Workplace</div>
 
@@ -228,7 +274,7 @@
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
                 </div>
 
-                <a href="{{ route('doctor.add.workplace') }}" class="add-btn">+</a>
+                
             </div>
 
 <div class="work-list">
@@ -291,6 +337,7 @@
     @endforelse
 </div>
         </div>
+        <a href="{{ route('doctor.add.workplace') }}" class="fab-btn">+</a>
     </div>
 </body>
 </html>

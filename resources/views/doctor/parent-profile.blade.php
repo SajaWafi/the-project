@@ -54,15 +54,20 @@
             margin-bottom: 14px;
         }
 
-        .back-btn {
-            position: absolute;
-            left: 6px;
-            top: 2px;
-            font-size: 30px;
-            line-height: 1;
-            color: #1fc9a8;
-            text-decoration: none;
-        }
+      .back-btn {
+    position: absolute;
+    left: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #2f80ed;
+    padding: 6px;
+}
+
+.back-btn svg {
+    width: 26px;
+    height: 26px;
+}
          .title {
         font-size: 28px;
         font-weight: 800;
@@ -380,7 +385,11 @@
     <div class="phone">
         <div class="content">
             <div class="header">
-                <a href="{{ url()->previous() }}" class="back-btn">‹</a>
+                  <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
                 <div class="title">Parent Profile</div>
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
@@ -404,11 +413,13 @@
                     </a>
                 </div>
 
-                <img
-                    class="parent-image"
-                    src="{{ asset('images/' . ($parent['image'] ?? 'p1.png')) }}"
-                    alt="Parent"
-                >
+              <img
+    class="parent-image"
+    src="{{ !empty($parent['image'])
+        ? asset('storage/' . $parent['image'])
+        : asset('images/default-user.png') }}"
+    alt="Parent"
+/>
 
                 <div class="parent-name">{{ $parent['name'] ?? 'Ali Saloh' }}</div>
                 <div class="parent-subtitle">{{ $parent['subtitle'] ?? "Ahmed Salah’s father" }}</div>
