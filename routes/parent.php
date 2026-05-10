@@ -64,67 +64,24 @@ Route::prefix('parents')
 
         /*
         |--------------------------------------------------------------------------
-        | Main Pages
+        | Alerts / Location
         |--------------------------------------------------------------------------
         */
+        // ملاحظة: تم توحيد مسار التنبيهات ليعمل من خلال الـ Controller أو الوظيفة المطلوبة
         Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
         Route::get('/location', fn() => view('parents.location'))->name('location');
 
         /*
         |--------------------------------------------------------------------------
-        | Requests
+        | Doctor Requests (Pending)
         |--------------------------------------------------------------------------
         */
-        Route::get('/request', function () {
-            $parent = auth()->user()->parentProfile;
-
-            if (!$parent) {
-                abort(404, 'Parent profile not found.');
-            }
-
-            $requests = DoctorRequest::with('doctor.user')
-                ->where('parent_id', $parent->id)
-                ->where('status', 'pending')
-                ->latest()
-                ->get();
-
-            return view('parents.requests', compact('requests'));
-        })->name('request');
-
         Route::get('/requests', function () {
             $parent = auth()->user()->parentProfile;
 
-<<<<<<< HEAD
-    /*
-    |--------------------------------------------------------------------------
-    | Alerts / Location / Requests
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/alerts', function () {
-        $parent = auth()->user()->parentProfile;
-
-        if (!$parent) {
-            abort(404, 'Parent profile not found.');
-        }
-
-        $alerts = Alert::where('parent_id', $parent->id)
-            ->where(function ($q) {
-                $q->whereDate('sent_at', now()->toDateString()) // اليوم
-                ->orWhereDate('sent_at', now()->subDay()->toDateString()); // أمس
-            })
-            ->latest('sent_at')
-            ->get();
-
-        return view('parents.alerts', compact('alerts'));
-    })->name('alerts');
-
-    Route::get('/location', fn() => view('parents.location'))->name('location');
-=======
             if (!$parent) {
                 abort(404, 'Parent profile not found.');
             }
->>>>>>> 2474793c4174b0723b4fc6092608206a643cfc41
 
             $requests = DoctorRequest::with('doctor.user')
                 ->where('parent_id', $parent->id)
@@ -143,14 +100,9 @@ Route::prefix('parents')
         Route::post('/doctor-requests/{id}/accept', function ($id) {
             $parent = auth()->user()->parentProfile;
 
-<<<<<<< HEAD
-        return view('parents.requests', compact('requests'));
-    })->name('requests');
-=======
             if (!$parent) {
                 return back()->withErrors(['parent' => 'Parent profile not found.']);
             }
->>>>>>> 2474793c4174b0723b4fc6092608206a643cfc41
 
             $requestItem = DoctorRequest::where('parent_id', $parent->id)
                 ->where('status', 'pending')
@@ -203,7 +155,7 @@ Route::prefix('parents')
 
         /*
         |--------------------------------------------------------------------------
-        | Doctors
+        | Doctors Management
         |--------------------------------------------------------------------------
         */
         Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
@@ -212,7 +164,7 @@ Route::prefix('parents')
 
         /*
         |--------------------------------------------------------------------------
-        | Chat
+        | Chat System
         |--------------------------------------------------------------------------
         */
         Route::get('/chat/{doctorId}', [ChatController::class, 'show'])->name('chat');
@@ -231,41 +183,35 @@ Route::prefix('parents')
 
 /*
 |--------------------------------------------------------------------------
-| Settings / Profile
+| Shared Settings / Profile (Common for Parents)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:parent'])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Profile / Settings Pages
-    |--------------------------------------------------------------------------
-    */
     Route::get('/profile', fn() => view('profile'))->name('profile');
     Route::get('/edit-profile', fn() => view('edit-profile'))->name('edit.profile');
-  Route::post('/edit-profile/update', function (Request $request) {
-    $request->validate([
-        'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-    ]);
 
-    $user = Auth::user();
+    Route::post('/edit-profile/update', function (Request $request) {
+        $request->validate([
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
 
-    $userData = [];
+        $user = Auth::user();
+        $userData = [];
 
-    if ($request->hasFile('profile_image')) {
-        if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
-            Storage::disk('public')->delete($user->profile_image);
+        if ($request->hasFile('profile_image')) {
+            if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
+                Storage::disk('public')->delete($user->profile_image);
+            }
+            $userData['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
         }
 
-        $userData['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
-    }
+        if (!empty($userData)) {
+            $user->update($userData);
+        }
 
-    if (!empty($userData)) {
-        $user->update($userData);
-    }
-
-    return back()->with('success', 'Profile updated successfully');
-})->name('parent.profile.update');
+        return back()->with('success', 'Profile updated successfully');
+    })->name('parent.profile.update');
 
     Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy.policy');
     Route::get('/settings', fn() => view('settings'))->name('settings');
@@ -276,7 +222,6 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/password-manager', fn() => view('password-manager'))->name('password.manager');
-
     Route::post('/password-manager', function (Request $request) {
         $request->validate([
             'current_password' => 'required',
@@ -300,7 +245,7 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Alerts & Safety
+    | Safety Alerts
     |--------------------------------------------------------------------------
     */
     Route::get('/panic-alert', fn() => view('panic-alert'))->name('panic.alert');
@@ -310,7 +255,7 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Reports History / Settings
+    | Reports History
     |--------------------------------------------------------------------------
     */
     Route::get('/reports-history', function () {
@@ -319,7 +264,6 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
             ['id' => 2, 'title' => 'Feb Report'],
             ['id' => 3, 'title' => 'Mar Report'],
         ];
-
         return view('reports-history', compact('reports'));
     })->name('reports.history');
 
@@ -329,54 +273,40 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
             2 => ['title' => 'Feb Report'],
             3 => ['title' => 'Mar Report'],
         ];
-
         $report = $reports[$id] ?? null;
-
-        if (!$report) {
-            abort(404);
-        }
-
+        if (!$report) abort(404);
         return view('report-details', compact('report', 'id'));
     })->name('reports.details');
 
-    Route::get('/reports-settings', function () {
-        return view('reports-settings');
-    })->name('reports.settings');
+    Route::get('/reports-settings', fn() => view('reports-settings'))->name('reports.settings');
 
     /*
     |--------------------------------------------------------------------------
-    | Delete Account
+    | Delete Account Logic
     |--------------------------------------------------------------------------
     */
     Route::delete('/delete-account', function () {
         $user = Auth::user();
-
         DB::beginTransaction();
-
         try {
             if ($user?->parentProfile) {
-                $children = $user->parentProfile->children();
-
-                if ($children) {
-                    $children->delete();
-                }
-
+                // حذف الأطفال أولاً لتجنب مشاكل Foreign Key
+                $user->parentProfile->children()->delete();
                 $user->parentProfile()->delete();
             }
-
+            
+            $tempUser = $user;
             Auth::logout();
-
-            if ($user) {
-                $user->delete();
+            
+            if ($tempUser) {
+                $tempUser->delete();
             }
 
             DB::commit();
-
             return redirect()->route('login.page')->with('success', 'Account deleted successfully');
         } catch (\Throwable $e) {
             DB::rollBack();
-
-            return back()->with('error', $e->getMessage());
+            return back()->with('error', 'Something went wrong while deleting the account.');
         }
     })->name('delete.account');
 });

@@ -9,6 +9,7 @@ use App\Models\ParentProfile;
 use App\Models\Child;
 use App\Models\DoctorProfile;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\DoctorManagementController;
 
 // Welcome
 Route::get('/', function () {
@@ -19,18 +20,45 @@ Route::get('/welcome-second', function () {
     return view('welcome-second');
 })->name('welcome.second');
 
-//login page
+
+// =======================
+// Login Page
+// =======================
+
 Route::get('/login', function () {
+
+    // لو المستخدم داخل أصلاً، ما نوريه صفحة login
+    if (Auth::check()) {
+        $user = Auth::user();
+
+        if ($user->role === 'parent') {
+            return redirect()->route('parents.home');
+        }
+
+        if ($user->role === 'doctor') {
+            return redirect()->route('doctor.home');
+        }
+
+        return redirect()->route('welcome');
+    }
+
     return view('login-page');
+
 })->name('login.page');
 
+
 Route::post('/login', function (Request $request) {
+
     $credentials = $request->validate([
         'email' => ['required', 'email'],
         'password' => ['required'],
     ]);
 
-    if (!Auth::attempt($credentials)) {
+    // هذا متاع Remember me
+    $remember = $request->has('remember');
+
+    // مهم: لازم نحط $remember هنا
+    if (!Auth::attempt($credentials, $remember)) {
         return back()->withErrors([
             'email' => 'Invalid email or password.',
         ])->onlyInput('email');
@@ -53,8 +81,47 @@ Route::post('/login', function (Request $request) {
     }
 
 
-    return redirect('/');
+    return redirect()->route('welcome');
+
+
 })->name('login.post');
+
+
+// =======================
+// Protected Home Pages
+// =======================
+// لو عندك routes هذني موجودات في مكان ثاني، ما تكرريهمش.
+// لكن من الملف اللي أرسلتيه مش موجودات، لذلك حطيتهم هنا.
+
+Route::get('/parents/home', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login.page');
+    }
+
+    if (Auth::user()->role !== 'parent') {
+        abort(403);
+    }
+
+    return view('parents.home');
+})->name('parents.home');
+
+
+Route::get('/doctor/home', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login.page');
+    }
+
+    if (Auth::user()->role !== 'doctor') {
+        abort(403);
+    }
+
+    return view('doctor.home');
+})->name('doctor.home');
+
+
+// =======================
+// Logout
+// =======================
 
 Route::post('/logout', function (Request $request) {
     Auth::logout();
@@ -66,13 +133,18 @@ Route::post('/logout', function (Request $request) {
 })->name('logout');
 
 
-//signup chosing
+// =======================
+// Signup Choosing
+// =======================
+
 Route::get('/signup/choice', function () {
     return view('signup.choice');
 })->name('signup.choice');
 
 
-// Parent signup
+// =======================
+// Parent Signup
+// =======================
 
 // step1
 Route::get('/signup/step1', function () {
@@ -88,6 +160,7 @@ Route::get('/signup/step1', function () {
 
     return view('signup.step1');
 })->name('signup.step1');
+
 
 Route::post('/step1', function (Request $request) {
     $request->validate([
@@ -107,10 +180,12 @@ Route::post('/step1', function (Request $request) {
     return redirect()->route('step2');
 })->name('step1.post');
 
+
 // step2
 Route::get('/step2', function () {
     return view('signup.step2');
 })->name('step2');
+
 
 Route::post('/step2', function (Request $request) {
     $request->validate([
@@ -155,10 +230,12 @@ Route::post('/step2', function (Request $request) {
     return redirect()->route('signup.step3');
 })->name('signup.step2.post');
 
+
 // child info
 Route::get('/step3', function () {
     return view('signup.step3');
 })->name('signup.step3');
+
 
 Route::post('/step3', function (Request $request) {
     $request->validate([
@@ -176,10 +253,12 @@ Route::post('/step3', function (Request $request) {
     return redirect()->route('signup.step4');
 })->name('signup.step3.post');
 
+
 // step4
 Route::get('/step4', function () {
     return view('signup.step4');
 })->name('signup.step4');
+
 
 Route::post('/step4', function (Request $request) {
     $request->validate([
@@ -201,7 +280,7 @@ Route::post('/step4', function (Request $request) {
             ->withErrors(['Please complete child information first.']);
     }
 
-    $child = Child::create([
+    Child::create([
         'parent_id' => $parentProfileId,
         'name' => $childName,
         'gender' => $childGender,
@@ -218,7 +297,10 @@ Route::post('/step4', function (Request $request) {
     return redirect()->route('parents.home');
 })->name('signup.step4.post');
 
-// Doctor signup
+
+// =======================
+// Doctor Signup
+// =======================
 
 // step1
 Route::get('/doctor/signup/step1', function () {
@@ -226,6 +308,7 @@ Route::get('/doctor/signup/step1', function () {
 
     return view('doctor-signup.step1');
 })->name('doctor.step1');
+
 
 Route::post('/doctor/signup/step1', function (Request $request) {
     $request->validate([
@@ -249,6 +332,7 @@ Route::get('/doctor/signup/step2', function () {
     return view('doctor-signup.step2');
 })->name('doctor.step2');
 
+
 Route::post('/doctor/signup/step2', function (Request $request) {
     $request->validate([
         'password' => 'required|string|min:6|same:password_confirmation',
@@ -267,6 +351,7 @@ Route::post('/doctor/signup/step2', function (Request $request) {
 Route::get('/doctor/signup/step3', function () {
     return view('doctor-signup.step3');
 })->name('doctor.step3');
+
 
 Route::post('/doctor/signup/step3', function (Request $request) {
     $request->validate([
@@ -292,7 +377,7 @@ Route::post('/doctor/signup/step3', function (Request $request) {
         empty($signup['email']) ||
         empty($signup['password'])
     ) {
-        return redirect()->route('doctor.signup.step1')
+        return redirect()->route('doctor.step1')
             ->withErrors(['Please complete step 1 first.']);
     }
 
@@ -319,36 +404,15 @@ Route::post('/doctor/signup/step3', function (Request $request) {
     ]);
 
     Auth::login($user);
+
     session()->forget('doctor_signup');
 
     return redirect()->route('doctor.home');
 })->name('doctor.step3.post');
 
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-    return redirect()->route('login.page');
-})->name('logout');
 
-/*
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
 
-    return redirect()->route('login');
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
 
-    return redirect()->route('login.page');
 
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
 
-    return redirect('/login'); // أو الصفحة الرئيسية
-
-})->name('logout');
-*/
-
-// dashboard for admin
-Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 

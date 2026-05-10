@@ -19,13 +19,19 @@ class User extends Authenticatable
         'profile_image',
         'password',
         'role',
+        'email_verified_at',
+'email_verification_code',
+'email_verification_code_expires_at',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
-
+protected $casts = [
+    'email_verified_at' => 'datetime',
+    'email_verification_code_expires_at' => 'datetime',
+];
     /*
     |----------------------------------------------------------------------
     | Relationships
@@ -48,6 +54,7 @@ class User extends Authenticatable
         return $this->hasOne(\App\Models\ParentProfile::class, 'user_id');
     }
 
+    
     /*
     |----------------------------------------------------------------------
     | Model Events

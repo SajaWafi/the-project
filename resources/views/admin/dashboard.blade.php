@@ -110,7 +110,12 @@
     <h2>Taif Project</h2>
     <ul class="sidebar-menu">
         <li><a href="#" class="active">📊 <span>Dashboard</span></a></li>
-        <li><a href="#">🧑‍⚕️ <span>Manage Doctors</span></a></li>
+        <li>
+    <a href="{{ route('admin.doctors.index') }}"
+       class="{{ request()->routeIs('admin.doctors.*') ? 'active' : '' }}">
+        🧑‍⚕️ <span>Manage Doctors</span>
+    </a>
+</li>
         <li><a href="#">👨‍👩‍👧 <span>Manage Parents</span></a></li>
         <li><a href="#">👶 <span>Manage Children</span></a></li>
         <li><a href="#">🔗 <span>Linking Requests</span></a></li>
