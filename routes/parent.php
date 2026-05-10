@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Storage;
 use App\Models\DoctorRequest;
 use App\Models\Alert;
 
@@ -24,37 +24,77 @@ Route::prefix('parents')
     ->middleware(['auth', 'role:parent'])
     ->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Home Page
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/home', function () {
+        /*
+        |--------------------------------------------------------------------------
+        | Home Page
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/home', function () {
+            $user = auth()->user();
 
-        $user = auth()->user();
+            if (!$user || !$user->parentProfile) {
+                abort(404, 'Parent profile not found.');
+            }
 
-        if (!$user || !$user->parentProfile) {
-            abort(404, 'Parent profile not found.');
-        }
+            $parentProfile = $user->parentProfile;
+            $child = $parentProfile->children()->first();
 
-        $parentProfile = $user->parentProfile;
-        $child = $parentProfile->children()->first();
+            $appointments = collect();
 
-        $appointments = collect();
+            if ($child) {
+                $appointments = \App\Models\Appointment::with(['child', 'doctor.user'])
+                    ->where('parent_id', $parentProfile->id)
+                    ->where('child_id', $child->id)
+                    ->whereDate('date', '>=', now()->toDateString())
+                    ->orderBy('date')
+                    ->orderByRaw("
+                        CASE
+                            WHEN from_period = 'AM' AND from_hour = 12 THEN 0
+                            WHEN from_period = 'AM' THEN from_hour
+                            WHEN from_period = 'PM' AND from_hour = 12 THEN 12
+                            ELSE from_hour + 12
+                        END
+                    ")
+                    ->orderBy('from_minute')
+                    ->get();
+            }
 
-        if ($child) {
-            $appointments = \App\Models\Appointment::with(['child', 'doctor.user'])
-                ->where('parent_id', $parentProfile->id)
-                ->where('child_id', $child->id)
-                ->whereDate('date', '>=', now()->toDateString())
-                ->orderBy('date')
+            return view('parents.home', compact('appointments', 'child'));
+        })->name('home');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Main Pages
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
+        Route::get('/location', fn() => view('parents.location'))->name('location');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Requests
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/request', function () {
+            $parent = auth()->user()->parentProfile;
+
+            if (!$parent) {
+                abort(404, 'Parent profile not found.');
+            }
+
+            $requests = DoctorRequest::with('doctor.user')
+                ->where('parent_id', $parent->id)
+                ->where('status', 'pending')
+                ->latest()
                 ->get();
-        }
 
-        return view('parents.home', compact('appointments', 'child'));
+            return view('parents.requests', compact('requests'));
+        })->name('request');
 
-    })->name('home');
+        Route::get('/requests', function () {
+            $parent = auth()->user()->parentProfile;
 
+<<<<<<< HEAD
     /*
     |--------------------------------------------------------------------------
     | Alerts / Location / Requests
@@ -80,87 +120,114 @@ Route::prefix('parents')
     })->name('alerts');
 
     Route::get('/location', fn() => view('parents.location'))->name('location');
+=======
+            if (!$parent) {
+                abort(404, 'Parent profile not found.');
+            }
+>>>>>>> 2474793c4174b0723b4fc6092608206a643cfc41
 
-    Route::get('/request', function () {
-        $parent = auth()->user()->parentProfile;
+            $requests = DoctorRequest::with('doctor.user')
+                ->where('parent_id', $parent->id)
+                ->where('status', 'pending')
+                ->latest()
+                ->get();
 
-        if (!$parent) {
-            abort(404);
-        }
+            return view('parents.requests', compact('requests'));
+        })->name('requests');
 
-        $requests = DoctorRequest::with('doctor.user')
-            ->where('parent_id', $parent->id)
-            ->where('status', 'pending')
-            ->latest()
-            ->get();
+        /*
+        |--------------------------------------------------------------------------
+        | Doctor Requests Accept / Reject
+        |--------------------------------------------------------------------------
+        */
+        Route::post('/doctor-requests/{id}/accept', function ($id) {
+            $parent = auth()->user()->parentProfile;
 
+<<<<<<< HEAD
         return view('parents.requests', compact('requests'));
     })->name('requests');
+=======
+            if (!$parent) {
+                return back()->withErrors(['parent' => 'Parent profile not found.']);
+            }
+>>>>>>> 2474793c4174b0723b4fc6092608206a643cfc41
 
-    /*
-    |--------------------------------------------------------------------------
-    | Doctor Requests Accept / Reject
-    |--------------------------------------------------------------------------
-    */
-    Route::post('/doctor-requests/{id}/accept', function ($id) {
-        $parent = auth()->user()->parentProfile;
+            $requestItem = DoctorRequest::where('parent_id', $parent->id)
+                ->where('status', 'pending')
+                ->findOrFail($id);
 
-        $requestItem = DoctorRequest::where('parent_id', $parent->id)
-            ->where('status', 'pending')
-            ->findOrFail($id);
+            $child = $parent->children()->first();
 
-        $child = $parent->children()->first();
+            if (!$child) {
+                return back()->withErrors([
+                    'child' => 'No child found for this parent.',
+                ]);
+            }
 
-        if ($child) {
-            DB::table('child_doctor')->insert([
-                'child_id' => $child->id,
-                'doctor_id' => $requestItem->doctor_id,
+            $alreadyLinked = DB::table('child_doctor')
+                ->where('child_id', $child->id)
+                ->where('doctor_id', $requestItem->doctor_id)
+                ->exists();
+
+            if (!$alreadyLinked) {
+                DB::table('child_doctor')->insert([
+                    'child_id' => $child->id,
+                    'doctor_id' => $requestItem->doctor_id,
+                ]);
+            }
+
+            $requestItem->update([
+                'status' => 'accepted',
             ]);
-        }
 
-        $requestItem->update(['status' => 'accepted']);
+            return back()->with('success', 'Request accepted successfully.');
+        })->name('requests.accept');
 
-        return back()->with('success', 'Request accepted');
-    })->name('requests.accept');
+        Route::post('/doctor-requests/{id}/reject', function ($id) {
+            $parent = auth()->user()->parentProfile;
 
-    Route::post('/doctor-requests/{id}/reject', function ($id) {
-        $parent = auth()->user()->parentProfile;
+            if (!$parent) {
+                return back()->withErrors(['parent' => 'Parent profile not found.']);
+            }
 
-        $requestItem = DoctorRequest::where('parent_id', $parent->id)
-            ->where('status', 'pending')
-            ->findOrFail($id);
+            $requestItem = DoctorRequest::where('parent_id', $parent->id)
+                ->where('status', 'pending')
+                ->findOrFail($id);
 
-        $requestItem->update(['status' => 'rejected']);
+            $requestItem->update([
+                'status' => 'rejected',
+            ]);
 
-        return back()->with('success', 'Request rejected');
-    })->name('requests.reject');
+            return back()->with('success', 'Request rejected.');
+        })->name('requests.reject');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Doctors
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
-    Route::get('/doctor-profile/{id}', [DoctorController::class, 'show'])->name('doctor-profile');
-    Route::delete('/doctors/{id}', [DoctorController::class, 'delete'])->name('doctors.delete');
+        /*
+        |--------------------------------------------------------------------------
+        | Doctors
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
+        Route::get('/doctor-profile/{id}', [DoctorController::class, 'show'])->name('doctor-profile');
+        Route::delete('/doctors/{id}', [DoctorController::class, 'delete'])->name('doctors.delete');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Chat
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/chat/{doctorId}', [ChatController::class, 'show'])->name('chat');
-    Route::post('/chat/{doctorId}/send', [ChatController::class, 'send'])->name('chat.send');
+        /*
+        |--------------------------------------------------------------------------
+        | Chat
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/chat/{doctorId}', [ChatController::class, 'show'])->name('chat');
+        Route::post('/chat/{doctorId}/send', [ChatController::class, 'send'])->name('chat.send');
+        Route::post('/chat/{doctorId}/send-audio', [ChatController::class, 'sendAudio'])->name('chat.sendAudio');
+        Route::delete('/chat/message/{messageId}', [ChatController::class, 'deleteMessage'])->name('chat.message.delete');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Reports
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/report', [ReportController::class, 'show'])->name('report');
-    Route::get('/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('report.download-pdf');
-
-});
+        /*
+        |--------------------------------------------------------------------------
+        | Reports
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/report', [ReportController::class, 'show'])->name('report');
+        Route::get('/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('report.download-pdf');
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -169,8 +236,37 @@ Route::prefix('parents')
 */
 Route::middleware(['auth', 'role:parent'])->group(function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | Profile / Settings Pages
+    |--------------------------------------------------------------------------
+    */
     Route::get('/profile', fn() => view('profile'))->name('profile');
     Route::get('/edit-profile', fn() => view('edit-profile'))->name('edit.profile');
+  Route::post('/edit-profile/update', function (Request $request) {
+    $request->validate([
+        'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
+
+    $user = Auth::user();
+
+    $userData = [];
+
+    if ($request->hasFile('profile_image')) {
+        if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
+            Storage::disk('public')->delete($user->profile_image);
+        }
+
+        $userData['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
+    }
+
+    if (!empty($userData)) {
+        $user->update($userData);
+    }
+
+    return back()->with('success', 'Profile updated successfully');
+})->name('parent.profile.update');
+
     Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy.policy');
     Route::get('/settings', fn() => view('settings'))->name('settings');
 
@@ -189,15 +285,17 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 
         $user = auth()->user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Wrong password']);
+        if (!$user || !Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors([
+                'current_password' => 'Current password is incorrect',
+            ]);
         }
 
         $user->update([
-            'password' => Hash::make($request->new_password)
+            'password' => Hash::make($request->new_password),
         ]);
 
-        return back()->with('success', 'Password updated');
+        return back()->with('success', 'Password updated successfully');
     })->name('password.manager.update');
 
     /*
@@ -212,10 +310,38 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Reports History
+    | Reports History / Settings
     |--------------------------------------------------------------------------
     */
-    Route::get('/reports-history', fn() => view('reports-history'))->name('reports.history');
+    Route::get('/reports-history', function () {
+        $reports = [
+            ['id' => 1, 'title' => 'Jan Report'],
+            ['id' => 2, 'title' => 'Feb Report'],
+            ['id' => 3, 'title' => 'Mar Report'],
+        ];
+
+        return view('reports-history', compact('reports'));
+    })->name('reports.history');
+
+    Route::get('/reports-history/{id}', function ($id) {
+        $reports = [
+            1 => ['title' => 'Jan Report'],
+            2 => ['title' => 'Feb Report'],
+            3 => ['title' => 'Mar Report'],
+        ];
+
+        $report = $reports[$id] ?? null;
+
+        if (!$report) {
+            abort(404);
+        }
+
+        return view('report-details', compact('report', 'id'));
+    })->name('reports.details');
+
+    Route::get('/reports-settings', function () {
+        return view('reports-settings');
+    })->name('reports.settings');
 
     /*
     |--------------------------------------------------------------------------
@@ -229,19 +355,28 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 
         try {
             if ($user?->parentProfile) {
+                $children = $user->parentProfile->children();
+
+                if ($children) {
+                    $children->delete();
+                }
+
                 $user->parentProfile()->delete();
             }
 
             Auth::logout();
-            $user?->delete();
+
+            if ($user) {
+                $user->delete();
+            }
 
             DB::commit();
 
-            return redirect()->route('login.page');
+            return redirect()->route('login.page')->with('success', 'Account deleted successfully');
         } catch (\Throwable $e) {
             DB::rollBack();
+
             return back()->with('error', $e->getMessage());
         }
     })->name('delete.account');
-
 });

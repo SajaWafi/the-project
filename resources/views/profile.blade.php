@@ -372,7 +372,7 @@
 
         <div class="avatar-star">★</div>
 
-        <button class="edit-avatar-btn" type="button" onclick="window.location='{{ route('parent.profile.edit') }}'">
+        <button class="edit-avatar-btn" type="button" onclick="window.location='{{ route('edit.profile') }}'">
             <svg viewBox="0 0 24 24" fill="none">
                 <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                 <path d="M12.5 5.5 16.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -385,15 +385,15 @@
     </div>
 
     <div class="name-ar">
-        {{ optional(optional(auth()->user()->parentProfile)->child)->name ?? 'No Child' }}
-    </div>
+    {{ optional(optional(auth()->user()->parentProfile)->child)->name ?? 'No Child' }}
+</div>
 
     <div class="profile-id">
         ID: {{ auth()->user()->id }}
     </div>
 </div>
 
-            <a href="{{ route('parent.profile.edit') }}" class="menu-item">
+            <a href="{{ route('edit.profile') }}" class="menu-item">
                 <div class="menu-left">
                     <div class="menu-icon">
                         <svg viewBox="0 0 24 24" fill="none">

@@ -36,7 +36,7 @@ class DoctorController extends Controller
                     'id' => $doctor->id,
                     'name' => $doctorName,
                     'specialty' => $doctor->specialization ?? 'No Specialty',
-                    'image' => 'doctor1.png',
+                    'image' => $doctor->user->profile_image ?? null,
                 ]);
             }
         }
@@ -150,7 +150,7 @@ public function show($id)
         $data = [
             'id' => $doctor->id,
             'name' => $doctorName,
-            'image' => 'doctor1.png',
+            'image' => $doctor->user->profile_image ?? null,
         ];
 
         return view('parents.chat', ['doctor' => $data]);

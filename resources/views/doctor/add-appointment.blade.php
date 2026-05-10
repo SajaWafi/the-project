@@ -78,13 +78,11 @@
         }
 
         .logo {
-            position: absolute;
-            right: 10px;
-            top: -2px;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            overflow: hidden;
+        position: absolute;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
         }
 
         .logo img {
@@ -306,7 +304,20 @@
     .suggestion-item:hover {
         background: #f2f2f2;
     }
+             .back-btn {
+    position: absolute;
+    left: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #2f80ed;
+    padding: 6px;
+}
 
+.back-btn svg {
+    width: 26px;
+    height: 26px;
+}
     </style>
 </head>
 <body>
@@ -314,6 +325,11 @@
         <div class="content">
 
             <div class="header">
+                 <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
                 <div class="page-title">Adding Appointment</div>
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">

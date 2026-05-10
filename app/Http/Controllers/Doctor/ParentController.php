@@ -68,7 +68,7 @@ class ParentController extends Controller
                     'subtitle' => $linkedChild
                         ? $linkedChild->name . "'s parent"
                         : 'No child linked',
-                    'image' => 'child.png',
+                    'image' => $parent->user->profile_image ?? null,
                 ];
             })
             ->values();
@@ -109,7 +109,7 @@ public function show($id)
         'id' => $parent->id,
         'name' => $parentName,
         'subtitle' => $linkedChild->name . "'s parent",
-        'image' => 'p1.png',
+        'image' => $parent->user->profile_image ?? null,
         'phone' => $parent->user->phone ?? 'No Phone',
         'autism_level' => $linkedChild->autism_level ?? 'Not set',
         'age' => $childAge,

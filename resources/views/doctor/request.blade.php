@@ -20,12 +20,19 @@
             justify-content: center;
 }
 
-.back-btn {
-            position: absolute;
-            left: 10px;
-            font-size: 28px;
-            color: #1d567e;
-            text-decoration: none;
+         .back-btn {
+    position: absolute;
+    left: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #2f80ed;
+    padding: 6px;
+}
+
+.back-btn svg {
+    width: 26px;
+    height: 26px;
 }
         
 body {
@@ -57,7 +64,12 @@ body {
     color:#1f567f;
     padding:20px;
 }
-
+  .logo {
+            position: absolute;
+            right: 0;
+            width: 50px;
+            height: 34px;
+        }
 /* doctor cards */
 .list {
     padding:10px;
@@ -162,8 +174,13 @@ body {
     <div class="content">
             <div class="header">
                 <div class="header-left">
-                    <a href="{{ url()->previous() }}" class="back-btn">‹</a>
+                  <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>   
                     <div class="title">Request</div>
+                    <img src="{{ asset('images/logo.png') }}" class="logo">
                 </div>
             </div>
 

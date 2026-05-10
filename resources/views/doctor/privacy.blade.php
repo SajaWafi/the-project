@@ -71,14 +71,19 @@
             margin-bottom: 22px;
         }
 
-        .back-btn {
+            .back-btn {
             position: absolute;
-            left: 4px;
-            top: 0;
-            font-size: 30px;
-            line-height: 1;
-            color: #3d78ff;
-            text-decoration: none;
+            left: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+        }
+
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
         }
 
         .title {
@@ -139,7 +144,11 @@
         <div class="content">
 
             <div class="header">
-                <a href="{{ route('doctor.doctor-profile') }}" class="back-btn">‹</a>
+             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
                 <div class="title">Privacy Policy</div>
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">

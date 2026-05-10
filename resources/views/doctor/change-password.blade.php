@@ -147,6 +147,20 @@
             border-radius: 10px;
             margin-bottom: 15px;
         }
+          .back-btn {
+            position: absolute;
+            left: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+        }
+
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
+        }
     </style>
 </head>
 
@@ -155,7 +169,11 @@
     <div class="content">
 
         <div class="header">
-            <a href="{{ route('doctor.settings') }}" class="back-btn">‹</a>
+             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
             <div class="title">Password Manager</div>
             <img src="{{ asset('images/logo.png') }}" class="logo">
         </div>

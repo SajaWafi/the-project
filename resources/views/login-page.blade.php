@@ -30,7 +30,7 @@
             overflow: hidden;
             border-radius: 20px;
             background: #f8f8f8;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.20);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20);
         }
 
         .mobile-screen::before {
@@ -50,25 +50,15 @@
             z-index: 1;
             width: 100%;
             height: 100%;
-            padding: 24px 22px 24px;
+            padding: 24px 22px;
             display: flex;
             flex-direction: column;
         }
 
-        .header {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 18px;
-            min-height: 40px;
-        }
-
         .back-btn {
             position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
+            left: 22px;
+            top: 24px;
             border: none;
             background: transparent;
             cursor: pointer;
@@ -78,6 +68,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 2;
         }
 
         .back-btn svg {
@@ -85,11 +76,21 @@
             height: 22px;
         }
 
+        .login-form {
+            width: 100%;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding-top: 34px;
+        }
+
         .title {
-            font-size: 20px;
+            font-size: 26px;
             font-weight: 800;
             color: #1d567e;
             text-align: center;
+            line-height: 1.25;
+            margin: 14px 0 8px;
         }
 
         .subtitle {
@@ -97,12 +98,6 @@
             font-size: 15px;
             color: #6b7280;
             margin-bottom: 24px;
-        }
-
-        .top-logo {
-            width: 75px;
-            margin: 0 auto 16px;
-            display: block;
         }
 
         .error-box {
@@ -125,8 +120,8 @@
             line-height: 1.5;
         }
 
-        .field {
-            margin-bottom: 20px;
+        .form-group {
+            margin-bottom: 22px;
         }
 
         .label {
@@ -149,25 +144,29 @@
             color: #374151;
         }
 
-        .input-wrap {
+        .password-wrapper {
             position: relative;
             width: 100%;
         }
 
-        .input-wrap .input {
-            padding-right: 50px;
+        .password-input {
+            padding-right: 52px;
         }
 
-        .eye-btn {
+        .toggle-password {
             position: absolute;
             top: 50%;
-            right: 14px;
+            right: 12px;
             transform: translateY(-50%);
             border: none;
             background: transparent;
             cursor: pointer;
-            font-size: 18px;
-            color: #555;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
         }
 
         .check-row {
@@ -270,69 +269,85 @@
 <body>
 <div class="mobile-screen">
     <div class="content">
-
-
-    <div class="header">
         <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
             <svg viewBox="0 0 24 24" fill="none">
                 <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
 
-        <div class="title">Login with Email</div>
-        
-    </div>        
-
-        <div class="subtitle">Login to continue</div>
-
-        @if (session('success'))
-            <div class="success-box">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="error-box">
-                @foreach ($errors->all() as $error)
-                    <div>{{ $error }}</div>
-                @endforeach
-            </div>
-        @endif
-
-        <form action="{{ route('login.post') }}" method="POST" style="display:flex; flex-direction:column; flex:1;">
+        <form action="{{ route('login.post') }}" method="POST" class="login-form">
             @csrf
 
-            <div class="field">
-                <label class="label" for="email">Email:</label>
+            <h1 class="title">Log in with Email</h1>
+            <div class="subtitle">Login to continue</div>
+
+            @if (session('success'))
+                <div class="success-box">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="error-box">
+                    @foreach ($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
+
+            <div class="form-group">
+                <label class="label" for="email">Your email:</label>
                 <input
-                    class="input"
-                    id="email"
                     type="email"
+                    id="email"
                     name="email"
+                    class="input"
                     value="{{ old('email') }}"
+                    autocomplete="email"
                     required
                 >
             </div>
 
-            <div class="field">
+            <div class="form-group">
                 <label class="label" for="password">Password:</label>
-                <div class="input-wrap">
+
+                <div class="password-wrapper">
                     <input
-                        class="input"
-                        id="password"
                         type="password"
+                        id="password"
                         name="password"
+                        class="input password-input"
+                        autocomplete="current-password"
                         required
                     >
-                    <button type="button" class="eye-btn" onclick="togglePassword()">👁</button>
+
+                    <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
+                        <svg id="eyeSlashIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" />
+                            <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" />
+                            <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" />
+                            <path d="M1 1l22 22" />
+                        </svg>
+
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
+            <label class="check-row">
+                <input type="checkbox" name="remember" >
+                <span>Remmeber me</span>
+            </label>
+
             <button type="submit" class="btn-login">Login</button>
-    <!--
-    
-    
-    
+
+            <!--
+            Google login was already disabled in the original file with href="#".
+            Enable this block only after connecting it to a real Google login route.
+
             <div class="divider">or</div>
 
             <a href="#" class="google-btn">
@@ -344,80 +359,30 @@
                 </svg>
                 <span>Login with Google</span>
             </a>
-    
-    -->
-        </form>
+            -->
 
-        <div class="bottom-text">
-            Don’t have an account?
-            <a href="{{ route('signup.choice') }}">Sign up</a>
-        </div>
+            <div class="bottom-text">
+                Don’t have an account?
+                <a href="{{ route('signup.choice') }}">Sign up</a>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
     function togglePassword() {
         const passwordInput = document.getElementById('password');
-        passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        const eyeSlashIcon = document.getElementById('eyeSlashIcon');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        const showPassword = passwordInput.type === 'password';
+        passwordInput.type = showPassword ? 'text' : 'password';
+
+        if (eyeSlashIcon && eyeIcon) {
+            eyeSlashIcon.style.display = showPassword ? 'none' : 'block';
+            eyeIcon.style.display = showPassword ? 'block' : 'none';
+        }
     }
 </script>
 </body>
 </html>
-
-<!--
-
-    <div class="mobile-screen">
-        <div class="content">
-            <form action="{{ route('step1.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
-                @csrf
-
-
-            </form>
-            <h1 class="title">Log in with Email</h1>
-
-            <div class="form-group" >
-                <label class="label" for="email">Your email:</label>
-                <input type="email" id="email" class="input">
-            </div>
-
-          <div class="form-group">
-    <label class="label" for="password">Password:</label>
-
-    <div class="password-wrapper">
-        <input type="password" id="password" class="input password-input">
-
-        <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
-            <svg id="eyeSlashIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" />
-                <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" />
-                <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" />
-                <path d="M1 1l22 22" />
-            </svg>
-
-            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
-        </button>
-    </div>
-</div>
-            <label class="check-row">
-                <input type="checkbox" checked>
-                <span>keep me logged in</span>
-            </label>
-
-            <button class="btn-login">Login</button>
-
-            <div class="divider">or</div>
-
-            <a href="#" class="google-btn">
-            <svg width="20" height="20" viewBox="0 0 48 48">
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.69 1.22 9.18 3.6l6.85-6.85C35.91 2.32 30.36 0 24 0 14.82 0 6.73 5.2 2.69 12.81l7.98 6.2C12.3 13.6 17.69 9.5 24 9.5z"/>
-                <path fill="#4285F4" d="M46.5 24.5c0-1.63-.15-3.2-.43-4.71H24v9.02h12.7c-.55 2.96-2.22 5.47-4.74 7.15l7.29 5.67C43.98 37.5 46.5 31.47 46.5 24.5z"/>
-                <path fill="#FBBC05" d="M10.67 28.99A14.5 14.5 0 0 1 9.5 24c0-1.73.3-3.41.84-4.99l-7.98-6.2A23.93 23.93 0 0 0 0 24c0 3.87.93 7.52 2.59 10.81l8.08-5.82z"/>
-                <path fill="#34A853" d="M24 48c6.36 0 11.71-2.1 15.61-5.7l-7.29-5.67c-2.02 1.36-4.6 2.17-8.32 2.17-6.31 0-11.7-4.1-13.63-9.52l-8.08 5.82C6.73 42.8 14.82 48 24 48z"/>
-            </svg>
-
-    <span>Login with Google</span>
-</a>
--->

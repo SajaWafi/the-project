@@ -96,14 +96,12 @@
         }
 
         /* ===== الشعار ===== */
-        .logo {
+          .logo {
             position: absolute;
-            right: 10px;
-            top: -2px;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            overflow: hidden;
+            right: 0;
+            width: 100px;
+            height:100px;
+            object-fit: contain;
         }
 
         .logo img {
@@ -315,6 +313,20 @@
             margin: 0 22px 14px;
             font-size: 13px;
         }
+        .back-btn {
+        position: absolute;
+        left: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #2f80ed;
+        padding: 6px;
+    }
+
+    .back-btn svg {
+        width: 26px;
+        height: 26px;
+    }
     </style>
 </head>
 <body>
@@ -322,7 +334,11 @@
         <div class="content">
 
             <div class="header">
-                <a href="{{ route('doctor.workplace.timing') }}" class="back-btn">‹</a>
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
 
                 <div class="page-title">Add Workplace</div>
 

@@ -70,19 +70,19 @@ class ReportController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $episodesCount = PanicEvent::whereBetween('created_at', [$startDate, $endDate])->count() ?: 6;
+        // $episodesCount = PanicEvent::whereBetween('created_at', [$startDate, $endDate])->count() ?: 6;
         $episodesCount = 6;
-        $previousEpisodesCount = PanicEvent::whereBetween('created_at', [$previousStart, $previousEnd])->count() ?: 4;
+        // $previousEpisodesCount = PanicEvent::whereBetween('created_at', [$previousStart, $previousEnd])->count() ?: 4;
 
-        $avgHeartRate = SensorReading::whereBetween('created_at', [$startDate, $endDate])->avg('heart_rate') ?? 122;
+        // $avgHeartRate = SensorReading::whereBetween('created_at', [$startDate, $endDate])->avg('heart_rate') ?? 122;
 
-        $peakHeartRate = SensorReading::whereBetween('created_at', [$startDate, $endDate])->max('heart_rate') ?? 165;
+        // $peakHeartRate = SensorReading::whereBetween('created_at', [$startDate, $endDate])->max('heart_rate') ?? 165;
 
-        $safeZoneBreaches = Notification::where('type', 'safe_zone_exit')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->count() ?: 3;
+        // $safeZoneBreaches = Notification::where('type', 'safe_zone_exit')
+           // ->whereBetween('created_at', [$startDate, $endDate])
+           // ->count() ?: 3;
 
-        $latestReading = SensorReading::latest()->first();
+        // $latestReading = SensorReading::latest()->first();
 
         $liveStatus = $latestReading->child_status ?? 'anxiety';
 
@@ -91,23 +91,23 @@ class ReportController extends Controller
         | Comparison
         |--------------------------------------------------------------------------
         */
-        $changePercent = $previousEpisodesCount > 0
-            ? round((($episodesCount - $previousEpisodesCount) / $previousEpisodesCount) * 100)
-            : null;
+        // $changePercent = $previousEpisodesCount > 0
+          //  ? round((($episodesCount - $previousEpisodesCount) / $previousEpisodesCount) * 100)
+           // : null;
 
-        $comparison = $this->getComparisonFromDB($changePercent);
+       // $comparison = $this->getComparisonFromDB($changePercent);
 
         /*
         |--------------------------------------------------------------------------
         | Recommendations
         |--------------------------------------------------------------------------
         */
-        $recommendations = $this->generateRecommendations(
-            $changePercent,
-            $peakHeartRate,
-            $safeZoneBreaches,
-            $liveStatus
-        );
+       // $recommendations = $this->generateRecommendations(
+         //   $changePercent,
+          //  $peakHeartRate,
+          //  $safeZoneBreaches,
+          //  $liveStatus
+        //);
 
         return [
             'child' => $child,
@@ -166,7 +166,7 @@ class ReportController extends Controller
     | Recommendations (Logic)
     |--------------------------------------------------------------------------
     */
-    private function generateRecommendations($changePercent, $peakHeartRate, $safeZoneBreaches, $status)
+    /* private function generateRecommendations($changePercent, $peakHeartRate, $safeZoneBreaches, $status)
     {
         $rec = [];
 
@@ -191,5 +191,5 @@ class ReportController extends Controller
         }
 
         return $rec;
-    }
+    } */
 }
