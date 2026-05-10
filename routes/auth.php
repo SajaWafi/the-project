@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\ParentProfile;
 use App\Models\Child;
 use App\Models\DoctorProfile;
+use App\Http\Controllers\AdminController;
 
 // Welcome
 Route::get('/', function () {
@@ -39,6 +40,10 @@ Route::post('/login', function (Request $request) {
 
     $user = Auth::user();
 
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
     if ($user->role === 'parent') {
         return redirect()->route('parents.home');
     }
@@ -46,6 +51,7 @@ Route::post('/login', function (Request $request) {
     if ($user->role === 'doctor') {
         return redirect()->route('doctor.home');
     }
+
 
     return redirect('/');
 })->name('login.post');
@@ -320,6 +326,14 @@ Route::post('/doctor/signup/step3', function (Request $request) {
 
 Route::post('/logout', function (Request $request) {
     Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect()->route('login.page');
+})->name('logout');
+
+/*
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
 
     return redirect()->route('login');
     $request->session()->invalidate();
@@ -333,7 +347,8 @@ Route::post('/logout', function (Request $request) {
     return redirect('/login'); // أو الصفحة الرئيسية
 
 })->name('logout');
+*/
 
-
-  
+// dashboard for admin
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 

@@ -254,51 +254,124 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Taif" class="logo">
             </div>
 
-            <div class="section-pill">Today</div>
+            @php
+                $todayAlerts = $alerts->filter(fn($alert) =>
+                    \Carbon\Carbon::parse($alert->sent_at ?? $alert->created_at)->isToday()
+                );
 
-            <div class="alerts-list">
-                <div class="alert-card severe">
-                    <div class="alert-title">WARNING: Severe<br>Panic Attack Detected</div>
-                    <div class="alert-text">
-                        Immediate intervention required. High-intensity
-                        symptoms detected. Locate the child now.
+                $yesterdayAlerts = $alerts->filter(fn($alert) =>
+                    \Carbon\Carbon::parse($alert->sent_at ?? $alert->created_at)->isYesterday()
+                );
+            @endphp
+
+            @if($todayAlerts->count())
+                <div class="section-pill">Today</div>
+
+                @foreach($todayAlerts as $alert)
+                    @php
+                        $type = $alert->alert_type;
+
+                        $titleClass = match($type) {
+                            'panic' => 'title-red',
+                            'heart_rate' => 'title-yellow',
+                            'safe_zone' => 'title-red',
+                            'activity' => 'title-yellow',
+                            default => 'title-blue',
+                        };
+                    @endphp
+
+                    <div class="alert-card {{ $type }}">
+                        <div class="alert-title {{ $titleClass }}">
+                            {{ $alert->title }}
+                        </div>
+
+                        <div class="alert-message">
+                            {{ $alert->message }}
+                        </div>
+
+                        @if($type === 'safe_zone')
+                            <div class="safe-question">
+                                <span id="safe-text-{{ $alert->id }}">
+                                    Is the children with you?
+                                </span>
+
+                                <button type="button" class="safe-btn" onclick="answerSafeZone({{ $alert->id }}, 'yes')">
+                                    yes
+                                </button>
+
+                                <button type="button" class="safe-btn" onclick="answerSafeZone({{ $alert->id }}, 'no')">
+                                    No
+                                </button>
+                            </div>
+                        @endif
                     </div>
+                @endforeach
+            @endif
+
+            @if($yesterdayAlerts->count())
+                <div class="section-pill">Yesterday</div>
+
+                @foreach($yesterdayAlerts as $alert)
+                    @php
+                        $type = $alert->alert_type;
+
+                        $titleClass = match($type) {
+                            'panic' => 'title-red',
+                            'heart_rate' => 'title-yellow',
+                            'safe_zone' => 'title-red',
+                            'activity' => 'title-yellow',
+                            default => 'title-blue',
+                        };
+                    @endphp
+
+                    <div class="alert-card {{ $type }}">
+                        <div class="alert-title {{ $titleClass }}">
+                            {{ $alert->title }}
+                        </div>
+
+                        <div class="alert-message">
+                            {{ $alert->message }}
+                        </div>
+
+                        @if($type === 'safe_zone')
+                            <div class="safe-question">
+                                <span id="safe-text-{{ $alert->id }}">
+                                    Is the children with you?
+                                </span>
+
+                                <button type="button" class="safe-btn" onclick="answerSafeZone({{ $alert->id }}, 'yes')">
+                                    yes
+                                </button>
+
+                                <button type="button" class="safe-btn" onclick="answerSafeZone({{ $alert->id }}, 'no')">
+                                    No
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            @endif
+
+            @if($alerts->isEmpty())
+                <div class="alert-card">
+                    <div class="alert-title title-blue">No alerts</div>
+                    <div class="alert-message">No alerts for today or yesterday</div>
                 </div>
+            @endif
 
-                <div class="alert-card moderate">
-                    <div class="alert-title">Alert: Moderate Panic<br>Attack</div>
-                    <div class="alert-text">
-                        The child is showing signs of moderate anxiety.
-                        Please check on them.
-                    </div>
-                </div>
-            </div>
+            <script>
+                function answerSafeZone(alertId, answer) {
+                    const text = document.getElementById('safe-text-' + alertId);
 
-            <div class="section-pill">Yesterday</div>
+                    text.classList.remove('safe-answer-yes', 'safe-answer-no');
 
-            <div class="alerts-list">
-                <div class="alert-card zone">
-                    <div class="alert-title">Security Alert: Safe<br>Zone Breached</div>
-                    <div class="alert-text">
-                        The child has left the designated safe area. Check
-                        the live location immediately.
-                    </div>
-
-                    <div class="alert-actions">
-                        <span>Is the children with you?</span>
-                        <button class="action-chip">yes</button>
-                        <button class="action-chip">No</button>
-                    </div>
-                </div>
-
-                <div class="alert-card health">
-                    <div class="alert-title">Health Alert: High<br>Heart Rate</div>
-                    <div class="alert-text">
-                        Abnormal spike in heart rate detected. Please verify
-                        the child's status.
-                    </div>
-                </div>
-            </div>
+                    if (answer === 'yes') {
+                        text.classList.add('safe-answer-yes');
+                    } else {
+                        text.classList.add('safe-answer-no');
+                    }
+                }
+            </script>
 
         </div>
 

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 use App\Models\DoctorRequest;
+use App\Models\Alert;
 
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Parent\DoctorController;
@@ -59,7 +60,25 @@ Route::prefix('parents')
     | Alerts / Location / Requests
     |--------------------------------------------------------------------------
     */
-    Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
+
+    Route::get('/alerts', function () {
+        $parent = auth()->user()->parentProfile;
+
+        if (!$parent) {
+            abort(404, 'Parent profile not found.');
+        }
+
+        $alerts = Alert::where('parent_id', $parent->id)
+            ->where(function ($q) {
+                $q->whereDate('sent_at', now()->toDateString()) // اليوم
+                ->orWhereDate('sent_at', now()->subDay()->toDateString()); // أمس
+            })
+            ->latest('sent_at')
+            ->get();
+
+        return view('parents.alerts', compact('alerts'));
+    })->name('alerts');
+
     Route::get('/location', fn() => view('parents.location'))->name('location');
 
     Route::get('/request', function () {
@@ -76,7 +95,7 @@ Route::prefix('parents')
             ->get();
 
         return view('parents.requests', compact('requests'));
-    })->name('request');
+    })->name('requests');
 
     /*
     |--------------------------------------------------------------------------

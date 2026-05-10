@@ -48,13 +48,14 @@
                 justify-content: center;
                 align-items: center;
         }
+        
         .back-link {
         position: absolute;
         left: 0;
         font-size: 28px;
         color: #2f80ed;
         text-decoration: none;
-    }
+         }
         .topbar-title {
             margin: 0;
             font-size: 22px;
@@ -100,8 +101,8 @@
         border-radius: 50%;
         overflow: hidden; /* مهم */
          border: 2px solid #ffffff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .avatar img {
             width: 100%;
             height: 100%;
@@ -322,31 +323,31 @@
         font-weight: 800;
         box-shadow: 0 10px 18px rgba(37, 99, 235, 0.22);
         margin: 20px auto 0;
-    }
-        @media (max-width: 480px) {
-    body {
-        padding: 0;
-    }
+        }
+            @media (max-width: 480px) {
+        body {
+            padding: 0;
+        }
 
-    .mobile-shell {
-        width: 100%;
-        max-width: 100%;
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-        box-shadow: none;
-    }
-}
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+        .mobile-shell {
+            width: 100%;
+            max-width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.logo {
-    width: 40px;
-    height: auto;
-}
+        .logo {
+            width: 40px;
+            height: auto;
+        }
     </style>
 </head>
 <body>
