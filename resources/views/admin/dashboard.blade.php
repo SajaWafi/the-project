@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Taif</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+>
     <style>
         :root {
             --primary-color: #1d567e;
@@ -106,23 +111,8 @@
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>Taif Project</h2>
-    <ul class="sidebar-menu">
-        <li><a href="#" class="active">📊 <span>Dashboard</span></a></li>
-        <li>
-    <a href="{{ route('admin.doctors.index') }}"
-       class="{{ request()->routeIs('admin.doctors.*') ? 'active' : '' }}">
-        🧑‍⚕️ <span>Manage Doctors</span>
-    </a>
-</li>
-        <li><a href="#">👨‍👩‍👧 <span>Manage Parents</span></a></li>
-        <li><a href="#">👶 <span>Manage Children</span></a></li>
-        <li><a href="#">🔗 <span>Linking Requests</span></a></li>
-        <li><a href="#">⚠️ <span>Complaints</span></a></li>
-        <li><a href="#">⚙️ <span>Settings</span></a></li>
-    </ul>
-</div>
+
+   @include('admin.partials.sidebar')
 
 <div class="main-content">
     <div class="header">

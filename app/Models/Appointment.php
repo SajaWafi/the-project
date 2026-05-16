@@ -10,6 +10,7 @@ class Appointment extends Model
         'doctor_id',
         'parent_id',
         'child_id',
+        'workplace_id',
         'date',
         'from_hour',
         'from_minute',

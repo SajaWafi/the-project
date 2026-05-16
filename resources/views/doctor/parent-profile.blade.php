@@ -517,13 +517,13 @@
                         Cancel
                     </button>
 
-                    <<form action="#" method="POST" onsubmit="event.preventDefault(); closeDeleteModal();">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="modal-delete-btn">
-                            Yes, Delete
-                        </button>
-                    </form>
+                    <form action="{{ route('doctor.parent.remove', $parent['id']) }}" method="POST">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="modal-delete-btn" onclick="closeDeleteModal()">
+        Yes, Delete
+    </button>
+</form>
                 </div>
             </div>
         </div>

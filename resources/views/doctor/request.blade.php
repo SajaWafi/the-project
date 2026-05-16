@@ -166,45 +166,87 @@ body {
 
 </style>
 </head>
+<body>
 
 <body>
 
 <div class="phone">
-
     <div class="content">
-            <div class="header">
-                <div class="header-left">
-                  <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>   
-                    <div class="title">Request</div>
-                    <img src="{{ asset('images/logo.png') }}" class="logo">
-                </div>
-            </div>
-
-    <div class="list">
-        
-        <div class="card">
-            <img src="{{ asset('pics/bg.png') }}">
-
-            <div class="card-info">
-                <div class="name">Nawar Omar</div>
-                <div class="specialty">waiting for accept the request</div>
-
-                <div class="actions">
-                    <!-- cancel -->
-                    <button class="btn-icon">
-                        <i class="fi fi-sr-user">cancel request</i>
-                    </button>         
-                </div>
+        <div class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>   
+                <div class="title">Requests</div>
+                <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo">
             </div>
         </div>
-      
 
-    
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <div class="list">
+            @forelse($requests as $request)
+                <div class="card">
+                    @php
+                        // 1. نتأكدوا أولاً لو الأهل عندهم صورة مخزنة في قاعدة البيانات
+                        $userPhoto = $request->parentProfile?->user?->profile_image;
+
+                        // 2. لو الصورة موجودة، نطلعوا مسارها من الـ storage، ولو مش موجودة نستخدموا الصورة الافتراضية
+                        // لاحظ تم تعديل الامتداد إلى .png بدل .php
+                        $displayImage = $userPhoto 
+                                        ? asset('storage/' . $userPhoto) 
+                                        : asset('images/default-user.png'); 
+                    @endphp
+
+                    <img src="{{ $displayImage }}" alt="Profile Image" style="object-fit: cover;">
+
+                    <div class="card-info">
+                        <div class="name">
+                            {{ $request->parentProfile?->user?->first_name ?? 'ولي أمر' }} {{ $request->parentProfile?->user?->last_name ?? '' }}
+                        </div>
+                        
+                        @if($request->status == 'pending')
+                            <div class="specialty" style="color: #030201;">Waiting for response ⏳</div>
+                        @elseif($request->status == 'accepted')
+                            <div class="specialty" style="color: #021008;">Request Accepted ✔️</div>
+                        @elseif($request->status == 'rejected')
+                            <div class="specialty" style="color: #070303;">Request Rejected ❌</div>
+                        @endif
+
+                        <div class="actions">
+                            @if($request->status == 'pending')
+                                <form action="{{ route('doctor.request.cancel', $request->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-icon" style="border: none; cursor: pointer; color:#e74c3c;">
+                                        Cancel Request
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                </div> @empty
+                <div class="card">
+                    <div class="card-info">
+                        <div class="name" style="text-align: center; width: 100%;">No requests sent yet</div>
+                    </div>
+                </div>
+            @endforelse
+        </div>
+    </div>
 </div>
 
 </body>
+
 </html>

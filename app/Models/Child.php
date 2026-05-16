@@ -15,7 +15,7 @@ class Child extends Model
     'birth_date',
     'autism_level',
 ];
-
+ 
     public function parent()
     {
          return $this->belongsTo(User::class, 'parent_id');

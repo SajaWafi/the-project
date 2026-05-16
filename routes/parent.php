@@ -280,6 +280,10 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 
     Route::get('/reports-settings', fn() => view('reports-settings'))->name('reports.settings');
 
+    /////deletedoctor
+    Route::delete('/doctors/{id}/delete', [\App\Http\Controllers\Parent\DoctorController::class, 'removeDoctor'])
+    ->name('doctors.delete');
+
     /*
     |--------------------------------------------------------------------------
     | Delete Account Logic

@@ -11,6 +11,7 @@ class DoctorProfile extends Model
         'phone',
         'gender',
         'specialization',
+        'approval_status',
         'birth_date',
         'bio',
     ];

@@ -81,6 +81,19 @@ protected $casts = [
             }
         });
     }
+
+
+    // لو كان المستخدم دكتور، هادي تجيب طلباته اللي بعتها
+    public function sentRequests()
+    {
+        return $this->hasMany(DoctorRequest::class, 'doctor_id');
+    }
+
+    // لو كان المستخدم أب، هادي تجيب الطلبات اللي وصلاته
+    public function receivedRequests()
+    {
+        return $this->hasMany(DoctorRequest::class, 'parent_id');
+    }
 }
 
 

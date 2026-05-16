@@ -20,6 +20,11 @@ Route::get('/welcome-second', function () {
     return view('welcome-second');
 })->name('welcome.second');
 
+Route::get('/doctor/pending-approval', function () {
+    return view('doctor.pending-approval');
+})->name('doctor.pending.approval');
+
+
 
 // =======================
 // Login Page
@@ -31,11 +36,26 @@ Route::get('/login', function () {
     if (Auth::check()) {
         $user = Auth::user();
 
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
         if ($user->role === 'parent') {
             return redirect()->route('parents.home');
         }
 
         if ($user->role === 'doctor') {
+            if (
+                !$user->doctorProfile ||
+                $user->doctorProfile->approval_status !== 'approved'
+            ) {
+                Auth::logout();
+
+                return redirect()->route('login.page')->withErrors([
+                    'email' => 'Your doctor account is waiting for admin approval.',
+                ]);
+            }
+
             return redirect()->route('doctor.home');
         }
 
@@ -54,10 +74,8 @@ Route::post('/login', function (Request $request) {
         'password' => ['required'],
     ]);
 
-    // هذا متاع Remember me
     $remember = $request->has('remember');
 
-    // مهم: لازم نحط $remember هنا
     if (!Auth::attempt($credentials, $remember)) {
         return back()->withErrors([
             'email' => 'Invalid email or password.',
@@ -77,15 +95,30 @@ Route::post('/login', function (Request $request) {
     }
 
     if ($user->role === 'doctor') {
+        if (
+            !$user->doctorProfile ||
+            $user->doctorProfile->approval_status !== 'approved'
+        ) {
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => 'Your doctor account is waiting for admin approval.',
+            ])->onlyInput('email');
+        }
+
         return redirect()->route('doctor.home');
     }
 
+    Auth::logout();
 
-    return redirect()->route('welcome');
-
+    return back()->withErrors([
+        'email' => 'Invalid user role.',
+    ])->onlyInput('email');
 
 })->name('login.post');
-
 
 // =======================
 // Protected Home Pages
@@ -348,10 +381,10 @@ Route::post('/doctor/signup/step2', function (Request $request) {
 
 
 // step3
+
 Route::get('/doctor/signup/step3', function () {
     return view('doctor-signup.step3');
 })->name('doctor.step3');
-
 
 Route::post('/doctor/signup/step3', function (Request $request) {
     $request->validate([
@@ -359,6 +392,7 @@ Route::post('/doctor/signup/step3', function (Request $request) {
         'gender' => 'required|in:Male,Female',
         'specialize' => 'required|string|max:255',
         'dob' => 'required|date',
+        'bio' => 'nullable|string|max:1000',
     ]);
 
     session([
@@ -375,10 +409,14 @@ Route::post('/doctor/signup/step3', function (Request $request) {
         empty($signup['first_name']) ||
         empty($signup['last_name']) ||
         empty($signup['email']) ||
-        empty($signup['password'])
+        empty($signup['password']) ||
+        empty($signup['phone']) ||
+        empty($signup['gender']) ||
+        empty($signup['specialization']) ||
+        empty($signup['birth_date'])
     ) {
         return redirect()->route('doctor.step1')
-            ->withErrors(['Please complete step 1 first.']);
+            ->withErrors(['Please complete signup steps first.']);
     }
 
     $user = User::create([
@@ -396,23 +434,15 @@ Route::post('/doctor/signup/step3', function (Request $request) {
         'birth_date' => $signup['birth_date'],
         'specialization' => $signup['specialization'],
         'bio' => $signup['bio'] ?? null,
-    ]);
 
-    session([
-        'doctor_signup.user_id' => $user->id,
-        'doctor_signup.doctor_profile_id' => $doctorProfile->id,
+        // مهم جدًا: الدكتور الجديد ينتظر موافقة الأدمن
+        'approval_status' => 'pending',
     ]);
-
-    Auth::login($user);
 
     session()->forget('doctor_signup');
 
-    return redirect()->route('doctor.home');
+
+    return redirect()->route('doctor.pending.approval')
+        ->with('success', 'Your account has been created and is waiting for admin approval.');
 })->name('doctor.step3.post');
-
-
-
-
-
-
 
