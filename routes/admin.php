@@ -4,21 +4,28 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DoctorManagementController;
 use App\Http\Controllers\Admin\ParentManagementController;
+
+use App\Http\Controllers\Admin\ChildrenManagementController;
+use App\Http\Controllers\Admin\ComplaintController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ReportsController;
+
 use App\Http\Controllers\Admin\DoctorRequestManagementController;
 use App\Http\Controllers\Admin\AdminAppointmentController;
 use App\Http\Controllers\Admin\AdminAlertController;
 use App\Http\Controllers\Admin\ProfileController;
+
 
 Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth', 'role:admin'])
     ->group(function () {
 
+        //admin dashbord
         Route::get('/dashboard', [AdminController::class, 'index'])
             ->name('dashboard');
- 
-            ////////////doctors
 
+        //doctor managment
         Route::get('/doctors', [DoctorManagementController::class, 'index'])
             ->name('doctors.index');
 
@@ -31,7 +38,18 @@ Route::prefix('admin')
         Route::delete('/doctors/{doctor}', [DoctorManagementController::class, 'destroy'])
             ->name('doctors.destroy');
 
-/////////// parents
+
+        //children managment
+        Route::get('/children', [ChildrenManagementController::class, 'index'])->name('children.index');
+        Route::put('/children/{id}', [ChildrenManagementController::class, 'update'])->name('children.update');
+        Route::delete('/children/{id}', [ChildrenManagementController::class, 'destroy'])->name('children.destroy');
+
+        //complaints managment
+        Route::get('/complaints', [ComplaintController::class, 'index'])->name('complaints.index');
+        Route::delete('/complaints/{id}', [ComplaintController::class, 'destroy'])->name('complaints.destroy');
+
+
+        // parents managment
 
 
             Route::get('/parents', [ParentManagementController::class, 'index'])
@@ -46,7 +64,7 @@ Route::prefix('admin')
             Route::delete('/parents/{parent}', [ParentManagementController::class, 'destroy'])
                 ->name('parents.destroy');
 
-  //////////DoctorRequestManagement
+            //DoctorRequestManagement
   
             Route::get('/doctor-requests', [DoctorRequestManagementController::class, 'index'])
                 ->name('doctor-requests.index');
@@ -60,7 +78,7 @@ Route::prefix('admin')
             Route::delete('/doctor-requests/{requestItem}', [DoctorRequestManagementController::class, 'destroy'])
                 ->name('doctor-requests.destroy');
 
-            ////////adminapprovdoctors
+            //adminapprovdoctors
 
             Route::post('/doctors/{doctor}/approve', [DoctorManagementController::class, 'approve'])
                 ->name('doctors.approve');
@@ -69,28 +87,29 @@ Route::prefix('admin')
                 ->name('doctors.reject');
 
 
-                //////////appointmentsMangegment
-                Route::get('/appointments', [AdminAppointmentController::class, 'index'])
+            //appointmentsMangegment
+            Route::get('/appointments', [AdminAppointmentController::class, 'index'])
                     ->name('appointments.index');
 
-                Route::put('/appointments/{appointment}', [AdminAppointmentController::class, 'update'])
+            Route::put('/appointments/{appointment}', [AdminAppointmentController::class, 'update'])
                     ->name('appointments.update');
 
-                Route::delete('/appointments/{appointment}', [AdminAppointmentController::class, 'destroy'])
+            Route::delete('/appointments/{appointment}', [AdminAppointmentController::class, 'destroy'])
                     ->name('appointments.destroy');
 
-                    /////////alerts
-                Route::get('/alerts', [AdminAlertController::class, 'index'])
+            //alerts
+            Route::get('/alerts', [AdminAlertController::class, 'index'])
                     ->name('alerts.index');
 
-                Route::post('/alerts/{alert}/mark-read', [AdminAlertController::class, 'markRead'])
+            Route::post('/alerts/{alert}/mark-read', [AdminAlertController::class, 'markRead'])
                     ->name('alerts.mark-read');
 
-                Route::post('/alerts/{alert}/mark-unread', [AdminAlertController::class, 'markUnread'])
+            Route::post('/alerts/{alert}/mark-unread', [AdminAlertController::class, 'markUnread'])
                     ->name('alerts.mark-unread');
 
-                Route::delete('/alerts/{alert}', [AdminAlertController::class, 'destroy'])
+            Route::delete('/alerts/{alert}', [AdminAlertController::class, 'destroy'])
                     ->name('alerts.destroy');
+
 
 
     
@@ -103,7 +122,3 @@ Route::prefix('admin')
     });
 
 
-
-
-
-   

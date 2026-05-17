@@ -1,5 +1,6 @@
 <?php
 
+/*
 namespace App\Models\ParentModule;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;

@@ -2,23 +2,35 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ParentProfile;
-use App\Models\DoctorProfile;
 
 class Child extends Model
 {
-   protected $fillable = [
-    'parent_id',
-    'name',
-    'gender',
-    'birth_date',
-    'autism_level',
-];
- 
-    public function parent()
+    use HasFactory;
+
+    protected $table = 'children';
+
+    protected $fillable = [
+        'parent_id',
+        'name',
+        'gender',
+        'birth_date',
+        'autism_level',
+    ];
+
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
+
+    public function parentProfile()
     {
-         return $this->belongsTo(User::class, 'parent_id');
+        return $this->belongsTo(ParentProfile::class, 'parent_id');
+    }
+
+    public function parentUser()
+    {
+        return $this->parentProfile->user();
     }
 
     public function doctors()
@@ -28,7 +40,8 @@ class Child extends Model
             'child_doctor',
             'child_id',
             'doctor_id'
-        )->withPivot('status', 'assigned_at')->withTimestamps();
+        )->withPivot('status', 'assigned_at')
+         ->withTimestamps();
     }
 
     public function appointments()

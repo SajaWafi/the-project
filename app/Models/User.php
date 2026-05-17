@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Complaint;
 
 class User extends Authenticatable
 {
@@ -38,7 +39,6 @@ protected $casts = [
     |----------------------------------------------------------------------
     */
 
-    // ⚠️ إذا عندك أكثر من طفل خليه hasMany مش hasOne
     public function children()
     {
         return $this->hasMany(\App\Models\Child::class, 'parent_id');
@@ -52,6 +52,11 @@ protected $casts = [
     public function parentProfile()
     {
         return $this->hasOne(\App\Models\ParentProfile::class, 'user_id');
+    }
+
+    public function complaints()
+    {
+        return $this->hasMany(Complaint::class);
     }
 
     

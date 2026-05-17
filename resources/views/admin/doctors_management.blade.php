@@ -587,8 +587,9 @@
 </head>
 
 <body>
-  @include('admin.partials.sidebar')
+    @include('admin.partials.sidebar')
 
+    <div class="admin-main-content text-start">
     <div class="admin-main-content text-start">
         <div class="admin-page-header">
             <div>
