@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
+class ProfileController extends Controller
+{
+    // عرض صفحة الإعدادات
+    public function index()
+    {
+        $admin = Auth::user(); 
+        return view('admin.settings', compact('admin'));
+    }
+
+ // تحديث بيانات الحساب
+    public function update(Request $request)
+    {
+        $admin = Auth::user(); 
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email,' . $admin->id,
+            'phone'      => 'nullable|string|max:20',
+            // إذا كتب باسورد جديد، لازم يكتب الحالي
+            'current_password' => 'nullable|required_with:password',
+            'password'   => 'nullable|min:8', 
+        ]);
+
+        $admin->first_name = $request->first_name;
+        $admin->last_name = $request->last_name;
+        $admin->email = $request->email;
+        $admin->phone = $request->phone;
+
+        // التحقق وتحديث كلمة المرور
+        if ($request->filled('password')) {
+            // التأكد من أن الباسورد الحالي صحيح
+            if (!Hash::check($request->current_password, $admin->password)) {
+                return back()->withErrors(['current_password' => 'The current password you entered is incorrect.']);
+            }
+            $admin->password = Hash::make($request->password);
+        }
+
+        $admin->save();
+
+        return redirect()->back()->with('success', 'Your settings have been updated successfully.');
+    }
+
+    // حذف الحساب
+    public function destroy(Request $request)
+    {
+        $admin = Auth::user();
+        
+        Auth::logout();
+        $admin->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login')->with('success', 'Your account has been deleted.');
+    }
+}

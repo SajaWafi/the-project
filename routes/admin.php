@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\DoctorRequestManagementController;
 use App\Http\Controllers\Admin\AdminAppointmentController;
 use App\Http\Controllers\Admin\AdminAlertController;
+use App\Http\Controllers\Admin\ProfileController;
 
 
 Route::prefix('admin')
@@ -108,5 +109,16 @@ Route::prefix('admin')
 
             Route::delete('/alerts/{alert}', [AdminAlertController::class, 'destroy'])
                     ->name('alerts.destroy');
-});
+
+
+
+    
+    // مسارات الإعدادات (Settings)
+// مسارات الإعدادات (Settings)
+    Route::get('/settings', [ProfileController::class, 'index'])->name('settings.index');
+    Route::put('/settings/update', [ProfileController::class, 'update'])->name('settings.update');
+    Route::delete('/settings/delete', [ProfileController::class, 'destroy'])->name('settings.destroy');
+    
+    });
+
 
