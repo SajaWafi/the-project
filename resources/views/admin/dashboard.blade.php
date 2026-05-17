@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -285,6 +284,10 @@
 
     </div>
 
+@php
+    $complaintsChartData = $complaintsData ?? [0,0,0,0,0,0,0];
+@endphp
+
 <script>
 
     // Registration Chart
@@ -369,6 +372,7 @@
     const last7Days = [];
 
     for (let i = 6; i >= 0; i--) {
+
         const d = new Date();
 
         d.setDate(d.getDate() - i);
@@ -380,7 +384,7 @@
         );
     }
 
-    const complaintsData = @json($complaintsData ?? [0,0,0,0,0,0,0]);
+    const complaintsData = @json($complaintsChartData);
 
     new Chart(ctxComplaints, {
         type: 'line',
@@ -419,4 +423,3 @@
 
 </body>
 </html>
-

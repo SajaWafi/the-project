@@ -435,7 +435,7 @@ Route::post('/doctor/signup/step3', function (Request $request) {
         'specialization' => $signup['specialization'],
         'bio' => $signup['bio'] ?? null,
 
-        // مهم جدًا: الدكتور الجديد ينتظر موافقة الأدمن
+        // admin approval
         'approval_status' => 'pending',
     ]);
 
