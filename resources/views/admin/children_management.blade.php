@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Management - Taif Project</title>
+    <title>children Management - Taif Project</title>
 
     <link
         rel="stylesheet"
@@ -168,10 +168,10 @@
         }
 
         /* =========================
-           Doctors Table Section
+           Children Table Section
         ========================= */
 
-        .doctor-management-card {
+        .children-management-card {
             width: 100%;
             margin-top: 20px;
             overflow-x: auto;
@@ -180,7 +180,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
 
-        .doctor-table-header {
+        .children-table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -188,43 +188,43 @@
             border-bottom: 1px solid #e5e7eb;
         }
 
-        .doctor-table-title {
+        .children-table-title {
             margin: 0;
             font-weight: 700;
             color: #111827;
         }
 
-        .doctor-search-wrapper {
+        .children-search-wrapper {
             position: relative;
             width: 250px;
         }
 
-        .doctor-search-icon {
+        .children-search-icon {
             position: absolute;
             left: 12px;
             top: 10px;
             color: #6b7280;
         }
 
-        .doctor-search-input {
+        .children-search-input {
             padding-left: 2.5rem;
             background: #f8fafc;
         }
 
-        .doctor-table {
+        .children-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: auto;
         }
 
-        .doctor-table th,
-        .doctor-table td {
+        .children-table th,
+        .children-table td {
             padding: 15px 20px;
             text-align: left;
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .doctor-table th {
+        .children-table th {
             background-color: #f8fafd;
             color: var(--muted-text);
             font-size: 0.75rem;
@@ -232,44 +232,44 @@
             letter-spacing: 0.05em;
         }
 
-        .doctor-table th:nth-child(1),
-        .doctor-table td:nth-child(1) {
+        .children-table th:nth-child(1),
+        .children-table td:nth-child(1) {
             width: 30%;
         }
 
-        .doctor-table th:nth-child(2),
-        .doctor-table td:nth-child(2) {
+        .children-table th:nth-child(2),
+        .children-table td:nth-child(2) {
             width: 20%;
         }
 
-        .doctor-table th:nth-child(3),
-        .doctor-table td:nth-child(3) {
+        .children-table th:nth-child(3),
+        .children-table td:nth-child(3) {
             width: 15%;
         }
 
-        .doctor-table th:nth-child(4),
-        .doctor-table td:nth-child(4) {
+        .children-table th:nth-child(4),
+        .children-table td:nth-child(4) {
             width: 15%;
         }
 
-        .doctor-table th:nth-child(5),
-        .doctor-table td:nth-child(5) {
+        .children-table th:nth-child(5),
+        .children-table td:nth-child(5) {
             width: 10%;
         }
 
-        .doctor-table th:nth-child(6),
-        .doctor-table td:nth-child(6) {
+        .children-table th:nth-child(6),
+        .children-table td:nth-child(6) {
             width: 10%;
             text-align: center;
         }
 
-        .doctor-info-cell {
+        .children-info-cell {
             display: flex;
             align-items: center;
             padding-left: 1rem;
         }
 
-        .doctor-profile-image {
+        .children-profile-image {
             width: 40px;
             height: 40px;
             margin-right: 12px;
@@ -282,23 +282,23 @@
             border-radius: 10px;
         }
 
-        .doctor-profile-image img {
+        .children-profile-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .doctor-full-name {
+        .children-full-name {
             color: #111827;
             font-weight: 700;
         }
 
-        .doctor-email {
+        .children-email {
             color: #6b7280;
             font-size: 13px;
         }
 
-        .doctor-specialization-badge {
+        .children-specialization-badge {
             display: inline-block;
             padding: 4px 12px;
             background: #eef2ff;
@@ -308,7 +308,7 @@
             font-weight: 600;
         }
 
-        .doctor-status-badge {
+        .children-status-badge {
             display: inline-block;
             padding: 4px 12px;
             background: #c6f6d5;
@@ -318,14 +318,14 @@
             font-weight: 700;
         }
 
-        .doctor-action-buttons {
+        .children-action-buttons {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
         }
 
-        .doctor-action-button {
+        .children-action-button {
             width: 32px;
             height: 32px;
             display: flex;
@@ -338,22 +338,22 @@
             transition: 0.2s;
         }
 
-        .doctor-action-view {
+        .children-action-view {
             background: #e0f2fe;
             color: #0ea5e9;
         }
 
-        .doctor-action-edit {
+        .children-action-edit {
             background: #e0e7ff;
             color: #4f46e5;
         }
 
-        .doctor-action-delete {
+        .children-action-delete {
             background: #fef3c7;
             color: #d97706;
         }
 
-        .doctor-action-button:hover {
+        .children-action-button:hover {
             transform: translateY(-1px);
             opacity: 0.9;
         }
@@ -423,15 +423,15 @@
             text-align: center;
         }
 
-        .view-doctor-modal .admin-modal-header {
+        .view-children-modal .admin-modal-header {
             background: var(--taif-green);
         }
 
-        .edit-doctor-modal .admin-modal-header {
+        .edit-children-modal .admin-modal-header {
             background: var(--taif-orange);
         }
 
-        .delete-doctor-modal .admin-modal-header {
+        .delete-children-modal .admin-modal-header {
             background: var(--danger-red);
         }
 
@@ -454,7 +454,7 @@
             padding: 30px 25px;
         }
 
-        .view-doctor-large-image {
+        .view-children-large-image {
             width: 80px;
             height: 80px;
             margin: 0 auto 1rem;
@@ -463,42 +463,42 @@
             border-radius: 12px;
         }
 
-        .view-doctor-large-image img {
+        .view-children-large-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .view-doctor-name {
+        .view-children-name {
             margin-bottom: 5px;
             color: #1f5b87;
             font-size: 24px;
             font-weight: 700;
         }
 
-        .view-doctor-details-box {
+        .view-children-details-box {
             padding: 15px;
             background: #f8fafc;
             border-radius: 15px;
         }
 
-        .view-doctor-info-row {
+        .view-children-info-row {
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .view-doctor-info-row:last-child {
+        .view-children-info-row:last-child {
             border: none;
         }
 
-        .view-doctor-info-label {
+        .view-children-info-label {
             color: var(--muted-text);
             font-weight: 700;
         }
 
-        .view-doctor-info-value {
+        .view-children-info-value {
             color: var(--dark-text);
             font-weight: 600;
         }
@@ -507,12 +507,12 @@
            Edit Form
         ========================= */
 
-        .doctor-edit-form-group {
+        .children-edit-form-group {
             margin-bottom: 20px;
             text-align: left;
         }
 
-        .doctor-edit-form-group label {
+        .children-edit-form-group label {
             display: block;
             margin-bottom: 8px;
             color: #1f5b87;
@@ -520,7 +520,7 @@
             font-weight: 700;
         }
 
-        .doctor-edit-input {
+        .children-edit-input {
             width: 100%;
             height: 45px;
             padding: 0 15px;
@@ -530,13 +530,13 @@
             font-size: 15px;
         }
 
-        .doctor-edit-input:focus {
+        .children-edit-input:focus {
             outline: none;
             background: white;
             border-color: var(--taif-orange);
         }
 
-        .doctor-edit-save-button {
+        .children-edit-save-button {
             width: 100%;
             padding: 12px;
             background: var(--taif-orange);
@@ -549,7 +549,7 @@
             transition: 0.3s;
         }
 
-        .doctor-edit-save-button:hover {
+        .children-edit-save-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(246, 173, 85, 0.3);
         }
@@ -667,8 +667,8 @@
                 href="{{ route('admin.doctors.index') }}"
                 class="admin-sidebar-link {{ request()->routeIs('admin.doctors.*') ? 'active' : '' }}"
             >
-                <i class="fas fa-user-md"></i>
-                <span>Manage Doctors</span>
+                <i class="fas fa-child"></i>
+                <span>Manage Children</span>
             </a>
 
             <a href="#" class="admin-sidebar-link">
@@ -703,11 +703,11 @@
         <div class="admin-page-header">
             <div>
                 <h4 class="admin-page-title">
-                    Doctor Management
+                    Children Management
                 </h4>
 
                 <small class="admin-page-subtitle">
-                    Manage all healthcare professionals in the system
+                    Manage all children in the system
                 </small>
             </div>
 
@@ -729,115 +729,125 @@
             </div>
         </div>
 
-        <div class="doctor-management-card">
-            <div class="doctor-table-header">
-                <h6 class="doctor-table-title">
-                    Professional Directory
+        <div class="children-management-card">
+            <div class="children-table-header">
+                <h6 class="children-table-title">
+                    Children Directory
                 </h6>
 
-                <div class="doctor-search-wrapper">
-                    <i class="fas fa-search doctor-search-icon"></i>
+                <div class="children-search-wrapper">
+                    <i class="fas fa-search children-search-icon"></i>
 
                     <input
                         type="text"
-                        id="doctorSearchInput"
-                        class="form-control form-control-sm doctor-search-input"
+                        id="childrenSearchInput"
+                        class="form-control form-control-sm children-search-input"
                         placeholder="Search..."
                     >
                 </div>
             </div>
 
-            <table id="doctorManagementTable" class="doctor-table">
+            <table id="childrenManagementTable" class="children-table">
                 <thead>
                     <tr>
-                        <th>Full Name</th>
-                        <th>Specialty</th>
-                        <th>Phone</th>
-                        <th>Joined Date</th>
-                        <th>Status</th>
+                        <th>Child Name</th>
+                        <th>Child ID</th>
+                        <th>Parent Name</th>
+                        <th>Autism Level</th>
+                        <th>Gender</th>
+                        <th>Birth date</th>
                         <th style="text-align: center;">Actions</th>
                     </tr>
                 </thead>
 
-                <tbody id="doctorTableBody">
-                    @forelse($doctors as $doctor)
-                        @php
-                            $doctorFullName = trim(($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? ''));
+                <tbody id="childrenTableBody">
+                    @forelse($children as $child)
+                    @php
+                        $user = $child->parentProfile?->user;
 
-                            $doctorImage = $doctor->user->profile_image
-                                ? asset('storage/' . $doctor->user->profile_image)
-                                : asset('images/default-user.png');
-                        @endphp
+                        $childFullName = $child->name; // اسم الطفل من جدول الأطفال مباشرة
+
+                        $parentName = $user 
+                            ? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) 
+                            : 'No Parent';
+
+                        $childImage = ($user && $user->profile_image)
+                            ? asset('storage/' . $user->profile_image)
+                            : asset('images/default-user.png');
+                    @endphp
 
                         <tr>
                             <td>
-                                <div class="doctor-info-cell">
-                                    <div class="doctor-profile-image">
+                                <div class="children-info-cell">
+                                    <div class="children-profile-image">
                                         <img
-                                            src="{{ $doctorImage }}"
-                                            alt="Doctor Profile"
+                                            src="{{ $childImage }}"
+                                            alt="Children Profile"
                                         >
                                     </div>
 
                                     <div>
-                                        <div class="doctor-full-name">
-                                            {{ $doctorFullName }}
+                                        <div class="children-full-name">
+                                            {{ $child->name }}
                                         </div>
 
-                                        <div class="doctor-email">
-                                            {{ $doctor->user->email }}
-                                        </div>
                                     </div>
                                 </div>
                             </td>
 
                             <td>
-                                <span class="doctor-specialization-badge">
-                                    {{ $doctor->specialization ?? 'N/A' }}
+                                <span class="children-specialization-badge">
+                                    {{ $child->id ?? 'N/A' }}
                                 </span>
                             </td>
 
                             <td>
-                                {{ $doctor->user->phone ?? 'N/A' }}
-                            </td>
-
-                            <td>
-                                {{ $doctor->created_at->format('M d, Y') }}
-                            </td>
-
-                            <td>
-                                <span class="doctor-status-badge">
-                                    Active
+                                <span class="children-specialization-badge">
+                                    {{ $parentName ?? 'N/A' }}
                                 </span>
                             </td>
 
                             <td>
-                                <div class="doctor-action-buttons">
+                                {{ $child->autism_level ?? 'N/A' }}
+                            </td>
+
+                            <td>
+                                {{ $child->gender ?? 'N/A' }}
+                            </td>
+
+                            <td>
+                                {{ $child->birth_date ?? 'N/A' }}
+                            </td>
+
+                            <td>
+                                <div class="children-action-buttons">
                                     <button
                                         type="button"
-                                        class="doctor-action-button doctor-action-view js-view-doctor"
-                                        data-name="{{ $doctorFullName }}"
-                                        data-specialization="{{ $doctor->specialization ?? 'N/A' }}"
-                                        data-email="{{ $doctor->user->email ?? 'N/A' }}"
-                                        data-phone="{{ $doctor->user->phone ?? 'N/A' }}"
-                                        data-image="{{ $doctorImage }}"
+                                        class="children-action-button children-action-view js-view-children"
+                                        data-name="{{ $childFullName }}"
+                                        data-parent-name="{{ $parentName ?? 'N/A' }}"
+                                        data-autism-level="{{ $child->autism_level ?? 'N/A' }}"
+                                        data-gender="{{ $child->gender ?? 'N/A' }}"
+                                        data-birth-date="{{ $child->birth_date ?? 'N/A' }}"
                                     >
                                         <i class="fas fa-eye"></i>
                                     </button>
 
                                     <button
                                         type="button"
-                                        class="doctor-action-button doctor-action-edit js-edit-doctor"
-                                        data-id="{{ $doctor->id }}"
-                                        data-first-name="{{ $doctor->user->first_name ?? '' }}"
-                                        data-last-name="{{ $doctor->user->last_name ?? '' }}"
-                                        data-specialization="{{ $doctor->specialization ?? '' }}"
+                                        class="children-action-button children-action-edit js-edit-children"
+                                        data-id="{{ $child->id }}"
+                                        data-name="{{ $child->name ?? '' }}"
+                                        data-parent-name="{{ $parentName ?? '' }}"
+                                        data-autism-level="{{ $child->autism_level ?? '' }}"
+                                        data-gender="{{ $child->gender ?? '' }}"
+                                        data-birth-date="{{ $child->birth_date ?? '' }}"
                                     >
                                         <i class="fas fa-edit"></i>
                                     </button>
 
                                     <form
-                                        action="{{ route('admin.doctors.destroy', $doctor->id) }}"
+                                        action="{{ route('admin.children.destroy', $child->id) }}"
                                         method="POST"
                                         class="m-0"
                                     >
@@ -846,8 +856,8 @@
 
                                         <button
                                             type="button"
-                                            class="doctor-action-button doctor-action-delete js-delete-doctor"
-                                            data-name="{{ $doctorFullName }}"
+                                            class="children-action-button children-action-delete js-delete-children"
+                                            data-name="{{ $childFullName }}"
                                         >
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -858,7 +868,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="text-center py-5 text-muted">
-                                No doctors found.
+                                No children found.
                             </td>
                         </tr>
                     @endforelse
@@ -867,17 +877,17 @@
         </div>
     </div>
 
-    <!-- View Doctor Modal -->
-    <div id="doctorViewModal" class="admin-modal-overlay view-doctor-modal">
+    <!-- View children Modal -->
+    <div id="childrenViewModal" class="admin-modal-overlay view-children-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
                 <i class="fas fa-id-card"></i>
-                Doctor Profile
+                Children Profile
             </div>
 
             <span
                 class="admin-modal-close"
-                onclick="closeAdminModal('doctorViewModal')"
+                onclick="closeAdminModal('childrenViewModal')"
             >
                 &times;
             </span>
@@ -885,37 +895,52 @@
             <div class="admin-modal-body text-center">
                 <div class="view-doctor-large-image">
                     <img
-                        id="viewDoctorImage"
+                        id="viewChildrenImage"
                         src="{{ asset('images/default-user.png') }}"
-                        alt="Doctor Image"
+                        alt="children Image"
                     >
                 </div>
 
-                <h3 id="viewDoctorName" class="view-doctor-name"></h3>
+                <h3 id="viewchildrenName" class="view-children-name"></h3>
 
                 <span
-                    id="viewDoctorSpecialization"
-                    class="doctor-specialization-badge d-inline-block mb-4"
+                    id="viewChildrenSpecialization"
+                    class="children-specialization-badge d-inline-block mb-4"
                     style="font-size: 13px;"
                 ></span>
 
-                <div class="view-doctor-details-box">
-                    <div class="view-doctor-info-row">
-                        <span class="view-doctor-info-label">Email</span>
-                        <span class="view-doctor-info-value" id="viewDoctorEmail"></span>
+                <div class="view-children-details-box">
+                    <div class="view-children-info-row">
+                        <span class="view-children-info-label">Child name</span>
+                        <span class="view-children-info-value" id="viewChildrenName"></span>
                     </div>
 
-                    <div class="view-doctor-info-row">
-                        <span class="view-doctor-info-label">Phone</span>
-                        <span class="view-doctor-info-value" id="viewDoctorPhone"></span>
+                    <div class="view-children-info-row">
+                        <span class="view-children-info-label">Parent name</span>
+                        <span class="view-children-info-value" id="viewParentName"></span>
+                    </div>
+
+                    <div class="view-children-info-row">
+                        <span class="view-children-info-label">Autism level</span>
+                        <span class="view-children-info-value" id="viewAutismLevel"></span>
+                    </div>
+
+                    <div class="view-children-info-row">
+                        <span class="view-children-info-label">Gender</span>
+                        <span class="view-children-info-value" id="viewGender"></span>
+                    </div>
+
+                    <div class="view-children-info-row">
+                        <span class="view-children-info-label">Birth date</span>
+                        <span class="view-children-info-value" id="viewBirthDate"></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Edit Doctor Modal -->
-    <div id="doctorEditModal" class="admin-modal-overlay edit-doctor-modal">
+    <!-- Edit children Modal -->
+    <div id="childrenEditModal" class="admin-modal-overlay edit-children-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
                 <i class="fas fa-user-edit"></i>
@@ -924,50 +949,80 @@
 
             <span
                 class="admin-modal-close"
-                onclick="closeAdminModal('doctorEditModal')"
+                onclick="closeAdminModal('childrenEditModal')"
             >
                 &times;
             </span>
 
             <div class="admin-modal-body">
-                <form id="doctorUpdateForm" method="POST">
+                <form id="childrenUpdateForm" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <div class="doctor-edit-form-group">
-                        <label>First Name</label>
+                    <div class="children-edit-form-group">
+                        <label>Id</label>
 
                         <input
                             type="text"
-                            id="editDoctorFirstName"
-                            name="first_name"
-                            class="doctor-edit-input"
+                            id="editchildId"
+                            name="id"
+                            class="children-edit-input"
+                            readonly
                         >
                     </div>
 
-                    <div class="doctor-edit-form-group">
-                        <label>Last Name</label>
+                    <div class="children-edit-form-group">
+                        <label> Child name</label>
 
                         <input
                             type="text"
-                            id="editDoctorLastName"
-                            name="last_name"
-                            class="doctor-edit-input"
+                            id="editchildrenName"
+                            name="name"
+                            class="children-edit-input"
                         >
                     </div>
 
-                    <div class="doctor-edit-form-group">
-                        <label>Specialization</label>
+                    <div class="children-edit-form-group">
+                        <label>Autism Level</label>
+
+                        <select
+                            id="editAutismLevel"
+                            name="autism_level"
+                            class="children-edit-input"
+                        >
+                            <option value="">Select Level</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
+                    </div>
+
+                    <div class="children-edit-form-group">
+                        <label>Gender</label>
+
+                        <select
+                            id="editGender"
+                            name="gender"
+                            class="children-edit-input"
+                        >
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="children-edit-form-group">
+                        <label>Birth Date</label>
 
                         <input
-                            type="text"
-                            id="editDoctorSpecialization"
-                            name="specialization"
-                            class="doctor-edit-input"
+                            type="date"
+                            id="editBirthDate"
+                            name="birth_date"
+                            class="children-edit-input"
                         >
                     </div>
 
-                    <button type="submit" class="doctor-edit-save-button">
+                    <button type="submit" class="children-edit-save-button">
                         Save Changes
                     </button>
                 </form>
@@ -975,17 +1030,17 @@
         </div>
     </div>
 
-    <!-- Delete Doctor Modal -->
-    <div id="doctorDeleteModal" class="admin-modal-overlay delete-doctor-modal">
+    <!-- Delete children Modal -->
+    <div id="childrenDeleteModal" class="admin-modal-overlay delete-children-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
                 <i class="fas fa-trash"></i>
-                Delete Doctor
+                Delete children
             </div>
 
             <span
                 class="admin-modal-close"
-                onclick="closeAdminModal('doctorDeleteModal')"
+                onclick="closeAdminModal('childrenDeleteModal')"
             >
                 &times;
             </span>
@@ -1001,7 +1056,7 @@
 
                 <p class="delete-message">
                     You are about to delete
-                    <strong id="deleteDoctorName">this doctor</strong>.
+                    <strong id="deletechildrenName">this children</strong>.
                     This action cannot be undone.
                 </p>
 
@@ -1009,7 +1064,7 @@
                     <button
                         type="button"
                         class="delete-cancel-button"
-                        onclick="closeAdminModal('doctorDeleteModal')"
+                        onclick="closeAdminModal('childrenDeleteModal')"
                     >
                         Cancel
                     </button>
@@ -1017,7 +1072,7 @@
                     <button
                         type="button"
                         class="delete-confirm-button"
-                        id="confirmDoctorDeleteButton"
+                        id="confirmchildrenDeleteButton"
                     >
                         Delete
                     </button>
@@ -1026,71 +1081,89 @@
         </div>
     </div>
 
-    <script>
-        let doctorDeleteForm = null;
+<script>
+    let childrenDeleteForm = null;
 
-        const doctorSearchInput = document.getElementById('doctorSearchInput');
-
-        if (doctorSearchInput) {
-            doctorSearchInput.addEventListener('keyup', function () {
-                const searchTerm = this.value.toLowerCase();
-                const doctorRows = document.querySelectorAll('#doctorTableBody tr');
-
-                doctorRows.forEach(function (row) {
-                    row.style.display = row.innerText.toLowerCase().includes(searchTerm) ? '' : 'none';
-                });
-            });
-        }
-
-        document.querySelectorAll('.js-view-doctor').forEach(function (button) {
-            button.addEventListener('click', function () {
-                document.getElementById('viewDoctorName').innerText = this.dataset.name || 'N/A';
-                document.getElementById('viewDoctorSpecialization').innerText = this.dataset.specialization || 'N/A';
-                document.getElementById('viewDoctorEmail').innerText = this.dataset.email || 'N/A';
-                document.getElementById('viewDoctorPhone').innerText = this.dataset.phone || 'N/A';
-                document.getElementById('viewDoctorImage').src = this.dataset.image;
-
-                document.getElementById('doctorViewModal').style.display = 'flex';
+    // search 
+    const childrenSearchInput = document.getElementById('childrenSearchInput');
+    if (childrenSearchInput) {
+        childrenSearchInput.addEventListener('keyup', function () {
+            const searchTerm = this.value.toLowerCase();
+            const childrenRows = document.querySelectorAll('#childrenTableBody tr');
+            childrenRows.forEach(function (row) {
+                row.style.display = row.innerText.toLowerCase().includes(searchTerm) ? '' : 'none';
             });
         });
+    }
 
-        document.querySelectorAll('.js-edit-doctor').forEach(function (button) {
-            button.addEventListener('click', function () {
-                document.getElementById('editDoctorFirstName').value = this.dataset.firstName || '';
-                document.getElementById('editDoctorLastName').value = this.dataset.lastName || '';
-                document.getElementById('editDoctorSpecialization').value = this.dataset.specialization || '';
-
-                document.getElementById('doctorUpdateForm').action = '/admin/doctors/' + this.dataset.id;
-                document.getElementById('doctorEditModal').style.display = 'flex';
-            });
-        });
-
-        document.querySelectorAll('.js-delete-doctor').forEach(function (button) {
-            button.addEventListener('click', function () {
-                doctorDeleteForm = this.closest('form');
-
-                document.getElementById('deleteDoctorName').innerText =
-                    this.dataset.name || 'this doctor';
-
-                document.getElementById('doctorDeleteModal').style.display = 'flex';
-            });
-        });
-
-        document.getElementById('confirmDoctorDeleteButton').addEventListener('click', function () {
-            if (doctorDeleteForm) {
-                doctorDeleteForm.submit();
+    // view 
+    document.querySelectorAll('.js-view-children').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const d = this.dataset;
+            document.getElementById('viewchildrenName').innerText = d.name || 'N/A';
+            document.getElementById('viewParentName').innerText = d.parentName || 'N/A';
+            document.getElementById('viewAutismLevel').innerText = d.autismLevel || 'N/A';
+            document.getElementById('viewGender').innerText = d.gender || 'N/A';
+            document.getElementById('viewBirthDate').innerText = d.birthDate || 'N/A';
+            if(document.getElementById('viewChildrenImage')) {
+                document.getElementById('viewChildrenImage').src = d.image || '';
             }
+            document.getElementById('childrenViewModal').style.display = 'flex';
         });
+    });
 
-        function closeAdminModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+    // edit 
+   document.querySelectorAll('.js-edit-children').forEach(function (button) {
+    button.addEventListener('click', function () {
+        const d = this.dataset;
+        console.log("تجهيز بيانات التعديل للطفل:", d.id);
+
+        try {
+            const form = document.getElementById('childrenUpdateForm');
+            
+            if(form) form.action = '/admin/children/' + d.id;
+
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+
+            setVal('editchildId', d.id); 
+            setVal('editchildrenName', d.name);
+            setVal('editAutismLevel', d.autismLevel);
+            setVal('editGender', d.gender);
+            setVal('editBirthDate', d.birthDate);
+
+            document.getElementById('childrenEditModal').style.display = 'flex';
+        } catch (error) {
+            console.error("خطأ في فتح مودال التعديل:", error);
         }
+    });
+    });
+    
+    // delet
+    document.querySelectorAll('.js-delete-children').forEach(function (button) {
+        button.addEventListener('click', function () {
+            childrenDeleteForm = this.closest('form');
+            const nameDisplay = document.getElementById('deletechildrenName');
+            if(nameDisplay) nameDisplay.innerText = this.dataset.name || 'this child';
+            document.getElementById('childrenDeleteModal').style.display = 'flex';
+        });
+    });
 
-        window.onclick = function (event) {
-            if (event.target.classList.contains('admin-modal-overlay')) {
-                event.target.style.display = 'none';
-            }
-        };
-    </script>
+    document.getElementById('confirmChildrenDeleteButton').addEventListener('click', function () {
+        if (childrenDeleteForm) childrenDeleteForm.submit();
+    });
+
+    function closeAdminModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    window.onclick = function (event) {
+        if (event.target.classList.contains('admin-modal-overlay')) {
+            event.target.style.display = 'none';
+        }
+    };
+</script>
 </body>
 </html>

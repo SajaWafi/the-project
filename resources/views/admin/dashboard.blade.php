@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Taif</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
     <style>
         :root {
-            --primary-color: #1d567e;
+            --primary-color: #2c5282; 
             --sidebar-width: 260px;
             --bg-light: #f4f7fa;
         }
@@ -17,40 +27,86 @@
         body { display: flex; background: var(--bg-light); min-height: 100vh; direction: ltr; }
 
         /* Sidebar Style */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--primary-color);
-            color: white;
-            padding: 20px;
-            position: fixed;
-            height: 100%;
-            left: 0;
-        }
+:root {
+    --sidebar-bg: #2c5282;
+    --sidebar-text: #e2e8f0;
+    --sidebar-active-bg: rgba(255, 255, 255, 0.15);
+}
 
-        .sidebar h2 { font-size: 24px; margin-bottom: 30px; text-align: center; border-bottom: 1px solid #ffffff33; padding-bottom: 10px; }
+/* Sidebar Structure */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 260px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
 
-        .sidebar-menu { list-style: none; }
+.admin-sidebar-header {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        .sidebar-menu li { margin-bottom: 15px; }
+.admin-sidebar-logo {
+    max-width: 70px;
+    margin-bottom: 10px;
+}
 
-        .sidebar-menu a {
-            color: #d1d5db;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
+.admin-sidebar-title {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
 
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: #ffffff22;
-            color: white;
-        }
+.admin-sidebar-menu {
+    margin-top: 1rem;
+    text-align: left;
+}
 
-        .sidebar-menu span { margin-left: 12px; }
+.admin-sidebar-link {
+    display: flex;
+    align-items: center;
+    margin: 0.2rem 0.8rem;
+    padding: 0.8rem 1.5rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s;
+}
 
-        /* Main Content Style */
+.admin-sidebar-link:hover,
+.admin-sidebar-link.active {
+    background-color: var(--sidebar-active-bg);
+    color: white;
+}
+
+.admin-sidebar-link i {
+    width: 20px;
+    margin-right: 12px;
+    text-align: center;
+}
+
+/* ضبط المساحة للمحتوى الرئيسي */
+.admin-main-content {
+    width: calc(100% - 260px);
+    margin-left: 260px;
+}
+
+@media (max-width: 992px) {
+    .admin-sidebar { width: 75px; }
+    .admin-sidebar-title, .admin-sidebar-link span { display: none; }
+    .admin-main-content { width: calc(100% - 75px); margin-left: 75px; }
+}
+
+    /* Main Content Style */
         .main-content {
             margin-left: var(--sidebar-width);
             width: calc(100% - var(--sidebar-width));
@@ -92,6 +148,15 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin: 10px;
+            height: 350px;
+            position: relative;
+
+            height: 400px; 
+    display: flex;
+    flex-direction: column;
+    justify-content:间-between;
+    position: relative;
         }
 
         .chart-box h3 { font-size: 18px; color: var(--primary-color); margin-bottom: 15px; }
@@ -102,27 +167,68 @@
             .sidebar h2, .sidebar span { display: none; }
             .main-content { margin-left: 70px; width: calc(100% - 70px); }
         }
+
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>Taif Project</h2>
-    <ul class="sidebar-menu">
-        <li><a href="#" class="active">📊 <span>Dashboard</span></a></li>
-        <li>
-    <a href="{{ route('admin.doctors.index') }}"
-       class="{{ request()->routeIs('admin.doctors.*') ? 'active' : '' }}">
-        🧑‍⚕️ <span>Manage Doctors</span>
-    </a>
-</li>
-        <li><a href="#">👨‍👩‍👧 <span>Manage Parents</span></a></li>
-        <li><a href="#">👶 <span>Manage Children</span></a></li>
-        <li><a href="#">🔗 <span>Linking Requests</span></a></li>
-        <li><a href="#">⚠️ <span>Complaints</span></a></li>
-        <li><a href="#">⚙️ <span>Settings</span></a></li>
-    </ul>
-</div>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="admin-sidebar-header">
+            <img
+                src="{{ asset('images/logo.png') }}"
+                class="admin-sidebar-logo"
+                alt="Logo"
+            >
+
+            <div class="admin-sidebar-title">
+                TAIF PROJECT
+            </div>
+        </div>
+
+        <div class="admin-sidebar-menu">
+            <a
+                href="{{ route('admin.dashboard') }}"
+                class="admin-sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+            >
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a
+                href="{{ route('admin.doctors.index') }}"
+                class="admin-sidebar-link {{ request()->routeIs('admin.doctors.*') ? 'active' : '' }}"
+            >
+                <i class="fas fa-user-md"></i>
+                <span>Manage Doctors</span>
+            </a>
+
+            <a href="#" class="admin-sidebar-link">
+                <i class="fas fa-users"></i>
+                <span>Manage Parents</span>
+            </a>
+
+            <a href="{{ route('admin.children.index') }}" class="admin-sidebar-link">
+                <i class="fas fa-child"></i>
+                <span>Manage Children</span>
+            </a>
+
+            <a href="#" class="admin-sidebar-link">
+                <i class="fas fa-link"></i>
+                <span>Linking Requests</span>
+            </a>
+
+            <a href="{{ route('admin.complaints.index') }}" class="admin-sidebar-link">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Complaints</span>
+            </a>
+
+            <a href="#" class="admin-sidebar-link">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </div>
+    </div>
 
 <div class="main-content">
     <div class="header">
@@ -154,16 +260,36 @@
     </div>
 
     <div class="charts-container">
-    <div class="chart-box">
-        <h3>Weekly New Registrations</h3>
-        <canvas id="registrationChart"></canvas>
-    </div>
+
+        <div class="chart-box">
+            <h3>Doctors Registrations</h3>
+            <canvas id="registrationChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <h3>User Distribution</h3>
+            <canvas id="userDistChart"></canvas>
+        </div>
     
-    <div class="chart-box">
-        <h3>User Distribution</h3>
-        <canvas id="userDistChart"></canvas>
     </div>
-</div>
+
+    <div class="charts-container">
+        
+        <div class="chart-box">
+            <h3>Weekly Complaints Overview</h3>
+            <div class="chart-container" style="flex-grow: 1; position: relative;">
+                <canvas id="complaintsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <h3>Children by Autism Level</h3>
+            <div class="chart-container" style="flex-grow: 1; position: relative;">
+                <canvas id="autismLevelChart"></canvas>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
@@ -176,7 +302,7 @@ new Chart(ctx1, {
         datasets: [{
             label: 'New Users',
             data: [5, 10, 8, 15, 12, 20, 7], // بيانات تجريبية
-            backgroundColor: '#1d567e',
+            backgroundColor: '#2c5282',
             borderRadius: 5
         }]
     },
@@ -203,6 +329,97 @@ new Chart(ctx1, {
             responsive: true,
             plugins: {
                 legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    //pie chart: autism level
+    const ctxAutism = document.getElementById('autismLevelChart').getContext('2d');
+    new Chart(ctxAutism, {
+        type: 'pie',
+        data: {
+            labels: ['Mild', 'Moderate', 'Severe'] ,
+            datasets: [{
+                data: [{{ $mild ?? 0 }}, {{ $moderate ?? 0 }}, {{ $severe ?? 0 }}],
+                backgroundColor: [
+                    '#35b8a6',
+                    '#eb9443',
+                    '#ef4444'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    const ctxComplaints = document.getElementById('complaintsChart').getContext('2d');
+
+    //get last 7 days complaints count
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        last7Days.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
+    }
+
+    const fakeComplaintsData = [2, 5, 3, 8, 4, 10, 6]; 
+
+    new Chart(ctxComplaints, {
+        type: 'line',
+        data: {
+            labels: last7Days,
+            datasets: [{
+                label: 'Complaints',
+                data: fakeComplaintsData,
+                borderColor: '#ef4444', 
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                fill: true,
+                tension: 0.4, 
+                borderWidth: 3,
+                pointBackgroundColor: '#ef4444',
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1d567e',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: 12,
+                    ticks: { 
+                        stepSize: 2,
+                        color: '#718096'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#718096'
+                    }
+                }
             }
         }
     });

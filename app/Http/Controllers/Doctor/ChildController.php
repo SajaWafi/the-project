@@ -84,4 +84,5 @@ class ChildController extends Controller
 
         return back()->with('success', 'Child added successfully.');
     }
+
 }
