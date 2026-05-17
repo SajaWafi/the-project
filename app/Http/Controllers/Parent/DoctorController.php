@@ -7,6 +7,8 @@ use App\Models\DoctorProfile;
 use App\Models\ParentProfile;
 use App\Models\Appointment;
 use App\Models\Workplace;
+use Illuminate\Support\Facades\DB;
+use App\Models\DoctorRequest;
 
 class DoctorController extends Controller
 {
@@ -46,79 +48,80 @@ class DoctorController extends Controller
         return view('parents.doctors', compact('doctors'));
     }
 
-public function show($id)
-{
-    $parent = ParentProfile::with(['children.doctors.user'])
-        ->where('user_id', auth()->id())
-        ->first();
+    public function show($id)
+    {
+        $parent = ParentProfile::with(['children.doctors.user'])
+            ->where('user_id', auth()->id())
+            ->first();
 
-    if (!$parent) {
-        return back()->withErrors(['parent' => 'Parent profile not found.']);
-    }
+        if (!$parent) {
+            return back()->withErrors(['parent' => 'Parent profile not found.']);
+        }
 
-    $doctor = DoctorProfile::with('user')->findOrFail($id);
+        $doctor = DoctorProfile::with('user')->findOrFail($id);
 
-    $isLinked = $parent->children->contains(function ($child) use ($doctor) {
-        return $child->doctors->contains('id', $doctor->id);
-    });
+        $isLinked = $parent->children->contains(function ($child) use ($doctor) {
+            return $child->doctors->contains('id', $doctor->id);
+        });
 
-    if (!$isLinked) {
-        abort(404);
-    }
+        if (!$isLinked) {
+            abort(404);
+        }
 
-    $doctorName = trim(
-        ($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? '')
-    );
+        $doctorName = trim(
+            ($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? '')
+        );
 
-    if ($doctorName === '') {
-        $doctorName = 'No Name';
-    }
+        if ($doctorName === '') {
+            $doctorName = 'No Name';
+        }
 
-    $data = [
-        'id' => $doctor->id,
-        'name' => $doctorName,
-        'specialty' => $doctor->specialization ?? 'No Specialty',
-        'image' => $doctor->user->profile_image ?? null,
-        'phone' => $doctor->user->phone ?? 'No Phone',
-        'bio' => $doctor->bio ?? 'No bio available',
-    ];
+        $data = [
+            'id' => $doctor->id,
+            'name' => $doctorName,
+            'specialty' => $doctor->specialization ?? 'No Specialty',
+            'image' => $doctor->user->profile_image ?? null,
+            'phone' => $doctor->user->phone ?? 'No Phone',
+            'bio' => $doctor->bio ?? 'No bio available',
+        ];
 
-    $child = $parent->children->first(function ($child) use ($doctor) {
-        return $child->doctors->contains('id', $doctor->id);
-    });
+        $child = $parent->children->first(function ($child) use ($doctor) {
+            return $child->doctors->contains('id', $doctor->id);
+        });
 
-    $appointments = collect();
+        $appointments = collect();
 
-    if ($child) {
-        $appointments = Appointment::with(['child', 'doctor.user'])
-            ->where('parent_id', $parent->id)
-            ->where('doctor_id', $doctor->id)
-            ->where('child_id', $child->id)
-            ->whereDate('date', '>=', now()->toDateString())
-            ->orderBy('date')
-            ->orderByRaw("
-                CASE 
-                    WHEN from_period = 'AM' AND from_hour = 12 THEN 0
-                    WHEN from_period = 'AM' THEN from_hour
-                    WHEN from_period = 'PM' AND from_hour = 12 THEN 12
-                    ELSE from_hour + 12
-                END
-            ")
-            ->orderBy('from_minute')
+        if ($child) {
+            $appointments = Appointment::with(['child', 'doctor.user'])
+                ->where('parent_id', $parent->id)
+                ->where('doctor_id', $doctor->id)
+                ->where('child_id', $child->id)
+                ->whereDate('date', '>=', now()->toDateString())
+                ->orderBy('date')
+                ->orderByRaw("
+                    CASE 
+                        WHEN from_period = 'AM' AND from_hour = 12 THEN 0
+                        WHEN from_period = 'AM' THEN from_hour
+                        WHEN from_period = 'PM' AND from_hour = 12 THEN 12
+                        ELSE from_hour + 12
+                    END
+                ")
+                ->orderBy('from_minute')
+                ->get();
+        }
+
+        $workplaces = Workplace::where('doctor_id', $doctor->id)
+            ->latest()
             ->get();
+
+        return view('parents.doctor-profile', [
+            'doctor' => $data,
+            'appointments' => $appointments,
+            'child' => $child,
+            'workplaces' => $workplaces,
+        ]);
     }
 
-    $workplaces = Workplace::where('doctor_id', $doctor->id)
-        ->latest()
-        ->get();
-
-    return view('parents.doctor-profile', [
-        'doctor' => $data,
-        'appointments' => $appointments,
-        'child' => $child,
-        'workplaces' => $workplaces,
-    ]);
-}
     public function chat($id)
     {
         $parent = ParentProfile::with(['children.doctors.user'])
@@ -157,25 +160,47 @@ public function show($id)
     }
     
     public function delete($doctorId)
-{
-    $parent = \App\Models\ParentProfile::with('children.doctors')
-        ->where('user_id', auth()->id())
-        ->first();
+    {
+        $parent = \App\Models\ParentProfile::with('children.doctors')
+            ->where('user_id', auth()->id())
+            ->first();
 
-    if (!$parent) {
-        return back()->withErrors(['parent' => 'Parent profile not found.']);
-    }
-
-    $doctor = \App\Models\DoctorProfile::findOrFail($doctorId);
-
-    foreach ($parent->children as $child) {
-        if ($child->doctors->contains('id', $doctor->id)) {
-            $child->doctors()->detach($doctor->id);
+        if (!$parent) {
+            return back()->withErrors(['parent' => 'Parent profile not found.']);
         }
+
+        $doctor = \App\Models\DoctorProfile::findOrFail($doctorId);
+
+        foreach ($parent->children as $child) {
+            if ($child->doctors->contains('id', $doctor->id)) {
+                $child->doctors()->detach($doctor->id);
+            }
+        }
+
+        return redirect()
+            ->route('parents.doctors')
+            ->with('success', 'Doctor removed successfully.');
     }
 
-    return redirect()
-        ->route('parents.doctors')
-        ->with('success', 'Doctor removed successfully.');
-}
+    public function removeDoctor($doctorId)
+    {
+        $parentProfile = auth()->user()->parentProfile;
+
+        if (!$parentProfile) {
+            return back()->withErrors(['parent' => 'Parent profile not found.']);
+        }
+
+        $childIds = $parentProfile->children->pluck('id');
+
+        DB::table('child_doctor')
+            ->where('doctor_id', $doctorId)
+            ->whereIn('child_id', $childIds)
+            ->delete();
+
+        DoctorRequest::where('doctor_id', $doctorId)
+            ->where('parent_id', $parentProfile->id)
+            ->delete();
+
+        return redirect()->route('parents.doctors')->with('success', 'تم حذف الدكتور وإلغاء الارتباط بنجاح.');
+    }
 }

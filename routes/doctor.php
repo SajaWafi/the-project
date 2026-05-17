@@ -17,6 +17,9 @@ use App\Http\Controllers\Doctor\ParentController;
 use App\Http\Controllers\Doctor\ChatController;
 use App\Http\Controllers\Doctor\ChildController;
 
+use App\Http\Controllers\Doctor\DoctorRequestController;
+use App\Http\Controllers\Parent\ParentRequestController;
+
 Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->group(function () {
 
     /*
@@ -24,7 +27,6 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     | Main Pages
     |--------------------------------------------------------------------------
     */
-
     Route::get('/home', function () {
         $user = auth()->user();
 
@@ -56,9 +58,20 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
         return view('doctor.home', compact('workplaces', 'appointments'));
     })->name('home');
 
-    Route::get('/request', function () {
-        return view('doctor.request');
-    })->name('request');
+ /*
+    |--------------------------------------------------------------------------
+    | Main Pages
+    |--------------------------------------------------------------------------
+    */
+    // ... باقي المسارات زي الـ home وغيرها ...
+
+    // 1. مسار عرض الطلبات (تم ربطه بالكنترولر بدلاً من الفيو المباشر)
+    Route::get('/request', [DoctorRequestController::class, 'index'])->name('request');
+
+    // 2. مسار إلغاء الطلب من قبل الدكتور
+    Route::delete('/request/{id}/cancel', [DoctorRequestController::class, 'cancel'])->name('request.cancel');
+
+  
 
     Route::get('/settings', function () {
         return view('doctor.settings');
@@ -82,6 +95,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/parents', [ParentController::class, 'index'])->name('parents');
     Route::get('/parent-profile/{id}', [ParentController::class, 'show'])->name('parent.profile');
     Route::get('/parents/search/ajax', [ParentController::class, 'searchAjax'])->name('parents.search.ajax');
+    Route::post('/children/{id}/attach', [ChildController::class, 'attach'])
+    ->name('children.attach');
 
 
     /*
@@ -128,86 +143,104 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
         return view('doctor.appointments', compact('appointments'));
     })->name('appointments');
 
-    Route::get('/add-appointment', function () {
-        $doctorProfile = auth()->user()->doctorProfile;
+   Route::get('/add-appointment', function () {
+    $doctorProfile = auth()->user()->doctorProfile;
 
-        if (!$doctorProfile) {
-            abort(404, 'Doctor profile not found.');
-        }
+    if (!$doctorProfile) {
+        abort(404, 'Doctor profile not found.');
+    }
+
+    $parents = ParentProfile::with(['user', 'children'])
+        ->whereHas('children.doctors', function ($query) use ($doctorProfile) {
+            $query->where('doctor_profiles.id', $doctorProfile->id);
+        })
+        ->get();
+
+    $workplaces = Workplace::where('doctor_id', $doctorProfile->id)
+        ->latest()
+        ->get();
+
+    return view('doctor.add-appointment', compact('parents', 'workplaces'));
+})->name('add.appointment');
 
 
-        $parents = ParentProfile::with('user', 'children')->get();
+Route::post('/add-appointment', function (Request $request) {
+    $request->validate([
+        'parent_id' => 'required|exists:parent_profiles,id',
+        'workplace_id' => 'required|exists:workplaces,id',
+        'date' => 'required|date',
 
-        $parents = ParentProfile::with(['user', 'children'])
-            ->whereHas('children.doctors', function ($query) use ($doctorProfile) {
-                $query->where('doctor_profiles.id', $doctorProfile->id);
-            })
-            ->get();
+        'from_hour' => 'required|integer|min:1|max:12',
+        'from_minute' => 'required|integer|in:0,15,30,45',
+        'from_period' => 'required|in:AM,PM',
 
+        'to_hour' => 'required|integer|min:1|max:12',
+        'to_minute' => 'required|integer|in:0,15,30,45',
+        'to_period' => 'required|in:AM,PM',
 
-        $workplaces = Workplace::where('doctor_id', $doctorProfile->id)->get();
+        'note' => 'nullable|string|max:1000',
+    ]);
 
-        return view('doctor.add-appointment', compact('parents', 'workplaces'));
-    })->name('add.appointment');
+    $doctorProfile = auth()->user()->doctorProfile;
 
-    Route::post('/add-appointment', function (Request $request) {
-        $request->validate([
-            'parent_id' => 'required|exists:parent_profiles,id',
-            'date' => 'required|date',
-            'from_hour' => 'required|integer|min:1|max:12',
-            'from_minute' => 'required|integer|in:0,15,30,45',
-            'from_period' => 'required|in:AM,PM',
-            'to_hour' => 'required|integer|min:1|max:12',
-            'to_minute' => 'required|integer|in:0,15,30,45',
-            'to_period' => 'required|in:AM,PM',
-            'note' => 'nullable|string|max:1000',
-        ]);
+    if (!$doctorProfile) {
+        return back()->withErrors([
+            'doctor' => 'Doctor profile not found.',
+        ])->withInput();
+    }
 
-        $doctorProfile = auth()->user()->doctorProfile;
+    $parent = ParentProfile::with(['children.doctors'])
+        ->find($request->parent_id);
 
-        if (!$doctorProfile) {
-            return back()->withErrors([
-                'doctor' => 'Doctor profile not found.'
-            ]);
-        }
+    if (!$parent) {
+        return back()->withErrors([
+            'parent_id' => 'Selected parent not found.',
+        ])->withInput();
+    }
 
-        $parent = ParentProfile::with(['children.doctors'])
-            ->find($request->parent_id);
+    $child = $parent->children->first(function ($child) use ($doctorProfile) {
+        return $child->doctors->contains('id', $doctorProfile->id);
+    });
 
-        if (!$parent) {
-            return back()->withErrors([
-                'parent_id' => 'Selected parent not found.'
-            ])->withInput();
-        }
+    if (!$child) {
+        return back()->withErrors([
+            'parent_id' => 'This parent is not linked to this doctor.',
+        ])->withInput();
+    }
 
-        $child = $parent->children->first(function ($child) use ($doctorProfile) {
-            return $child->doctors->contains('id', $doctorProfile->id);
-        });
+    $workplace = Workplace::where('id', $request->workplace_id)
+        ->where('doctor_id', $doctorProfile->id)
+        ->first();
 
-        if (!$child) {
-            return back()->withErrors([
-                'parent_id' => 'This parent is not linked to this doctor.'
-            ])->withInput();
-        }
+    if (!$workplace) {
+        return back()->withErrors([
+            'workplace_id' => 'Selected workplace does not belong to this doctor.',
+        ])->withInput();
+    }
 
-        Appointment::create([
-            'doctor_id' => $doctorProfile->id,
-            'parent_id' => $request->parent_id,
-            'child_id' => $child->id,
-            'date' => $request->date,
-            'from_hour' => $request->from_hour,
-            'from_minute' => $request->from_minute,
-            'from_period' => $request->from_period,
-            'to_hour' => $request->to_hour,
-            'to_minute' => $request->to_minute,
-            'to_period' => $request->to_period,
-            'status' => 'pending',
-            'note' => $request->note,
-        ]);
+    Appointment::create([
+        'doctor_id' => $doctorProfile->id,
+        'parent_id' => $request->parent_id,
+        'child_id' => $child->id,
+        'workplace_id' => $workplace->id,
 
-        return redirect()->route('doctor.appointments')
-            ->with('success', 'Appointment added successfully.');
-    })->name('add.appointment.store');
+        'date' => $request->date,
+
+        'from_hour' => $request->from_hour,
+        'from_minute' => $request->from_minute,
+        'from_period' => $request->from_period,
+
+        'to_hour' => $request->to_hour,
+        'to_minute' => $request->to_minute,
+        'to_period' => $request->to_period,
+
+        'status' => 'pending',
+        'note' => $request->note,
+    ]);
+
+    return redirect()->route('doctor.appointments')
+        ->with('success', 'Appointment added successfully.');
+})->name('add.appointment.store');
 
     Route::get('/edit-appointment/{id}', function ($id) {
         $doctorProfile = auth()->user()->doctorProfile;
@@ -301,6 +334,9 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
         return back()->with('success', 'Appointment deleted successfully.');
     })->name('appointments.delete');
+    
+    ////////delete parent
+   Route::delete('/parents/{id}/remove', [\App\Http\Controllers\Doctor\ParentController::class, 'removeParent'])->name('parent.remove');
 
 
     /*
@@ -667,4 +703,13 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
         return redirect()->route('login.page');
     })->name('logout');
+
+    
 });
+
+// مسارات الأب للتعامل مع الطلبات (القبول والرفض)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/parent/requests/{id}/accept', [ParentRequestController::class, 'accept'])->name('parent.requests.accept');
+    Route::post('/parent/requests/{id}/reject', [ParentRequestController::class, 'reject'])->name('parent.requests.reject');
+});
+

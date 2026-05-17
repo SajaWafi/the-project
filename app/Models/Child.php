@@ -33,7 +33,6 @@ class Child extends Model
         return $this->parentProfile->user();
     }
 
-
     public function doctors()
     {
         return $this->belongsToMany(
@@ -41,9 +40,9 @@ class Child extends Model
             'child_doctor',
             'child_id',
             'doctor_id'
-        )->withPivot('status', 'assigned_at')->withTimestamps();
+        )->withPivot('status', 'assigned_at')
+         ->withTimestamps();
     }
-
 
     public function appointments()
     {

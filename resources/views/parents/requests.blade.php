@@ -223,26 +223,31 @@ body {
         <div class="list">
             @forelse($requests as $request)
                 <div class="card">
-                    <img src="{{ $request->doctor->user->profile_image ? asset('storage/' . $request->doctor->user->profile_image) : asset('images/default-user.png') }}">
+                    @php
+                        $profileImage = $request->doctor?->user?->profile_image;
+                        $doctorImage = $profileImage ? asset('storage/' . $profileImage) : asset('images/default-user.png');
+                    @endphp
+                    
+                    <img src="{{ $doctorImage }}" alt="Doctor Image">
 
                     <div class="card-info">
                         <div class="name">
-                            Dr. {{ $request->doctor->user->first_name ?? '' }} {{ $request->doctor->user->last_name ?? '' }}
+                            Dr. {{ $request->doctor?->user?->first_name ?? 'طبيب' }} {{ $request->doctor?->user?->last_name ?? 'غير متوفر' }}
                         </div>
 
                         <div class="specialty">Is sending request</div>
 
-                        <div class="actions">
-                            <form action="{{ route('parents.requests.accept', $request->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                <button class="btn-icon" type="submit">accept</button>
-                            </form>
+                      <div class="actions">
+    <form action="{{ route('parents.requests.accept', $request->id) }}" method="POST" style="display:inline;">
+        @csrf
+        <button class="btn-icon" type="submit">accept</button>
+    </form>
 
-                            <form action="{{ route('parents.requests.reject', $request->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                <button class="btn-icon" type="submit">reject</button>
-                            </form>
-                        </div>
+    <form action="{{ route('parents.requests.reject', $request->id) }}" method="POST" style="display:inline;">
+        @csrf
+        <button class="btn-icon" type="submit">reject</button>
+    </form>
+</div>
                     </div>
                 </div>
             @empty
