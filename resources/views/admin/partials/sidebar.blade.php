@@ -37,7 +37,7 @@
         </a>
 
         <a
-            href="#"
+            href="{{ route('admin.children.index') }}"
             class="admin-sidebar-link {{ request()->routeIs('admin.children.*') ? 'active' : '' }}"
         >
             <i class="fas fa-child"></i>
@@ -59,6 +59,15 @@
             <i class="fas fa-calendar-check"></i>
             <span>Appointments</span>
         </a>
+
+           <a
+            href="{{ route('admin.complaints.index') }}"
+            class="admin-sidebar-link {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}"
+        >
+            <i class="fas fa-calendar-check"></i>
+            <span> Manage Complaints</span>
+        </a>
+
 
       <a
             href="{{ route('admin.alerts.index') }}"

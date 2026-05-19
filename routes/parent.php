@@ -13,6 +13,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Parent\DoctorController;
 use App\Http\Controllers\Parent\ChatController;
 use App\Http\Controllers\Parent\AlertController;
+use App\Http\Controllers\Parent\ParentComplaintController;
 
 /*
 |--------------------------------------------------------------------------
@@ -313,4 +314,17 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
             return back()->with('error', 'Something went wrong while deleting the account.');
         }
     })->name('delete.account');
+});
+
+
+
+
+Route::middleware(['auth'])->group(function () {
+    
+    // رابط عرض صفحة الشكوى
+    Route::get('/complaint', [ParentComplaintController::class, 'create'])->name('parent.complaints.create');
+    
+    // رابط إرسال وحفظ الشكوى في قاعدة البيانات
+    Route::post('/complaint', [ParentComplaintController::class, 'store'])->name('parent.complaints.store');
+
 });

@@ -19,6 +19,7 @@ use App\Http\Controllers\Doctor\ChildController;
 
 use App\Http\Controllers\Doctor\DoctorRequestController;
 use App\Http\Controllers\Parent\ParentRequestController;
+use App\Http\Controllers\Doctor\DoctorComplaintController;
 
 Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->group(function () {
 
@@ -704,6 +705,13 @@ Route::post('/add-appointment', function (Request $request) {
         return redirect()->route('login.page');
     })->name('logout');
 
+
+        // واجهة الشكاوى للدكتور
+    Route::get('/complaint', [DoctorComplaintController::class, 'create'])->name('doctor.complaints.create');
+    
+    // حفظ الشكوى
+    Route::post('/complaint', [DoctorComplaintController::class, 'store'])->name('doctor.complaints.store');
+
     
 });
 
@@ -713,3 +721,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/parent/requests/{id}/reject', [ParentRequestController::class, 'reject'])->name('parent.requests.reject');
 });
 
+Route::middleware(['auth'])->group(function () {
+    
+    // واجهة الشكاوى للدكتور
+    Route::get('/complaint', [DoctorComplaintController::class, 'create'])->name('doctor.complaints.create');
+    
+    // حفظ الشكوى
+    Route::post('/complaint', [DoctorComplaintController::class, 'store'])->name('doctor.complaints.store');
+
+});

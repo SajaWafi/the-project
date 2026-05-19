@@ -39,7 +39,7 @@ class ChildController extends Controller
 
         $search = $request->search;
 
-    $children = Child::with('parent')
+    $children = Child::with('parentProfile')
     ->when($search, function ($query) use ($search) {
         $query->where('name', 'like', '%' . $search . '%');
     })

@@ -380,7 +380,7 @@
         );
     }
 
-    const complaintsData = @json($complaintsData ?? [0,0,0,0,0,0,0]);
+   const complaintsData = {{ Js::from($complaintsData ?? [0,0,0,0,0,0,0]) }};
 
     new Chart(ctxComplaints, {
         type: 'line',
