@@ -3,6 +3,7 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/parent.php';
 require __DIR__ . '/doctor.php';
 require __DIR__ . '/admin.php';
+require __DIR__ . '/api.php';
 /*
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

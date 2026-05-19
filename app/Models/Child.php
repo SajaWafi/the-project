@@ -48,4 +48,9 @@ class Child extends Model
     {
         return $this->hasMany(Appointment::class, 'child_id');
     }
+
+    public function sensorReadings()
+    {
+        return $this->hasMany(SensorReading::class, 'child_id');
+    }
 }
