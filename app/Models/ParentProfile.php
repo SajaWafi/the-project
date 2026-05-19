@@ -17,8 +17,12 @@ class ParentProfile extends Model
         return $this->belongsTo(User::class);
     }
 
+
     /*
     public function child()
+
+    public function children()
+
 
 {
     return $this->hasMany(\App\Models\Child::class, 'parent_id');
