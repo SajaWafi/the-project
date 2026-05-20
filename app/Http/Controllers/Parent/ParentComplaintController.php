@@ -9,13 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class ParentComplaintController extends Controller
 {
-    // 1. عرض واجهة الشكاوى للأهل (مباشرة وبدون جلب الدكاترة من الداتابيز لتجنب أي تعارض)
     public function create()
     {
         return view('complaint');
     }
 
-    // 2. حفظ الشكوى في جدول complaints
    public function store(Request $request)
     {
         $request->validate([
@@ -24,10 +22,9 @@ class ParentComplaintController extends Controller
             'doctor_info' => 'nullable|string|max:255', 
         ]);
 
-        // دمج نوع الشكوى بشكل افتراضي في بداية أي رسالة
-        $finalMessage = "Category: [" . $request->category . "]\n\nDetails:\n" . $request->message;
+        $finalMessage = $request->message;
 
-        // تخصيص الرسالة إذا كانت الشكوى ضد طبيب
+        // complaint against doctor
         if ($request->category == 'Doctor Dispute' && $request->doctor_info) {
             $finalMessage = "Notice: Complaint against Doctor (" . $request->doctor_info . ")\n\nDetails:\n" . $request->message;
         }

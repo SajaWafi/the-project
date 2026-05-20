@@ -174,12 +174,13 @@
                     <label>Issue Category</label>
                     <select name="category" id="complaint-category" class="form-select" required>
                         <option value="" disabled selected>Choose a category</option>
-                        <option value="System Error / Bug">System Error or Bug (خلل في النظام)</option>
-                        <option value="Technical Issue">Technical Issue (مشكلة تقنية بالحساب)</option>
-                        <option value="Parent Dispute">Issue regarding a Parent (مشكلة مع ولي أمر)</option>
-                        <option value="General Suggestion">General Suggestion (اقتراح عام)</option>
-                        <option value="Other">Other</option>
+                        <option value="system_error_or_bug">System Error or Bug (خلل في النظام)</option>
+                        <option value="technical_issue">Technical Issue (مشكلة تقنية بالحساب)</option>
+                        <option value="parent_dispute">Issue regarding a Parent (مشكلة مع ولي أمر)</option>
+                        <option value="general_suggestion">General Suggestion (اقتراح عام)</option>
+                        <option value="other">Other</option>
                     </select>
+                    
                 </div>
 
                 <div class="form-group" id="parent-select-group">

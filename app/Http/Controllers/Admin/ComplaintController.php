@@ -7,6 +7,23 @@ use App\Models\Complaint;
 
 class ComplaintController extends Controller
 {
+    public function store(Request $request)
+    {
+        $request->validate([
+            'category' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        Complaint::create([
+            'user_id' => auth()->id(),
+            'category' => $request->category,
+            'message' => $request->message,
+            'status' => 'pending',
+        ]);
+
+        return back();
+    }
+
     public function index()
     {
         $complaints = Complaint::with('user')->latest()->get();

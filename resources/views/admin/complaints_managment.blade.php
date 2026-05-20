@@ -75,6 +75,22 @@ body {
         margin-bottom: 5px;
     }
 
+    .filter-select {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        font-size: 13px;
+        color: #4a5568;
+        outline: none;
+        transition: .2s;
+    }
+
+    .filter-select:focus {
+        border-color: var(--taif-orange);
+        box-shadow: 0 0 0 3px rgba(246, 173, 85, 0.1);
+    }
+
     .complaints-subtitle {
         color: #6b7280;
         font-size: 14px;
@@ -288,12 +304,37 @@ body {
                 Complaints Directory
             </h6>
 
-            <input
-                type="text"
-                id="complaintSearch"
-                class="form-control complaints-search"
-                placeholder="Search..."
-            >
+            <div style="display:flex; gap:15px; margin-bottom:20px;">
+
+                <!-- role Filter -->
+                <select id="roleFilter" class="filter-select">
+                    <option value="">All Roles</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="parent">Parent</option>
+                </select>
+
+                <!-- category Filter -->
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">All Categories</option>
+                    <option value="system_error_or_bug">System Error or Bug</option>
+                    <option value="technical_issue">Technical Issue</option>
+                    <option value="parent_dispute">Issue regarding a Parent</option>
+                    <option value="doctor_issue">Issue regarding a Doctor</option>
+                    <option value="general_suggestion">General Suggestion</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <input
+                    type="text"
+                    id="complaintSearch"
+                    class="form-control complaints-search"
+                    placeholder="Search..."
+                >
+
+            </div>
+
+
+
         </div>
 
         <table class="complaints-table">
@@ -301,6 +342,7 @@ body {
                 <tr>
                     <th>User</th>
                     <th>Role</th>
+                    <th>Category</th>
                     <th>Complaint</th>
                     <th>Status</th>
                     <th>Date</th>
@@ -326,7 +368,10 @@ body {
                         : asset('images/default-user.png');
                 @endphp
 
-                <tr>
+                <tr 
+                    data-role="{{ strtolower($role) }}"
+                    data-category="{{ $complaint->category }}"
+                >
 
                     <td>
                         <div class="user-info">
@@ -355,7 +400,11 @@ body {
                     </td>
 
                     <td>
-                        {{ Str::limit($complaint->message, 40) }}
+                        {{ $complaint->category }}
+                    </td>
+
+                    <td>
+                        {{ $complaint->message }}
                     </td>
 
                     <td>
@@ -376,6 +425,7 @@ body {
                                 class="action-btn view-btn js-view-complaint"
                                 data-user="{{ $fullName }}"
                                 data-role="{{ ucfirst($role) }}"
+                                data-category="{{ $complaint->category }}"
                                 data-message="{{ $complaint->message }}"
                             >
                                 <i class="fas fa-eye"></i>
@@ -437,6 +487,7 @@ body {
                 <span id="modalUserRole" class="role-badge"></span>
             </div>
 
+            <div class="complaint-category" id="modalComplaintCategory"></div>
             <div class="complaint-message" id="modalComplaintMessage"></div>
 
         </div>
@@ -475,6 +526,9 @@ body {
             document.getElementById('modalComplaintMessage').innerText =
                 this.dataset.message;
 
+            document.getElementById('modalComplaintCategory').innerText =
+                this.dataset.category;
+
             document.getElementById('complaintModal').style.display = 'flex';
         });
     });
@@ -483,6 +537,39 @@ body {
 
         document.getElementById('complaintModal').style.display = 'none';
     }
+
+    const roleFilter = document.getElementById('roleFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+
+    function filterComplaints() {
+
+        const selectedRole = roleFilter.value;
+        const selectedCategory = categoryFilter.value;
+
+        const rows = document.querySelectorAll('#complaintsTableBody tr');
+
+        rows.forEach(row => {
+
+            const role = row.dataset.role;
+            const category = row.dataset.category;
+
+            const roleMatch =
+                !selectedRole || role === selectedRole;
+
+            const categoryMatch =
+                !selectedCategory || category === selectedCategory;
+
+            if (roleMatch && categoryMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+
+        });
+    }
+
+    roleFilter.addEventListener('change', filterComplaints);
+    categoryFilter.addEventListener('change', filterComplaints);
 
 </script>
 

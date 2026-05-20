@@ -352,8 +352,12 @@ body {
                             Child: {{ $appointment->child->name ?? 'N/A' }}
                         </div>
 
+                        <div class="appointment-sub">
+                            Place: {{ $appointment->workplace->place_name }}
+                        </div>
+
                         <div class="note">
-                            {{ $appointment->note }}
+                            Note: {{ $appointment->note }}
                         </div>
                     </div>
 
