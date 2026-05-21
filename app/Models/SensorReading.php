@@ -2,17 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Alert;
+use Carbon\Carbon;
 
 class SensorReading extends Model
 {
-    use HasFactory;
-
-    // 1. تحديد اسم الجدول في قاعدة البيانات (لأن لارافل تلقائياً حيبحث عن sensor_readings)
-    protected $table = 'sensor_readings';
-
-    // 2. حماية الحقول (Fillable) لكي يسمح لارافل بتخزين البيانات القادمة من الإسوارة دفعة واحدة
     protected $fillable = [
         'bracelet_id',
         'child_id',
@@ -20,29 +15,69 @@ class SensorReading extends Model
         'motion_level',
         'pressure_level',
         'place_value',
-        'recorded_at'
+        'recorded_at',
     ];
 
-    // 3. تحويل حقل التاريخ إلى كائن Carbon لكي نتمكن من تنسيقه بسهولة في الرسوم البيانية
-    protected $casts = [
-        'recorded_at' => 'datetime',
-    ];
-
-    // --- العلاقات (Relationships) ---
-
-    /**
-     * علاقة القراءة بالطفل (كل قراءة تتبع طفل واحد)
-     */
-    public function child()
+    protected static function booted()
     {
-        return $this->belongsTo(Child::class, 'child_id');
+        static::created(function ($reading) {
+
+            $child = $reading->child;
+
+            if (!$child) {
+                return;
+            }
+
+            // حساب العمر
+            $age = Carbon::parse($child->birth_date)->age;
+
+            // الحد الطبيعي للنبض
+            $maxHeartRate = 100;
+
+            if ($age >= 3 && $age <= 5) {
+
+                $maxHeartRate = 120;
+
+            } elseif ($age >= 6 && $age <= 12) {
+
+                $maxHeartRate = 110;
+
+            } elseif ($age >= 13) {
+
+                $maxHeartRate = 100;
+            }
+
+            // إذا النبض مرتفع
+            if ($reading->heart_rate > $maxHeartRate) {
+
+                Alert::create([
+
+                    'child_id' => $child->id,
+
+                    'parent_id' => $child->parent_id,
+
+                    'title' => 'High Heart Rate Alert',
+
+                    'message' =>
+                        $child->name .
+                        ' has a high heart rate (' .
+                        $reading->heart_rate .
+                        ' BPM)',
+
+                    'alert_type' => 'heart_rate',
+
+                    'is_read' => false,
+
+                    'sent_at' => now(),
+                ]);
+            }
+
+        });
     }
 
-    /**
-     * علاقة القراءة بالإسوارة (كل قراءة تتبع إسوارة واحدة)
-     */
-    public function bracelet()
+    // العلاقة مع الطفل
+    public function child()
     {
-        return $this->belongsTo(Bracelet::class, 'bracelet_id');
+        return $this->belongsTo(Child::class);
     }
 }

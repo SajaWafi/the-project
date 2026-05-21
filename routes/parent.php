@@ -14,6 +14,7 @@ use App\Http\Controllers\Parent\DoctorController;
 use App\Http\Controllers\Parent\ChatController;
 use App\Http\Controllers\Parent\AlertController;
 use App\Http\Controllers\Parent\ParentComplaintController;
+use App\Http\Controllers\Parent\ParentAlertController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,7 +70,7 @@ Route::prefix('parents')
         |--------------------------------------------------------------------------
         */
         // ملاحظة: تم توحيد مسار التنبيهات ليعمل من خلال الـ Controller أو الوظيفة المطلوبة
-        Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
+        Route::get('/alerts', [ParentAlertController::class, 'index'])->name('alerts');
         Route::get('/location', fn() => view('parents.location'))->name('location');
 
         /*
@@ -317,14 +318,26 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 });
 
 
+    /*
+    |--------------------------------------------------------------------------
+    |       complaints
+    |--------------------------------------------------------------------------
+    */
 
+    Route::middleware(['auth'])->group(function () {
 
-Route::middleware(['auth'])->group(function () {
-    
     // رابط عرض صفحة الشكوى
     Route::get('/complaint', [ParentComplaintController::class, 'create'])->name('parent.complaints.create');
-    
+
     // رابط إرسال وحفظ الشكوى في قاعدة البيانات
     Route::post('/complaint', [ParentComplaintController::class, 'store'])->name('parent.complaints.store');
 
-});
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    |       Alerts
+    |--------------------------------------------------------------------------
+    */
+
+   //oute::get('/alerts', [ParentAlertController::class, 'index'])->name('parents.alerts');
