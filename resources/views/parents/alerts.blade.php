@@ -393,6 +393,8 @@
 
                     </div>
 
+                    <br>
+
                 @endforeach
 
             @endif
