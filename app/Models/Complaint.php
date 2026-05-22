@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Complaint extends Model
 {
     protected $fillable = [
-        'user_id',
-        'message',
-        'status',
+    'user_id',
+    'message',
+    'category',
+    'status',
     ];
 
     public function user()

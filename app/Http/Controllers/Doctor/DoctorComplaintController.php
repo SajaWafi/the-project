@@ -9,14 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class DoctorComplaintController extends Controller
 {
-    // 1. عرض واجهة الشكاوى للدكتور
     public function create()
     {
         return view('doctor.complaint');
     }
 
-    // 2. حفظ شكوى الدكتور
- public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'category' => 'required|string',
@@ -24,12 +22,15 @@ class DoctorComplaintController extends Controller
             'parent_info' => 'nullable|string|max:255',
         ]);
 
-        // دمج نوع الشكوى بشكل افتراضي في بداية أي رسالة
-        $finalMessage = "Category: [" . $request->category . "]\n\nDetails:\n" . $request->message;
+        $finalMessage = $request->message;
 
-        // تخصيص الرسالة إذا كانت الشكوى ضد ولي أمر
-        if ($request->category == 'Parent Dispute' && $request->parent_info) {
-            $finalMessage = "Notice: Complaint against Parent (" . $request->parent_info . ")\n\nDetails:\n" . $request->message;
+        // complaint against parent
+        if ($request->category == 'parent_dispute' && $request->parent_info) {
+
+            $finalMessage =
+                "Parent Info: " . $request->parent_info .
+                "\n\n" .
+                $request->message;
         }
 
         Complaint::create([
@@ -39,6 +40,9 @@ class DoctorComplaintController extends Controller
             'status'   => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Complaint submitted successfully!');
+        return redirect()->back()->with(
+            'success',
+            'Complaint submitted successfully!'
+        );
     }
 }

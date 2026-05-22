@@ -107,6 +107,7 @@
     <div class="stat-title">Heart Rate<br>bpm</div>
 </div>
 
+
 <div class="stat-card blue">
     <div class="stat-icon">
         <svg class="card-svg activity-svg" viewBox="0 0 24 24" fill="none">
@@ -130,6 +131,50 @@
                     <div class="stat-title">
                         Device Status<br>
                         <strong id="liveConnectionStatus">{{ $isConnected ? 'Connected' : 'Disconnected' }}</strong>
+
+<div class="section-chip">Appointment</div>
+<!--schedule-card -->
+
+@forelse($appointments as $appointment)
+    @php
+        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+        $isToday = $appointmentDate->isToday();
+
+        $doctorName = trim(
+            ($appointment->doctor->user->first_name ?? '') . ' ' . ($appointment->doctor->user->last_name ?? '')
+        );
+
+        $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+    @endphp
+
+    <div class="schedule-card">
+        <div class="appointment-box">
+            <div class="times">
+                <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                <div>|</div>
+                <div>|</div>
+                <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
+            </div>
+
+            <div class="appointment-content">
+                <div class="appointment-header">
+                    <span>{{ $headerText }}</span>
+                </div>
+
+                <div class="appointment-main">
+                    <div class="appointment-info">
+                        <div class="appointment-sub">
+                            Doctor: {{ $doctorName ?: 'N/A' }}
+                        </div>
+
+                        <div class="appointment-sub">
+                            Place: {{ $appointment->workplace->place_name }}
+                        </div>
+
+                        <div class="note">
+                            Note: {{ $appointment->note }}
+                        </div>
+
                     </div>
                 </div>
             </div>

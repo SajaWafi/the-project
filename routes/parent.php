@@ -14,9 +14,13 @@ use App\Http\Controllers\Parent\DoctorController;
 use App\Http\Controllers\Parent\ChatController;
 use App\Http\Controllers\Parent\AlertController;
 use App\Http\Controllers\Parent\ParentComplaintController;
+
 use App\Http\Controllers\Parent\HomeController;
 use App\Http\Controllers\Parent\LocationController;
 use App\Http\Controllers\Parent\SafeZoneController;
+
+use App\Http\Controllers\Parent\ParentAlertController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +75,12 @@ Route::prefix('parents')
         | Alerts / Location
         |--------------------------------------------------------------------------
         */
+
         Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
+
+        // ملاحظة: تم توحيد مسار التنبيهات ليعمل من خلال الـ Controller أو الوظيفة المطلوبة
+        Route::get('/alerts', [ParentAlertController::class, 'index'])->name('alerts');
+
         Route::get('/location', fn() => view('parents.location'))->name('location');
 
         /*
@@ -316,6 +325,7 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 Route::get('/parents/home', [HomeController::class, 'home'])->name('parents.home');
 Route::get('/parents/home/live-data', [HomeController::class, 'getLiveData'])->name('parents.home.live');
 
+
 Route::get('/parents/location', [LocationController::class, 'index'])->name('parents.location');
 Route::get('/parents/location/live', [LocationController::class, 'getLiveLocation'])->name('parents.location.live');
 
@@ -332,3 +342,28 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/complaint', [ParentComplaintController::class, 'create'])->name('parent.complaints.create');
     Route::post('/complaint', [ParentComplaintController::class, 'store'])->name('parent.complaints.store');
 });
+
+    /*
+    |--------------------------------------------------------------------------
+    |       complaints
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware(['auth'])->group(function () {
+
+    // رابط عرض صفحة الشكوى
+    Route::get('/complaint', [ParentComplaintController::class, 'create'])->name('parent.complaints.create');
+
+    // رابط إرسال وحفظ الشكوى في قاعدة البيانات
+    Route::post('/complaint', [ParentComplaintController::class, 'store'])->name('parent.complaints.store');
+
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    |       Alerts
+    |--------------------------------------------------------------------------
+    */
+
+   //oute::get('/alerts', [ParentAlertController::class, 'index'])->name('parents.alerts');
+

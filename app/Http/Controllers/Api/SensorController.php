@@ -9,6 +9,7 @@ use App\Models\Alert;
 use App\Models\Child; 
 use Carbon\Carbon;
 
+
 class SensorController extends Controller
 {
     public function receiveData(Request $request)
@@ -27,6 +28,7 @@ class SensorController extends Controller
         // 1. تخزين القراءات في جدول sensor_readings
         $reading = SensorReading::create($validatedData);
 
+
         // 2. تخزين الإحداثيات في جدول locations (مباشرة هنا لأن $request موجود)
         if (!empty($validatedData['place_value'])) {
             $coords = explode(',', $validatedData['place_value']);
@@ -44,6 +46,53 @@ class SensorController extends Controller
         }
 
         // 3. تشغيل التحليل الطبي بناءً على قراءات الإسوارة الذكية
+
+    $child = $sensorReading->child;
+
+    $age = Carbon::parse($child->birth_date)->age;
+
+    $maxHeartRate = 100;
+
+    // تحديد الحد الطبيعي حسب العمر
+    if ($age >= 3 && $age <= 5) {
+
+        $maxHeartRate = 120;
+
+    } elseif ($age >= 6 && $age <= 12) {
+
+        $maxHeartRate = 110;
+
+    } elseif ($age >= 13) {
+
+        $maxHeartRate = 100;
+    }
+
+    // لو النبض أعلى من الطبيعي
+    if ($sensorReading->heart_rate > $maxHeartRate) {
+
+        Alert::create([
+
+            'child_id' => $child->id,
+
+            'parent_id' => $child->parent_id,
+
+            'title' => 'High Heart Rate Alert',
+
+            'message' =>
+                $child->name .
+                ' has a high heart rate (' .
+                $sensorReading->heart_rate .
+                ' BPM)',
+
+            'alert_type' => 'heart_rate',
+
+            'is_read' => false,
+
+            'sent_at' => now(),
+        ]);
+    }
+        // تشغيل التحليل الطبي بناءً على قراءات الإسوارة الذكية
+
         $this->analyzeMedicalData($reading);
 
         return response()->json([
@@ -51,6 +100,7 @@ class SensorController extends Controller
             'message' => 'Data analyzed and location saved successfully.'
         ], 201);
     }
+
 
     /**
      * الوظيفة الطبية: التحليل وتوليد التنبيهات بناءً على هيكل جدولك الحالي
@@ -108,4 +158,6 @@ class SensorController extends Controller
             ]);
         }
     }
+
+
 }
