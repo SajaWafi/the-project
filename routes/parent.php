@@ -14,6 +14,9 @@ use App\Http\Controllers\Parent\DoctorController;
 use App\Http\Controllers\Parent\ChatController;
 use App\Http\Controllers\Parent\AlertController;
 use App\Http\Controllers\Parent\ParentComplaintController;
+use App\Http\Controllers\Parent\HomeController;
+use App\Http\Controllers\Parent\LocationController;
+use App\Http\Controllers\Parent\SafeZoneController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,7 +71,6 @@ Route::prefix('parents')
         | Alerts / Location
         |--------------------------------------------------------------------------
         */
-        // ملاحظة: تم توحيد مسار التنبيهات ليعمل من خلال الـ Controller أو الوظيفة المطلوبة
         Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
         Route::get('/location', fn() => view('parents.location'))->name('location');
 
@@ -256,32 +258,23 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Reports History
+    | Reports Settings & History
     |--------------------------------------------------------------------------
     */
-    Route::get('/reports-history', function () {
-        $reports = [
-            ['id' => 1, 'title' => 'Jan Report'],
-            ['id' => 2, 'title' => 'Feb Report'],
-            ['id' => 3, 'title' => 'Mar Report'],
-        ];
-        return view('reports-history', compact('reports'));
-    })->name('reports.history');
+    // 1. المسار الناقص اللي كان مسبب الخطأ
+    Route::get('/settings/reports-config', function () {
+        return "صفحة إعدادات التقارير (قيد الإنشاء 🚧)";
+    })->name('reports.settings');
 
-    Route::get('/reports-history/{id}', function ($id) {
-        $reports = [
-            1 => ['title' => 'Jan Report'],
-            2 => ['title' => 'Feb Report'],
-            3 => ['title' => 'Mar Report'],
-        ];
-        $report = $reports[$id] ?? null;
-        if (!$report) abort(404);
-        return view('report-details', compact('report', 'id'));
-    })->name('reports.details');
+    // 2. مسارات الأرشيف والحذف
+    Route::get('/settings/reports-history', [\App\Http\Controllers\ReportController::class, 'history'])->name('reports.history');
+    Route::post('/settings/reports-history/delete', [\App\Http\Controllers\ReportController::class, 'destroyMultiple'])->name('reports.destroy');
 
-    Route::get('/reports-settings', fn() => view('reports-settings'))->name('reports.settings');
-
-    /////deletedoctor
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Doctor
+    |--------------------------------------------------------------------------
+    */
     Route::delete('/doctors/{id}/delete', [\App\Http\Controllers\Parent\DoctorController::class, 'removeDoctor'])
     ->name('doctors.delete');
 
@@ -295,7 +288,6 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
         DB::beginTransaction();
         try {
             if ($user?->parentProfile) {
-                // حذف الأطفال أولاً لتجنب مشاكل Foreign Key
                 $user->parentProfile->children()->delete();
                 $user->parentProfile()->delete();
             }
@@ -316,15 +308,27 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     })->name('delete.account');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Parent Extra Routes (Outside Group Prefix)
+|--------------------------------------------------------------------------
+*/
+Route::get('/parents/home', [HomeController::class, 'home'])->name('parents.home');
+Route::get('/parents/home/live-data', [HomeController::class, 'getLiveData'])->name('parents.home.live');
 
+Route::get('/parents/location', [LocationController::class, 'index'])->name('parents.location');
+Route::get('/parents/location/live', [LocationController::class, 'getLiveLocation'])->name('parents.location.live');
 
+Route::get('/safe-zone-settings', [SafeZoneController::class, 'index'])->name('safe.zone.settings');
+Route::post('/safe-zone-settings', [SafeZoneController::class, 'store'])->name('safe.zone.store');
+Route::delete('/safe-zone-settings/{id}', [SafeZoneController::class, 'destroy'])->name('safe.zone.destroy');
 
+/*
+|--------------------------------------------------------------------------
+| Complaints
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
-    
-    // رابط عرض صفحة الشكوى
     Route::get('/complaint', [ParentComplaintController::class, 'create'])->name('parent.complaints.create');
-    
-    // رابط إرسال وحفظ الشكوى في قاعدة البيانات
     Route::post('/complaint', [ParentComplaintController::class, 'store'])->name('parent.complaints.store');
-
 });

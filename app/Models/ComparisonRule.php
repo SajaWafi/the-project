@@ -15,4 +15,9 @@ class ComparisonRule extends Model
         'message_ar',
         'is_active'
     ];
+    protected $casts = [
+        'min_value' => 'float',
+        'max_value' => 'float',
+        'is_active' => 'boolean',
+    ];
 }

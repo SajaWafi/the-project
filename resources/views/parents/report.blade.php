@@ -351,7 +351,14 @@
     </style>
 </head>
 <body>
-<div class="mobile-shell">
+
+<div class="mobile-shell" id="live-dashboard">
+
+    <div id="report-data" style="display: none;" 
+         data-labels="{{ json_encode($report['chart_labels']) }}" 
+         data-episodes="{{ json_encode($report['chart_episodes']) }}" 
+         data-heartrate="{{ json_encode($report['chart_heart_rate']) }}">
+    </div>
 
     <div class="topbar">
         <a href="{{ route('parents.home') }}" class="back-link">‹</a>
@@ -486,127 +493,113 @@
 </div>
 
 <script>
-    const labels = @json($report['chart_labels']);
-    const episodesData = @json($report['chart_episodes']);
-    const heartRateData = @json($report['chart_heart_rate']);
+    // متغيرات عامة باش نحفظوا فيهم الرسوم البيانية ونقدروا نمسحوهم ونجددوهم
+    let epChart = null;
+    let hrChart = null;
 
-    const commonGridColor = 'rgba(148, 163, 184, 0.15)';
-    const commonTickColor = '#64748b';
+    // دالة إنشاء وتحديث الرسوم البيانية
+    function renderCharts() {
+        const dataElement = document.getElementById('report-data');
+        if (!dataElement) return;
 
-    new Chart(document.getElementById('episodesChart'), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Episodes',
-                data: episodesData,
-                borderColor: '#f59e0b',
-                backgroundColor: 'rgba(245, 158, 11, 0.14)',
-                fill: true,
-                tension: 0.35,
-                pointRadius: 4,
-                pointHoverRadius: 5,
-                borderWidth: 3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false
+        const labels = JSON.parse(dataElement.getAttribute('data-labels'));
+        const episodesData = JSON.parse(dataElement.getAttribute('data-episodes'));
+        const heartRateData = JSON.parse(dataElement.getAttribute('data-heartrate'));
+
+        const commonGridColor = 'rgba(148, 163, 184, 0.15)';
+        const commonTickColor = '#64748b';
+
+        // تدمير الرسوم القديمة لو كانت موجودة باش ما تتراكمش وتضرب
+        if (epChart) epChart.destroy();
+        if (hrChart) hrChart.destroy();
+
+        // إنشاء رسم النوبات
+        epChart = new Chart(document.getElementById('episodesChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Episodes',
+                    data: episodesData,
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.14)',
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointHoverRadius: 5,
+                    borderWidth: 3
+                }]
             },
-            plugins: {
-                legend: {
-                    display: false
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: '#0f172a', titleColor: '#ffffff', bodyColor: '#ffffff', padding: 10, cornerRadius: 10 }
                 },
-                tooltip: {
-                    backgroundColor: '#0f172a',
-                    titleColor: '#ffffff',
-                    bodyColor: '#ffffff',
-                    padding: 10,
-                    cornerRadius: 10
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        color: commonTickColor
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: commonGridColor
-                    },
-                    ticks: {
-                        stepSize: 1,
-                        color: commonTickColor
-                    }
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: commonTickColor } },
+                    y: { beginAtZero: true, grid: { color: commonGridColor }, ticks: { stepSize: 1, color: commonTickColor } }
                 }
             }
-        }
-    });
+        });
 
-    new Chart(document.getElementById('heartRateChart'), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Heart Rate',
-                data: heartRateData,
-                borderColor: '#2563eb',
-                backgroundColor: 'rgba(37, 99, 235, 0.12)',
-                fill: true,
-                tension: 0.35,
-                pointRadius: 4,
-                pointHoverRadius: 5,
-                borderWidth: 3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false
+        // إنشاء رسم النبضات
+        hrChart = new Chart(document.getElementById('heartRateChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Heart Rate',
+                    data: heartRateData,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointHoverRadius: 5,
+                    borderWidth: 3
+                }]
             },
-            plugins: {
-                legend: {
-                    display: false
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: '#0f172a', titleColor: '#ffffff', bodyColor: '#ffffff', padding: 10, cornerRadius: 10 }
                 },
-                tooltip: {
-                    backgroundColor: '#0f172a',
-                    titleColor: '#ffffff',
-                    bodyColor: '#ffffff',
-                    padding: 10,
-                    cornerRadius: 10
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        color: commonTickColor
-                    }
-                },
-                y: {
-                    beginAtZero: false,
-                    grid: {
-                        color: commonGridColor
-                    },
-                    ticks: {
-                        color: commonTickColor
-                    }
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: commonTickColor } },
+                    y: { beginAtZero: false, grid: { color: commonGridColor }, ticks: { color: commonTickColor } }
                 }
             }
-        }
-    });
+        });
+    }
+
+    // تشغيل الرسوم أول مرة تفتح فيها الصفحة
+    document.addEventListener('DOMContentLoaded', renderCharts);
+
+    // كود التحديث الحي الذكي (كل 10 ثواني)
+    setInterval(() => {
+        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // جلب المحتوى الجديد بالكامل
+                const newContent = doc.getElementById('live-dashboard').innerHTML;
+                
+                // استبدال المحتوى القديم (النصوص والأرقام والرسوم حتتحدث)
+                document.getElementById('live-dashboard').innerHTML = newContent;
+                
+                // إعادة تشغيل الرسوم البيانية بالبيانات الجديدة
+                renderCharts();
+            })
+            .catch(error => console.log('Live update paused...'));
+    }, 10000); // 10000 ملي ثانية = 10 ثواني
 </script>
 </body>
 </html>

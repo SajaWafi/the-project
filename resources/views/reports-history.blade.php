@@ -372,11 +372,14 @@
                 </div>
 
                 <div class="reports-list" id="reportsList">
-                    @foreach($reports as $report)
+                @foreach($reports as $report)
+                        @php
+                            $monthName = DateTime::createFromFormat('!m', $report->report_month)->format('M');
+                        @endphp
                         <div class="report-card-wrapper">
-                            <input type="checkbox" class="report-check" value="{{ $report['id'] }}">
+                            <input type="checkbox" class="report-check" value="{{ $report->id }}">
 
-                            <a href="{{ route('reports.details', $report['id']) }}" class="report-card">
+                            <a href="{{ route('parents.report', ['period' => 'month']) }}" class="report-card">
                                 <div class="report-left">
                                     <div class="report-icon">
                                         <svg viewBox="0 0 24 24" fill="none">
@@ -386,17 +389,12 @@
                                             <path d="M15 11v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                         </svg>
                                     </div>
-
-                                    <div class="report-title">{{ $report['title'] }}</div>
+                                    <div class="report-title">{{ $monthName }} Report {{ $report->report_year }}</div>
                                 </div>
 
                                 <div class="report-arrow">
                                     <svg viewBox="0 0 24 24" fill="none">
-                                        <path d="M9 5L16 12L9 19"
-                                              stroke="#e69a4b"
-                                              stroke-width="2.2"
-                                              stroke-linecap="round"
-                                              stroke-linejoin="round"/>
+                                        <path d="M9 5L16 12L9 19" stroke="#e69a4b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </div>
                             </a>
@@ -494,14 +492,32 @@
             const selectedIds = Array.from(document.querySelectorAll('.report-check:checked'))
                 .map(input => input.value);
 
-            console.log('Delete reports:', selectedIds);
+            if (selectedIds.length === 0) return;
 
-            // هنا لاحقًا تقدر تبعث selectedIds للباك إند
-            // مثلاً عن طريق form أو fetch
+            // 1. إنشاء فورم مخفي برمجياً
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{{ route('reports.destroy') }}";
 
-            closeDeleteModal();
+            // 2. إضافة توكن الحماية الخاص بـ لارافل (CSRF)
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = "{{ csrf_token() }}";
+            form.appendChild(csrfToken);
 
-            alert('Selected reports are ready to be deleted.');
+            // 3. إضافة مصفوفة الـ IDs اللي تم اختيارها
+            selectedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'report_ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+
+            // 4. إرسال الفورم
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 

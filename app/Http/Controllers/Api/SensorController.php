@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SensorReading;
 use App\Models\Alert;
-use App\Models\Child; // استدعاء موديل الطفل لجلب بيانات الأهل
+use App\Models\Child; 
 use Carbon\Carbon;
 
 class SensorController extends Controller
@@ -23,14 +23,32 @@ class SensorController extends Controller
         ]);
 
         $validatedData['recorded_at'] = Carbon::now();
+
+        // 1. تخزين القراءات في جدول sensor_readings
         $reading = SensorReading::create($validatedData);
 
-        // تشغيل التحليل الطبي بناءً على قراءات الإسوارة الذكية
+        // 2. تخزين الإحداثيات في جدول locations (مباشرة هنا لأن $request موجود)
+        if (!empty($validatedData['place_value'])) {
+            $coords = explode(',', $validatedData['place_value']);
+            
+            // التأكد إن الإسوارة بعتت خط الطول وخط العرض الزوز
+            if (count($coords) == 2) {
+                \App\Models\Location::create([
+                    'child_id' => $validatedData['child_id'],
+                    'bracelet_id' => $validatedData['bracelet_id'],
+                    'latitude' => (float) trim($coords[0]),
+                    'longitude' => (float) trim($coords[1]),
+                    'recorded_at' => Carbon::now(),
+                ]);
+            }
+        }
+
+        // 3. تشغيل التحليل الطبي بناءً على قراءات الإسوارة الذكية
         $this->analyzeMedicalData($reading);
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Data analyzed and alert generated if required.'
+            'message' => 'Data analyzed and location saved successfully.'
         ], 201);
     }
 
@@ -69,7 +87,6 @@ class SensorController extends Controller
         }
 
         // 3. تطبيق شروط الحركة المفرطة (Excessive Motion)
-        // إذا لم تكن هناك حالة نبض خطيرة ولكن الحركة عالية جداً (نوبة غضب/Meltdown)
         if (!$isEmergency && !is_null($reading->motion_level) && $reading->motion_level >= 85) {
             $isEmergency = true;
             $title = 'High Physical Activity';
@@ -77,16 +94,16 @@ class SensorController extends Controller
             $alertType = 'Motion Alert';
         }
 
-        // 4. إذا تحقق أي شرط من الشروط، نقوم بتسجيل التنبيه في جدولك الحالي
+        // 4. إذا تحقق أي شرط من الشروط، نقوم بتسجيل التنبيه
         if ($isEmergency) {
             Alert::create([
                 'child_id'       => $reading->child_id,
-                'parent_id'      => $parentId,       // تم جلبه ديناميكياً من علاقة الطفل
-                'panic_event_id' => null,            // نضعها null مبدئياً أو نربطها لو عندك جدول الـ panic
+                'parent_id'      => $parentId,       
+                'panic_event_id' => null,            
                 'title'          => $title,
                 'message'        => $message,
-                'is_read'        => false,           // القيمة الافتراضية للتنبيه الجديد
-                'sent_at'        => Carbon::now(),   // وقت إرسال التنبيه
+                'is_read'        => false,           
+                'sent_at'        => Carbon::now(),   
                 'alert_type'     => $alertType,
             ]);
         }

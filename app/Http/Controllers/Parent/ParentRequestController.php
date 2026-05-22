@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Parent;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\DoctorRequest;
 use Illuminate\Http\Request;
