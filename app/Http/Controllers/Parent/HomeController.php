@@ -149,5 +149,24 @@ class HomeController extends Controller
             'activityStatus' => $activityStatus,
             'isConnected' => $isConnected
         ]);
+
+    }
+
+    public function saveToken(\Illuminate\Http\Request $request)
+    {
+        $request->validate(['token' => 'required']);
+
+        // يخزن التوكن أو يحدثه لو كان موجود من قبل
+        \App\Models\FcmToken::updateOrCreate(
+            ['fcm_token' => $request->token], // ابحث عن هذا التوكن
+            [
+                'user_id' => auth()->id(), 
+                'device_type' => 'PWA-Web', 
+                'is_active' => true,
+                'last_used_at' => now()
+            ]
+        );
+
+        return response()->json(['message' => 'Token saved successfully.']);
     }
 }

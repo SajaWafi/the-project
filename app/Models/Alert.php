@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Alert extends Model
 {
-    // إضافة هذي الميزة من الكود بتاعي
     use HasFactory;
 
-    // اعتماد الحقول الخاصة بجدولك أنتِ لأنها الأصح
+    /**
+     * الحقول القابلة للتعبئة الجماعية (Mass Assignment)
+     */
     protected $fillable = [
         'child_id',
         'parent_id',
@@ -22,7 +23,9 @@ class Alert extends Model
         'alert_type',
     ];
 
-    // اعتماد التحويلات الخاصة بجدولك (خطوة احترافية جداً منكِ)
+    /**
+     * تحويل أنواع البيانات عند استرجاعها من القاعدة (Casting)
+     */
     protected $casts = [
         'is_read' => 'boolean',
         'sent_at' => 'datetime',
@@ -30,17 +33,25 @@ class Alert extends Model
 
     // --- العلاقات (Relationships) ---
 
+    /**
+     * علاقة التنبيه بالطفل (كل تنبيه يخص طفلاً واحداً)
+     */
     public function child()
     {
         return $this->belongsTo(Child::class, 'child_id');
     }
 
+    /**
+     * علاقة التنبيه بولي الأمر (كل تنبيه يُرسل لولي أمر واحد)
+     */
     public function parent()
     {
         return $this->belongsTo(ParentProfile::class, 'parent_id');
     }
     
-    // (اختياري) علاقة جدول حالات الذعر لو احتجتيها مستقبلاً
+    /**
+     * علاقة التنبيه بحدث ذعر (إذا كان التنبيه مرتبطاً بنوبة ذعر مسجلة)
+     */
     public function panicEvent()
     {
         return $this->belongsTo(PanicEvent::class, 'panic_event_id');

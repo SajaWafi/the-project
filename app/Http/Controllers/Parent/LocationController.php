@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Parent;
 use App\Http\Controllers\Controller;
 use App\Models\SensorReading;
 use App\Models\SafeZone;
-use App\Models\Child; // تأكدي من إضافة هذا السطر
+use App\Models\Child;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;

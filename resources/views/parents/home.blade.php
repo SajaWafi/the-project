@@ -74,13 +74,13 @@
                 </div>
 
                 <div class="header-icons">
-                   <button class="circle-icon" type="button" onclick="window.location.href='{{ route('parents.requests') }}'">
-    <svg class="icon-svg bell-icon" viewBox="0 0 24 24" fill="none">
-        <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/>
-    </svg>
-    <span class="notif-dot"></span>
-</button>
+                    <button class="circle-icon" type="button" onclick="window.location.href='{{ route('parents.requests') }}'">
+                        <svg class="icon-svg bell-icon" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/>
+                        </svg>
+                        <span class="notif-dot"></span>
+                    </button>
                     <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo-small">
                 </div>
             </div>
@@ -97,29 +97,29 @@
             </div>
 
             <div class="stats">
-            <div class="stat-card red">
-    <div class="stat-icon">
-        <svg class="card-svg heart-svg" viewBox="0 0 24 24" fill="none">
-            <path d="M12 20s-6.5-4.2-8.5-8A5.2 5.2 0 0 1 12 5.7 5.2 5.2 0 0 1 20.5 12C18.5 15.8 12 20 12 20Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </div>
-    <div class="stat-value" id="liveHeartRate">{{ $heartRate }}</div>
-    <div class="stat-title">Heart Rate<br>bpm</div>
-</div>
+                <div class="stat-card red">
+                    <div class="stat-icon">
+                        <svg class="card-svg heart-svg" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 20s-6.5-4.2-8.5-8A5.2 5.2 0 0 1 12 5.7 5.2 5.2 0 0 1 20.5 12C18.5 15.8 12 20 12 20Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value" id="liveHeartRate">{{ $heartRate }}</div>
+                    <div class="stat-title">Heart Rate<br>bpm</div>
+                </div>
 
-
-<div class="stat-card blue">
-    <div class="stat-icon">
-        <svg class="card-svg activity-svg" viewBox="0 0 24 24" fill="none">
-            <path d="M3 13h4l2-6 4 12 2-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </div>
-    <div class="stat-title">
-        Today<br>
-        Activity Level<br>
-        <strong id="liveActivityStatus">{{ $activityStatus }}</strong>
-    </div>
-</div>
+                <div class="stat-card blue">
+                    <div class="stat-icon">
+                        <svg class="card-svg activity-svg" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 13h4l2-6 4 12 2-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="stat-title">
+                        Today<br>
+                        Activity Level<br>
+                        <strong id="liveActivityStatus">{{ $activityStatus }}</strong>
+                    </div>
+                </div>
+                
                 <div class="stat-card green">
                     <div class="stat-icon">
                         <svg id="liveBatterySvg" class="card-svg battery-svg" style="color: {{ $isConnected ? '#14b8a6' : '#ef4444' }};" viewBox="0 0 24 24" fill="none">
@@ -131,79 +131,48 @@
                     <div class="stat-title">
                         Device Status<br>
                         <strong id="liveConnectionStatus">{{ $isConnected ? 'Connected' : 'Disconnected' }}</strong>
-
-<div class="section-chip">Appointment</div>
-<!--schedule-card -->
-
-@forelse($appointments as $appointment)
-    @php
-        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
-        $isToday = $appointmentDate->isToday();
-
-        $doctorName = trim(
-            ($appointment->doctor->user->first_name ?? '') . ' ' . ($appointment->doctor->user->last_name ?? '')
-        );
-
-        $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
-    @endphp
-
-    <div class="schedule-card">
-        <div class="appointment-box">
-            <div class="times">
-                <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
-                <div>|</div>
-                <div>|</div>
-                <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
-            </div>
-
-            <div class="appointment-content">
-                <div class="appointment-header">
-                    <span>{{ $headerText }}</span>
-                </div>
-
-                <div class="appointment-main">
-                    <div class="appointment-info">
-                        <div class="appointment-sub">
-                            Doctor: {{ $doctorName ?: 'N/A' }}
-                        </div>
-
-                        <div class="appointment-sub">
-                            Place: {{ $appointment->workplace->place_name }}
-                        </div>
-
-                        <div class="note">
-                            Note: {{ $appointment->note }}
-                        </div>
-
                     </div>
                 </div>
             </div>
 
             <div class="section-chip">Appointment</div>
-            
+
             @forelse($appointments as $appointment)
+                @php
+                    $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+                    $isToday = $appointmentDate->isToday();
+                    $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+                    $doctorName = trim(($appointment->doctor->user->first_name ?? '') . ' ' . ($appointment->doctor->user->last_name ?? ''));
+                @endphp
+
                 <div class="schedule-card">
                     <div class="appointment-box">
                         <div class="times">
                             <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
-                            <div>|</div><div>|</div>
+                            <div>|</div>
+                            <div>|</div>
                             <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
                         </div>
+
                         <div class="appointment-content">
-                            @php
-                                $appointmentDate = \Carbon\Carbon::parse($appointment->date);
-                                $isToday = $appointmentDate->isToday();
-                                $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
-                                $doctorName = trim(($appointment->doctor->user->first_name ?? '') . ' ' . ($appointment->doctor->user->last_name ?? ''));
-                            @endphp
                             <div class="appointment-header">
                                 <span>{{ $headerText }}</span>
                             </div>
+
                             <div class="appointment-main">
                                 <div class="appointment-info">
-                                    <div class="appointment-sub">Doctor: {{ $doctorName ?: 'N/A' }}</div>
-                                    <div class="appointment-sub">Child: {{ $appointment->child->name ?? 'N/A' }}</div>
-                                    <div class="note">{{ $appointment->note }}</div>
+                                    <div class="appointment-sub">
+                                        Doctor: {{ $doctorName ?: 'N/A' }}
+                                    </div>
+                                    <div class="appointment-sub">
+                                        Child: {{ $appointment->child->name ?? 'N/A' }}
+                                    </div>
+                                    <div class="appointment-sub">
+                                        Place: {{ $appointment->workplace->place_name ?? 'N/A' }}
+                                    </div>
+                                    <div class="note">
+                                        Note: {{ $appointment->note }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -213,7 +182,7 @@
                 <div class="schedule-card">
                     <div class="appointment-box">
                         <div class="appointment-content">
-                            <span class="mmm">No upcoming appointments</span>
+                            <span class="mmm" style="text-align: center; display: block; padding-top: 10px;">No upcoming appointments</span>
                         </div>
                     </div>
                 </div>
@@ -257,6 +226,71 @@
     </div>
 
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+
+<script>
+    // 1. نفس بيانات مشروعك في الفايربيس
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        projectId: "YOUR_PROJECT_ID",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // 2. تشغيل الفايربيس
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    // 3. طلب الإذن من الأب لإرسال الإشعارات
+    function requestNotificationPermission() {
+        Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+                
+                // 4. جلب التوكن من الفايربيس
+                messaging.getToken({ vapidKey: "YOUR_VAPID_KEY" }).then((currentToken) => {
+                    if (currentToken) {
+                        console.log('FCM Token:', currentToken);
+                        sendTokenToServer(currentToken); // نبعثوه للارافل
+                    } else {
+                        console.log('No registration token available.');
+                    }
+                }).catch((err) => {
+                    console.log('An error occurred while retrieving token. ', err);
+                });
+            } else {
+                console.log('Unable to get permission to notify.');
+            }
+        });
+    }
+
+    // 5. دالة إرسال التوكن للكنترولر متاعك اللي درناه في الخطوة 1
+    function sendTokenToServer(token) {
+        fetch('{{ route("save.token") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ token: token })
+        }).then(response => {
+            console.log('Token saved in database successfully.');
+        }).catch(error => {
+            console.error('Error saving token:', error);
+        });
+    }
+
+    // نشغلوا طلب الإذن أول ما الصفحة تفتح
+    requestNotificationPermission();
+
+    // 6. هذي تستقبل الإشعار لو كان الأب فاتح التطبيق ويتصفح فيه
+    messaging.onMessage((payload) => {
+        console.log('Message received. ', payload);
+        alert(payload.notification.title + "\n" + payload.notification.body);
+    });
+</script>
 
 <script>
     const ctx = document.getElementById('activityChart').getContext('2d');

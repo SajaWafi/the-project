@@ -127,6 +127,13 @@
             border-radius: 20px;
             padding: 16px 16px 18px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            margin-bottom: 12px; /* مسافة بين الكروت */
+        }
+
+        .alert-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         .alert-title {
@@ -137,46 +144,76 @@
             letter-spacing: 0.2px;
         }
 
-        .alert-text {
-            font-size: 14px;
-            color: #5a6270;
-            line-height: 1.25;
+        .alert-time {
+            font-size: 12px;
+            color: #1f5b87;
+            font-weight: bold;
         }
 
-        .alert-card.severe .alert-title {
+        .alert-message {
+            font-size: 14px;
+            color: #5a6270;
+            line-height: 1.35;
+        }
+
+        /* --- الألوان الجديدة التي تمت إضافتها --- */
+        .title-red { color: #ff3434 !important; }
+        .title-yellow { color: #d68100 !important; } /* لون أصفر غامق ليكون مقروءاً */
+        .title-blue { color: #1f5b87 !important; }
+
+        .heart-warning {
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: bold;
             color: #ff3434;
         }
 
-        .alert-card.moderate .alert-title,
-        .alert-card.zone .alert-title {
-            color: #f1912f;
-        }
-
-        .alert-card.health .alert-title {
-            color: #1f5b87;
-        }
-
-        .alert-actions {
-            margin-top: 12px;
+        /* --- تصميم قسم سؤال المنطقة الآمنة وأزرارها --- */
+        .safe-question {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px dashed #a3b9d6;
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #5f6673;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .action-chip {
-            min-width: 34px;
-            height: 20px;
-            padding: 0 10px;
-            border: none;
-            border-radius: 999px;
-            background: #f4f1ea;
-            color: #7b8088;
-            font-size: 11px;
-            cursor: pointer;
+        .safe-question span {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1f5b87;
+            flex-grow: 1;
         }
+
+        .safe-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 13px;
+        }
+
+        .safe-btn.btn-yes {
+            background: #4fcbb9;
+            color: white;
+        }
+
+        .safe-btn.btn-no {
+            background: #ff3434;
+            color: white;
+        }
+
+        .safe-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ألوان النصوص بعد الإجابة */
+        .safe-answer-yes { color: #158a77 !important; }
+        .safe-answer-no { color: #ff3434 !important; }
+
 
         .bottom-nav {
             position: absolute;
@@ -221,7 +258,6 @@
                 padding: 0;
                 background: #fff;
             }
-
             .mobile-screen {
                 width: 100%;
                 max-width: 100%;
@@ -230,7 +266,6 @@
                 border-radius: 0;
                 box-shadow: none;
             }
-
             .content {
                 padding: 12px 12px 90px;
             }
@@ -248,9 +283,7 @@
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
-
                 <div class="page-title">Alerts</div>
-
                 <img src="{{ asset('images/logo.png') }}" alt="Taif" class="logo">
             </div>
 
@@ -269,7 +302,6 @@
                 <div class="section-pill">Today</div>
 
                 @foreach($todayAlerts as $alert)
-
                     @php
                         $type = $alert->alert_type;
 
@@ -288,16 +320,13 @@
                             'activity' => '🏃',
                             default => '🔔',
                         };
-
                     @endphp
 
                     <div class="alert-card {{ $type }}">
-
                         <div class="alert-top">
                             <div class="alert-title {{ $titleClass }}">
                                 {{ $icon }} {{ $alert->title }}
                             </div>
-
                             <div class="alert-time">
                                 {{ \Carbon\Carbon::parse($alert->sent_at ?? $alert->created_at)->format('h:i A') }}
                             </div>
@@ -309,50 +338,28 @@
 
                         @if($type === 'heart_rate')
                             <div class="heart-warning">
-                                 High heart rate detected
+                                ⚠️ High heart rate detected
                             </div>
                         @endif
 
                         @if($type === 'safe_zone')
-                            <div class="safe-question">
-
+                            <div class="safe-question" id="safe-container-{{ $alert->id }}">
                                 <span id="safe-text-{{ $alert->id }}">
                                     Is the child with you?
                                 </span>
-
-                                <button
-                                    type="button"
-                                    class="safe-btn"
-                                    onclick="answerSafeZone({{ $alert->id }}, 'yes')"
-                                >
-                                    Yes
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="safe-btn"
-                                    onclick="answerSafeZone({{ $alert->id }}, 'no')"
-                                >
-                                    No
-                                </button>
-
+                                <button type="button" class="safe-btn btn-yes" onclick="answerSafeZone({{ $alert->id }}, 'yes')">Yes</button>
+                                <button type="button" class="safe-btn btn-no" onclick="answerSafeZone({{ $alert->id }}, 'no')">No</button>
                             </div>
                         @endif
-
                     </div>
-
-                    <br>
-
                 @endforeach
             @endif
 
             {{-- Yesterday Alerts --}}
             @if($yesterdayAlerts->count())
-
                 <div class="section-pill">Yesterday</div>
 
                 @foreach($yesterdayAlerts as $alert)
-
                     @php
                         $type = $alert->alert_type;
 
@@ -374,158 +381,90 @@
                     @endphp
 
                     <div class="alert-card {{ $type }}">
-
                         <div class="alert-top">
-
                             <div class="alert-title {{ $titleClass }}">
                                 {{ $icon }} {{ $alert->title }}
                             </div>
-
                             <div class="alert-time">
                                 {{ \Carbon\Carbon::parse($alert->sent_at ?? $alert->created_at)->format('h:i A') }}
                             </div>
-
                         </div>
-
                         <div class="alert-message">
                             {{ $alert->message }}
                         </div>
-
                     </div>
-
-                    <br>
-
                 @endforeach
-
             @endif
 
-            {{-- Empty --}}
+            {{-- Empty State --}}
             @if($alerts->isEmpty())
-
                 <div class="alert-card">
-
                     <div class="alert-title title-blue">
                         No alerts
                     </div>
-
                     <div class="alert-message">
                         No alerts for today or yesterday
                     </div>
-
                 </div>
-
             @endif
 
         </div>
 
         {{-- Bottom Navigation --}}
         <div class="bottom-nav">
-
-            <a href="{{ route('parents.doctors') }}"
-               class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
-
+            <a href="{{ route('parents.doctors') }}" class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M6 4v5a6 6 0 0 0 12 0V4"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
-                    <path d="M12 15v2a4 4 0 0 0 4 4"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
+                    <path d="M6 4v5a6 6 0 0 0 12 0V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 15v2a4 4 0 0 0 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     <circle cx="18" cy="19" r="2" fill="currentColor"/>
                 </svg>
-
             </a>
-
-            <a href="{{ route('parents.alerts') }}"
-               class="nav-item {{ request()->routeIs('parents.alerts') ? 'active' : '' }}">
-
+            <a href="{{ route('parents.alerts') }}" class="nav-item {{ request()->routeIs('parents.alerts') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"/>
-                    <path d="M10 17a2 2 0 0 0 4 0"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
+                    <path d="M12 4a4 4 0 0 0-4 4v2.2c0 .7-.2 1.3-.6 1.8L6 14h12l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a4 4 0 0 0-4-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-
             </a>
-
-            <a href="{{ route('parents.home') }}"
-               class="nav-item {{ request()->routeIs('parents.home') ? 'active' : '' }}">
-
+            <a href="{{ route('parents.home') }}" class="nav-item {{ request()->routeIs('parents.home') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 10.5 12 4l8 6.5"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
-                    <path d="M7 10v9h10v-9"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linejoin="round"/>
+                    <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
                 </svg>
-
             </a>
-
-            <a href="{{ route('parents.report') }}"
-               class="nav-item {{ request()->routeIs('parents.report') ? 'active' : '' }}">
-
+            <a href="{{ route('parents.report') }}" class="nav-item {{ request()->routeIs('parents.report') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <rect x="6" y="4"
-                          width="12"
-                          height="16"
-                          rx="2"
-                          stroke="currentColor"
-                          stroke-width="2"/>
-                    <path d="M9 8h6M9 12h6M9 16h4"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"/>
+                    <rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-
             </a>
-
-            <a href="{{ route('parents.location') }}"
-               class="nav-item {{ request()->routeIs('parents.location') ? 'active' : '' }}">
-
+            <a href="{{ route('parents.location') }}" class="nav-item {{ request()->routeIs('parents.location') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linejoin="round"/>
+                    <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
                     <circle cx="12" cy="10" r="2.5" fill="currentColor"/>
                 </svg>
-
             </a>
-
         </div>
     </div>
 
     <script>
-
         function answerSafeZone(alertId, answer) {
-
+            const container = document.getElementById('safe-container-' + alertId);
             const text = document.getElementById('safe-text-' + alertId);
+            
+            // إخفاء الأزرار بعد الضغط عليها
+            const buttons = container.querySelectorAll('.safe-btn');
+            buttons.forEach(btn => btn.style.display = 'none');
 
             text.classList.remove('safe-answer-yes', 'safe-answer-no');
 
             if (answer === 'yes') {
-
-                text.innerHTML = " Child is safe with parent";
+                text.innerHTML = "✅ Child is safe with parent";
                 text.classList.add('safe-answer-yes');
-
             } else {
-
-                text.innerHTML = " Parent confirmed child is missing";
+                text.innerHTML = "🚨 Parent confirmed child is missing!";
                 text.classList.add('safe-answer-no');
-
             }
         }
-
     </script>
 
 </body>

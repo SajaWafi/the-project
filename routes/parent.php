@@ -367,3 +367,12 @@ Route::middleware(['auth'])->group(function () {
 
    //oute::get('/alerts', [ParentAlertController::class, 'index'])->name('parents.alerts');
 
+
+
+    /*
+    |--------------------------------------------------------------------------
+    |       FCM Token
+    |--------------------------------------------------------------------------
+    */
+   Route::post('/save-fcm-token', [App\Http\Controllers\HomeController::class, 'saveToken'])->name('save.token');
+   
