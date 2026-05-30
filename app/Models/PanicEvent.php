@@ -9,8 +9,23 @@ class PanicEvent extends Model
 {
     use HasFactory;
 
-    // استخدمنا guarded بدل fillable باش يقبل أي أعمدة عندك في الجدول بدون مشاكل
-    protected $guarded = [];
+    // تم حذف guarded والاعتماد على fillable للحماية القصوى
+    protected $fillable = [
+        'child_id',
+        'bracelet_id',
+        'sensor_reading_id',
+        'location_id',
+        'event_type',
+        'severity',
+        'description',
+        'started_at',
+        'ended_at',
+    ];
+
+    protected $casts = [
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
+    ];
 
     public function child()
     {

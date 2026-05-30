@@ -344,11 +344,38 @@
 
                         @if($type === 'safe_zone')
                             <div class="safe-question" id="safe-container-{{ $alert->id }}">
-                                <span id="safe-text-{{ $alert->id }}">
-                                    Is the child with you?
-                                </span>
-                                <button type="button" class="safe-btn btn-yes" onclick="answerSafeZone({{ $alert->id }}, 'yes')">Yes</button>
-                                <button type="button" class="safe-btn btn-no" onclick="answerSafeZone({{ $alert->id }}, 'no')">No</button>
+                                @if($type === 'safe_zone')
+                                    <div class="safe-question" id="safe-container-{{ $alert->id }}">
+
+                                        @if(is_null($alert->parent_response))
+                                            <span id="safe-text-{{ $alert->id }}">
+                                                Is the child with you?
+                                            </span>
+                                            
+                                            <form action="{{ route('parents.alerts.response', $alert->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <input type="hidden" name="parent_response" value="yes">
+                                                <button type="submit" class="safe-btn btn-yes">Yes</button>
+                                            </form>
+
+                                            <form action="{{ route('parents.alerts.response', $alert->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <input type="hidden" name="parent_response" value="no">
+                                                <button type="submit" class="safe-btn btn-no">No</button>
+                                            </form>
+
+                                        {{-- إذا كانت الإجابة المحفوظة في قاعدة البيانات هي نعم --}}
+                                        @elseif($alert->parent_response === 'yes')
+                                            <span class="safe-answer-yes">✅ Child is safe with parent</span>
+
+                                        {{-- إذا كانت الإجابة المحفوظة في قاعدة البيانات هي لا --}}
+                                        @elseif($alert->parent_response === 'no')
+                                            <span class="safe-answer-no">🚨 Parent confirmed child is missing!</span>
+                                        @endif
+
+                                    </div>
+                                @endif
+
                             </div>
                         @endif
                     </div>
@@ -447,11 +474,12 @@
     </div>
 
     <script>
+    /*
         function answerSafeZone(alertId, answer) {
             const container = document.getElementById('safe-container-' + alertId);
             const text = document.getElementById('safe-text-' + alertId);
             
-            // إخفاء الأزرار بعد الضغط عليها
+            // 1. إخفاء الأزرار فوراً وتغيير النص (لإعطاء استجابة سريعة للمستخدم)
             const buttons = container.querySelectorAll('.safe-btn');
             buttons.forEach(btn => btn.style.display = 'none');
 
@@ -464,7 +492,25 @@
                 text.innerHTML = "🚨 Parent confirmed child is missing!";
                 text.classList.add('safe-answer-no');
             }
+
+            // 2. إرسال الإجابة لقاعدة البيانات في الخلفية (بدون تحديث الصفحة)
+            fetch(`/alerts/${alertId}/response`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // حماية لارافل
+                },
+                body: JSON.stringify({ answer: answer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response saved to database successfully');
+            })
+            .catch(error => {
+                console.error('Error saving response:', error);
+            });
         }
+            */
     </script>
 
 </body>

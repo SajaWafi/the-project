@@ -21,6 +21,7 @@ class Alert extends Model
         'is_read',
         'sent_at',
         'alert_type',
+        'parent_response',
     ];
 
     /**

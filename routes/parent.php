@@ -78,7 +78,6 @@ Route::prefix('parents')
 
         Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
 
-        // ملاحظة: تم توحيد مسار التنبيهات ليعمل من خلال الـ Controller أو الوظيفة المطلوبة
         Route::get('/alerts', [ParentAlertController::class, 'index'])->name('alerts');
 
         Route::get('/location', fn() => view('parents.location'))->name('location');
@@ -264,6 +263,9 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/location-alerts', fn() => view('location-alerts'))->name('location.alerts');
     Route::get('/safe-zone-settings', fn() => view('safe-zone-settings'))->name('safe.zone.settings');
     Route::get('/alert-sounds', fn() => view('alert-sounds'))->name('alert.sounds');
+    
+    Route::post('/alerts/{id}/response', [\App\Http\Controllers\Parent\AlertController::class, 'updateResponse'])->name('parents.alerts.response');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -366,9 +368,6 @@ Route::middleware(['auth'])->group(function () {
     */
 
    //oute::get('/alerts', [ParentAlertController::class, 'index'])->name('parents.alerts');
-
-
-
     /*
     |--------------------------------------------------------------------------
     |       FCM Token
