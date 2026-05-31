@@ -163,6 +163,13 @@
             margin-bottom: 20px;
         }
 
+        .charts-container2 {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .chart-box {
             background: white;
             padding: 20px;
@@ -171,7 +178,7 @@
             height: 400px;
             display: flex;
             flex-direction: column;
-            position: relative;
+            position: relative;  
         }
 
         .chart-box h3 {
@@ -204,6 +211,46 @@
             .charts-container {
                 grid-template-columns: 1fr;
             }
+        }
+
+        #autismLevelChart {
+            height: 100vh;
+            max-height: 350px; 
+            margin: 0 auto;    
+        }
+
+        #userDistChart{
+            height: 100vh;  
+            max-height: 350px; 
+            margin: 0 auto;           
+        }
+        #complaintsChart{
+            height: 100vh;  
+            max-height: 350px; 
+            width: 100%;
+            margin: 0 auto;           
+        }
+
+        #registrationChart{
+            height: 100vh;  
+            max-height: 350px;
+            position: left; 
+            width: 100%;
+            margin: 0 auto;           
+        }
+
+        #approvalChart {
+            height: 100vh;
+            max-height: 350px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        #appointmentsChart {
+            height: 100vh;
+            max-height: 350px;
+            width: 100%;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -262,16 +309,7 @@
 
         </div>
 
-        <div class="charts-container">
-
-            <div class="chart-box">
-                <h3>Weekly Complaints Overview</h3>
-
-                <div class="chart-container">
-                    <canvas id="complaintsChart"></canvas>
-                </div>
-            </div>
-
+        <div class="charts-container2">
             <div class="chart-box">
                 <h3>Children by Autism Level</h3>
 
@@ -280,6 +318,26 @@
                 </div>
             </div>
 
+            <div class="chart-box">
+                <h3>Weekly Complaints Overview</h3>
+                <div class="chart-container">
+                    <canvas id="complaintsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+
+            <div class="chart-box" style="margin-bottom: 30px;">
+                <h3>Appointments Booked</h3>
+                <canvas id="appointmentsChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h3>Doctor Approvals</h3>
+                <canvas id="approvalChart"></canvas>
+            </div>
+            
         </div>
 
     </div>
@@ -289,19 +347,27 @@
 @endphp
 
 <script>
+    // استقبال البيانات من الكنترولر
+    const registrationData = @json($doctorRegistrationsData);
+    const labelsData = @json($daysLabels);
 
-    // Registration Chart
     const ctx1 = document.getElementById('registrationChart').getContext('2d');
 
     new Chart(ctx1, {
-        type: 'bar',
+        type: 'line',
         data: {
-            labels: ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            labels: labelsData, // أسماء الأيام تتغير تلقائياً حسب اليوم الحالي
             datasets: [{
-                label: 'New Users',
-                data: [5, 10, 8, 15, 12, 20, 7],
-                backgroundColor: '#2c5282',
-                borderRadius: 5
+                label: 'New Registrations',
+                data: registrationData, // بيانات التسجيل من قاعدة البيانات
+                borderColor: '#2c5282',
+                backgroundColor: 'rgba(44, 82, 130, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointBackgroundColor: '#2c5282',
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
@@ -309,6 +375,14 @@
             plugins: {
                 legend: {
                     display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1 // لضمان ظهور الأرقام كأعداد صحيحة (1, 2, 3) بدون كسور
+                    }
                 }
             }
         }
@@ -372,11 +446,8 @@
     const last7Days = [];
 
     for (let i = 6; i >= 0; i--) {
-
         const d = new Date();
-
         d.setDate(d.getDate() - i);
-
         last7Days.push(
             d.toLocaleDateString('en-US', {
                 weekday: 'short'
@@ -384,23 +455,18 @@
         );
     }
 
-  const complaintsData = @json($complaintsChartData);
+    // تم تعديل اسم المتغير هنا ليتطابق مع الكنترولر
+    const complaintsData = @json($complaintsData ?? []);
 
     new Chart(ctxComplaints, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: last7Days,
             datasets: [{
                 label: 'Complaints',
                 data: complaintsData,
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 3,
-                pointBackgroundColor: '#ef4444',
-                pointRadius: 5,
-                pointHoverRadius: 7
+                backgroundColor: '#ef4444',
+                borderRadius: 5
             }]
         },
         options: {
@@ -419,6 +485,84 @@
         }
     });
 
+    // Doctor Approvals Chart (الكود الجديد المضاف)
+    const approvalData = @json($approvalStats ?? []);
+
+    const pendingCount = approvalData['pending'] || 0;
+    const approvedCount = approvalData['approved'] || 0;
+    const rejectedCount = approvalData['rejected'] || 0;
+
+    // تم تغيير اسم المتغير إلى ctxApproval والـ id إلى approvalChart
+    const ctxApproval = document.getElementById('approvalChart').getContext('2d');
+
+    new Chart(ctxApproval, {
+        type: 'doughnut',
+        data: {
+            labels: ['قيد الانتظار', 'مقبول', 'مرفوض'],
+            datasets: [{
+                label: 'Doctor Approvals',
+                data: [pendingCount, approvedCount, rejectedCount],
+                backgroundColor: [
+                    '#f6ad55', 
+                    '#48bb78', 
+                    '#f56565'  
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <script>
+    // استقبال البيانات من الكنترولر
+    const apptData = @json($appointmentsChartData);
+    const apptLabels = @json($daysLabels);
+
+    const ctx = document.getElementById('appointmentsChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: apptLabels, // أسماء الأيام
+            datasets: [{
+                label: 'New Appointments',
+                data: apptData, // أرقام المواعيد لكل يوم
+                borderColor: '#38a169', // اخترتلك لون أخضر لتمييزه عن رسم الأطباء
+                backgroundColor: 'rgba(56, 161, 105, 0.1)',
+                fill: true,
+                tension: 0.4, // لجعل الخط منحني بشكل سلس
+                borderWidth: 3,
+                pointBackgroundColor: '#38a169',
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false // إخفاء المربع التوضيحي إذا لم تكن تحتاجه
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1 // لعرض أرقام صحيحة فقط (1, 2, 3) بدون فواصل عشرية
+                    }
+                }
+            }
+        }
+    });
 </script>
 
 </body>

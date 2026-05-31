@@ -9,6 +9,8 @@ use App\Models\DoctorProfile;
 use App\Models\ParentProfile;
 use App\Models\DoctorRequest;
 use App\Models\Complaint;
+use App\Models\Appointment;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -32,17 +34,34 @@ class AdminController extends Controller
         $moderate = Child::where('autism_level', 'Moderate')->count();
         $severe = Child::where('autism_level', 'Severe')->count();
 
-        // Last 7 days complaints count
+        // --- مصفوفات إحصائيات آخر 7 أيام ---
         $complaintsData = [];
+        $doctorRegistrationsData = [];
+        $appointmentsChartData = [];
+        $daysLabels = []; // نعرفها مرة واحدة فقط
 
+        // Loop واحد يجمع بيانات الشكاوى، التسجيلات، والمواعيد مع بعض لتسريع الكود
         for ($i = 6; $i >= 0; $i--) {
-
             $date = now()->subDays($i)->format('Y-m-d');
+            $dayName = now()->subDays($i)->format('D'); 
 
-            $count = Complaint::whereDate('created_at', $date)->count();
-
-            $complaintsData[] = $count;
+            $daysLabels[] = $dayName;
+            
+            // الشكاوى
+            $complaintsData[] = Complaint::whereDate('created_at', $date)->count();
+            
+            // حساب عدد الأطباء الذين سجلوا في هذا اليوم
+            $doctorRegistrationsData[] = DoctorProfile::whereDate('created_at', $date)->count();
+            
+            // حساب المواعيد التي تم حجزها في هذا اليوم
+            $appointmentsChartData[] = Appointment::whereDate('date', $date)->count();
         }
+
+        // doctor approval stats
+        $approvalStats = DoctorProfile::select('approval_status', DB::raw('count(*) as total'))
+            ->groupBy('approval_status')
+            ->pluck('total', 'approval_status')
+            ->toArray();
 
         // Send data to view
         return view('admin.dashboard', compact(
@@ -54,7 +73,11 @@ class AdminController extends Controller
             'mild',
             'moderate',
             'severe',
-            'complaintsData'
+            'complaintsData',
+            'approvalStats',
+            'doctorRegistrationsData',
+            'appointmentsChartData', // تمرير بيانات رسم المواعيد
+            'daysLabels' // ممررة مرة واحدة فقط وتخدم كل الرسوم البيانية
         ));
     }
 }
