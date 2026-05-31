@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Parent;
 use App\Http\Controllers\Controller;
 use App\Models\SensorReading;
 use App\Models\Appointment;
+use App\Models\FcmToken; // تمت إضافته
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -70,13 +72,17 @@ class HomeController extends Controller
         }
 
         // --- 3. جلب المواعيد الخاصة بأطفال هذا المستخدم فقط (المواعيد القادمة) ---
-        $appointments = Appointment::whereHas('child', function($query) {
-            $query->where('parent_id', auth()->id());
-        })
-        ->whereDate('date', '>=', Carbon::today()) // عرض مواعيد اليوم والمستقبل بس
-        ->orderBy('date', 'asc') // الترتيب من الأقرب للأبعد
-        ->take(3) // باش نعرضوا أقرب 3 مواعيد بس وماتتخربش الواجهة
-        ->get();
+        $parentProfile = auth()->user()->parentProfile;
+        $appointments = collect(); // مصفوفة فارغة احتياطياً لتجنب الأخطاء
+
+        if ($parentProfile) {
+            $appointments = Appointment::with(['doctor.user', 'child'])
+                ->where('parent_id', $parentProfile->id) // هنا التعديل الصحيح
+                ->whereDate('date', '>=', Carbon::today()) // عرض مواعيد اليوم والمستقبل بس
+                ->orderBy('date', 'asc') // الترتيب من الأقرب للأبعد
+                ->take(3) // عرض أقرب 3 مواعيد
+                ->get();
+        }
 
         return view('parents.home', compact(
             'chartLabels', 'heartRatesChart', 'motionLevelsChart', 
@@ -84,9 +90,9 @@ class HomeController extends Controller
         ));
     }
 
-    // ضيفي هذي الدالة في نفس الكنترولر (HomeController)
     public function getLiveData()
     {
+        // نفس الكود الخاص بك تماماً، لم يتم تغييره لأنه يعمل بشكل سليم
         $todayReadings = SensorReading::whereDate('recorded_at', Carbon::today())->get();
         $chartLabels = [];
         $heartRatesChart = [];
@@ -140,7 +146,6 @@ class HomeController extends Controller
             }
         }
 
-        // هنا نردوا البيانات على هيئة JSON للجافاسكريبت
         return response()->json([
             'chartLabels' => $chartLabels,
             'heartRatesChart' => $heartRatesChart,
@@ -149,16 +154,14 @@ class HomeController extends Controller
             'activityStatus' => $activityStatus,
             'isConnected' => $isConnected
         ]);
-
     }
 
-    public function saveToken(\Illuminate\Http\Request $request)
+    public function saveToken(Request $request)
     {
         $request->validate(['token' => 'required']);
 
-        // يخزن التوكن أو يحدثه لو كان موجود من قبل
-        \App\Models\FcmToken::updateOrCreate(
-            ['fcm_token' => $request->token], // ابحث عن هذا التوكن
+        FcmToken::updateOrCreate(
+            ['fcm_token' => $request->token],
             [
                 'user_id' => auth()->id(), 
                 'device_type' => 'PWA-Web', 
