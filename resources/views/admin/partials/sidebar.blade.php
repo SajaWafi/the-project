@@ -64,7 +64,7 @@
             href="{{ route('admin.complaints.index') }}"
             class="admin-sidebar-link {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}"
         >
-            <i class="fas fa-calendar-check"></i>
+            <i class="fas fa-clipboard-list"></i>
             <span> Manage Complaints</span>
         </a>
 

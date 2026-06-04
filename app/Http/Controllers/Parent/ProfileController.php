@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Parent\UpdateProfileRequest;
-use App\Models\ParentModule\Child;
+use App\Models\Child;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +16,7 @@ class ProfileController extends Controller
         return view('edit-profile');
     }
 
-   public function update(UpdateProfileRequest $request)
+  public function update(\Illuminate\Http\Request $request) 
 {
     $user = auth()->user();
 
@@ -72,11 +72,12 @@ class ProfileController extends Controller
         }
 
         if (!empty($childData)) {
-            \App\Models\ParentModule\Child::updateOrCreate(
+            \App\Models\Child::updateOrCreate(
                 ['parent_id' => $user->id],
                 $childData
             );
         }
+        
 
         \DB::commit();
 
@@ -84,7 +85,10 @@ class ProfileController extends Controller
     } catch (\Throwable $e) {
         \DB::rollBack();
         return redirect()->back()->withInput()->with('error', $e->getMessage());
+
+        
     }
 }
+
 
 }

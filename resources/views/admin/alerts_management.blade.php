@@ -491,6 +491,46 @@
             .alerts-filter-search-wrapper {
                 flex-wrap: wrap;
             }
+            /* إصلاح وتجميل أزرار الترقيم (Pagination) */
+            nav[role="navigation"] {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+                margin-top: 30px;
+                padding: 15px 0;
+                border-top: 1px solid #edf2f7;
+            }
+
+            /* تصغير الأسهم الكبيرة */
+            nav[role="navigation"] svg {
+                width: 22px;
+                height: 22px;
+            }
+
+            /* تنسيق النصوص والروابط */
+            nav[role="navigation"] p {
+                font-size: 14px;
+                color: #718096;
+                margin-bottom: 0;
+                font-weight: 600;
+            }
+
+            nav[role="navigation"] a, 
+            nav[role="navigation"] span {
+                font-size: 14px;
+                font-weight: 600;
+                color: #4a5568;
+                transition: 0.3s;
+            }
+
+            /* إخفاء العناصر الزائدة اللي تطلع أحياناً في لارافيل */
+            .hidden.sm\:flex-1.sm\:flex.sm\:items-center.sm\:justify-between {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -605,6 +645,8 @@
             <table class="alerts-table">
                 <thead>
                     <tr>
+                        <th style="width: 50px; text-align: center;">#</th>
+                        
                         <th>Title</th>
                         <th>Message</th>
                         <th>Type</th>
@@ -660,6 +702,10 @@
                             data-read="{{ $readType }}"
                             data-date-type="{{ $dateType }}"
                         >
+                            <td style="text-align: center; font-weight: bold; color: #718096;">
+                                {{ $alerts->firstItem() + $loop->index }}
+                            </td>
+
                             <td>
                                 <div class="alert-title-cell">
                                     {{ $alert->title }}
@@ -764,7 +810,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8">
+                            <td colspan="9">
                                 <div class="empty-state">
                                     <div class="empty-state-icon">
                                         <i class="fas fa-bell"></i>

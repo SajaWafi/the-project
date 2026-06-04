@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy</title>
+    <title>Privacy Policy - Doctor</title>
     <style>
         /* ===== Reset ===== */
         * {
@@ -49,19 +49,6 @@
             border-radius: 10px;
         }
 
-        /* ===== Status bar ===== */
-        .status-bar {
-            height: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 10px 12px 0;
-            font-size: 13px;
-            font-weight: 700;
-            color: #111;
-            margin-bottom: 6px;
-        }
-
         /* ===== Header ===== */
         .header {
             position: relative;
@@ -69,9 +56,10 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 22px;
+            margin-top: 20px;
         }
 
-            .back-btn {
+        .back-btn {
             position: absolute;
             left: 0;
             background: transparent;
@@ -125,17 +113,17 @@
         }
 
         .policy-text {
-            font-size: 15px;
-            line-height: 1.75;
+            font-size: 14px;
+            line-height: 1.6;
             color: #333;
             margin-bottom: 16px;
         }
 
         .policy-subtitle {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: #2f80ed;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
     </style>
 </head>
@@ -144,11 +132,11 @@
         <div class="content">
 
             <div class="header">
-             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
+                <a href="{{ route('doctor.doctor-profile') ?? '#' }}" class="back-btn" aria-label="Back">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
                 <div class="title">Privacy Policy</div>
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
@@ -156,32 +144,24 @@
             </div>
 
             <div class="policy-card">
-                <div class="policy-title">Your Privacy Matters</div>
+                <div class="policy-title">Professional Confidentiality</div>
                 <div class="policy-text">
-                    We are committed to protecting your personal information and keeping your data secure.
-                    This page explains how we collect, use, and protect your information while using the app.
+                    As a healthcare provider on the Taif platform, you play a vital role in guiding and consulting parents. This policy outlines how information is handled within your dashboard.
                 </div>
 
-                <div class="policy-subtitle">Information Collection</div>
+                <div class="policy-subtitle">1. Data Access & Scope</div>
                 <div class="policy-text">
-                    We may collect profile details, appointment data, medical notes, and communication history
-                    only for improving your experience and delivering app services.
+                    You have access to appointment schedules, basic profile details, and chat histories with parents. To ensure the highest level of child privacy, live IoT sensor data (such as real-time heart rate or location) is strictly controlled by the parents and is not accessible through this dashboard.
                 </div>
 
-                <div class="policy-subtitle">How We Use Data</div>
+                <div class="policy-subtitle">2. Purpose of Information</div>
                 <div class="policy-text">
-                    Your information is used to manage appointments, enable communication, and provide a
-                    better healthcare experience between doctors and parents.
+                    The information provided to you is used solely to facilitate appointment bookings, manage your consultation schedule, and enable secure, direct communication with parents.
                 </div>
 
-                <div class="policy-subtitle">Security</div>
+                <div class="policy-subtitle">3. Secure Communications</div>
                 <div class="policy-text">
-                    We apply reasonable security practices to protect your stored data and prevent unauthorized access.
-                </div>
-
-                <div class="policy-subtitle">Contact</div>
-                <div class="policy-text">
-                    If you have any questions about privacy, please contact the support team through the application.
+                    All chat messages, medical notes, and consultation details shared via the Taif platform are encrypted and strictly confidential. Sharing any patient or parent information outside this platform is prohibited.
                 </div>
             </div>
         </div>

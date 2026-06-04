@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Parent;
 use App\Http\Controllers\Controller;
 use App\Models\SensorReading;
 use App\Models\SafeZone;
+
 use App\Models\Child;
+
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -66,14 +68,7 @@ public function index()
             }
         }
 
-        return view('parents.location', compact(
-            'latitude',
-            'longitude',
-            'altitude',
-            'lastUpdateSec',
-            'isSafe',
-            'safeZones'
-        ));
+    
     
 
 
@@ -84,6 +79,16 @@ $latestLocation = \App\Models\Location::where('child_id', $child->id)
 
 $latitude = $latestLocation ? $latestLocation->latitude : 32.8872;
 $longitude = $latestLocation ? $latestLocation->longitude : 13.1913;
+
+
+    return view('parents.location', compact(
+            'latitude',
+            'longitude',
+            'altitude',
+            'lastUpdateSec',
+            'isSafe',
+            'safeZones'
+        ));
     }
 
     /**

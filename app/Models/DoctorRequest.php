@@ -37,4 +37,12 @@ class DoctorRequest extends Model
     {
         return $this->belongsTo(ParentProfile::class, 'parent_id');
     }
+    /**
+     * علاقة الطلب بالولي (Parent)
+     */
+    public function parent()
+    {
+        // ملاحظة: لو كان اسم المودل بتاعك يختلف (مثلا ParentModel أو User)، غيره هنا
+        return $this->belongsTo(ParentProfile::class, 'parent_id');
+    }
 }

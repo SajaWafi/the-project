@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy</title>
+    <title>Privacy Policy - Taif</title>
 
     <style>
         * {
@@ -67,18 +67,6 @@
             margin-bottom: 6px;
         }
 
-        .time {
-            font-size: 14px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .top-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-       
         .header {
             position: relative;
             display: flex;
@@ -114,8 +102,8 @@
         .app-logo {
             position: absolute;
             right: 0;
-            width: 100px;
-            height: 100px;
+            width: 35px; /* صغرتها شوية باش تطلع متناسقة في الـ Header */
+            height: 35px;
             object-fit: contain;
         }
 
@@ -132,23 +120,27 @@
 
         .policy-text {
             color: #222;
-            font-size: 15px;
-            line-height: 1.45;
+            font-size: 14px;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
 
         .policy-text p {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .policy-section {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .policy-section h3 {
             font-size: 15px;
             font-weight: 800;
-            color: #222;
-            margin-bottom: 4px;
+            color: #1f5b87;
+            margin-bottom: 6px;
         }
 
         .policy-list {
@@ -158,63 +150,17 @@
         }
 
         .policy-list li {
-            margin-bottom: 2px;
+            margin-bottom: 6px;
+            padding-left: 14px;
+            position: relative;
         }
 
         .policy-list li::before {
-            content: "• ";
-        }
-
-        .agree-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 18px 0 34px;
-            font-size: 15px;
-            color: #222;
-        }
-
-        .agree-row input[type="checkbox"] {
-            width: 14px;
-            height: 14px;
-            accent-color: #2f80ed;
-            cursor: pointer;
-        }
-
-        .actions {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            margin-top: 6px;
-        }
-
-        .btn {
-            min-width: 150px;
-            height: 38px;
-            border-radius: 999px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-            transition: 0.2s;
-        }
-
-        .btn-primary {
-            background: #2f80ed;
-            color: #fff;
-            box-shadow: 0 4px 10px rgba(47,128,237,0.22);
-        }
-
-        .btn-secondary {
-            background: #f8f6f3;
-            color: #6b6b6b;
-            border: 2px solid #58d0bd;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #2f80ed;
+            font-weight: bold;
         }
 
         @media (max-width: 480px) {
@@ -244,69 +190,54 @@
         <div class="content">
 
             <div class="top-bar">
-
-                <div class="top-right">
-                    
-                 
-                </div>
+                <div class="top-right"></div>
             </div>
 
             <div class="header">
-                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <a href="{{ route('profile') ?? '#' }}" class="back-btn">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                </button>
+                </a>
 
                 <div class="page-title">Privacy Policy</div>
 
-                <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
+                <img src="{{ asset('images/logo.png') }}" alt="Taif Logo" class="app-logo">
             </div>
 
-            <div class="updated-badge">Last updated: March 2026</div>
+            <div class="updated-badge">Last updated: May 2026</div>
 
             <div class="policy-text">
-                <p>We care about your privacy and your child’s safety.</p>
+                <p>Welcome to <strong>Taif</strong>. We are deeply committed to protecting your child's privacy and ensuring the highest level of data security.</p>
 
                 <div class="policy-section">
-                    <h3>What Data We Collect</h3>
+                    <h3>1. What Data We Collect</h3>
                     <ul class="policy-list">
-                        <li>Heart rate data</li>
-                        <li>Movement data</li>
-                        <li>Location (GPS)</li>
-                        <li>Altitude (floor detection)</li>
-                        <li>Device information</li>
+                        <li><strong>Vital Signs:</strong> Heart rate and motion levels.</li>
+                        <li><strong>Location Data:</strong> GPS coordinates and altitude (floor detection).</li>
+                        <li><strong>Device Info:</strong> Bracelet ID and connection status.</li>
                     </ul>
                 </div>
 
                 <div class="policy-section">
-                    <h3>How We Use Data</h3>
+                    <h3>2. How We Use Your Data</h3>
                     <ul class="policy-list">
-                        <li>To monitor the child’s health</li>
-                        <li>To send alerts during panic episodes</li>
-                        <li>To track location for safety</li>
+                        <li>To monitor your child's well-being in real-time.</li>
+                        <li>To detect panic attacks or meltdowns and trigger instant alerts.</li>
+                        <li>To track safe zone boundaries and ensure physical safety.</li>
+                        <li>To generate medical reports for better healthcare decisions.</li>
                     </ul>
                 </div>
 
                 <div class="policy-section">
-                    <h3>Data Sharing</h3>
-                    <p>We do not share your data with third parties except authorized doctors.</p>
+                    <h3>3. Data Sharing & Privacy</h3>
+                    <p>Your child's data is strictly confidential. It is <strong>only</strong> shared with the linked parent accounts and authorized healthcare professionals you explicitly approve. We never sell your data to third parties.</p>
                 </div>
 
                 <div class="policy-section">
-                    <h3>Security</h3>
-                    <p>Your data is securely stored and protected.</p>
+                    <h3>4. Data Security & Control</h3>
+                    <p>We implement industry-standard encryption to protect your data. You have full control to connect or disconnect the bracelet via the app at any time.</p>
                 </div>
-            </div>
-
-            <label class="agree-row">
-                <input type="checkbox">
-                <span>I agree to the Privacy Policy</span>
-            </label>
-
-            <div class="actions">
-                <button class="btn btn-primary">[ Accept & Continue ]</button>
-                <button class="btn btn-secondary">[ Decline ]</button>
             </div>
 
         </div>

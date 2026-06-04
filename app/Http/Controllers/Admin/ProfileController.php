@@ -49,6 +49,32 @@ class ProfileController extends Controller
 
         return redirect()->back()->with('success', 'Your settings have been updated successfully.');
     }
+// دالة إضافة أدمن جديد
+    public function storeAdmin(Request $request)
+    {
+        $request->validate([
+            'first_name'            => 'required|string|max:255',
+            'last_name'             => 'required|string|max:255',
+            'email'                 => 'required|email|unique:users,email',
+            'phone'                 => 'nullable|string|max:20',
+            'gender'                => 'required|in:Male,Female', // ⬅️ إضافة التحقق من الجنس
+            'password'              => 'required|min:8|same:password_confirmation', // ⬅️ ربط الباسورد بالتأكيد
+            'password_confirmation' => 'required|min:8', // ⬅️ حقل التأكيد
+        ]);
+
+        // إنشاء المستخدم الجديد وحفظه في الداتابيز
+        $newAdmin = new \App\Models\User();
+        $newAdmin->first_name = $request->first_name;
+        $newAdmin->last_name = $request->last_name;
+        $newAdmin->email = $request->email;
+        $newAdmin->phone = $request->phone;
+        $newAdmin->gender = $request->gender; // ⬅️ حفظ الجنس
+        $newAdmin->password = Hash::make($request->password);
+        $newAdmin->role = 'admin'; // تعيين الصلاحية كأدمن
+        $newAdmin->save();
+
+        return redirect()->back()->with('success', 'New Admin has been added successfully.');
+    }
 
     // حذف الحساب
     public function destroy(Request $request)

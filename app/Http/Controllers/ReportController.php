@@ -16,6 +16,7 @@ use App\Models\PanicEvent;
 use App\Models\Notification;
 use App\Models\RecommendationRule;
 use App\Models\ComparisonRule;
+use App\Models\Location; // تمت الإضافة باش نجيبو مكان النوبة
 
 class ReportController extends Controller
 {
@@ -55,9 +56,6 @@ class ReportController extends Controller
     /**
      * دالة سحب البيانات الحقيقية من الإسوارة وتوليد التقرير
      */
-   /**
-     * دالة سحب البيانات الحقيقية من الإسوارة وتوليد التقرير
-     */
     private function syncRealBraceletData(string $period)
     {
         $parentProfile = ParentProfile::where('user_id', Auth::id())->first();
@@ -92,11 +90,11 @@ class ReportController extends Controller
         $peakHeartRate = $readings->max('heart_rate') ?? 0;
         $minHeartRate = $readings->where('heart_rate', '>', 0)->min('heart_rate') ?? 0;
         
-        // هذا السطر اللي كان ناقص! (حساب الخطوات بناءً على الحركة)
+        // حساب الخطوات بناءً على الحركة
         $avgSteps = $readings->avg('motion_level') ? round($readings->avg('motion_level') * 15) : 0;
 
         // 2. حساب نسبة التغير للمقارنة بالفترة السابقة
-        $previousEpisodes = 0; // نقدروا نبرمجوها لاحقاً تجيب تقرير الأسبوع الماضي
+        $previousEpisodes = 0; 
         $currentEpisodes = $episodes->count();
         
         if ($previousEpisodes > 0) {
@@ -108,7 +106,7 @@ class ReportController extends Controller
         }
 
         // 3. سحب الملخص الطبي (Critical Summary) من جدول comparison_rules 
-        $comparisonRule = \App\Models\ComparisonRule::where('is_active', true)
+        $comparisonRule = ComparisonRule::where('is_active', true)
             ->where('min_value', '<=', $comparisonPercentage)
             ->where(function($query) use ($comparisonPercentage) {
                 $query->where('max_value', '>=', $comparisonPercentage)
@@ -131,14 +129,14 @@ class ReportController extends Controller
             'average_heart_rate' => $avgHeartRate,
             'peak_heart_rate' => $peakHeartRate,
             'min_heart_rate' => $minHeartRate,
-            'average_steps' => $avgSteps, // تم حله!
+            'average_steps' => $avgSteps, 
             'safe_zone_exit_count' => $safeZoneBreaches,
             'comparison_percentage' => round($comparisonPercentage),
             'summary_text' => $summaryText
         ]);
 
         // 5. توليد التوصيات الذكية من جدول recommendation_rules 
-        $activeRules = \App\Models\RecommendationRule::where('is_active', true)->get()->keyBy('rule_key');
+        $activeRules = RecommendationRule::where('is_active', true)->get()->keyBy('rule_key');
         $recommendationsToInsert = [];
         $sortOrder = 1;
 
@@ -174,16 +172,43 @@ class ReportController extends Controller
             $report->recommendations()->createMany($recommendationsToInsert);
         }
 
-        // 6. تفاصيل النوبات الحقيقية
+        // ========================================================
+        // 6. تفاصيل النوبات الحقيقية (التحديث الذكي الجديد)
+        // ========================================================
         foreach ($episodes as $ep) {
+            
+            // 1. جلب النبض الحقيقي وقت حدوث النوبة
+            $relatedReading = SensorReading::find($ep->sensor_reading_id);
+            $actualHeartRate = $relatedReading ? $relatedReading->heart_rate : $peakHeartRate;
+
+            // 2. جلب المكان
+            $locationName = 'Tracked Location';
+            if ($ep->location_id) {
+                $loc = Location::find($ep->location_id);
+                $locationName = $loc ? "Lat: {$loc->latitude}, Lng: {$loc->longitude}" : 'Unknown Location';
+            } elseif ($relatedReading && $relatedReading->place_value) {
+                $locationName = 'Coords: ' . $relatedReading->place_value;
+            }
+
+            // 3. حساب المدة الحقيقية
+            $duration = 5; // افتراضي 5 دقائق
+            if ($ep->started_at && $ep->ended_at) {
+                $duration = Carbon::parse($ep->started_at)->diffInMinutes(Carbon::parse($ep->ended_at));
+                if ($duration < 1) $duration = 1; 
+            }
+
+            // 4. تحديد الوقت والتاريخ الدقيق
+            $eventDate = $ep->started_at ? $ep->started_at : $ep->created_at;
+
+            // 5. حفظ التفاصيل الحقيقية في التقرير
             $report->episodeDetails()->create([
                 'panic_event_id' => $ep->id,
-                'episode_title' => 'Panic/Anxiety Event',
-                'episode_date' => $ep->created_at,
-                'location_name' => 'Tracked Location',
-                'duration_min' => rand(2, 10), // عشوائي مؤقتاً لين يتم حسابها
-                'heart_rate' => $peakHeartRate,
-                'severity' => 'Medium'
+                'episode_title'  => $ep->event_type ?? 'Panic/Anxiety Event',
+                'episode_date'   => $eventDate, 
+                'location_name'  => $locationName,
+                'duration_min'   => $duration,
+                'heart_rate'     => $actualHeartRate,
+                'severity'       => $ep->severity ?? 'High'
             ]);
         }
 
@@ -213,8 +238,9 @@ class ReportController extends Controller
             ]);
         }
     }
+
     /**
-     * جلب التقرير الجاهز للواجهة (نفس كودنا السابق المنظم)
+     * جلب التقرير الجاهز للواجهة 
      */
     private function buildReportData(string $period)
     {
@@ -263,7 +289,7 @@ class ReportController extends Controller
                 return [
                     'status' => $ep->episode_title,
                     'date' => Carbon::parse($ep->episode_date)->format('M d, Y'),
-                    'time' => Carbon::parse($ep->episode_date)->format('H:i A'),
+                    'time' => Carbon::parse($ep->episode_date)->format('H:i A'), // هذي اللي حتعرض الوقت صح في كرت النوبة!
                     'location' => $ep->location_name,
                     'duration' => $ep->duration_min . ' mins',
                     'heart_rate' => $ep->heart_rate,
@@ -271,9 +297,7 @@ class ReportController extends Controller
                 ];
             })->toArray(),
             'alerts' => $dbReport->alertHistory->pluck('alert_text')->toArray(),
-           
-
-            // الإضافة الجديدة باش ما يضربش ملف الـ PDF
+            
             'trigger_insights' => [
                 $dbReport->summary_text ?? 'Review recent changes in routine or environment.',
                 'Sensory overload (noise/light) may be a contributing factor.'
@@ -301,14 +325,10 @@ class ReportController extends Controller
             'chart_labels' => [], 'chart_episodes' => [], 'chart_heart_rate' => [],
             'episodes' => [], 
             'alerts' => [],
-            
-            // الإضافة الجديدة
             'trigger_insights' => ['Not enough data to determine triggers yet.']
         ];
     }
 
-
-    // دالة عرض أرشيف التقارير الشهرية
     public function history()
     {
         $parentProfile = \App\Models\ParentProfile::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
@@ -319,9 +339,8 @@ class ReportController extends Controller
             $child = \App\Models\Child::where('parent_id', $parentProfile->id)->first();
             
             if ($child) {
-                // نجيبو التقارير الشهرية بس، ومرتبة من الأحدث للأقدم
                 $reports = \App\Models\MedicalReport::where('child_id', $child->id)
-                    ->where('report_type', 'month') // ركزي هنا: شهري فقط
+                    ->where('report_type', 'month') 
                     ->orderBy('report_year', 'desc')
                     ->orderBy('report_month', 'desc')
                     ->get();
@@ -331,14 +350,11 @@ class ReportController extends Controller
         return view('reports-history', compact('reports'));
     }
 
-    // دالة حذف التقارير المحددة من الأرشيف
     public function destroyMultiple(Request $request)
     {
         $reportIds = $request->input('report_ids', []);
 
         if (!empty($reportIds)) {
-            // اللارافل حيحذفهم، وبما إننا دايرين cascadeOnDelete في المايجريشن
-            // حتنحذف معاهم كل تفاصيلهم (الرسوم، التنبيهات، والتوصيات)
             \App\Models\MedicalReport::whereIn('id', $reportIds)->delete();
         }
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\Parent\LocationController;
 use App\Http\Controllers\Parent\SafeZoneController;
 
 use App\Http\Controllers\Parent\ParentAlertController;
+use App\Http\Controllers\Parent\BraceletController;
 
 
 /*
@@ -87,21 +88,7 @@ Route::prefix('parents')
         | Doctor Requests (Pending)
         |--------------------------------------------------------------------------
         */
-        Route::get('/requests', function () {
-            $parent = auth()->user()->parentProfile;
-
-            if (!$parent) {
-                abort(404, 'Parent profile not found.');
-            }
-
-            $requests = DoctorRequest::with('doctor.user')
-                ->where('parent_id', $parent->id)
-                ->where('status', 'pending')
-                ->latest()
-                ->get();
-
-            return view('parents.requests', compact('requests'));
-        })->name('requests');
+      Route::get('/requests', [\App\Http\Controllers\Parent\ParentRequestController::class, 'index'])->name('requests');
 
         /*
         |--------------------------------------------------------------------------
@@ -202,27 +189,7 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/profile', fn() => view('profile'))->name('profile');
     Route::get('/edit-profile', fn() => view('edit-profile'))->name('edit.profile');
 
-    Route::post('/edit-profile/update', function (Request $request) {
-        $request->validate([
-            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-        $user = Auth::user();
-        $userData = [];
-
-        if ($request->hasFile('profile_image')) {
-            if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
-                Storage::disk('public')->delete($user->profile_image);
-            }
-            $userData['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
-        }
-
-        if (!empty($userData)) {
-            $user->update($userData);
-        }
-
-        return back()->with('success', 'Profile updated successfully');
-    })->name('parent.profile.update');
+   Route::post('/edit-profile/update', [\App\Http\Controllers\Parent\ProfileController::class, 'update'])->name('parent.profile.update');
 
     Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy.policy');
     Route::get('/settings', fn() => view('settings'))->name('settings');
@@ -358,6 +325,11 @@ Route::middleware(['auth'])->group(function () {
 
     // رابط إرسال وحفظ الشكوى في قاعدة البيانات
     Route::post('/complaint', [ParentComplaintController::class, 'store'])->name('parent.complaints.store');
+
+
+Route::get('/profile/bracelet', [BraceletController::class, 'showConnectBracelet'])->name('parents.bracelet.show');
+Route::post('/profile/bracelet/connect', [BraceletController::class, 'connectBracelet'])->name('parents.bracelet.connect');
+Route::post('/profile/bracelet/disconnect', [BraceletController::class, 'disconnectBracelet'])->name('parents.bracelet.disconnect');
 
     });
 

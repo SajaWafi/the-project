@@ -7,6 +7,7 @@ use App\Models\Conversation;
 use App\Models\DoctorProfile;
 use App\Models\Message;
 use App\Models\ParentProfile;
+use App\Models\Notification; // تم إضافة مودل الإشعارات
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -76,7 +77,7 @@ class ChatController extends Controller
                 return response()->json(['message' => 'Parent profile not found.'], 403);
             }
 
-            $doctor = DoctorProfile::findOrFail($doctorId);
+            $doctor = DoctorProfile::with('user')->findOrFail($doctorId);
 
             $linkedChild = $parent->children->first(function ($child) use ($doctor) {
                 return $child->doctors->contains('id', $doctor->id);
@@ -122,6 +123,23 @@ class ChatController extends Controller
                 'read_at' => null,
             ]);
 
+            // --- إضافة إشعار للدكتور ---
+            $notifyMessage = 'Sent you a new message.';
+            if ($type == 'image') {
+                $notifyMessage = 'Sent you an image.';
+            } elseif ($type == 'file') {
+                $notifyMessage = 'Sent you a file.';
+            }
+
+            Notification::create([
+                'user_id' => $doctor->user_id, // توجيه الإشعار لحساب الدكتور
+                'related_id' => auth()->user()->parentProfile->id,
+                'title' => 'New Message from ' . auth()->user()->first_name,
+                'message' => $notifyMessage,
+                'type' => 'chat_message',
+            ]);
+            // ---------------------------
+
             return response()->json([
                 'id' => $message->id,
                 'message' => $message->message,
@@ -152,7 +170,7 @@ class ChatController extends Controller
                 return response()->json(['message' => 'Parent profile not found.'], 403);
             }
 
-            $doctor = DoctorProfile::findOrFail($doctorId);
+            $doctor = DoctorProfile::with('user')->findOrFail($doctorId);
 
             $linkedChild = $parent->children->first(function ($child) use ($doctor) {
                 return $child->doctors->contains('id', $doctor->id);
@@ -179,6 +197,15 @@ class ChatController extends Controller
                 'file_path' => $filePath,
                 'read_at' => null,
             ]);
+
+            // --- إضافة إشعار بصمة صوت للدكتور ---
+            Notification::create([
+                'user_id' => $doctor->user_id, // توجيه الإشعار لحساب الدكتور
+                'title' => 'New Message from ' . auth()->user()->first_name,
+                'message' => 'Sent you a voice message.',
+                'type' => 'chat_message',
+            ]);
+            // ------------------------------------
 
             return response()->json([
                 'id' => $message->id,

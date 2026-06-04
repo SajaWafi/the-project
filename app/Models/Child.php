@@ -14,6 +14,8 @@ class Child extends Model
     protected $fillable = [
         'parent_id',
         'name',
+        'bracelet_id',
+        'is_bracelet_connected',
         'gender',
         'birth_date',
         'autism_level',

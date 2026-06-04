@@ -21,8 +21,10 @@ class User extends Authenticatable
         'password',
         'role',
         'email_verified_at',
-'email_verification_code',
-'email_verification_code_expires_at',
+        'email_verification_code',
+        'email_verification_code_expires_at',
+        'reset_code', 
+        'reset_code_expires_at',
     ];
 
     protected $hidden = [
@@ -58,8 +60,12 @@ protected $casts = [
     {
         return $this->hasMany(Complaint::class);
     }
-
-    
+        public function child()
+        {
+            // تم تصحيح المسار هنا
+            return $this->hasOne(\App\Models\Child::class, 'parent_id');
+        }
+            
     /*
     |----------------------------------------------------------------------
     | Model Events

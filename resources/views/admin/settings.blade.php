@@ -13,7 +13,6 @@
     <style>
         :root { --bg-sidebar: #2c5282; --bg-body: #f4f7fc; --taif-orange: #f6ad55; --taif-green: #48bb78; --taif-red: #e53e3e; }
         
-        /* تطبيق الخط الجديد على كل الصفحة */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: var(--bg-body); display: flex; color: #333; }
 
@@ -103,9 +102,17 @@
 
         <div class="settings-wrapper">
             <div class="settings-nav">
+                <!-- تبويبة الملف الشخصي -->
                 <button class="tab-btn active" onclick="openTab(event, 'profile')">
                     <i class="fas fa-user-edit"></i> Profile Details
                 </button>
+
+                <!-- تبويبة إضافة أدمن (الجديدة) -->
+                <button class="tab-btn" onclick="openTab(event, 'add-admin')" style="color: var(--taif-green);">
+                    <i class="fas fa-user-plus"></i> Add Admin
+                </button>
+
+                <!-- تبويبة حذف الحساب -->
                 <button class="tab-btn" onclick="openTab(event, 'security')" style="color: #c53030;">
                     <i class="fas fa-trash-alt"></i> Delete Account
                 </button>
@@ -119,6 +126,7 @@
 
             <div class="settings-content">
                 
+                <!-- 1. Profile Details -->
                 <div id="profile" class="tab-panel active">
                     <h3 class="panel-title"><i class="fas fa-user-circle" style="color: var(--taif-orange);"></i> Update Information</h3>
                     
@@ -168,6 +176,65 @@
                     </form>
                 </div>
 
+                <!-- 2. Add New Admin (التبويبة الجديدة) -->
+           <div id="add-admin" class="tab-panel">
+                    <h3 class="panel-title"><i class="fas fa-user-plus" style="color: var(--taif-green);"></i> Add New Admin</h3>
+                    
+                    <form action="{{ route('admin.settings.storeAdmin') }}" method="POST">
+                        @csrf
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">First Name</label>
+                                <input type="text" name="first_name" class="form-input" placeholder="Enter first name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" name="last_name" class="form-input" placeholder="Enter last name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" name="email" class="form-input" placeholder="Enter email address" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" name="phone" class="form-input" placeholder="Enter phone number">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select name="gender" class="form-input" required style="cursor: pointer; appearance: auto;">
+                                    <option value="" disabled selected>Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="margin-bottom: 30px;">
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" name="password" id="add_admin_password" class="form-input" placeholder="Enter strong password" required>
+                                    <i class="fas fa-eye-slash" onclick="togglePassword('add_admin_password', this)"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" name="password_confirmation" id="add_admin_password_confirm" class="form-input" placeholder="Confirm password" required>
+                                    <i class="fas fa-eye-slash" onclick="togglePassword('add_admin_password_confirm', this)"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-save" style="background: var(--taif-green);"><i class="fas fa-plus-circle me-2"></i> Create Admin Account</button>
+                    </form>
+                </div>
+
+                <!-- 3. Account Security (Delete) -->
                 <div id="security" class="tab-panel">
                     <h3 class="panel-title" style="color: #c53030;"><i class="fas fa-exclamation-triangle"></i> Account Security</h3>
                     
@@ -187,6 +254,7 @@
         </div>
     </div>
 
+    <!-- النافذة المنبثقة (Modal) لتسجيل الخروج -->
     <div id="logoutModal" class="custom-modal">
         <div class="modal-box">
             <i class="fas fa-sign-out-alt" style="font-size: 40px; color: #fc8181; margin-bottom: 15px;"></i>
@@ -199,6 +267,7 @@
         </div>
     </div>
 
+    <!-- النافذة المنبثقة (Modal) لحذف الحساب -->
     <div id="deleteModal" class="custom-modal">
         <div class="modal-box">
             <i class="fas fa-exclamation-triangle" style="font-size: 40px; color: #e53e3e; margin-bottom: 15px;"></i>
@@ -211,6 +280,7 @@
         </div>
     </div>
 
+    <!-- فورم مخفي لتسجيل الخروج الفعلي -->
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
         @csrf
     </form>
@@ -244,7 +314,6 @@
             }
         }
 
-        // دوال النافذة المنبثقة للوق اوت
         function openLogoutModal() {
             document.getElementById('logoutModal').style.display = 'flex';
         }
@@ -253,7 +322,6 @@
             document.getElementById('logoutModal').style.display = 'none';
         }
 
-        // دوال النافذة المنبثقة لحذف الحساب
         function openDeleteModal() {
             document.getElementById('deleteModal').style.display = 'flex';
         }

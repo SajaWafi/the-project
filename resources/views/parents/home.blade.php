@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="30">
     <title>Taif Dashboard</title>
 
     <style>
@@ -29,12 +28,12 @@
         .chart-wrap { height: 255px; position: relative; background: rgba(255, 255, 255, 0.78); border-radius: 18px; padding: 8px 6px 0 0; isolation: isolate; }
         #activityChart { width: 100% !important; height: 255px !important; }
         .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-        .stat-card { border-radius: 18px; padding: 14px 12px; min-height: 98px; display: flex; flex-direction: column; justify-content: flex-start; }
+        .stat-card { border-radius: 18px; padding: 14px 12px; min-height: 98px; display: flex; flex-direction: column; justify-content: flex-start; transition: background 0.3s ease; }
         .stat-card.red { background: #fff0f0; }
         .stat-card.blue { background: #edf2fb; }
         .stat-card.green { background: #d9f2ee; }
         .stat-icon { font-size: 24px; line-height: 1; margin-bottom: 8px; }
-        .stat-value { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+        .stat-value { font-size: 17px; font-weight: 700; margin-bottom: 4px; transition: color 0.3s ease; }
         .stat-card.red .stat-value { color: #ef4444; }
         .stat-title { font-size: 12px; color: #5b6472; line-height: 1.3; }
         .schedule-card { background: #f3e2d0; border-radius: 24px; padding: 10px 12px 14px; margin-bottom: 18px; }
@@ -52,13 +51,11 @@
         .card-svg { width: 24px; height: 24px; display: block; }
         .heart-svg { color: #ef4444; }
         .activity-svg { color: #3b82f6; }
-        .battery-svg { color: #14b8a6; }
         .child-link { display: inline-flex; text-decoration: none; }
         .section-chip { width: 40%; display: inline-block; background: #e29244; color: #fff; border-radius: 14px; padding: 4px 12px; font-size: 16px; font-weight: 700; margin-bottom: 10px; text-align: center;}
     </style>
 </head>
 <body>
-
     <div class="mobile-screen">
         <div class="content">
 
@@ -83,10 +80,8 @@
                     </button>
                     <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo-small">
                 </div>
-            </div>
-
-            <div class="section-title-row">
-                <div class="section-title">daily activities</div>
+            </div> <div class="section-title-row">
+                <div class="section-title">Daily Activities</div>
             </div>
 
             <div class="chart-card">
@@ -103,7 +98,7 @@
                             <path d="M12 20s-6.5-4.2-8.5-8A5.2 5.2 0 0 1 12 5.7 5.2 5.2 0 0 1 20.5 12C18.5 15.8 12 20 12 20Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
-                    <div class="stat-value" id="liveHeartRate">{{ $heartRate }}</div>
+                    <div class="stat-value" id="liveHeartRate">{{ $heartRate ?? 0 }}</div>
                     <div class="stat-title">Heart Rate<br>bpm</div>
                 </div>
 
@@ -114,44 +109,45 @@
                         </svg>
                     </div>
                     <div class="stat-title">
-                        Today<br>
-                        Activity Level<br>
-                        <strong id="liveActivityStatus">{{ $activityStatus }}</strong>
+                        Today<br>Activity Level<br>
+                        <strong id="liveActivityStatus" style="color: #3b82f6;">{{ $liveStatus ?? $activityStatus ?? 'Calm' }}</strong>
                     </div>
                 </div>
                 
-                <div class="stat-card green">
+                <div id="liveConnectionCard" class="stat-card {{ ($isConnected ?? false) ? 'green' : 'red' }}">
                     <div class="stat-icon">
-                        <svg id="liveBatterySvg" class="card-svg battery-svg" style="color: {{ $isConnected ? '#14b8a6' : '#ef4444' }};" viewBox="0 0 24 24" fill="none">
-                            <rect x="3" y="7" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                            <path d="M21 10v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                            <rect x="5.5" y="9.5" width="8" height="5" rx="1" fill="currentColor"/>
+                        <svg id="liveConnectionSvg" class="card-svg" style="color: {{ ($isConnected ?? false) ? '#14b8a6' : '#ef4444' }};" viewBox="0 0 24 24" fill="none">
+                            @if($isConnected ?? false)
+                                <path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            @else
+                                <path d="M1.42 9a16 16 0 0 1 21.16 0M5 12.55a11 11 0 0 1 14.08 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01M3 3l18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            @endif
                         </svg>
                     </div>
                     <div class="stat-title">
                         Device Status<br>
-                        <strong id="liveConnectionStatus">{{ $isConnected ? 'Connected' : 'Disconnected' }}</strong>
+                        <strong id="liveConnectionStatus" style="color: {{ ($isConnected ?? false) ? '#14b8a6' : '#ef4444' }};">
+                            {{ ($isConnected ?? false) ? 'Connected' : 'Disconnected' }}
+                        </strong>
                     </div>
                 </div>
-            </div>
-
-            <div class="section-chip">Appointment</div>
-
-            @forelse($appointments as $appointment)
+            </div> <div class="section-chip">Appointments</div>
+            
+            @forelse($appointments ?? [] as $appointment)
                 @php
                     $appointmentDate = \Carbon\Carbon::parse($appointment->date);
                     $isToday = $appointmentDate->isToday();
-                    $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
                     $doctorName = trim(($appointment->doctor->user->first_name ?? '') . ' ' . ($appointment->doctor->user->last_name ?? ''));
+                    $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
                 @endphp
 
                 <div class="schedule-card">
                     <div class="appointment-box">
                         <div class="times">
-                            <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                            <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($appointment->from_minute, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
                             <div>|</div>
                             <div>|</div>
-                            <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
+                            <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($appointment->to_minute, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
                         </div>
 
                         <div class="appointment-content">
@@ -161,18 +157,10 @@
 
                             <div class="appointment-main">
                                 <div class="appointment-info">
-                                    <div class="appointment-sub">
-                                        Doctor: {{ $doctorName ?: 'N/A' }}
-                                    </div>
-                                    <div class="appointment-sub">
-                                        Child: {{ $appointment->child->name ?? 'N/A' }}
-                                    </div>
-                                    <div class="appointment-sub">
-                                        Place: {{ $appointment->workplace->place_name ?? 'N/A' }}
-                                    </div>
-                                    <div class="note">
-                                        Note: {{ $appointment->note }}
-                                    </div>
+                                    <div class="appointment-sub">Doctor: {{ $doctorName ?: 'N/A' }}</div>
+                                    <div class="appointment-sub">Child: {{ $appointment->child->name ?? 'N/A' }}</div>
+                                    <div class="appointment-sub">Place: {{ $appointment->workplace->place_name ?? 'N/A' }}</div>
+                                    <div class="note">Note: {{ $appointment->note }}</div>
                                 </div>
                             </div>
                         </div>
@@ -181,16 +169,14 @@
             @empty
                 <div class="schedule-card">
                     <div class="appointment-box">
-                        <div class="appointment-content">
-                            <span class="mmm" style="text-align: center; display: block; padding-top: 10px;">No upcoming appointments</span>
+                        <div class="appointment-content" style="text-align: center; width: 100%;">
+                            <span class="mmm" style="display: block; padding-top: 10px;">No upcoming appointments</span>
                         </div>
                     </div>
                 </div>
             @endforelse
 
-        </div>
-
-        <div class="bottom-nav">
+        </div> <div class="bottom-nav">
             <a href="{{ route('parents.doctors') }}" class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
                     <path d="M6 4v5a6 6 0 0 0 12 0V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -223,7 +209,7 @@
                 </svg>
             </a>
         </div>
-    </div>
+    </div> </body>
 
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -295,7 +281,6 @@
 <script>
     const ctx = document.getElementById('activityChart').getContext('2d');
 
-    // 1. استقبال البيانات المبدئية عند فتح الصفحة
     const labels = {!! json_encode($chartLabels ?? []) !!};
     const heartRates = {!! json_encode($heartRatesChart ?? []) !!};
     const motionLevels = {!! json_encode($motionLevelsChart ?? []) !!};
@@ -312,27 +297,28 @@
         }
     };
 
-    // 2. هنا السر! سمينا الرسم البياني myChart باش نقدرو نحدثوه بعدين
-    const myChart = new Chart(ctx, {
+  const myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [
                 {
                     type: 'bar',
-                    data: motionLevels, // الحركة (الأعمدة)
+                    data: motionLevels,
                     backgroundColor: '#7CC7BD',
                     borderRadius: 12,
                     categoryPercentage: 0.72,
-                    barPercentage: 0.9
+                    barPercentage: 0.9,
+                    yAxisID: 'yMotion' // ربطنا الأعمدة بمحور الحركة المخفي
                 },
                 {
                     type: 'line',
-                    data: heartRates, // النبض (الخط)
+                    data: heartRates,
                     borderColor: '#E5A96D',
                     backgroundColor: '#E5A96D',
                     tension: 0.4,
-                    borderWidth: 5
+                    borderWidth: 5,
+                    yAxisID: 'y' // ربطنا الخط بمحور النبض الأساسي
                 }
             ]
         },
@@ -343,7 +329,12 @@
             plugins: { legend: { display: false } },
             scales: {
                 x: { grid: { display: false }, border: { display: false } },
+                
+                // 1. المحور الأساسي للنبض (من 0 إلى 150)
                 y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
                     min: 0,
                     max: 150, 
                     afterBuildTicks: (scale) => {
@@ -357,37 +348,68 @@
                             return '';
                         }
                     }
+                },
+
+                // 2. المحور الجديد للحركة (من 0 إلى 100) ومخفي
+                yMotion: {
+                    type: 'linear',
+                    display: false, // مخفي باش ما يخربش شكل الواجهة
+                    min: 0,
+                    max: 100 
                 }
             }
         },
         plugins: [chartBgPlugin]
     });
 
-    // 3. كود التحديث التلقائي (AJAX) - يخدم كل 5 ثواني
     setInterval(function() {
         fetch('{{ route("parents.home.live") }}')
             .then(response => response.json())
             .then(data => {
-                // تحديث المربعات
+                // تحديث النبض
                 document.getElementById('liveHeartRate').innerText = data.heartRate;
-                document.getElementById('liveActivityStatus').innerText = data.activityStatus;
                 
+                // تحديث حالة النشاط وتغيير اللون حسب الخطورة
+                const activityStatusEl = document.getElementById('liveActivityStatus');
+                activityStatusEl.innerText = data.live_status;
+                if (data.live_status === 'Panic Episode') {
+                    activityStatusEl.style.color = '#ef4444'; // أحمر للخطورة
+                } else if (data.live_status === 'Anxiety') {
+                    activityStatusEl.style.color = '#e29244'; // برتقالي للقلق
+                } else {
+                    activityStatusEl.style.color = '#3b82f6'; // أزرق للطبيعي (Calm)
+                }
+                
+                // تحديث أيقونة وخلفية مربع الاتصال ديناميكياً
+                const connCard = document.getElementById('liveConnectionCard');
                 const connElement = document.getElementById('liveConnectionStatus');
-                const svgElement = document.getElementById('liveBatterySvg');
+                const svgElement = document.getElementById('liveConnectionSvg');
                 
                 if (data.isConnected) {
                     connElement.innerText = 'Connected';
+                    connElement.style.color = '#14b8a6'; // أخضر
                     svgElement.style.color = '#14b8a6'; // أخضر
+                    
+                    connCard.classList.remove('red');
+                    connCard.classList.add('green');
+                    
+                    svgElement.innerHTML = '<path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
                 } else {
                     connElement.innerText = 'Disconnected';
+                    connElement.style.color = '#ef4444'; // أحمر
                     svgElement.style.color = '#ef4444'; // أحمر
+                    
+                    connCard.classList.remove('green');
+                    connCard.classList.add('red');
+                    
+                    svgElement.innerHTML = '<path d="M1.42 9a16 16 0 0 1 21.16 0M5 12.55a11 11 0 0 1 14.08 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01M3 3l18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
                 }
 
-                // تحديث الرسم البياني وإعطاء أمر بإعادة الرسم
+                // تحديث الرسم البياني
                 myChart.data.labels = data.chartLabels;
                 myChart.data.datasets[0].data = data.motionLevelsChart; 
                 myChart.data.datasets[1].data = data.heartRatesChart; 
-                myChart.update(); // هذي الدالة هي اللي تخلي الرسم يتحرك
+                myChart.update();
             })
             .catch(error => console.error('Error fetching live data:', error));
     }, 5000);

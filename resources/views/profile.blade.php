@@ -388,9 +388,6 @@
     {{ optional(optional(auth()->user()->parentProfile)->child)->name ?? 'No Child' }}
 </div>
 
-    <div class="profile-id">
-        ID: {{ auth()->user()->id }}
-    </div>
 </div>
 
             <a href="{{ route('edit.profile') }}" class="menu-item">
@@ -411,7 +408,7 @@
                 </div>
             </a>
 
-                <a href="#" class="menu-item">
+                <a href="{{ route('parents.bracelet.show') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="menu-icon">
                             <svg viewBox="0 0 24 24" fill="none">

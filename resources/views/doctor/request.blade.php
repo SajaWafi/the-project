@@ -168,8 +168,6 @@ body {
 </head>
 <body>
 
-<body>
-
 <div class="phone">
     <div class="content">
         <div class="header">
@@ -196,14 +194,52 @@ body {
         @endif
 
         <div class="list">
+            
+            @foreach($notifications as $relatedId => $userMessages)
+                @if($relatedId && $userMessages->isNotEmpty())
+                    @php
+                        // نجيبوا بيانات أحدث رسالة في المجموعة
+                        $latestMsg = $userMessages->first();
+                    @endphp
+                    <a href="{{ route('doctor.chat', $relatedId) }}" class="notice-box" style="background: #eef2f6; border: 1px solid #cdd8e4; color: #1f567f; margin-bottom: 12px; border-radius: 20px; padding: 14px; font-size: 13px; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 12px; text-decoration: none;">
+                        
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f567f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 2px;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <span>
+                                    {{ $latestMsg->title }} 
+                                    @if($userMessages->count() > 1)
+                                        <span style="background: #1f567f; color: #fff; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-left: 4px;">{{ $userMessages->count() }}</span>
+                                    @endif
+                                </span>
+                                <span style="font-size: 11px; font-weight: normal; color: #7f8c8d;">
+                                    {{ $latestMsg->created_at->diffForHumans() }}
+                                </span>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                @foreach($userMessages->take(3) as $msg)
+                                    <div style="background: #ffffff; padding: 6px 10px; border-radius: 8px; border: 1px solid #e1e8ed; color: #2c3e50; font-size: 12px;">
+                                        {{ $msg->message }}
+                                    </div>
+                                @endforeach
+                                
+                                @if($userMessages->count() > 3)
+                                    <div style="font-size: 10px; color: #7f8c8d; text-align: center; margin-top: 2px;">+ {{ $userMessages->count() - 3 }} more...</div>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @endif
+            @endforeach
+
             @forelse($requests as $request)
                 <div class="card">
                     @php
-                        // 1. نتأكدوا أولاً لو الأهل عندهم صورة مخزنة في قاعدة البيانات
                         $userPhoto = $request->parentProfile?->user?->profile_image;
-
-                        // 2. لو الصورة موجودة، نطلعوا مسارها من الـ storage، ولو مش موجودة نستخدموا الصورة الافتراضية
-                        // لاحظ تم تعديل الامتداد إلى .png بدل .php
                         $displayImage = $userPhoto 
                                         ? asset('storage/' . $userPhoto) 
                                         : asset('images/default-user.png'); 
@@ -236,17 +272,19 @@ body {
                             @endif
                         </div>
                     </div>
-                </div> @empty
+                </div> 
+            @empty
                 <div class="card">
                     <div class="card-info">
                         <div class="name" style="text-align: center; width: 100%;">No requests sent yet</div>
                     </div>
                 </div>
             @endforelse
+
         </div>
+        
     </div>
 </div>
 
 </body>
-
 </html>

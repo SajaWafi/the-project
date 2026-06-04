@@ -12,7 +12,7 @@ class AdminAlertController extends Controller
         $alerts = Alert::with(['parent.user', 'child'])
             ->latest('sent_at')
             ->latest()
-            ->paginate(10);
+            ->paginate(20);
 
         return view('admin.alerts_management', compact('alerts'));
     }

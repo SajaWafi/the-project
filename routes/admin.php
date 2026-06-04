@@ -118,6 +118,7 @@ Route::prefix('admin')
     Route::get('/settings', [ProfileController::class, 'index'])->name('settings.index');
     Route::put('/settings/update', [ProfileController::class, 'update'])->name('settings.update');
     Route::delete('/settings/delete', [ProfileController::class, 'destroy'])->name('settings.destroy');
+    Route::post('/settings/add-admin', [ProfileController::class, 'storeAdmin'])->name('settings.storeAdmin');
     
     });
 

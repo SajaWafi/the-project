@@ -7,6 +7,7 @@ use App\Models\Conversation;
 use App\Models\DoctorProfile;
 use App\Models\Message;
 use App\Models\ParentProfile;
+use App\Models\Notification; // تم إضافة مودل الإشعارات هنا
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -118,6 +119,23 @@ class ChatController extends Controller
                 'read_at' => null,
             ]);
 
+            // --- إضافة إشعار لولي الأمر ---
+            $notifyMessage = 'Sent you a new message.';
+            if ($type == 'image') {
+                $notifyMessage = 'Sent you an image.';
+            } elseif ($type == 'file') {
+                $notifyMessage = 'Sent you a file.';
+            }
+
+            Notification::create([
+                'user_id' => $parent->user_id, // توجيه الإشعار لحساب ولي الأمر
+                'related_id' => auth()->user()->doctorProfile->id,
+                'title' => 'New Message from Dr. ' . auth()->user()->first_name,
+                'message' => $notifyMessage,
+                'type' => 'chat_message',
+            ]);
+            // -----------------------------
+
             return response()->json([
                 'id' => $message->id,
                 'message' => $message->message,
@@ -173,6 +191,15 @@ class ChatController extends Controller
                 'file_path' => $filePath,
                 'read_at' => null,
             ]);
+
+            // --- إضافة إشعار بصمة صوت لولي الأمر ---
+            Notification::create([
+                'user_id' => $parent->user_id, // توجيه الإشعار لحساب ولي الأمر
+                'title' => 'New Message from Dr. ' . auth()->user()->first_name,
+                'message' => 'Sent you a voice message.',
+                'type' => 'chat_message',
+            ]);
+            // ---------------------------------------
 
             return response()->json([
                 'id' => $message->id,

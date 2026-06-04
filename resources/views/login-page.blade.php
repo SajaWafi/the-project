@@ -337,31 +337,20 @@
                 </div>
             </div>
 
-            <label class="check-row">
-                <input type="checkbox" name="remember" >
-                <span>Remmeber me</span>
-            </label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <label class="check-row" style="margin-bottom: 0;">
+                    <input type="checkbox" name="remember" >
+                    <span>Remember me</span>
+                </label>
+                
+                <a href="{{ route('forgot.password') }}" style="color: #2563eb; font-size: 14px; text-decoration: none; font-weight: 600;">
+                    Forgot Password?
+                </a>
+            </div>
 
             <button type="submit" class="btn-login">Login</button>
 
-            <!--
-            Google login was already disabled in the original file with href="#".
-            Enable this block only after connecting it to a real Google login route.
-
-            <div class="divider">or</div>
-
-            <a href="#" class="google-btn">
-                <svg width="20" height="20" viewBox="0 0 48 48">
-                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.69 1.22 9.18 3.6l6.85-6.85C35.91 2.32 30.36 0 24 0 14.82 0 6.73 5.2 2.69 12.81l7.98 6.2C12.3 13.6 17.69 9.5 24 9.5z"/>
-                    <path fill="#4285F4" d="M46.5 24.5c0-1.63-.15-3.2-.43-4.71H24v9.02h12.7c-.55 2.96-2.22 5.47-4.74 7.15l7.29 5.67C43.98 37.5 46.5 31.47 46.5 24.5z"/>
-                    <path fill="#FBBC05" d="M10.67 28.99A14.5 14.5 0 0 1 9.5 24c0-1.73.3-3.41.84-4.99l-7.98-6.2A23.93 23.93 0 0 0 0 24c0 3.87.93 7.52 2.59 10.81l8.08-5.82z"/>
-                    <path fill="#34A853" d="M24 48c6.36 0 11.71-2.1 15.61-5.7l-7.29-5.67c-2.02 1.36-4.6 2.17-8.32 2.17-6.31 0-11.7-4.1-13.63-9.52l-8.08 5.82C6.73 42.8 14.82 48 24 48z"/>
-                </svg>
-                <span>Login with Google</span>
-            </a>
-            -->
-
-            <div class="bottom-text">
+            <div class="bottom-text" style="margin-top: 20px;">
                 Don’t have an account?
                 <a href="{{ route('signup.choice') }}">Sign up</a>
             </div>
