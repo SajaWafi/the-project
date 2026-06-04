@@ -460,5 +460,45 @@
         </div>
     </div>
 
+     <script>
+ /*
+        function answerSafeZone(alertId, answer) {
+            const container = document.getElementById('safe-container-' + alertId);
+            const text = document.getElementById('safe-text-' + alertId);
+            
+            // 1. إخفاء الأزرار فوراً وتغيير النص (لإعطاء استجابة سريعة للمستخدم)
+            const buttons = container.querySelectorAll('.safe-btn');
+            buttons.forEach(btn => btn.style.display = 'none');
+
+            text.classList.remove('safe-answer-yes', 'safe-answer-no');
+
+            if (answer === 'yes') {
+                text.innerHTML = "✅ Child is safe with parent";
+                text.classList.add('safe-answer-yes');
+            } else {
+                text.innerHTML = "🚨 Parent confirmed child is missing!";
+                text.classList.add('safe-answer-no');
+            }
+
+            // 2. إرسال الإجابة لقاعدة البيانات في الخلفية (بدون تحديث الصفحة)
+            fetch(`/alerts/${alertId}/response`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // حماية لارافل
+                },
+                body: JSON.stringify({ answer: answer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response saved to database successfully');
+            })
+            .catch(error => {
+                console.error('Error saving response:', error);
+            });
+        }
+            */
+</script>
+
 </body>
 </html>
