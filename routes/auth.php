@@ -18,7 +18,27 @@ use App\Mail\ResetPasswordMail;
 // Welcome Screens
 // =======================
 Route::get('/', function () {
-    return view('welcome-screen');
+    $dashboard = null;
+
+    // لو المستخدم مسجل دخوله (Remembered) نحددوا وجهته بناءً على الصلاحية
+    if (Auth::check()) {
+        $user = Auth::user();
+        
+        if ($user->role === 'admin') {
+            $dashboard = route('admin.dashboard');
+        } elseif ($user->role === 'parent') {
+            $dashboard = route('parents.home');
+        } elseif ($user->role === 'doctor') {
+            if ($user->doctorProfile && $user->doctorProfile->approval_status === 'approved') {
+                $dashboard = route('doctor.home');
+            } else {
+                $dashboard = route('doctor.pending.approval');
+            }
+        }
+    }
+
+    // نبعتوا متغير $dashboard للواجهة
+    return view('welcome-screen', compact('dashboard'));
 })->name('welcome');
 
 Route::get('/welcome-second', function () {
