@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Doctor; // هذا مسار ملفك الحالي
+namespace App\Http\Controllers\Doctor;
 
-use App\Http\Controllers\Controller; // ⬅️ هذا السطر اللي حيحل المشكلة!
+use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\ParentProfile;
 use App\Models\Workplace;
@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
+    // 1. دالة عرض المواعيد
     public function index()
     {
         $doctorProfile = auth()->user()->doctorProfile;
@@ -136,7 +137,7 @@ class AppointmentController extends Controller
         return view('doctor.edit-appointment', compact('appointment', 'parents', 'workplaces'));
     }
 
-    // 5. دالة تحديث الموعد (وهنا حطينا إشعار المربع الأصفر!)
+    // 5. دالة تحديث الموعد وإرسال إشعار للأب
     public function update(Request $request, $id)
     {
         $request->validate([

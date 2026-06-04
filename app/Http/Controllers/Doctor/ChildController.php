@@ -53,36 +53,35 @@ class ChildController extends Controller
         return view('doctor.search-child', compact('children', 'search', 'linkedChildIds'));
     }
 
-    public function attach($id)
+public function attach($id)
     {
-        $doctor = DoctorProfile::where('user_id', auth()->id())->first();
+        $doctor = auth()->user()->doctorProfile;
+        if (!$doctor) return back()->withErrors(['doctor' => 'Doctor profile not found.']);
 
-        if (!$doctor) {
-            return back()->withErrors(['doctor' => 'Doctor profile not found.']);
-        }
+        $child = \App\Models\Child::findOrFail($id);
+        $parent = \App\Models\ParentProfile::findOrFail($child->parent_id);
 
-        $child = Child::find($id);
-
-        if (!$child) {
-            return back()->withErrors(['child' => 'Child not found.']);
-        }
-
-        $exists = ChildDoctor::where('child_id', $child->id)
+        $alreadyLinked = \Illuminate\Support\Facades\DB::table('child_doctor')
+            ->where('child_id', $child->id)
             ->where('doctor_id', $doctor->id)
             ->exists();
 
-        if ($exists) {
-            return back()->with('error', 'This child is already linked to you.');
-        }
+        if ($alreadyLinked) return back()->withErrors(['link' => 'This parent is already linked to this doctor.']);
 
-        ChildDoctor::create([
-            'child_id' => $child->id,
+        $pendingRequest = \App\Models\DoctorRequest::where('doctor_id', $doctor->id)
+            ->where('parent_id', $parent->id)
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($pendingRequest) return back()->withErrors(['request' => 'A pending request has already been sent.']);
+
+        \App\Models\DoctorRequest::create([
             'doctor_id' => $doctor->id,
-            'status' => 'active',
-            'assigned_at' => now(),
+            'parent_id' => $parent->id,
+            'status' => 'pending',
         ]);
 
-        return back()->with('success', 'Child added successfully.');
+        return back()->with('success', 'Request sent successfully.');
     }
 
 }

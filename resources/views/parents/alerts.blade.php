@@ -127,7 +127,7 @@
             border-radius: 20px;
             padding: 16px 16px 18px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            margin-bottom: 12px; /* مسافة بين الكروت */
+            margin-bottom: 12px; 
         }
 
         .alert-top {
@@ -158,7 +158,7 @@
 
         /* --- الألوان الجديدة التي تمت إضافتها --- */
         .title-red { color: #ff3434 !important; }
-        .title-yellow { color: #d68100 !important; } /* لون أصفر غامق ليكون مقروءاً */
+        .title-yellow { color: #d68100 !important; } 
         .title-blue { color: #1f5b87 !important; }
 
         .heart-warning {
@@ -210,10 +210,8 @@
             transform: scale(0.95);
         }
 
-        /* ألوان النصوص بعد الإجابة */
         .safe-answer-yes { color: #158a77 !important; }
         .safe-answer-no { color: #ff3434 !important; }
-
 
         .bottom-nav {
             position: absolute;
@@ -305,24 +303,25 @@
                     @php
                         $type = $alert->alert_type;
 
+                        // 💡 التعديل هنا: مطابقة الأسماء القادمة من SensorController
                         $titleClass = match($type) {
-                            'panic' => 'title-red',
-                            'heart_rate' => 'title-yellow',
+                            'Danger' => 'title-red',
+                            'Warning' => 'title-yellow',
                             'safe_zone' => 'title-red',
-                            'activity' => 'title-yellow',
+                            'Motion Alert' => 'title-yellow',
                             default => 'title-blue',
                         };
 
                         $icon = match($type) {
-                            'panic' => '🚨',
-                            'heart_rate' => '💓',
+                            'Danger' => '🚨',
+                            'Warning' => '💓',
                             'safe_zone' => '📍',
-                            'activity' => '🏃',
+                            'Motion Alert' => '🏃',
                             default => '🔔',
                         };
                     @endphp
 
-                    <div class="alert-card {{ $type }}">
+                    <div class="alert-card {{ strtolower(str_replace(' ', '_', $type)) }}">
                         <div class="alert-top">
                             <div class="alert-title {{ $titleClass }}">
                                 {{ $icon }} {{ $alert->title }}
@@ -336,7 +335,7 @@
                             {{ $alert->message }}
                         </div>
 
-                        @if($type === 'heart_rate')
+                        @if($type === 'Warning')
                             <div class="heart-warning">
                                 ⚠️ High heart rate detected
                             </div>
@@ -344,38 +343,25 @@
 
                         @if($type === 'safe_zone')
                             <div class="safe-question" id="safe-container-{{ $alert->id }}">
-                                @if($type === 'safe_zone')
-                                    <div class="safe-question" id="safe-container-{{ $alert->id }}">
+                                @if(is_null($alert->parent_response))
+                                    <span id="safe-text-{{ $alert->id }}">Is the child with you?</span>
+                                    
+                                    <form action="{{ route('parents.alerts.response', $alert->id) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <input type="hidden" name="parent_response" value="yes">
+                                        <button type="submit" class="safe-btn btn-yes">Yes</button>
+                                    </form>
 
-                                        @if(is_null($alert->parent_response))
-                                            <span id="safe-text-{{ $alert->id }}">
-                                                Is the child with you?
-                                            </span>
-                                            
-                                            <form action="{{ route('parents.alerts.response', $alert->id) }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                <input type="hidden" name="parent_response" value="yes">
-                                                <button type="submit" class="safe-btn btn-yes">Yes</button>
-                                            </form>
-
-                                            <form action="{{ route('parents.alerts.response', $alert->id) }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                <input type="hidden" name="parent_response" value="no">
-                                                <button type="submit" class="safe-btn btn-no">No</button>
-                                            </form>
-
-                                        {{-- إذا كانت الإجابة المحفوظة في قاعدة البيانات هي نعم --}}
-                                        @elseif($alert->parent_response === 'yes')
-                                            <span class="safe-answer-yes">✅ Child is safe with parent</span>
-
-                                        {{-- إذا كانت الإجابة المحفوظة في قاعدة البيانات هي لا --}}
-                                        @elseif($alert->parent_response === 'no')
-                                            <span class="safe-answer-no">🚨 Parent confirmed child is missing!</span>
-                                        @endif
-
-                                    </div>
+                                    <form action="{{ route('parents.alerts.response', $alert->id) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <input type="hidden" name="parent_response" value="no">
+                                        <button type="submit" class="safe-btn btn-no">No</button>
+                                    </form>
+                                @elseif($alert->parent_response === 'yes')
+                                    <span class="safe-answer-yes">✅ Child is safe with parent</span>
+                                @elseif($alert->parent_response === 'no')
+                                    <span class="safe-answer-no">🚨 Parent confirmed child is missing!</span>
                                 @endif
-
                             </div>
                         @endif
                     </div>
@@ -390,24 +376,25 @@
                     @php
                         $type = $alert->alert_type;
 
+                        // 💡 نفس التعديل في الأمس
                         $titleClass = match($type) {
-                            'panic' => 'title-red',
-                            'heart_rate' => 'title-yellow',
+                            'Danger' => 'title-red',
+                            'Warning' => 'title-yellow',
                             'safe_zone' => 'title-red',
-                            'activity' => 'title-yellow',
+                            'Motion Alert' => 'title-yellow',
                             default => 'title-blue',
                         };
 
                         $icon = match($type) {
-                            'panic' => '🚨',
-                            'heart_rate' => '💓',
+                            'Danger' => '🚨',
+                            'Warning' => '💓',
                             'safe_zone' => '📍',
-                            'activity' => '🏃',
+                            'Motion Alert' => '🏃',
                             default => '🔔',
                         };
                     @endphp
 
-                    <div class="alert-card {{ $type }}">
+                    <div class="alert-card {{ strtolower(str_replace(' ', '_', $type)) }}">
                         <div class="alert-top">
                             <div class="alert-title {{ $titleClass }}">
                                 {{ $icon }} {{ $alert->title }}
@@ -472,46 +459,6 @@
             </a>
         </div>
     </div>
-
-    <script>
-    /*
-        function answerSafeZone(alertId, answer) {
-            const container = document.getElementById('safe-container-' + alertId);
-            const text = document.getElementById('safe-text-' + alertId);
-            
-            // 1. إخفاء الأزرار فوراً وتغيير النص (لإعطاء استجابة سريعة للمستخدم)
-            const buttons = container.querySelectorAll('.safe-btn');
-            buttons.forEach(btn => btn.style.display = 'none');
-
-            text.classList.remove('safe-answer-yes', 'safe-answer-no');
-
-            if (answer === 'yes') {
-                text.innerHTML = "✅ Child is safe with parent";
-                text.classList.add('safe-answer-yes');
-            } else {
-                text.innerHTML = "🚨 Parent confirmed child is missing!";
-                text.classList.add('safe-answer-no');
-            }
-
-            // 2. إرسال الإجابة لقاعدة البيانات في الخلفية (بدون تحديث الصفحة)
-            fetch(`/alerts/${alertId}/response`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // حماية لارافل
-                },
-                body: JSON.stringify({ answer: answer })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Response saved to database successfully');
-            })
-            .catch(error => {
-                console.error('Error saving response:', error);
-            });
-        }
-            */
-    </script>
 
 </body>
 </html>

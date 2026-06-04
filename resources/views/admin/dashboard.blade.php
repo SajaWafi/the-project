@@ -505,7 +505,7 @@
     new Chart(ctxApproval, {
         type: 'doughnut',
         data: {
-            labels: ['قيد الانتظار', 'مقبول', 'مرفوض'],
+            labels: ['pending', 'approved', 'rejected'],
             datasets: [{
                 label: 'Doctor Approvals',
                 data: [pendingCount, approvedCount, rejectedCount],

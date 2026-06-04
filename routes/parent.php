@@ -1,26 +1,22 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-use App\Models\DoctorRequest;
-use App\Models\Alert;
 
+use App\Http\Controllers\HomeController as MainHomeController; 
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Parent\DoctorController;
 use App\Http\Controllers\Parent\ChatController;
 use App\Http\Controllers\Parent\AlertController;
+use App\Http\Controllers\Parent\ParentAlertController; 
 use App\Http\Controllers\Parent\ParentComplaintController;
-
 use App\Http\Controllers\Parent\HomeController;
 use App\Http\Controllers\Parent\LocationController;
 use App\Http\Controllers\Parent\SafeZoneController;
-
-use App\Http\Controllers\Parent\ParentAlertController;
 use App\Http\Controllers\Parent\BraceletController;
+use App\Http\Controllers\Parent\DoctorRequestController; 
+use App\Http\Controllers\Parent\ProfileController; 
+use App\Http\Controllers\Parent\ParentRequestController;
 
 
 /*
@@ -33,55 +29,23 @@ Route::prefix('parents')
     ->middleware(['auth', 'role:parent'])
     ->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Home Page
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/home', function () {
-            $user = auth()->user();
+        // Home Page
+        Route::get('/home', [HomeController::class, 'home'])->name('home');
+        Route::get('/home/live-data', [HomeController::class, 'getLiveData'])->name('home.live');
 
-            if (!$user || !$user->parentProfile) {
-                abort(404, 'Parent profile not found.');
-            }
-
-            $parentProfile = $user->parentProfile;
-            $child = $parentProfile->children()->first();
-
-            $appointments = collect();
-
-            if ($child) {
-                $appointments = \App\Models\Appointment::with(['child', 'doctor.user'])
-                    ->where('parent_id', $parentProfile->id)
-                    ->where('child_id', $child->id)
-                    ->whereDate('date', '>=', now()->toDateString())
-                    ->orderBy('date')
-                    ->orderByRaw("
-                        CASE
-                            WHEN from_period = 'AM' AND from_hour = 12 THEN 0
-                            WHEN from_period = 'AM' THEN from_hour
-                            WHEN from_period = 'PM' AND from_hour = 12 THEN 12
-                            ELSE from_hour + 12
-                        END
-                    ")
-                    ->orderBy('from_minute')
-                    ->get();
-            }
-
-            return view('parents.home', compact('appointments', 'child'));
-        })->name('home');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Alerts / Location
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
-
+        // Alerts / Location
+        // ملاحظة: اختر واحداً فقط من الكنترولرات لتجنب التعارض! سأترك ParentAlertController كمثال
         Route::get('/alerts', [ParentAlertController::class, 'index'])->name('alerts');
+        Route::post('/alerts/{id}/response', [ParentAlertController::class, 'updateResponse'])->name('alerts.response');
+        
+        Route::get('/location', [LocationController::class, 'index'])->name('location');
+        Route::get('/location/live', [LocationController::class, 'getLiveLocation'])->name('location.live');
 
-        Route::get('/location', fn() => view('parents.location'))->name('location');
+        // Doctor Requests
+        Route::get('/requests', [ParentRequestController::class, 'index'])->name('requests');
+        Route::post('/doctor-requests/{id}/accept', [ParentRequestController::class, 'accept'])->name('requests.accept');
+        Route::post('/doctor-requests/{id}/reject', [ParentRequestController::class, 'reject'])->name('requests.reject');
+
 
         /*
         |--------------------------------------------------------------------------
@@ -156,25 +120,20 @@ Route::prefix('parents')
         | Doctors Management
         |--------------------------------------------------------------------------
         */
+
+        // Doctors Management
+
         Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
         Route::get('/doctor-profile/{id}', [DoctorController::class, 'show'])->name('doctor-profile');
-        Route::delete('/doctors/{id}', [DoctorController::class, 'delete'])->name('doctors.delete');
+        Route::delete('/doctors/{id}', [DoctorController::class, 'removeDoctor'])->name('doctors.delete');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Chat System
-        |--------------------------------------------------------------------------
-        */
+        // Chat System
         Route::get('/chat/{doctorId}', [ChatController::class, 'show'])->name('chat');
         Route::post('/chat/{doctorId}/send', [ChatController::class, 'send'])->name('chat.send');
         Route::post('/chat/{doctorId}/send-audio', [ChatController::class, 'sendAudio'])->name('chat.sendAudio');
         Route::delete('/chat/message/{messageId}', [ChatController::class, 'deleteMessage'])->name('chat.message.delete');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Reports
-        |--------------------------------------------------------------------------
-        */
+        // Reports
         Route::get('/report', [ReportController::class, 'show'])->name('report');
         Route::get('/report/download-pdf', [ReportController::class, 'downloadPdf'])->name('report.download-pdf');
     });
@@ -186,8 +145,12 @@ Route::prefix('parents')
 */
 Route::middleware(['auth', 'role:parent'])->group(function () {
 
-    Route::get('/profile', fn() => view('profile'))->name('profile');
-    Route::get('/edit-profile', fn() => view('edit-profile'))->name('edit.profile');
+        // Profile & Settings Views
+        Route::get('/profile', fn() => view('profile'))->name('profile');
+        Route::get('/edit-profile', fn() => view('edit-profile'))->name('edit.profile');
+        Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy.policy');
+        Route::get('/settings', fn() => view('settings'))->name('settings');
+
 
    Route::post('/edit-profile/update', [\App\Http\Controllers\Parent\ProfileController::class, 'update'])->name('parent.profile.update');
 
@@ -284,23 +247,39 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
             return back()->with('error', 'Something went wrong while deleting the account.');
         }
     })->name('delete.account');
+
+        // Profile Logic (يجب إنشاء ProfileController)
+        Route::post('/edit-profile/update', [ProfileController::class, 'updateProfile'])->name('parent.profile.update');
+        Route::delete('/delete-account', [ProfileController::class, 'destroyAccount'])->name('delete.account');
+
+        // Password Manager
+        Route::get('/password-manager', fn() => view('password-manager'))->name('password.manager');
+        Route::post('/password-manager', [ProfileController::class, 'updatePassword'])->name('password.manager.update');
+
+        // Safety Alerts
+        Route::get('/panic-alert', fn() => view('panic-alert'))->name('panic.alert');
+        Route::get('/location-alerts', fn() => view('location-alerts'))->name('location.alerts');
+        Route::get('/safe-zone-settings', fn() => view('safe-zone-settings'))->name('safe.zone.settings');
+        Route::get('/alert-sounds', fn() => view('alert-sounds'))->name('alert.sounds');
+
+        // Reports Settings & History
+        Route::get('/settings/reports-config', [ReportController::class, 'settings'])->name('reports.settings');
+        Route::get('/settings/reports-history', [ReportController::class, 'history'])->name('reports.history');
+        Route::post('/settings/reports-history/delete', [ReportController::class, 'destroyMultiple'])->name('reports.destroy');
+
+
 });
 
 /*
 |--------------------------------------------------------------------------
-| Parent Extra Routes (Outside Group Prefix)
+| Safe Zone
 |--------------------------------------------------------------------------
 */
-Route::get('/parents/home', [HomeController::class, 'home'])->name('parents.home');
-Route::get('/parents/home/live-data', [HomeController::class, 'getLiveData'])->name('parents.home.live');
-
-
-Route::get('/parents/location', [LocationController::class, 'index'])->name('parents.location');
-Route::get('/parents/location/live', [LocationController::class, 'getLiveLocation'])->name('parents.location.live');
-
-Route::get('/safe-zone-settings', [SafeZoneController::class, 'index'])->name('safe.zone.settings');
-Route::post('/safe-zone-settings', [SafeZoneController::class, 'store'])->name('safe.zone.store');
-Route::delete('/safe-zone-settings/{id}', [SafeZoneController::class, 'destroy'])->name('safe.zone.destroy');
+Route::middleware(['auth', 'role:parent'])->group(function () {
+    Route::get('/safe-zone-settings', [SafeZoneController::class, 'index'])->name('safe.zone.settings');
+    Route::post('/safe-zone-settings', [SafeZoneController::class, 'store'])->name('safe.zone.store');
+    Route::delete('/safe-zone-settings/{id}', [SafeZoneController::class, 'destroy'])->name('safe.zone.destroy');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -311,6 +290,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/complaint', [ParentComplaintController::class, 'create'])->name('parent.complaints.create');
     Route::post('/complaint', [ParentComplaintController::class, 'store'])->name('parent.complaints.store');
 });
+
 
     /*
     |--------------------------------------------------------------------------
@@ -347,3 +327,11 @@ Route::post('/profile/bracelet/disconnect', [BraceletController::class, 'disconn
     */
    Route::post('/save-fcm-token', [App\Http\Controllers\HomeController::class, 'saveToken'])->name('save.token');
    
+
+/*
+|--------------------------------------------------------------------------
+| FCM Token
+|--------------------------------------------------------------------------
+*/
+Route::post('/save-fcm-token', [MainHomeController::class, 'saveToken'])->name('save.token');
+

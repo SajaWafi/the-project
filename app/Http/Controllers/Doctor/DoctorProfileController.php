@@ -5,12 +5,19 @@ namespace App\Http\Controllers\Doctor;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\UpdateDoctorProfileRequest;
 use App\Models\DoctorProfile;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class DoctorProfileController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Edit Profile Data
+    |--------------------------------------------------------------------------
+    */
     public function edit()
     {
         $user = Auth::user()->load('doctorProfile');
@@ -88,5 +95,75 @@ class DoctorProfileController extends Controller
                 ->withInput()
                 ->with('error', $e->getMessage());
         }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Change Password
+    |--------------------------------------------------------------------------
+    */
+    public function editPassword()
+    {
+        return view('doctor.change-password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if (!$user || !Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors([
+                'current_password' => 'Current password is incorrect'
+            ]);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Password updated successfully');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Account & Logout
+    |--------------------------------------------------------------------------
+    */
+    public function destroyAccount()
+    {
+        $user = Auth::user();
+        DB::beginTransaction();
+
+        try {
+            if ($user?->doctorProfile) {
+                $user->doctorProfile()->delete();
+            }
+
+            Auth::logout();
+
+            if ($user) {
+                $user->delete();
+            }
+            
+            DB::commit();
+            return redirect('/')->with('success', 'Account deleted successfully');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
+        return redirect()->route('login.page');
     }
 }

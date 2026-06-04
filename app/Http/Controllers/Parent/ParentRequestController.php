@@ -4,61 +4,104 @@ namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use App\Models\DoctorRequest;
-use App\Models\Notification; // استدعاء جدول الإشعارات
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ParentRequestController extends Controller
 {
-    // دالة فتح صفحة الطلبات والإشعارات
-public function index()
+    // 1. دالة عرض الطلبات والإشعارات للأب
+    public function index()
     {
-        // 1. جلب الطلبات (الكروت الخضراء)
-       $requests = \App\Models\DoctorRequest::with('doctor.user')
-            ->where('parent_id', auth()->user()->parentProfile->id)
+        $parent = Auth::user()->parentProfile;
+
+        if (!$parent) {
+            abort(404, 'Parent profile not found.');
+        }
+
+        // 1. جلب الطلبات المعلقة (الكروت الخضراء)
+        $requests = DoctorRequest::with('doctor.user')
+            ->where('parent_id', $parent->id)
+            ->where('status', 'pending')
+            ->latest()
             ->get()
-            ->unique('doctor_id');
+            ->unique('doctor_id'); // منع تكرار الطلبات من نفس الدكتور
 
         // 2. جلب إشعارات الشات (المربعات الزرقاء)
-        $notifications = \App\Models\Notification::where('user_id', auth()->id())
+        $notifications = Notification::where('user_id', Auth::id())
             ->where('type', 'chat_message')
             ->where('created_at', '>=', now()->subDays(3))
             ->latest()
             ->get()
             ->groupBy('related_id');
 
-        // 3. جلب إشعارات المواعيد (المربع الأصفر) ⬅️ تأكدي إن الكود هذا موجود
-        $appointmentNotices = \App\Models\Notification::where('user_id', auth()->id())
+        // 3. جلب إشعارات المواعيد (المربع الأصفر)
+        $appointmentNotices = Notification::where('user_id', Auth::id())
             ->where('type', 'appointment_update')
             ->where('created_at', '>=', now()->subDays(7))
             ->latest()
             ->get();
 
-        // إرسال المتغيرات للواجهة
         return view('parents.requests', compact('requests', 'notifications', 'appointmentNotices'));
     }
 
-    // دالة قبول الطلب
+    // 2. دالة قبول الطلب
     public function accept($id)
     {
+        $parent = Auth::user()->parentProfile;
+
+        if (!$parent) {
+            return back()->withErrors(['parent' => 'Parent profile not found.']);
+        }
+
         // التأكد إن الطلب مبعوث لهذا الأب بالذات
-        $request = DoctorRequest::where('id', $id)->where('parent_id', Auth::id())->firstOrFail();
-        
-        $request->update(['status' => 'accepted']);
+        $requestItem = DoctorRequest::where('id', $id)
+            ->where('parent_id', $parent->id)
+            ->where('status', 'pending')
+            ->firstOrFail();
 
-        // هنا لاحقاً تقدر تضيف كود لإنشاء رابط في جدول doctor_parent_links
+        $child = $parent->children()->first();
 
-        return back()->with('success', 'تم قبول طلب الدكتور بنجاح.');
+        if (!$child) {
+            return back()->withErrors(['child' => 'No child found for this parent.']);
+        }
+
+        // التأكد إن العلاقة مش موجودة مسبقاً لتجنب التكرار
+        $alreadyLinked = DB::table('child_doctor')
+            ->where('child_id', $child->id)
+            ->where('doctor_id', $requestItem->doctor_id)
+            ->exists();
+
+        // إنشاء الرابط بين الطفل والدكتور
+        if (!$alreadyLinked) {
+            DB::table('child_doctor')->insert([
+                'child_id' => $child->id,
+                'doctor_id' => $requestItem->doctor_id,
+            ]);
+        }
+
+        $requestItem->update(['status' => 'accepted']);
+
+        return back()->with('success', 'تم قبول طلب الدكتور بنجاح وتم ربط الطفل.');
     }
 
-    // دالة رفض الطلب
+    // 3. دالة رفض الطلب
     public function reject($id)
     {
-        $request = DoctorRequest::where('id', $id)->where('parent_id', Auth::id())->firstOrFail();
-        
-        $request->update(['status' => 'rejected']);
+        $parent = Auth::user()->parentProfile;
+
+        if (!$parent) {
+            return back()->withErrors(['parent' => 'Parent profile not found.']);
+        }
+
+        $requestItem = DoctorRequest::where('id', $id)
+            ->where('parent_id', $parent->id)
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        $requestItem->update(['status' => 'rejected']);
 
         return back()->with('success', 'تم رفض الطلب.');
     }
 }
-  

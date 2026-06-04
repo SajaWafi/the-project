@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Doctor; 
 
 use App\Http\Controllers\Controller;
+use App\Models\DoctorRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\DoctorRequest; // ⬅️ ضفنا استدعاء المودل باش ما يضربش إيرور
 
 class DoctorRequestController extends Controller
 {
@@ -13,7 +13,7 @@ class DoctorRequestController extends Controller
     public function index()
     {
         // 1. نجيبوا بروفايل الدكتور الحالي
-        $doctorProfile = auth()->user()->doctorProfile;
+        $doctorProfile = Auth::user()->doctorProfile;
 
         if (!$doctorProfile) {
             abort(404, 'Doctor profile not found.');
