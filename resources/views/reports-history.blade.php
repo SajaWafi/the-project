@@ -379,7 +379,7 @@
                         <div class="report-card-wrapper">
                             <input type="checkbox" class="report-check" value="{{ $report->id }}">
 
-                            <a href="{{ route('parents.report', ['period' => 'month']) }}" class="report-card">
+                            <a href="{{ route('report', ['period' => 'month']) }}" class="report-card">
                                 <div class="report-left">
                                     <div class="report-icon">
                                         <svg viewBox="0 0 24 24" fill="none">

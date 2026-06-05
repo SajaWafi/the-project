@@ -16,6 +16,8 @@ use App\Http\Controllers\Doctor\DoctorComplaintController;
 use App\Http\Controllers\Doctor\DoctorProfileController;
 use App\Http\Controllers\Parent\ParentRequestController;
 
+// استدعاء كنترولر الإعدادات الجديد (يخدم للزوز)
+use App\Http\Controllers\NotificationSettingController;
 
 Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->group(function () {
 
@@ -97,6 +99,11 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::post('/change-password', [DoctorProfileController::class, 'updatePassword'])->name('password.update');
     Route::delete('/delete-account', [DoctorProfileController::class, 'destroyAccount'])->name('delete.account');
     Route::post('/logout', [DoctorProfileController::class, 'logout'])->name('logout');
+    
+    // راوت فتح واجهة أصوات الدكتور قعد زي ما هو باش يفتح الصفحة
+    Route::get('/alert-sounds', function () {
+        return view('doctor.alert-sounds'); 
+    })->name('alert-sounds');
 
     /*
     |--------------------------------------------------------------------------
@@ -109,10 +116,13 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
 
 /*
 |--------------------------------------------------------------------------
-| Parent Routes (For accepting/rejecting requests)
+| Shared Authenticated Routes (Parent & Doctor)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+    // راوت الإعدادات المشترك (AJAX) اللي يخدم للدكتور والأهل
+    Route::post('/settings/toggle', [NotificationSettingController::class, 'toggleSetting'])->name('settings.toggle');
+    
     Route::post('/parent/requests/{id}/accept', [ParentRequestController::class, 'accept'])->name('parent.requests.accept');
     Route::post('/parent/requests/{id}/reject', [ParentRequestController::class, 'reject'])->name('parent.requests.reject');
 });

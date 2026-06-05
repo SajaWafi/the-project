@@ -432,7 +432,7 @@
             <div class="section-chip">Notifications</div>
 
             <div class="menu-list">
-                <a href="{{ route('doctor.alert') }}" class="menu-item">
+                <a href="{{ route('doctor.alert-sounds') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="menu-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

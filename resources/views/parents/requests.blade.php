@@ -248,7 +248,7 @@ body {
                             $latestMsg = $doctorMessages->first();
                         @endphp
                         
-                        <a href="{{ route('parents.chat', $relatedId) }}" class="notice-box" style="background: #eef2f6; border: 1px solid #cdd8e4; color: #1f567f; margin-bottom: 12px; border-radius: 20px; padding: 14px; font-size: 13px; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 12px; text-decoration: none;">
+                        <a href="{{ route('chat', $relatedId) }}" class="notice-box" style="background: #eef2f6; border: 1px solid #cdd8e4; color: #1f567f; margin-bottom: 12px; border-radius: 20px; padding: 14px; font-size: 13px; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 12px; text-decoration: none;">
                             
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f567f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 2px;">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>

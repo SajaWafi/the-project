@@ -348,7 +348,7 @@
             <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
         </div>
 
-        <form action="{{ route('parent.profile.update') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="profile-top">
