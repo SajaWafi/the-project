@@ -97,6 +97,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::post('/change-password', [DoctorProfileController::class, 'updatePassword'])->name('password.update');
     Route::delete('/delete-account', [DoctorProfileController::class, 'destroyAccount'])->name('delete.account');
     Route::post('/logout', [DoctorProfileController::class, 'logout'])->name('logout');
+    Route::get('/alert', [DoctorController::class, 'alert'])->name('alert');
 
     /*
     |--------------------------------------------------------------------------

@@ -46,6 +46,7 @@ Route::prefix('admin')
 
         //complaints managment
         Route::get('/complaints', [ComplaintController::class, 'index'])->name('complaints.index');
+        Route::put('/complaints/{id}', [ComplaintController::class, 'update'])->name('complaints.update');
         Route::delete('/complaints/{id}', [ComplaintController::class, 'destroy'])->name('complaints.destroy');
 
 

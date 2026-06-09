@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title> Complaints Management - Taif Project</title>
 
     <link
@@ -279,6 +280,11 @@ body {
         line-height: 1.8;
         color: #374151;
     }
+
+    .update-btn {
+        background: #fef3c7;
+        color: #d97706;
+    }
 </style>
 
 <body>
@@ -443,6 +449,22 @@ body {
                                 </button>
                             </form>
 
+                            <form
+                                action="{{ route('admin.complaints.update', $complaint->id) }}"
+                                method="POST"
+                            >
+                                @csrf
+                                @method('PUT')
+                                <button
+                                    type="button"
+                                    class="action-btn update-btn"
+                                    data-id="{{ $complaint->id }}"
+                                    data-status="{{ $complaint->status }}"
+                                >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                            </form>
                         </div>
 
                     </td>
@@ -489,6 +511,43 @@ body {
 
             <div class="complaint-category" id="modalComplaintCategory"></div>
             <div class="complaint-message" id="modalComplaintMessage"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Update Status Modal -->
+<div class="modal-overlay" id="updateModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+            Update Complaint Status
+
+            <span class="close-modal" onclick="closeUpdateModal()">
+                &times;
+            </span>
+        </div>
+
+        <div class="modal-body">
+
+            <input type="hidden" id="complaintId">
+
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+
+                <select id="complaintStatus" class="form-control">
+                    <option value="pending">Pending</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary w-100" onclick="saveStatus()">
+                Save Changes
+            </button>
 
         </div>
 
@@ -571,6 +630,53 @@ body {
     roleFilter.addEventListener('change', filterComplaints);
     categoryFilter.addEventListener('change', filterComplaints);
 
+   document.querySelectorAll('.update-btn').forEach(button => {
+
+    button.addEventListener('click', function () {
+
+        document.getElementById('complaintId').value =
+            this.dataset.id;
+
+        document.getElementById('complaintStatus').value =
+            this.dataset.status;
+
+        document.getElementById('updateModal').style.display = 'flex';
+    });
+
+});
+
+    function closeUpdateModal() {
+
+        document.getElementById('updateModal').style.display = 'none';
+    }
+
+function saveStatus() {
+    const id = document.getElementById('complaintId').value;
+    const status = document.getElementById('complaintStatus').value;
+
+    fetch(`/admin/complaints/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            status: status
+        })
+    })
+    .then(response => response.json()) // تحويل الاستجابة إلى JSON مباشرة
+    .then(data => {
+        if(data.success) {
+            location.reload(); // إعادة تحميل الصفحة لتحديث الحالة
+        } else {
+            alert("Error: Could not update status.");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("An error occurred. Check the console.");
+    });
+}
 </script>
 
 </body>
