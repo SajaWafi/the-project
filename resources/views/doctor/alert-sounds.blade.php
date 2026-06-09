@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Alert Sounds</title>
 
     <style>
@@ -42,23 +43,17 @@
             margin-bottom: 25px;
         }
 
-        .back-btn {
-            position: absolute;
-            left: 0;
-            font-size: 28px;
-            color: #2f66f3;
-            text-decoration: none;
-        }
-
         .title {
             font-size: 26px;
             font-weight: 800;
             color: #1d567e;
+            padding-top: 5px;
         }
 
-          .logo {
+        .logo {
             position: absolute;
             right: 0;
+            top: -10px;
             width: 100px;
             height:100px;
             object-fit: contain;
@@ -137,10 +132,15 @@
             padding: 10px;
             border-radius: 10px;
             margin-bottom: 10px;
+            display: none; /* مخفي افتراضياً، يظهر بالجافاسكربت */
+            text-align: center;
+            font-weight: bold;
         }
-          .back-btn {
+
+        .back-btn {
             position: absolute;
             left: 0;
+            top: 5px;
             background: transparent;
             border: none;
             cursor: pointer;
@@ -156,67 +156,122 @@
 </head>
 
 <body>
+
+@php
+    // جلب إعدادات الدكتور الحالية من الداتابيز باش نعرضوها
+    $userSettings = \App\Models\NotificationSetting::where('user_id', auth()->id())->get()->keyBy('notification_type');
+    
+    // إعدادات الإشعارات العامة
+    $notif = $userSettings['doctor_notification'] ?? null;
+    
+    // إعدادات رسائل الأهل
+    $chat = $userSettings['chat'] ?? null;
+@endphp
+
 <div class="phone">
     <div class="content">
 
         <div class="header">
-               <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
+            <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
             <div class="title">Alert Sounds</div>
-            <img src="{{ asset('images/logo.png') }}" class="logo">
+            <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo">
         </div>
 
-        @if(session('success'))
-            <div class="success-box">{{ session('success') }}</div>
-        @endif
+        <div id="toast-message" class="success-box">Saved Successfully!</div>
 
-        <form action="{{ route('doctor.alert.update') }}" method="POST">
-            @csrf
+        <div class="chip">Notifications</div>
 
-            <!-- Notifications -->
-            <div class="chip">Notifications</div>
+        <div class="row">
+            <span>Sound</span>
+            <label class="switch">
+                <input type="checkbox" class="smart-toggle" data-type="doctor_notification" data-field="has_sound" 
+                       {{ ($notif->has_sound ?? true) ? 'checked' : '' }}>
+                <span class="slider"></span>
+            </label>
+        </div>
 
-            <div class="row">
-                <span>Sound</span>
-                <label class="switch">
-                    <input type="checkbox" name="notif_sound" value="1" {{ old('notif_sound', $settings['notif_sound'] ?? true) ? 'checked' : '' }}>
-                    <span class="slider"></span>
-                </label>
-            </div>
+        <div class="row">
+            <span>Vibrate</span>
+            <label class="switch">
+                <input type="checkbox" class="smart-toggle" data-type="doctor_notification" data-field="has_vibrate" 
+                       {{ ($notif->has_vibrate ?? true) ? 'checked' : '' }}>
+                <span class="slider"></span>
+            </label>
+        </div>
 
-            <div class="row">
-                <span>Vibrate</span>
-                <label class="switch">
-                    <input type="checkbox" name="notif_vibrate" value="1" {{ old('notif_vibrate', $settings['notif_vibrate'] ?? false) ? 'checked' : '' }}>
-                    <span class="slider"></span>
-                </label>
-            </div>
+        <div class="chip" style="margin-top:20px;">Parents Messages</div>
 
-            <!-- Parents Messages -->
-            <div class="chip" style="margin-top:20px;">Parents Messages</div>
+        <div class="row">
+            <span>Sound</span>
+            <label class="switch">
+                <input type="checkbox" class="smart-toggle" data-type="chat" data-field="has_sound" 
+                       {{ ($chat->has_sound ?? true) ? 'checked' : '' }}>
+                <span class="slider"></span>
+            </label>
+        </div>
 
-            <div class="row">
-                <span>Sound</span>
-                <label class="switch">
-                    <input type="checkbox" name="msg_sound" value="1" {{ old('msg_sound', $settings['msg_sound'] ?? true) ? 'checked' : '' }}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="row">
-                <span>Vibrate</span>
-                <label class="switch">
-                    <input type="checkbox" name="msg_vibrate" value="1" {{ old('msg_vibrate', $settings['msg_vibrate'] ?? false) ? 'checked' : '' }}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-        </form>
+        <div class="row">
+            <span>Vibrate</span>
+            <label class="switch">
+                <input type="checkbox" class="smart-toggle" data-type="chat" data-field="has_vibrate" 
+                       {{ ($chat->has_vibrate ?? true) ? 'checked' : '' }}>
+                <span class="slider"></span>
+            </label>
+        </div>
 
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.smart-toggle').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            let typeVal = this.getAttribute('data-type');
+            let fieldVal = this.getAttribute('data-field');
+            let isChecked = this.checked ? 1 : 0;
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // إرسال البيانات للكنترولر
+            fetch("{{ route('settings.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    type: typeVal,
+                    field: fieldVal,
+                    status: isChecked
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    // إظهار رسالة النجاح لفترة قصيرة
+                    let toast = document.getElementById('toast-message');
+                    toast.style.display = 'block';
+                    setTimeout(() => { toast.style.display = 'none'; }, 2000);
+
+                    // ميزة إضافية: لو فعل الاهتزاز، خلي المتصفح يهتز كنوع من التأكيد
+                    if(isChecked === 1 && fieldVal === 'has_vibrate') {
+                        if (navigator.vibrate) {
+                            navigator.vibrate(200);
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // لو صار خطأ في النت، رجع الزر لحالته السابقة
+                this.checked = !this.checked; 
+                alert('حدث خطأ في الاتصال بالسيرفر. يرجى المحاولة لاحقاً.');
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

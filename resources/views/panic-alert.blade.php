@@ -251,22 +251,48 @@
 
                     <div class="title">Panic Alerts</div>
                 </div>
+<div class="switch {{ (optional($userSettings->get('panic'))->is_enabled ?? true) ? 'active' : '' }}" 
+     onclick="toggleSetting(this)" 
+     data-type="panic" 
+     data-field="is_enabled">
+</div>
 
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
-            </div>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
+<script>
+    function toggleSetting(el) {
+        // 1. تغيير شكل الزر بصرياً
+        el.classList.toggle('active');
+        let isActive = el.classList.contains('active') ? 1 : 0;
+        
+        let typeVal = el.getAttribute('data-type');
+        let fieldVal = el.getAttribute('data-field');
+        let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        </div>
-
-    
-    </div>
-
-    <script>
-        function toggleSwitch(el) {
+        // 2. إرسال الطلب للسيرفر
+        fetch("{{ route('settings.toggle') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                type: typeVal,
+                field: fieldVal,
+                status: isActive
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('تم التحديث:', data);
+        })
+        .catch(error => {
+            console.error('خطأ:', error);
+            // إرجاع الزر لوضعه السابق لو فشل الاتصال
             el.classList.toggle('active');
-        }
-
-    </script>
+        });
+    }
+</script>
 
 </body>
 </html>

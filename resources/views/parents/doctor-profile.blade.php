@@ -623,7 +623,7 @@
 
             <div class="profile-card">
                 <div class="profile-actions">
-                    <a href="{{ route('parents.chat', $doctor['id'] ?? 1) }}" class="chat-btn" title="Chat">
+                    <a href="{{ route('chat', $doctor['id'] ?? 1) }}" class="chat-btn" title="Chat">
                         💬
                     </a>
 
@@ -748,7 +748,7 @@
                 Cancel
             </button>
 
-            <form action="{{ route('parents.doctors.delete', $doctor['id'] ?? 1) }}" method="POST">
+            <form action="{{ route('doctors.delete', $doctor['id'] ?? 1) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="modal-delete-btn">

@@ -361,7 +361,7 @@
     </div>
 
     <div class="topbar">
-        <a href="{{ route('parents.home') }}" class="back-link">‹</a>
+        <a href="{{ route('home') }}" class="back-link">‹</a>
         <h1 class="topbar-title">Health Report</h1>
         <span class="chip">{{ $report['period_label'] }}</span>
         <img src="{{ asset('images/logo.png') }}" alt="logo" class="logo">
@@ -384,10 +384,10 @@
     </div>
 
     <div class="filters">
-        <a href="{{ route('parents.report', ['period' => 'week']) }}" class="{{ $period === 'week' ? 'active' : '' }}">
+        <a href="{{ route('report', ['period' => 'week']) }}" class="{{ $period === 'week' ? 'active' : '' }}">
             Weekly
         </a>
-        <a href="{{ route('parents.report', ['period' => 'month']) }}" class="{{ $period === 'month' ? 'active' : '' }}">
+        <a href="{{ route('report', ['period' => 'month']) }}" class="{{ $period === 'month' ? 'active' : '' }}">
             Monthly
         </a>
     </div>
@@ -487,7 +487,7 @@
         </ul>
     </div>
 
-    <a class="download-btn" href="{{ route('parents.report.download-pdf', ['period' => $period]) }}">
+    <a class="download-btn" href="{{ route('report.download-pdf', ['period' => $period]) }}">
         Download PDF Report
     </a>
 </div>

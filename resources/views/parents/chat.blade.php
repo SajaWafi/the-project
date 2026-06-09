@@ -650,7 +650,7 @@
             class="input-bar-wrap"
             id="chatForm"
             method="POST"
-            action="{{ route('parents.chat.send', ['doctorId' => $doctor['id']]) }}"
+            action="{{ route('chat.send', ['doctorId' => $doctor['id']]) }}"
             enctype="multipart/form-data"
         >
             @csrf
@@ -1050,7 +1050,7 @@
                 const formData = new FormData();
                 formData.append('audio', audioBlob, 'voice-message.webm');
 
-                const response = await fetch("{{ route('parents.chat.sendAudio', ['doctorId' => $doctor['id']]) }}", {
+                const response = await fetch("{{ route('chat.sendAudio', ['doctorId' => $doctor['id']]) }}", {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': "{{ csrf_token() }}",
@@ -1137,7 +1137,7 @@
 
         async function deleteMessage(messageId, button) {
             try {
-                const url = "{{ route('parents.chat.message.delete', ['messageId' => '__ID__']) }}".replace('__ID__', messageId);
+                const url = "{{ route('chat.message.delete', ['messageId' => '__ID__']) }}".replace('__ID__', messageId);
 
                 const response = await fetch(url, {
                     method: 'DELETE',

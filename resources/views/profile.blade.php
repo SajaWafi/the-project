@@ -408,7 +408,7 @@
                 </div>
             </a>
 
-                <a href="{{ route('parents.bracelet.show') }}" class="menu-item">
+                <a href="{{ route('bracelet.show') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="menu-icon">
                             <svg viewBox="0 0 24 24" fill="none">
