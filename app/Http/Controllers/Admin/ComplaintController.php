@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 
@@ -29,6 +31,23 @@ class ComplaintController extends Controller
         $complaints = Complaint::with('user')->latest()->get();
 
         return view('admin.complaints_managment', compact('complaints'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,resolved',
+        ]);
+
+        $complaint = Complaint::findOrFail($id);
+
+        $complaint->status = $request->status;
+        $complaint->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Complaint updated successfully'
+        ]);
     }
 
     public function destroy($id)

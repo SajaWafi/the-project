@@ -918,7 +918,7 @@
                         >
                     </div>
 
-                    <div class="doctor-edit-form-group">
+                    <div class="doctor-edit-form-group" action="{{ route('admin.doctors.update', $doctor->id) }}">
                         <label>Last Name</label>
 
                         <input
