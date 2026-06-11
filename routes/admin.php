@@ -86,6 +86,8 @@ Route::prefix('admin')
             Route::post('/doctors/{doctor}/reject', [DoctorManagementController::class, 'reject'])
                 ->name('doctors.reject');
 
+                // bracelets managment
+                Route::get('/bracelets', [BraceletController::class, 'index'])->name('bracelets.index');
 
             //appointmentsMangegment
             Route::get('/appointments', [AdminAppointmentController::class, 'index'])
