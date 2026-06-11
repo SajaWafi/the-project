@@ -16,11 +16,6 @@
     >
         <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
-
     <style>
         :root {
             --sidebar-bg: #2c5282;
@@ -550,26 +545,6 @@
                 </small>
             </div>
 
-            <div class="admin-status-wrapper">
-                <div class="admin-status-text">
-                    <div class="admin-status-title">
-                        Admin Panel
-                    </div>
-
-                    <small class="admin-online-status">
-                        <i class="fas fa-circle me-1"></i>
-                        Online
-                    </small>
-                </div>
-
-                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                    @csrf
-
-                    <button type="submit" class="admin-logout-button">
-                        <i class="fas fa-sign-out-alt text-danger"></i>
-                    </button>
-                </form>
-            </div>
         </div>
 
         @if(session('success'))
@@ -946,12 +921,18 @@
     </div>
 
     <script>
+        // 1. ذاكرة مؤقتة لحفظ الـ Form اللي بنمسحوها باش ما نمسحوش تنبيه بالغلط
         let alertDeleteForm = null;
-
+        // 2. التقاط عناصر الفلترة من الشاشة (مربع البحث والقوائم المنسدلة)
         const alertSearchInput = document.getElementById('alertSearchInput');
         const alertTypeFilter = document.getElementById('alertTypeFilter');
         const alertReadFilter = document.getElementById('alertReadFilter');
         const alertDateFilter = document.getElementById('alertDateFilter');
+
+        // ---------------------------------------------------------
+        // العقل المدبر: دالة الفلترة الفورية (Client-Side Filtering)
+        // ميزتها: تفلتر البيانات في المتصفح في ثواني بدون الضغط على السيرفر
+        // ---------------------------------------------------------
 
         function filterAlertsTable() {
             const searchTerm = alertSearchInput
@@ -969,16 +950,16 @@
             const selectedDate = alertDateFilter
                 ? alertDateFilter.value
                 : 'all';
-
+            // المرور على كل صفوف الجدول
             const rows = document.querySelectorAll('#alertsTableBody tr');
 
             rows.forEach(function (row) {
-                if (!row.dataset.type) {
+                if (!row.dataset.type) { 
                     return;
                 }
-
+            // سحب البيانات المخفية (Data Attributes) من كل صف
                 const rowText = row.innerText.toLowerCase();
-                const rowType = row.dataset.type;
+                const rowType = row.dataset.type; // تسحب نوع التنبيه من الـ HTML
                 const rowRead = row.dataset.read;
                 const rowDateType = row.dataset.dateType;
 
@@ -993,7 +974,9 @@
                         : 'none';
             });
         }
-
+            // ---------------------------------------------------------
+            // مراقبة الأحداث (Event Listeners): تشغيل الفلترة تلقائياً
+            // ---------------------------------------------------------
         if (alertSearchInput) {
             alertSearchInput.addEventListener('keyup', filterAlertsTable);
         }
@@ -1009,7 +992,9 @@
         if (alertDateFilter) {
             alertDateFilter.addEventListener('change', filterAlertsTable);
         }
-
+        // ---------------------------------------------------------
+        // دالة زر (العرض): سحب البيانات وعرضها في نافذة منبثقة (Modal)
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-view-alert').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('viewAlertTitle').innerText = this.dataset.title || 'N/A';
@@ -1024,7 +1009,9 @@
                 document.getElementById('alertViewModal').style.display = 'flex';
             });
         });
-
+        // ---------------------------------------------------------
+        // دالة زر (الحذف) في الجدول: تحضير الفورم للحذف وتجنب الأخطاء الكارثية
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-alert').forEach(function (button) {
             button.addEventListener('click', function () {
                 alertDeleteForm = this.closest('form');
@@ -1035,13 +1022,15 @@
                 document.getElementById('alertDeleteModal').style.display = 'flex';
             });
         });
-
+        // ---------------------------------------------------------
+        // دالة زر (تأكيد الحذف) داخل النافذة المنبثقة
+        // ---------------------------------------------------------
         const confirmAlertDeleteButton = document.getElementById('confirmAlertDeleteButton');
 
         if (confirmAlertDeleteButton) {
             confirmAlertDeleteButton.addEventListener('click', function () {
                 if (alertDeleteForm) {
-                    alertDeleteForm.submit();
+                    alertDeleteForm.submit(); // إرسال طلب الحذف الفعلي للسيرفر
                 }
             });
         }

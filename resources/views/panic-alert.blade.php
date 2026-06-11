@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Panic Alert</title>
 
     <style>
@@ -58,6 +59,7 @@
             align-items: center;
             margin-bottom: 10px;
         }
+        
         .top-right {
             display: flex;
             align-items: center;
@@ -136,32 +138,10 @@
             display: block;
         }
 
-        .icon.heart svg {
-            color: #ff5a5a;
-        }
-
         .title {
             font-size: 15px;
             font-weight: 600;
             color: #202020;
-        }
-
-        .sub {
-            font-size: 13px;
-            color: #777;
-            margin-top: 2px;
-        }
-
-        .arrow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .arrow svg {
-            width: 18px;
-            height: 18px;
         }
 
         .switch {
@@ -211,17 +191,17 @@
 </head>
 <body>
 
+    @php
+        // جلب الإعدادات مباشرة لمنع أي خطأ
+        $userSettings = \App\Models\NotificationSetting::where('user_id', auth()->id())->get()->keyBy('notification_type');
+    @endphp
+
     <div class="mobile-screen">
         <div class="content">
 
             <div class="top-bar">
-            
-
                 <div class="top-right">
-                    <div class="status-icon">
-                
-                    </div>
-                  
+                    <div class="status-icon"></div>
                 </div>
             </div>
 
@@ -237,7 +217,6 @@
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Taif">
             </div>
 
-            <!-- Panic Alerts Switch -->
             <div class="card" style="cursor: default;">
                 <div class="left">
                     <div class="icon">
@@ -248,51 +227,53 @@
                                   stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                         </svg>
                     </div>
-
                     <div class="title">Panic Alerts</div>
                 </div>
-<div class="switch {{ (optional($userSettings->get('panic'))->is_enabled ?? true) ? 'active' : '' }}" 
-     onclick="toggleSetting(this)" 
-     data-type="panic" 
-     data-field="is_enabled">
-</div>
 
-<meta name="csrf-token" content="{{ csrf_token() }}">
+                <div class="switch {{ (optional($userSettings->get('panic'))->is_enabled ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" 
+                     data-type="panic" 
+                     data-field="is_enabled">
+                </div>
+            </div>
 
-<script>
-    function toggleSetting(el) {
-        // 1. تغيير شكل الزر بصرياً
-        el.classList.toggle('active');
-        let isActive = el.classList.contains('active') ? 1 : 0;
-        
-        let typeVal = el.getAttribute('data-type');
-        let fieldVal = el.getAttribute('data-field');
-        let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        </div>
+    </div>
 
-        // 2. إرسال الطلب للسيرفر
-        fetch("{{ route('settings.toggle') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify({
-                type: typeVal,
-                field: fieldVal,
-                status: isActive
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('تم التحديث:', data);
-        })
-        .catch(error => {
-            console.error('خطأ:', error);
-            // إرجاع الزر لوضعه السابق لو فشل الاتصال
+    <script>
+        function toggleSetting(el) {
+            // 1. تغيير شكل الزر بصرياً
             el.classList.toggle('active');
-        });
-    }
-</script>
+            let isActive = el.classList.contains('active') ? 1 : 0;
+            
+            let typeVal = el.getAttribute('data-type');
+            let fieldVal = el.getAttribute('data-field');
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // 2. إرسال الطلب للسيرفر
+            fetch("{{ route('settings.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    type: typeVal,
+                    field: fieldVal,
+                    status: isActive
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('تم التحديث:', data);
+            })
+            .catch(error => {
+                console.error('خطأ:', error);
+                // إرجاع الزر لوضعه السابق لو فشل الاتصال
+                el.classList.toggle('active');
+            });
+        }
+    </script>
 
 </body>
 </html>

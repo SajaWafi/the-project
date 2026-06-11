@@ -370,7 +370,10 @@
     <div class="card profile-card">
         <div class="profile-left">
             <div class="avatar">
-            <img src="{{ asset('images/child.png') }}" alt="child">
+             <img 
+                            src="{{ !empty(auth()->user()->profile_image) ? asset('storage/' . auth()->user()->profile_image) : asset('images/default-user.png') }}"
+                            alt="Profile"
+                        >
         </div>
             <div>
                 <p class="child-name">{{ $report['child']['name'] }}</p>

@@ -121,8 +121,17 @@ class WorkplaceController extends Controller
         $doctorProfile = Auth::user()->doctorProfile;
 
         $workplace = Workplace::where('doctor_id', $doctorProfile->id)->findOrFail($id);
+
+        // هنا نقطة التفتيش: لو العيادة عندها مواعيد، نمنعوه من الحذف!
+        if ($workplace->appointments()->exists()) {
+            return back()->withErrors([
+                'error' => 'Sorry, you cannot delete this clinic as there are active appointments associated with it. Please cancel the appointments first.'
+            ]);
+        }
+
+        // لو مافيهاش مواعيد، نمسحوها عادي
         $workplace->delete();
 
-        return back()->with('success', 'Workplace deleted');
+        return back()->with('success', 'The clinic was successfully deleted.');
     }
 }

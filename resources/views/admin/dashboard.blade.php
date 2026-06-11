@@ -455,15 +455,9 @@
         );
     }
 
-<<<<<<< Updated upstream
+
     // تم تعديل اسم المتغير هنا ليتطابق مع الكنترولر
     const complaintsData = @json($complaintsData ?? []);
-=======
-
-  
-
-  const complaintsData = @json($complaintsChartData);
->>>>>>> Stashed changes
 
     new Chart(ctxComplaints, {
         type: 'bar',
@@ -527,6 +521,8 @@
             }
         }
     });
+
+    
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <script>

@@ -55,7 +55,6 @@ class ParentRequestController extends Controller
             return back()->withErrors(['parent' => 'Parent profile not found.']);
         }
 
-        // التأكد إن الطلب مبعوث لهذا الأب بالذات
         $requestItem = DoctorRequest::where('id', $id)
             ->where('parent_id', $parent->id)
             ->where('status', 'pending')
@@ -67,23 +66,30 @@ class ParentRequestController extends Controller
             return back()->withErrors(['child' => 'No child found for this parent.']);
         }
 
-        // التأكد إن العلاقة مش موجودة مسبقاً لتجنب التكرار
-        $alreadyLinked = DB::table('child_doctor')
-            ->where('child_id', $child->id)
-            ->where('doctor_id', $requestItem->doctor_id)
-            ->exists();
+        // استخدام الـ Try-Catch مع الـ Transaction لحماية قاعدة البيانات
+        try {
+            DB::transaction(function () use ($child, $requestItem) {
+                
+                $alreadyLinked = DB::table('child_doctor')
+                    ->where('child_id', $child->id)
+                    ->where('doctor_id', $requestItem->doctor_id)
+                    ->exists();
 
-        // إنشاء الرابط بين الطفل والدكتور
-        if (!$alreadyLinked) {
-            DB::table('child_doctor')->insert([
-                'child_id' => $child->id,
-                'doctor_id' => $requestItem->doctor_id,
-            ]);
+                if (!$alreadyLinked) {
+                    DB::table('child_doctor')->insert([
+                        'child_id' => $child->id,
+                        'doctor_id' => $requestItem->doctor_id,
+                    ]);
+                }
+
+                $requestItem->update(['status' => 'accepted']);
+            });
+
+            return back()->with('success', 'تم قبول طلب الدكتور بنجاح وتم ربط الطفل.');
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'حدث خطأ أثناء معالجة الطلب، الرجاء المحاولة لاحقاً.']);
         }
-
-        $requestItem->update(['status' => 'accepted']);
-
-        return back()->with('success', 'تم قبول طلب الدكتور بنجاح وتم ربط الطفل.');
     }
 
     // 3. دالة رفض الطلب

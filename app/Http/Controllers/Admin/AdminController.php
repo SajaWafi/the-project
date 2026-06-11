@@ -60,7 +60,7 @@ class AdminController extends Controller
         // doctor approval stats
         $approvalStats = DoctorProfile::select('approval_status', DB::raw('count(*) as total'))
             ->groupBy('approval_status')
-            ->pluck('total', 'approval_status')
+            ->pluck('total', 'approval_status') //دالة سحرية في لارافيل، تفلتر النتيجة المعقدة وتحولها لمصفوفة بسيطة جد
             ->toArray();
 
         // Send data to view

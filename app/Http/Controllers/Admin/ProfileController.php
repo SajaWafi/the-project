@@ -77,10 +77,21 @@ class ProfileController extends Controller
     }
 
     // حذف الحساب
-    public function destroy(Request $request)
+  public function destroy(Request $request)
     {
         $admin = Auth::user();
-        
+
+        // 1. نعدوا قداش فيه مدير في النظام توا
+        $adminCount = \App\Models\User::where('role', 'admin')->count();
+
+        // 2. لو هو أدمن، وهو الوحيد اللي قاعد، نمنعوا الحذف ونرجعوه برسالة خطأ
+        if ($admin->role === 'admin' && $adminCount <= 1) {
+            return back()->withErrors([
+                'error' => 'Sorry, you cannot delete your account. At least one administrator must remain in the innovation system.'
+            ]);
+        }
+
+        // 3. لو تخطى الشرط (يعني في مدراء غيره)، يكمل ينفذ كودك الأساسي للحذف
         Auth::logout();
         $admin->delete();
 

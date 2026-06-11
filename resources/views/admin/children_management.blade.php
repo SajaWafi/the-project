@@ -601,19 +601,7 @@
 
             <div class="admin-status-wrapper">
                 <div class="admin-status-text">
-                    <div class="admin-status-title">
-                        Admin Panel
-                    </div>
-
-                    <small class="admin-online-status">
-                        <i class="fas fa-circle me-1"></i>
-                        Online
-                    </small>
                 </div>
-
-                <button class="admin-logout-button">
-                    <i class="fas fa-sign-out-alt text-danger"></i>
-                </button>
             </div>
         </div>
 
@@ -651,6 +639,7 @@
                 <tbody id="childrenTableBody">
                     @forelse($children as $child)
                     @php
+                    //?-> :هذا يسمى الـ (Nullsafe Operator) وهو ميزة في PHP 8. وظيفتها حماية النظام من الانهيار (Error 500)
                         $user = $child->parentProfile?->user;
 
                         $childFullName = $child->name; // اسم الطفل من جدول الأطفال مباشرة
@@ -709,6 +698,7 @@
 
                             <td>
                                 <div class="children-action-buttons">
+                                  <!-- زر العرض -->
                                     <button
                                         type="button"
                                         class="children-action-button children-action-view js-view-children"
@@ -720,7 +710,7 @@
                                     >
                                         <i class="fas fa-eye"></i>
                                     </button>
-
+                                    <!-- زر التعديل -->
                                     <button
                                         type="button"
                                         class="children-action-button children-action-edit js-edit-children"
@@ -741,7 +731,7 @@
                                     >
                                         @csrf
                                         @method('DELETE')
-
+                                        <!-- زر الحذف -->
                                         <button
                                             type="button"
                                             class="children-action-button children-action-delete js-delete-children"
@@ -970,11 +960,15 @@
     </div>
 
 <script>
+    //  [متغير عام]: ذاكرة مؤقتة لحفظ فورم الحذف ومنع الأخطاء الكارثية
     let childrenDeleteForm = null;
 
-    // search 
+    // ---------------------------------------------------------
+    // 1. دالة البحث الفوري (Client-Side Live Search)
+    // ---------------------------------------------------------
     const childrenSearchInput = document.getElementById('childrenSearchInput');
     if (childrenSearchInput) {
+        // حدث keyup: يشتغل مع كل حرف ينكتب في الكيبورد
         childrenSearchInput.addEventListener('keyup', function () {
             const searchTerm = this.value.toLowerCase();
             const childrenRows = document.querySelectorAll('#childrenTableBody tr');
@@ -984,10 +978,14 @@
         });
     }
 
-    // view 
+    // ---------------------------------------------------------
+    // 2. دالة عرض التفاصيل (View Modal Population)
+    // ---------------------------------------------------------
     document.querySelectorAll('.js-view-children').forEach(function (button) {
         button.addEventListener('click', function () {
-            const d = this.dataset;
+            const d = this.dataset;// [Clean Code]: تخزين الـ dataset في متغير قصير لتجنب التكرار
+             
+             // حقن البيانات في النافذة المنبثقة (DOM Manipulation)
             document.getElementById('viewchildrenName').innerText = d.name || 'N/A';
             document.getElementById('viewParentName').innerText = d.parentName || 'N/A';
             document.getElementById('viewAutismLevel').innerText = d.autismLevel || 'N/A';
@@ -1000,17 +998,19 @@
         });
     });
 
-    // edit 
+    // ---------------------------------------------------------
+    // 3. دالة التعديل الذكية (Dynamic Route Action)
+    // ---------------------------------------------------------
    document.querySelectorAll('.js-edit-children').forEach(function (button) {
     button.addEventListener('click', function () {
         const d = this.dataset;
         console.log("تجهيز بيانات التعديل للطفل:", d.id);
-
+    //  [Error Handling]: استخدام try-catch لاصطياد أي خطأ في الجافاسكربت ومنع توقف الصفحة
         try {
             const form = document.getElementById('childrenUpdateForm');
             
             if(form) form.action = '/admin/children/' + d.id;
-
+    //  [Arrow Function]: دالة مساعدة لتقليل تكرار كود الـ getElementById (مبدأ DRY)
             const setVal = (id, val) => {
                 const el = document.getElementById(id);
                 if (el) el.value = val || '';
@@ -1029,7 +1029,9 @@
     });
     });
     
-    // delet
+    // ---------------------------------------------------------
+    // 4. دالة الحذف الآمن (Safe Deletion Flow)
+    // ---------------------------------------------------------
     document.querySelectorAll('.js-delete-children').forEach(function (button) {
         button.addEventListener('click', function () {
             childrenDeleteForm = this.closest('form');
@@ -1038,11 +1040,13 @@
             document.getElementById('childrenDeleteModal').style.display = 'flex';
         });
     });
-
+    // تنفيذ الحذف الفعلي بعد التأكيد
     document.getElementById('confirmChildrenDeleteButton').addEventListener('click', function () {
         if (childrenDeleteForm) childrenDeleteForm.submit();
     });
-
+    // ---------------------------------------------------------
+    // 5. دوال إغلاق النوافذ (UX Polish)
+    // ---------------------------------------------------------
     function closeAdminModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
     }

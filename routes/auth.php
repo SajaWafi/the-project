@@ -27,12 +27,16 @@ Route::get('/', function () {
         if ($user->role === 'admin') {
             $dashboard = route('admin.dashboard');
         } elseif ($user->role === 'parent') {
-            $dashboard = route('parents.home');
+            $dashboard = route('home');
         } elseif ($user->role === 'doctor') {
-            if ($user->doctorProfile && $user->doctorProfile->approval_status === 'approved') {
-                $dashboard = route('doctor.home');
-            } else {
-                $dashboard = route('doctor.pending.approval');
+            if ($user->doctorProfile) {
+                if ($user->doctorProfile->approval_status === 'approved') {
+                    $dashboard = route('doctor.home');
+                } elseif (in_array($user->doctorProfile->approval_status, ['rejected', 'suspended'])) {
+                    $dashboard = route('doctor.rejected');
+                } else {
+                    $dashboard = route('doctor.pending.approval');
+                }
             }
         }
     }
@@ -48,6 +52,20 @@ Route::get('/welcome-second', function () {
 Route::get('/doctor/pending-approval', function () {
     return view('doctor.pending-approval');
 })->name('doctor.pending.approval');
+
+// مسار صفحة الدكتور المرفوض أو المعطل
+// مسار صفحة الدكتور المرفوض أو المعطل
+Route::get('/doctor/rejected', function () {
+    $status = 'rejected'; // قيمة افتراضية احتياطية
+
+    // لو الدكتور مسجل دخوله، نجيبوا حالته الفعلية من الداتا بيز
+    if (Auth::check() && Auth::user()->doctorProfile) {
+        $status = Auth::user()->doctorProfile->approval_status;
+    }
+
+    // نبعتوا المتغير للصفحة باستخدام compact
+    return view('doctor.rejected', compact('status'));
+})->name('doctor.rejected');
 
 
 // =======================
@@ -66,11 +84,10 @@ Route::get('/login', function () {
         }
 
         if ($user->role === 'doctor') {
-            if (!$user->doctorProfile || $user->doctorProfile->approval_status !== 'approved') {
-                Auth::logout();
-                return redirect()->route('login.page')->withErrors([
-                    'email' => 'Your doctor account is waiting for admin approval.',
-                ]);
+            if (!$user->doctorProfile || $user->doctorProfile->approval_status === 'pending') {
+                return redirect()->route('doctor.pending.approval');
+            } elseif (in_array($user->doctorProfile->approval_status, ['rejected', 'suspended'])) {
+                return redirect()->route('doctor.rejected');
             }
             return redirect()->route('doctor.home');
         }
@@ -104,18 +121,14 @@ Route::post('/login', function (Request $request) {
     }
 
     if ($user->role === 'parent') {
-        return redirect()->route('parents.home');
+        return redirect()->route('home');
     }
 
     if ($user->role === 'doctor') {
-        if (!$user->doctorProfile || $user->doctorProfile->approval_status !== 'approved') {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return back()->withErrors([
-                'email' => 'Your doctor account is waiting for admin approval.',
-            ])->onlyInput('email');
+        if (!$user->doctorProfile || $user->doctorProfile->approval_status === 'pending') {
+            return redirect()->route('doctor.pending.approval');
+        } elseif (in_array($user->doctorProfile->approval_status, ['rejected', 'suspended'])) {
+            return redirect()->route('doctor.rejected');
         }
         return redirect()->route('doctor.home');
     }
@@ -128,12 +141,12 @@ Route::post('/login', function (Request $request) {
 
 
 // =======================
-// Protected Home Pages
+// حماية الصفحات (Protected Routes)
 // =======================
 Route::get('/parents/home', function () {
     if (!Auth::check()) return redirect()->route('login.page');
     if (Auth::user()->role !== 'parent') abort(403);
-    return view('parents.home');
+    return view('home');
 })->name('parents.home');
 
 
@@ -236,7 +249,7 @@ Route::post('/step2', function (Request $request) {
     $code = rand(100000, 999999);
     $user->update([
         'email_verification_code' => $code,
-        'email_verification_code_expires_at' => now()->addMinutes(10),
+        'email_verification_code_expires_at' => now()->addMinutes(5),
     ]);
 
     Mail::to($user->email)->send(new VerificationCodeMail($code));
