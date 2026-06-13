@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Alert Sounds</title>
 
     <style>
@@ -61,7 +62,6 @@
             margin-bottom: 10px;
         }
 
-     
         .top-right {
             display: flex;
             align-items: center;
@@ -181,17 +181,17 @@
 </head>
 <body>
 
+    @php
+        // جلب الإعدادات لتحديد حالة الأزرار
+        $userSettings = \App\Models\NotificationSetting::where('user_id', auth()->id())->get()->keyBy('notification_type');
+    @endphp
+
     <div class="mobile-screen">
         <div class="content">
 
             <div class="top-bar">
-              
-
                 <div class="top-right">
-                    <div class="status-icon">
-                     
-                    </div>
-                    
+                    <div class="status-icon"></div>
                 </div>
             </div>
 
@@ -211,56 +211,99 @@
 
             <div class="sound-row">
                 <span>Sound</span>
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('warning'))->has_sound ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="warning" data-field="has_sound"></div>
             </div>
 
             <div class="sound-row">
                 <span>Vibrate</span>
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('warning'))->has_vibrate ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="warning" data-field="has_vibrate"></div>
             </div>
 
             <div class="section-chip">Alerts</div>
 
             <div class="sound-row">
                 <span>Sound</span>
-                <div class="switch" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('alert'))->has_sound ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="alert" data-field="has_sound"></div>
             </div>
 
             <div class="sound-row">
                 <span>Vibrate</span>
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('alert'))->has_vibrate ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="alert" data-field="has_vibrate"></div>
             </div>
 
             <div class="section-chip">Appointment</div>
 
             <div class="sound-row">
                 <span>Sound</span>
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('appointment'))->has_sound ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="appointment" data-field="has_sound"></div>
             </div>
 
             <div class="sound-row">
                 <span>Vibrate</span>
-                <div class="switch" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('appointment'))->has_vibrate ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="appointment" data-field="has_vibrate"></div>
             </div>
 
             <div class="section-chip">Doctors Messages</div>
 
             <div class="sound-row">
                 <span>Sound</span>
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('chat'))->has_sound ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="chat" data-field="has_sound"></div>
             </div>
 
             <div class="sound-row">
                 <span>Vibrate</span>
-                <div class="switch" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('chat'))->has_vibrate ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="chat" data-field="has_vibrate"></div>
             </div>
 
         </div>
     </div>
 
     <script>
-        function toggleSwitch(el) {
+        function toggleSetting(el) {
             el.classList.toggle('active');
+            
+            let isActive = el.classList.contains('active') ? 1 : 0;
+            let typeVal = el.getAttribute('data-type');
+            let fieldVal = el.getAttribute('data-field');
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // لمسة UX إضافية: لو اختار اهتزاز (Vibrate)، التليفون يهتز كنوع من التأكيد
+            if (isActive === 1 && fieldVal === 'has_vibrate') {
+                if (navigator.vibrate) {
+                    navigator.vibrate(150);
+                }
+            }
+
+            fetch("{{ route('settings.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    type: typeVal,
+                    field: fieldVal,
+                    status: isActive
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    console.log('Saved:', typeVal, fieldVal, isActive);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                el.classList.toggle('active'); // إرجاع الزر لحالته لو صار خطأ في النت
+            });
         }
     </script>
 

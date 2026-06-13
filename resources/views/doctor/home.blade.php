@@ -460,7 +460,6 @@
                 @forelse($workplaces as $workplace)
                     <div class="workplace-pill">
                         <div class="workplace-name">{{ $workplace->place_name }}</div>
-
                         <div class="workplace-meta">
                             {{ is_array($workplace->days) ? implode(' - ', $workplace->days) : '' }}
                         </div>

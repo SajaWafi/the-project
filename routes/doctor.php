@@ -25,7 +25,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/settings', fn() => view('doctor.settings'))->name('settings');
     Route::get('/doctor-profile', fn() => view('doctor.doctor-profile'))->name('doctor-profile');
-    Route::get('/privacy', fn() => view('doctor.privacy'))->name('privacy');
+   // Route::get('/privacy', fn() => view('doctor.privacy'))->name('privacy');
 
     /*
     |--------------------------------------------------------------------------
@@ -121,3 +121,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/parent/requests/{id}/accept', [ParentRequestController::class, 'accept'])->name('parent.requests.accept');
     Route::post('/parent/requests/{id}/reject', [ParentRequestController::class, 'reject'])->name('parent.requests.reject');
 });
+
+Route::get('/privacy', function () {
+    return view('doctor.privacy');
+})->name('privacy');

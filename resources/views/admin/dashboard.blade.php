@@ -460,7 +460,6 @@
     // تم تعديل اسم المتغير هنا ليتطابق مع الكنترولر
     const complaintsData = @json($complaintsData ?? []);
 
-
     new Chart(ctxComplaints, {
         type: 'bar',
         data: {
@@ -523,6 +522,8 @@
             }
         }
     });
+
+    
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <script>

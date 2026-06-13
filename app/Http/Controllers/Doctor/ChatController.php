@@ -7,7 +7,7 @@ use App\Models\Conversation;
 use App\Models\DoctorProfile;
 use App\Models\Message;
 use App\Models\ParentProfile;
-use App\Models\Notification; // تم إضافة مودل الإشعارات هنا
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -30,13 +30,13 @@ class ChatController extends Controller
         if (!$linkedChild) {
             abort(404, 'Parent is not linked to this doctor.');
         }
-
-        $conversation = Conversation::firstOrCreate([
+        //إنشاء المحادثة
+        $conversation = Conversation::firstOrCreate([ //لمنع إنشاء أكثر من محادثة لنفس الدكتور وولي الأمر.
             'doctor_id' => $doctor->id,
             'parent_id' => $parent->id,
             'child_id'  => $linkedChild->id,
         ]);
-
+        //جلب الرسائل
         $messages = Message::where('conversation_id', $conversation->id)
             ->orderBy('created_at', 'asc')
             ->get();
@@ -82,7 +82,7 @@ class ChatController extends Controller
             if (!$linkedChild) {
                 return response()->json(['message' => 'Parent is not linked to this doctor.'], 404);
             }
-
+            //التحقق من وجود رسالة أو ملف
             if (!$request->filled('message') && !$request->hasFile('file')) {
                 return response()->json(['message' => 'Message or file is required.'], 422);
             }

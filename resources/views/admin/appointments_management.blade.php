@@ -489,23 +489,8 @@
 
             <div class="admin-status-wrapper">
                 <div class="admin-status-text">
-                    <div class="admin-status-title">
-                        Admin Panel
-                    </div>
-
-                    <small class="admin-online-status">
-                        <i class="fas fa-circle me-1"></i>
-                        Online
-                    </small>
                 </div>
 
-                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                    @csrf
-
-                    <button type="submit" class="admin-logout-button">
-                        <i class="fas fa-sign-out-alt text-danger"></i>
-                    </button>
-                </form>
             </div>
         </div>
 
@@ -567,6 +552,7 @@
                 <tbody id="appointmentTableBody">
                     @forelse($appointments as $appointment)
                         @php
+                //استخدام '??' (Null Coalescing) يحمي النظام من الانهيار في حال كان هناك حقل مفقود (Defensive Programming)
                             $doctorName = trim(
                                 ($appointment->doctor->user->first_name ?? '') . ' ' .
                                 ($appointment->doctor->user->last_name ?? '')
@@ -579,18 +565,20 @@
 
                             $status = $appointment->status ?? 'pending';
 
+                   // دالة match() أسرع وأنظف في كتابة الأكواد من switch-case التقليدية
                             $statusClass = match($status) {
                                 'scheduled' => 'status-scheduled',
                                 'completed' => 'status-completed',
                                 'cancelled' => 'status-cancelled',
                                 default => 'status-pending',
                             };
+                    // استخدام مكتبة Carbon لمعالجة التاريخ في الـ View، وهو تطبيق لمبدأ Data Normalization in UI
 
                             $appointmentDate = \Carbon\Carbon::parse($appointment->date);
                             $dateType = $appointmentDate->isToday()
                                 ? 'today'
                                 : ($appointmentDate->isFuture() ? 'upcoming' : 'past');
-
+                    //: استخدام str_pad يجبر الوقت على الظهور بتنسيق 00:00 (مثل 09:00 بدلاً من 9:0) لتجميل الواجهة
                             $timeText =
                                 str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) . ':' .
                                 str_pad($appointment->from_minute, 2, '0', STR_PAD_LEFT) . ' ' .
@@ -618,6 +606,7 @@
                             </td>
                             <td>
                                 <div class="appointment-action-buttons">
+                                 <!--زر العرض -->  
                                     <button
                                         type="button"
                                         class="appointment-action-button appointment-action-view js-view-appointment"
@@ -632,7 +621,7 @@
                                     >
                                         <i class="fas fa-eye"></i>
                                     </button>
-
+                                        <!-- زر التعديل -->
                                     <button
                                         type="button"
                                         class="appointment-action-button appointment-action-edit js-edit-appointment"
@@ -649,7 +638,7 @@
                                     >
                                         <i class="fas fa-edit"></i>
                                     </button>
-
+                                <!-- زر الحذف -->
                                     <form
                                         action="{{ route('admin.appointments.destroy', $appointment->id) }}"
                                         method="POST"
@@ -904,12 +893,15 @@
     </div>
 
     <script>
+        // 1. ذاكرة مؤقتة لحفظ فورم الحذف
         let appointmentDeleteForm = null;
-
+        // 2. التقاط عناصر الفلترة (بحث، حالة، تاريخ)
         const appointmentSearchInput = document.getElementById('appointmentSearchInput');
         const appointmentStatusFilter = document.getElementById('appointmentStatusFilter');
         const appointmentDateFilter = document.getElementById('appointmentDateFilter');
-
+        // ---------------------------------------------------------
+        // دالة الفلترة الفورية (Client-Side Filtering)
+        // ---------------------------------------------------------
         function filterAppointmentsTable() {
             const searchTerm = appointmentSearchInput
                 ? appointmentSearchInput.value.toLowerCase().trim()
@@ -932,8 +924,8 @@
 
                 const rowText = row.innerText.toLowerCase();
                 const rowStatus = row.dataset.status;
-                const rowDateType = row.dataset.dateType;
-
+                const rowDateType = row.dataset.dateType; // تسحب نوع التاريخ (اليوم، قادم، ماضي)
+                // فحص تطابق الشروط الثلاثة مع بعض
                 const matchesSearch = rowText.includes(searchTerm);
                 const matchesStatus = selectedStatus === 'all' || rowStatus === selectedStatus;
                 const matchesDate = selectedDateType === 'all' || rowDateType === selectedDateType;
@@ -941,7 +933,7 @@
                 row.style.display = matchesSearch && matchesStatus && matchesDate ? '' : 'none';
             });
         }
-
+        // تشغيل الفلترة عند الكتابة أو تغيير القوائم المنسدلة
         if (appointmentSearchInput) {
             appointmentSearchInput.addEventListener('keyup', filterAppointmentsTable);
         }
@@ -953,7 +945,9 @@
         if (appointmentDateFilter) {
             appointmentDateFilter.addEventListener('change', filterAppointmentsTable);
         }
-
+        // ---------------------------------------------------------
+        // دالة عرض التفاصيل (View Modal)
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-view-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('viewAppointmentDoctor').innerText = this.dataset.doctor || 'N/A';
@@ -968,7 +962,9 @@
                 document.getElementById('appointmentViewModal').style.display = 'flex';
             });
         });
-
+        // ---------------------------------------------------------
+        // دالة التعديل الذكية (Dynamic Form Action) 
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-edit-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('editAppointmentDate').value = this.dataset.date || '';
@@ -980,14 +976,16 @@
                 document.getElementById('editToPeriod').value = this.dataset.toPeriod || '';
                 document.getElementById('editAppointmentStatus').value = this.dataset.status || 'pending';
                 document.getElementById('editAppointmentNote').value = this.dataset.note || '';
-
+           //  تغيير رابط الفورم (Action) ديناميكياً ليطابق ID الموعد!
                 document.getElementById('appointmentUpdateForm').action =
                     '/admin/appointments/' + this.dataset.id;
 
                 document.getElementById('appointmentEditModal').style.display = 'flex';
             });
         });
-
+        // ---------------------------------------------------------
+        // دوال الحذف والإغلاق
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
                 appointmentDeleteForm = this.closest('form');

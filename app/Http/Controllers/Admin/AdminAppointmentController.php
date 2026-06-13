@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class AdminAppointmentController extends Controller
 {
+    // ---------------------------------------------------------
+    // دالة العرض: تجيب المواعيد مرتبة زمنياً بذكاء
+    // ---------------------------------------------------------
     public function index()
     {
         $appointments = Appointment::with([
@@ -18,6 +21,7 @@ class AdminAppointmentController extends Controller
                 'workplace',
             ])
             ->orderBy('date')
+            //(Raw SQL): تحويل وقت 12-ساعة (AM/PM) إلى 24-ساعة وهمياً باش يترتبوا صح!
             ->orderByRaw("
                 CASE 
                     WHEN from_period = 'AM' AND from_hour = 12 THEN 0
@@ -69,11 +73,11 @@ class AdminAppointmentController extends Controller
                 'note' => $request->note,
             ]);
 
-            DB::commit();
+            DB::commit(); // حفظ التعديلات نهائياً لو كل شيء تمام
 
             return back()->with('success', 'Appointment updated successfully.');
         } catch (\Throwable $e) {
-            DB::rollBack();
+            DB::rollBack(); // تراجع عن أي تغيير لو صار خطأ برمجي أو فصل السيرفر فجأة
 
             return back()->with('error', $e->getMessage());
         }

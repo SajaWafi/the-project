@@ -9,6 +9,9 @@ use App\Models\Complaint;
 
 class ComplaintController extends Controller
 {
+    // ---------------------------------------------------------
+    // 1. دالة إضافة الشكوى (Store)
+    // ---------------------------------------------------------
     public function store(Request $request)
     {
         $request->validate([
@@ -20,19 +23,23 @@ class ComplaintController extends Controller
             'user_id' => auth()->id(),
             'category' => $request->category,
             'message' => $request->message,
-            'status' => 'pending',
+            'status' => 'pending', //(Default State)
         ]);
 
         return back();
     }
-
+    // ---------------------------------------------------------
+    // 2. دالة العرض (Index)
+    // ---------------------------------------------------------
     public function index()
     {
         $complaints = Complaint::with('user')->latest()->get();
 
         return view('admin.complaints_managment', compact('complaints'));
     }
-
+    // ---------------------------------------------------------
+    // 3. دالة التعديل (Update) 
+    // ---------------------------------------------------------
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -43,13 +50,15 @@ class ComplaintController extends Controller
 
         $complaint->status = $request->status;
         $complaint->save();
-
+    //[JSON Response]: إرجاع النتيجة كـ JSON لأن هذه الدالة تُستدعى عبر الجافاسكربت 
         return response()->json([
             'success' => true,
             'message' => 'Complaint updated successfully'
         ]);
     }
-
+    // ---------------------------------------------------------
+    // 4. دالة الحذف (Destroy)
+    // ---------------------------------------------------------
     public function destroy($id)
     {
         Complaint::findOrFail($id)->delete();

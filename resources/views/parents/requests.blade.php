@@ -301,12 +301,12 @@ body {
                                 <div class="specialty" style="color: #1f567f;">Is sending request</div>
                                 
                                 <div class="actions">
-                                    <form action="{{ route('parents.requests.accept', $request->id) }}" method="POST" style="display:inline;">
+                                    <form action="{{ route('requests.accept', $request->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         <button class="btn-icon" type="submit" style="background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;">accept</button>
                                     </form>
 
-                                    <form action="{{ route('parents.requests.reject', $request->id) }}" method="POST" style="display:inline;">
+                                    <form action="{{ route('requests.reject', $request->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         <button class="btn-icon" type="submit" style="background: #ffebee; color: #c62828; border: 1px solid #ffcdd2;">reject</button>
                                     </form>

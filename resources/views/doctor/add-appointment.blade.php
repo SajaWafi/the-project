@@ -477,7 +477,8 @@
         </div>
     </div>
 </body>
-<script>
+
+<script>/*
     const patients = [
         { id: 1, name: 'Jane Doe' },
         { id: 2, name: 'Ali Salah' },
@@ -554,7 +555,7 @@
     }
 
     parentSelect.addEventListener('change', filterChildren);
-    window.addEventListener('load', filterChildren);
-</script>
+    window.addEventListener('load', filterChildren);*/
+</script> 
 </body>
 </html>

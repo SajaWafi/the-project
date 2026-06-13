@@ -93,7 +93,7 @@
                     <div class="status-title">No Device Found</div>
                     <div class="status-desc">Connect a smart bracelet to start monitoring your child's activities and vital signs.</div>
 
-                    <form action="{{ route('parents.bracelet.connect') }}" method="POST">
+                    <form action="{{ route('bracelet.connect') }}" method="POST">
                         @csrf
                         <div class="input-group">
                             <label class="input-label">Bracelet Serial Number (ID)</label>

@@ -417,19 +417,10 @@
 
             <div class="admin-status-wrapper">
                 <div class="admin-status-text">
-                    <div class="admin-status-title">
-                        Admin Panel
-                    </div>
-
-                    <small class="admin-online-status">
-                        <i class="fas fa-circle me-1"></i>
-                        Online
-                    </small>
+                
                 </div>
 
-                <button class="admin-logout-button">
-                    <i class="fas fa-sign-out-alt text-danger"></i>
-                </button>
+               
             </div>
         </div>
 
@@ -490,7 +481,7 @@
                             );
 
                             $child = $requestItem->parent?->children?->first();
-
+                        //[Match Expression]: ميزة حديثة في PHP 8 لربط الحالة بصنف  CSS مباشرة (أنظف من switch-case)
                             $statusClass = match($requestItem->status) {
                                 'accepted' => 'status-accepted',
                                 'rejected' => 'status-rejected',
@@ -696,7 +687,9 @@
 
         const requestSearchInput = document.getElementById('requestSearchInput');
         const requestStatusFilter = document.getElementById('requestStatusFilter');
-
+        // ---------------------------------------------------------
+        // دالة الفلترة المزدوجة (Multi-criteria Client-Side Filtering)
+        // ---------------------------------------------------------
         function filterRequestsTable() {
             const searchTerm = requestSearchInput
                 ? requestSearchInput.value.toLowerCase().trim()
@@ -705,7 +698,7 @@
             const selectedStatus = requestStatusFilter
                 ? requestStatusFilter.value
                 : 'all';
-
+            // جلب كل صفوف الجدول
             const requestRows = document.querySelectorAll('#requestTableBody tr');
 
             requestRows.forEach(function (row) {
@@ -713,16 +706,16 @@
                     return;
                 }
 
-                const rowText = row.innerText.toLowerCase();
-                const rowStatus = row.dataset.status;
+                const rowText = row.innerText.toLowerCase();// النص المعروض في الصف
+                const rowStatus = row.dataset.status; // حالة الطلب المخفية في data-status
 
                 const matchesSearch = rowText.includes(searchTerm);
                 const matchesStatus = selectedStatus === 'all' || rowStatus === selectedStatus;
-
+                // إظهار الصف فقط إذا تحقق الشرطان معاً (&&)
                 row.style.display = matchesSearch && matchesStatus ? '' : 'none';
             });
         }
-
+        // ربط الأحداث: البحث الفوري مع الكتابة، وتغيير القائمة المنسدلة
         if (requestSearchInput) {
             requestSearchInput.addEventListener('keyup', filterRequestsTable);
         }
@@ -730,7 +723,9 @@
         if (requestStatusFilter) {
             requestStatusFilter.addEventListener('change', filterRequestsTable);
         }
-
+        // ---------------------------------------------------------
+        // دالة عرض التفاصيل (DOM Manipulation)
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-view-request').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('viewRequestDoctor').innerText = this.dataset.doctor || 'N/A';
@@ -742,7 +737,9 @@
                 document.getElementById('requestViewModal').style.display = 'flex';
             });
         });
-
+        // ---------------------------------------------------------
+        // دوال الحذف (Safe Deletion Flow)
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-request').forEach(function (button) {
             button.addEventListener('click', function () {
                 requestDeleteForm = this.closest('form');

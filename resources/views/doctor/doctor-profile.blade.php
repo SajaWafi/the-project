@@ -324,7 +324,7 @@
             </div>
 
             <div class="menu-list">
-                <a href="{{ route('doctor.privacy') }}" class="menu-item">
+                <a href="{{ route('privacy') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="icon-circle">
                             <svg class="menu-icon" viewBox="0 0 24 24" fill="none">

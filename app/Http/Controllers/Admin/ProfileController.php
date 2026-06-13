@@ -57,9 +57,9 @@ class ProfileController extends Controller
             'last_name'             => 'required|string|max:255',
             'email'                 => 'required|email|unique:users,email',
             'phone'                 => 'nullable|string|max:20',
-            'gender'                => 'required|in:Male,Female', // ⬅️ إضافة التحقق من الجنس
-            'password'              => 'required|min:8|same:password_confirmation', // ⬅️ ربط الباسورد بالتأكيد
-            'password_confirmation' => 'required|min:8', // ⬅️ حقل التأكيد
+            'gender'                => 'required|in:Male,Female', 
+            'password'              => 'required|min:8|same:password_confirmation', //  ربط الباسورد بالتأكيد
+            'password_confirmation' => 'required|min:8', //  حقل التأكيد
         ]);
 
         // إنشاء المستخدم الجديد وحفظه في الداتابيز
@@ -68,7 +68,7 @@ class ProfileController extends Controller
         $newAdmin->last_name = $request->last_name;
         $newAdmin->email = $request->email;
         $newAdmin->phone = $request->phone;
-        $newAdmin->gender = $request->gender; // ⬅️ حفظ الجنس
+        $newAdmin->gender = $request->gender; 
         $newAdmin->password = Hash::make($request->password);
         $newAdmin->role = 'admin'; // تعيين الصلاحية كأدمن
         $newAdmin->save();
@@ -77,10 +77,21 @@ class ProfileController extends Controller
     }
 
     // حذف الحساب
-    public function destroy(Request $request)
+  public function destroy(Request $request)
     {
         $admin = Auth::user();
-        
+
+        // 1. نعدوا قداش فيه مدير في النظام توا
+        $adminCount = \App\Models\User::where('role', 'admin')->count();
+
+        // 2. لو هو أدمن، وهو الوحيد اللي قاعد، نمنعوا الحذف ونرجعوه برسالة خطأ
+        if ($admin->role === 'admin' && $adminCount <= 1) {
+            return back()->withErrors([
+                'error' => 'Sorry, you cannot delete your account. At least one administrator must remain in the innovation system.'
+            ]);
+        }
+
+        // 3. لو تخطى الشرط (يعني في مدراء غيره)، يكمل ينفذ كودك الأساسي للحذف
         Auth::logout();
         $admin->delete();
 

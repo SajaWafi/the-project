@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Location Alerts</title>
 
     <style>
@@ -132,40 +133,15 @@
             display: block;
         }
 
-        .icon.red svg {
-            color: #ff5a5a;
-        }
-
-        .icon.green svg {
-            color: #1fc76a;
-        }
-
-        .icon.blue svg {
-            color: #2f80ed;
-        }
-
-        .icon.teal svg {
-            color: #27d0b9;
-        }
+        .icon.red svg { color: #ff5a5a; }
+        .icon.green svg { color: #1fc76a; }
+        .icon.blue svg { color: #2f80ed; }
 
         .title {
             font-size: 15px;
             font-weight: 600;
             color: #202020;
             white-space: nowrap;
-        }
-
-        .right-side {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .small-value {
-            font-size: 12px;
-            font-weight: 500;
-            color: #4a4a4a;
         }
 
         .arrow {
@@ -229,11 +205,15 @@
 </head>
 <body>
 
+    @php
+        // السطر هذا يجيب الإعدادات من الداتابيز مباشرة ويمنع أي إيرور في الصفحة
+        $userSettings = \App\Models\NotificationSetting::where('user_id', auth()->id())->get()->keyBy('notification_type');
+    @endphp
+
     <div class="mobile-screen">
         <div class="content">
 
             <div class="top-bar">
-
                 <div class="top-right">
                     <div class="status-icon">
                         <span></span><span></span><span></span><span></span>
@@ -258,37 +238,30 @@
                 <div class="left">
                     <div class="icon red">
                         <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M12 3a5 5 0 0 0-5 5v3.2c0 .7-.2 1.3-.6 1.8L5 15h14l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a5 5 0 0 0-5-5Z"
-                                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M10 18a2 2 0 0 0 4 0"
-                                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M12 3a5 5 0 0 0-5 5v3.2c0 .7-.2 1.3-.6 1.8L5 15h14l-1.4-2c-.4-.5-.6-1.1-.6-1.8V8a5 5 0 0 0-5-5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 18a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                         </svg>
                     </div>
-
                     <div class="title">Location Alerts</div>
                 </div>
 
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('location'))->is_enabled ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="location" data-field="is_enabled"></div>
             </div>
 
-        <a href="{{ route('safe.zone.settings') }}" class="card" style="text-decoration: none;">
+            <a href="{{ route('safe.zone.settings') }}" class="card" style="text-decoration: none;">
                 <div class="left">
                     <div class="icon green">
                         <svg viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="7" fill="currentColor"/>
                         </svg>
                     </div>
-
                     <div class="title">Safe Zone Settings</div>
                 </div>
 
                 <div class="arrow">
                     <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M9 5L16 12L9 19"
-                            stroke="#e69a4b"
-                            stroke-width="2.2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"/>
+                        <path d="M9 5L16 12L9 19" stroke="#e69a4b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
             </a>
@@ -302,43 +275,66 @@
                             <path d="M12 9v6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                     </div>
-
                     <div class="title">Leave Zone Alert</div>
                 </div>
 
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('leave_zone'))->is_enabled ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="leave_zone" data-field="is_enabled"></div>
             </div>
 
             <div class="card">
                 <div class="left">
                     <div class="icon blue">
                         <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z"
-                                  stroke="currentColor"
-                                  stroke-width="1.8"
-                                  stroke-linejoin="round"/>
-                            <path d="M9.5 10.5l1.5 1.5 3.5-3.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.8"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"/>
+                            <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            <path d="M9.5 10.5l1.5 1.5 3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
-
                     <div class="title">Enter Zone Alert</div>
                 </div>
 
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
+                <div class="switch {{ (optional($userSettings->get('enter_zone'))->is_enabled ?? true) ? 'active' : '' }}" 
+                     onclick="toggleSetting(this)" data-type="enter_zone" data-field="is_enabled"></div>
             </div>
 
-            </div>
         </div>
-
     </div>
 
     <script>
-        function toggleSwitch(el) {
+        function toggleSetting(el) {
+            // تغيير لون الزر في الواجهة
             el.classList.toggle('active');
+            
+            // تحديد المتغيرات
+            let isActive = el.classList.contains('active') ? 1 : 0;
+            let typeVal = el.getAttribute('data-type');
+            let fieldVal = el.getAttribute('data-field');
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // إرسال البيانات للباك إند (لارافيل)
+            fetch("{{ route('settings.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    type: typeVal,
+                    field: fieldVal,
+                    status: isActive
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    console.log('Saved:', typeVal);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // لو فشل الاتصال، يرجع الزر لشكله القديم
+                el.classList.toggle('active');
+            });
         }
     </script>
 

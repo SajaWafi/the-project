@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Hash;
 
 class ParentManagementController extends Controller
 {
+    // ---------------------------------------------------------
+    // 1. دالة العرض (Index)
+    // ---------------------------------------------------------
     public function index()
     {
         $parents = ParentProfile::with(['user', 'children'])
@@ -20,7 +23,9 @@ class ParentManagementController extends Controller
 
         return view('admin.parents_management', compact('parents'));
     }
-
+    // ---------------------------------------------------------
+    // 2. دالة التعديل (Update - تعديل ثلاثي الأبعاد)
+    // ---------------------------------------------------------
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -39,6 +44,7 @@ class ParentManagementController extends Controller
         DB::beginTransaction();
 
         try {
+            // أ. تحديث جدول الـ Users (البيانات الأساسية)
             if ($parent->user) {
                 $parent->user->update([
                     'first_name' => $request->first_name,
@@ -46,11 +52,12 @@ class ParentManagementController extends Controller
                     'phone' => $request->phone,
                 ]);
             }
-
+            // ب. تحديث جدول بروفايل ولي الأمر
             $parent->update([
                 'relation_to_child' => $request->relation_to_child,
             ]);
-
+            // ج. تحديث جدول الأطفال 
+            // 💡 [First Record Assumption]: التعديل يطبق على أول طفل مسجل للأب
             $child = $parent->children->first();
 
             if ($child) {
@@ -70,7 +77,9 @@ class ParentManagementController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
-
+        // ---------------------------------------------------------
+        // 3. دالة الحذف (Destroy)
+        // ---------------------------------------------------------
     public function destroy($id)
     {
         $parent = ParentProfile::with(['user', 'children'])->findOrFail($id);
@@ -93,57 +102,60 @@ class ParentManagementController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
-    public function store(Request $request)
-{
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'phone' => 'nullable|string|max:30',
-        'gender' => 'nullable|in:Male,Female',
-        'password' => 'required|string|min:6',
+        // ---------------------------------------------------------
+        // 4. دالة الإضافة (Store - الإدخال المتسلسل)
+        // ---------------------------------------------------------
+        public function store(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:30',
+            'gender' => 'nullable|in:Male,Female',
+            'password' => 'required|string|min:6',
 
-        'relation_to_child' => 'nullable|string|max:255',
+            'relation_to_child' => 'nullable|string|max:255',
 
-        'child_name' => 'required|string|max:255',
-        'child_gender' => 'nullable|in:Male,Female',
-        'child_birth_date' => 'nullable|date',
-        'autism_level' => 'nullable|in:Mild,Moderate,Severe',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        $user = User::create([
-            'role' => 'parent',
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'gender' => $request->gender,
-            'password' => Hash::make($request->password),
+            'child_name' => 'required|string|max:255',
+            'child_gender' => 'nullable|in:Male,Female',
+            'child_birth_date' => 'nullable|date',
+            'autism_level' => 'nullable|in:Mild,Moderate,Severe',
         ]);
 
-        $parent = ParentProfile::create([
-            'user_id' => $user->id,
-            'relation_to_child' => $request->relation_to_child,
-        ]);
+        DB::beginTransaction();
 
-        Child::create([
-            'parent_id' => $parent->id,
-            'name' => $request->child_name,
-            'gender' => $request->child_gender,
-            'birth_date' => $request->child_birth_date,
-            'autism_level' => $request->autism_level,
-        ]);
+        try {
+            $user = User::create([
+                'role' => 'parent',
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'password' => Hash::make($request->password),
+            ]);
 
-        DB::commit();
+            $parent = ParentProfile::create([
+                'user_id' => $user->id,
+                'relation_to_child' => $request->relation_to_child,
+            ]);
 
-        return back()->with('success', 'Parent and child added successfully.');
-    } catch (\Throwable $e) {
-        DB::rollBack();
+            Child::create([
+                'parent_id' => $parent->id,
+                'name' => $request->child_name,
+                'gender' => $request->child_gender,
+                'birth_date' => $request->child_birth_date,
+                'autism_level' => $request->autism_level,
+            ]);
 
-        return back()->with('error', $e->getMessage());
+            DB::commit();
+
+            return back()->with('success', 'Parent and child added successfully.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return back()->with('error', $e->getMessage());
+        }
     }
-}
-}
+    }

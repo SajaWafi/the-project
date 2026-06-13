@@ -1080,20 +1080,25 @@
 </div>
     <script>
         let parentDeleteForm = null;
-
+        // ---------------------------------------------------------
+        // 1. الفلترة الفورية (Client-Side Live Search)
+        // ---------------------------------------------------------
         const parentSearchInput = document.getElementById('parentSearchInput');
 
         if (parentSearchInput) {
+            //[Event Listener]: التفاعل مع كل حرف يُكتب (keyup) لتقديم استجابة فورية (Zero Latency)
             parentSearchInput.addEventListener('keyup', function () {
                 const searchTerm = this.value.toLowerCase();
                 const parentRows = document.querySelectorAll('#parentTableBody tr');
-
+        //[DOM Manipulation]: إخفاء أو إظهار السطر بناءً على تطابق النص (يبحث في اسم الأب والطفل معاً)
                 parentRows.forEach(function (row) {
                     row.style.display = row.innerText.toLowerCase().includes(searchTerm) ? '' : 'none';
                 });
             });
         }
-
+    // ---------------------------------------------------------
+    // 2. دالة عرض التفاصيل (Composite Data Population)
+    // ---------------------------------------------------------
         document.querySelectorAll('.js-view-parent').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('viewParentName').innerText = this.dataset.name || 'N/A';
@@ -1107,7 +1112,9 @@
                 document.getElementById('parentViewModal').style.display = 'flex';
             });
         });
-
+    // ---------------------------------------------------------
+    // 3. دالة التعديل (Dynamic Form Routing & Pre-filling)
+    // ---------------------------------------------------------
         document.querySelectorAll('.js-edit-parent').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('editParentFirstName').value = this.dataset.firstName || '';
@@ -1117,12 +1124,14 @@
                 document.getElementById('editChildName').value = this.dataset.childName || '';
                 document.getElementById('editChildGender').value = this.dataset.childGender || '';
                 document.getElementById('editAutismLevel').value = this.dataset.autismLevel || '';
-
+        //[Dynamic Action]: تركيب مسار التعديل برمجياً ليتطابق مع ID الأب المختار
                 document.getElementById('parentUpdateForm').action = '/admin/parents/' + this.dataset.id;
                 document.getElementById('parentEditModal').style.display = 'flex';
             });
         });
-
+    // ---------------------------------------------------------
+    // 4. دوال الحذف (Safe Deletion Flow)
+    // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-parent').forEach(function (button) {
             button.addEventListener('click', function () {
                 parentDeleteForm = this.closest('form');
@@ -1139,7 +1148,9 @@
                 parentDeleteForm.submit();
             }
         });
-
+    // ---------------------------------------------------------
+    // 5. دوال التحكم بنوافذ الـ Modals (UX Polish)
+    // ---------------------------------------------------------
         function closeAdminModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }

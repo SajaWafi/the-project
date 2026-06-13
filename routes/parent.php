@@ -104,8 +104,7 @@ Route::prefix('parents')->middleware(['auth', 'role:parent'])->group(function ()
 
     // صفحات إعدادات التنبيهات (الواجهات)
     Route::get('/panic-alert', function () {
-    $userSettings = \App\Models\NotificationSetting::where('user_id', auth()->id())->get()->keyBy('notification_type');
-    return view('panic-alert', compact('userSettings'));
+    return view('panic-alert');
 })->name('panic.alert');
     Route::get('/location-alerts', fn() => view('location-alerts'))->name('location.alerts');
     Route::get('/alert-sounds', fn() => view('alert-sounds'))->name('alert.sounds');
@@ -115,39 +114,14 @@ Route::prefix('parents')->middleware(['auth', 'role:parent'])->group(function ()
     | Doctor Requests
     |--------------------------------------------------------------------------
     */
+   /*
+    |--------------------------------------------------------------------------
+    | Doctor Requests
+    |--------------------------------------------------------------------------
+    */
     Route::get('/requests', [ParentRequestController::class, 'index'])->name('requests');
-    // الكود اللي كتبتيه لقبول ورفض الطلبات خليته زي ما هو لأنه يخدم بالـ Closures
-    Route::post('/doctor-requests/{id}/accept', function ($id) {
-        $parent = auth()->user()->parentProfile;
-        if (!$parent) return back()->withErrors(['parent' => 'Parent profile not found.']);
-
-        $requestItem = DoctorRequest::where('parent_id', $parent->id)->where('status', 'pending')->findOrFail($id);
-        $child = $parent->children()->first();
-        if (!$child) return back()->withErrors(['child' => 'No child found for this parent.']);
-
-        $alreadyLinked = DB::table('child_doctor')
-            ->where('child_id', $child->id)
-            ->where('doctor_id', $requestItem->doctor_id)
-            ->exists();
-
-        if (!$alreadyLinked) {
-            DB::table('child_doctor')->insert([
-                'child_id' => $child->id,
-                'doctor_id' => $requestItem->doctor_id,
-            ]);
-        }
-        $requestItem->update(['status' => 'accepted']);
-        return back()->with('success', 'Request accepted successfully.');
-    })->name('requests.accept');
-
-    Route::post('/doctor-requests/{id}/reject', function ($id) {
-        $parent = auth()->user()->parentProfile;
-        if (!$parent) return back()->withErrors(['parent' => 'Parent profile not found.']);
-
-        $requestItem = DoctorRequest::where('parent_id', $parent->id)->where('status', 'pending')->findOrFail($id);
-        $requestItem->update(['status' => 'rejected']);
-        return back()->with('success', 'Request rejected.');
-    })->name('requests.reject');
+    Route::post('/doctor-requests/{id}/accept', [ParentRequestController::class, 'accept'])->name('requests.accept');
+    Route::post('/doctor-requests/{id}/reject', [ParentRequestController::class, 'reject'])->name('requests.reject');
 
     /*
     |--------------------------------------------------------------------------

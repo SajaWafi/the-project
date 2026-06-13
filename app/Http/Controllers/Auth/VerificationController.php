@@ -12,7 +12,7 @@ class VerificationController extends Controller
     // 1. عرض واجهة إدخال الكود
     public function show()
     {
-        return view('auth.verify-email'); // تأكدي إن اسم ملف الـ blade مطابق
+        return view('auth.verify-email'); 
     }
 
     // 2. التحقق من الكود اللي دخله المستخدم
@@ -29,7 +29,7 @@ class VerificationController extends Controller
             return back()->withErrors(['code' => 'Invalid verification code.']);
         }
 
-        // هل الكود منتهي الصلاحية (فاتوا 10 دقايق)؟
+        // هل الكود منتهي الصلاحية ؟
         if (now()->greaterThan($user->email_verification_code_expires_at)) {
             return back()->withErrors(['code' => 'The verification code has expired.']);
         }
@@ -60,7 +60,7 @@ class VerificationController extends Controller
         
         $user->update([
             'email_verification_code' => $code,
-            'email_verification_code_expires_at' => now()->addMinutes(10),
+            'email_verification_code_expires_at' => now()->addMinutes(5),
         ]);
 
         Mail::to($user->email)->send(new VerificationCodeMail($code));

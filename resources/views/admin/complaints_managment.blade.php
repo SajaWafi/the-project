@@ -320,13 +320,13 @@ body {
                 </select>
 
                 <!-- category Filter -->
-                <select id="categoryFilter" class="filter-select">
-                    <option value="">All Categories</option>
-                    <option value="system_error_or_bug">System Error or Bug</option>
-                    <option value="technical_issue">Technical Issue</option>
-                    <option value="parent_dispute">Issue regarding a Parent</option>
-                    <option value="doctor_issue">Issue regarding a Doctor</option>
-                    <option value="general_suggestion">General Suggestion</option>
+               <select id="categoryFilter" class="filter-select">
+                    <option value="all">All Categories</option>
+                    <option value="system error or bug">System Error or Bug</option>
+                    <option value="technical issue">Technical Issue</option>
+                    <option value="parent dispute">Issue regarding a Parent</option>
+                    <option value="doctor issue">Issue regarding a Doctor</option>
+                    <option value="general suggestion">General Suggestion</option>
                     <option value="other">Other</option>
                 </select>
 
@@ -336,11 +336,7 @@ body {
                     class="form-control complaints-search"
                     placeholder="Search..."
                 >
-
             </div>
-
-
-
         </div>
 
         <table class="complaints-table">
@@ -373,7 +369,7 @@ body {
                         ? asset('storage/' . $user->profile_image)
                         : asset('images/default-user.png');
                 @endphp
-
+                <!-- تخزين دور المستخدم و الكاتيجوري في data-attributes مخفية -->
                 <tr 
                     data-role="{{ strtolower($role) }}"
                     data-category="{{ $complaint->category }}"
@@ -426,7 +422,7 @@ body {
                     <td>
 
                         <div class="action-buttons">
-
+                        
                             <button
                                 class="action-btn view-btn js-view-complaint"
                                 data-user="{{ $fullName }}"
@@ -554,130 +550,118 @@ body {
     </div>
 
 </div>
-
 <script>
-
+    // ---------------------------------------------------------
+    // 1. الفلترة الفورية (Client-Side Search & Multi-Filter)
+    // ---------------------------------------------------------
     const searchInput = document.getElementById('complaintSearch');
+    const roleFilter = document.getElementById('roleFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
 
-    searchInput.addEventListener('keyup', function () {
+    function filterComplaintsTable() {
+        // سحب القيم وتوحيد حالة الأحرف (Normalization) لمنع أخطاء الـ Case-Sensitivity
+        const searchValue = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const selectedRole = roleFilter ? roleFilter.value.toLowerCase().trim() : '';
+        const selectedCategory = categoryFilter ? categoryFilter.value.toLowerCase().trim() : 'all';
 
-        const value = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#complaintsTableBody tr');
 
-        document.querySelectorAll('#complaintsTableBody tr').forEach(row => {
+        rows.forEach(row => {
+            // سحب البيانات من الـ Dataset وتوحيدها (Replace _ with space لضمان المطابقة)
+            const rowRole = (row.dataset.role || '').toLowerCase().trim();
+            let rowCategory = (row.dataset.category || '').toLowerCase().trim();
+            rowCategory = rowCategory.replace(/_/g, ' '); //يستخدم (Regex) باش يبدل أي شرطة سفلية _ بمسافة عادية
 
-            row.style.display =
-                row.innerText.toLowerCase().includes(value)
-                ? ''
-                : 'none';
+            const rowText = row.innerText.toLowerCase();
+
+            // 💡 [Logic Conditions]: التحقق من الشروط الثلاثة
+            const matchesSearch = rowText.includes(searchValue);
+            const matchesRole = !selectedRole || selectedRole === 'all' || rowRole === selectedRole;
+            const matchesCategory = selectedCategory === 'all' || rowCategory.includes(selectedCategory);
+
+            // إظهار الصف فقط إذا تحققت الشروط الثلاثة معاً (AND Logic)
+            if (matchesSearch && matchesRole && matchesCategory) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
         });
-    });
+    }
 
+    // ربط الفلترة بالأحداث (Event Listeners)
+    if (searchInput) searchInput.addEventListener('keyup', filterComplaintsTable);
+    if (roleFilter) roleFilter.addEventListener('change', filterComplaintsTable);
+    if (categoryFilter) categoryFilter.addEventListener('change', filterComplaintsTable);
+
+    // ---------------------------------------------------------
+    // 2. دالة عرض التفاصيل (View Modal Population)
+    // ---------------------------------------------------------
     document.querySelectorAll('.js-view-complaint').forEach(button => {
-
         button.addEventListener('click', function () {
-
-            document.getElementById('modalUserName').innerText =
-                this.dataset.user;
-
-            document.getElementById('modalUserRole').innerText =
-                this.dataset.role;
-
-            document.getElementById('modalComplaintMessage').innerText =
-                this.dataset.message;
-
-            document.getElementById('modalComplaintCategory').innerText =
-                this.dataset.category;
+            // 💡 [DOM Manipulation]: حقن بيانات الشكوى من الزر إلى النافذة المنبثقة
+            document.getElementById('modalUserName').innerText = this.dataset.user || 'Unknown';
+            document.getElementById('modalUserRole').innerText = this.dataset.role || 'N/A';
+            document.getElementById('modalComplaintMessage').innerText = this.dataset.message || 'No details provided.';
+            document.getElementById('modalComplaintCategory').innerText = this.dataset.category || 'N/A';
 
             document.getElementById('complaintModal').style.display = 'flex';
         });
     });
 
     function closeComplaintModal() {
-
         document.getElementById('complaintModal').style.display = 'none';
     }
 
-    const roleFilter = document.getElementById('roleFilter');
-    const categoryFilter = document.getElementById('categoryFilter');
+    // ---------------------------------------------------------
+    // 3. تجهيز نافذة التعديل السريع (Update Modal)
+    // ---------------------------------------------------------
+    document.querySelectorAll('.update-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            // تخزين الـ ID الخاص بالشكوى في حقل مخفي (Hidden Input) لاستخدامه لاحقاً في الـ Fetch
+            document.getElementById('complaintId').value = this.dataset.id;
+            document.getElementById('complaintStatus').value = this.dataset.status;
 
-    function filterComplaints() {
-
-        const selectedRole = roleFilter.value;
-        const selectedCategory = categoryFilter.value;
-
-        const rows = document.querySelectorAll('#complaintsTableBody tr');
-
-        rows.forEach(row => {
-
-            const role = row.dataset.role;
-            const category = row.dataset.category;
-
-            const roleMatch =
-                !selectedRole || role === selectedRole;
-
-            const categoryMatch =
-                !selectedCategory || category === selectedCategory;
-
-            if (roleMatch && categoryMatch) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-
+            document.getElementById('updateModal').style.display = 'flex';
         });
-    }
-
-    roleFilter.addEventListener('change', filterComplaints);
-    categoryFilter.addEventListener('change', filterComplaints);
-
-   document.querySelectorAll('.update-btn').forEach(button => {
-
-    button.addEventListener('click', function () {
-
-        document.getElementById('complaintId').value =
-            this.dataset.id;
-
-        document.getElementById('complaintStatus').value =
-            this.dataset.status;
-
-        document.getElementById('updateModal').style.display = 'flex';
     });
 
-});
-
     function closeUpdateModal() {
-
         document.getElementById('updateModal').style.display = 'none';
     }
 
-function saveStatus() {
-    const id = document.getElementById('complaintId').value;
-    const status = document.getElementById('complaintStatus').value;
+    // ---------------------------------------------------------
+    // 4. التحديث في الخلفية (AJAX Fetch API) 
+    // ---------------------------------------------------------
+    function saveStatus() {
+        const id = document.getElementById('complaintId').value;
+        const status = document.getElementById('complaintStatus').value;
 
-    fetch(`/admin/complaints/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-            status: status
+        // 💡 [Asynchronous Request]: إرسال البيانات للسيرفر في الخلفية بدون إعادة تحميل الصفحة
+        fetch(`/admin/complaints/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                // 💡 [Security]: إرفاق توكن الحماية لمنع هجمات CSRF
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                status: status
+            })
         })
-    })
-    .then(response => response.json()) // تحويل الاستجابة إلى JSON مباشرة
-    .then(data => {
-        if(data.success) {
-            location.reload(); // إعادة تحميل الصفحة لتحديث الحالة
-        } else {
-            alert("Error: Could not update status.");
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert("An error occurred. Check the console.");
-    });
-}
+        .then(response => response.json()) // 💡 [Data Parsing]: تحويل استجابة السيرفر إلى كائن JSON
+        .then(data => {
+            if(data.success) {
+                location.reload(); // 💡 [State Sync]: إعادة تحميل الصفحة لتحديث الألوان (Badges)
+            } else {
+                alert("Error: Could not update status.");
+            }
+        })
+        .catch(error => {
+            // 💡 [Error Handling]: اصطياد الأخطاء في حال انقطاع النت أو توقف السيرفر
+            console.error('Error:', error);
+            alert("An error occurred. Check the console.");
+        });
+    }
 </script>
-
 </body>
 </html>

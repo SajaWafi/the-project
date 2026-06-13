@@ -317,7 +317,8 @@ body {
 
     @forelse($appointments as $appointment)
     @php
-        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+       $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+       //التحقق هل الموعد اليوم
         $isToday = $appointmentDate->isToday();
 
         $parentName = trim(

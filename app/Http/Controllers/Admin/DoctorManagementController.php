@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Hash;
 
 class DoctorManagementController extends Controller
 {
+    // ---------------------------------------------------------
+    // 1. دالة العرض (Index)
+    // ---------------------------------------------------------
     public function index()
     {
         $doctors = DoctorProfile::with('user')
@@ -20,9 +23,12 @@ class DoctorManagementController extends Controller
         return view('admin.doctors_management', compact('doctors'));
     }
 
-    //update doctor
+    // ---------------------------------------------------------
+    // 2. دالة التعديل 
+    // ---------------------------------------------------------
     public function update(Request $request, $id)
     {
+    //[Database Transaction]: تفعيل المعاملات لأننا سنقوم بتحديث جدولين مختلفين (users و doctor_profiles)
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -30,10 +36,10 @@ class DoctorManagementController extends Controller
         ]);
 
         $doctor = DoctorProfile::with('user')->findOrFail($id);
-
+    //[Database Transaction]: تفعيل المعاملات لأننا سنقوم بتحديث جدولين مختلفين (users و doctor_profiles)
         DB::beginTransaction();
-
         try {
+            // تحديث البيانات في جدول الـ Users (الاسم)
             if ($doctor->user) {
                 $doctor->user->update([
                     'first_name' => $request->first_name,
@@ -55,7 +61,10 @@ class DoctorManagementController extends Controller
         }
     }
 
-    //delete doctor
+    // ---------------------------------------------------------
+    // 3. دالة الحذف (Destroy)
+    // ---------------------------------------------------------
+
     public function destroy($id)
     {
         $doctor = DoctorProfile::with('user')->findOrFail($id);
@@ -66,7 +75,7 @@ class DoctorManagementController extends Controller
             if ($doctor->user) {
                 $doctor->user->delete();
             } else {
-                $doctor->delete();
+                $doctor->delete(); // كود احتياطي (Fallback) لو كان البروفايل يتيم بدون User
             }
 
             DB::commit();
@@ -79,7 +88,10 @@ class DoctorManagementController extends Controller
         }
     }
 
-    //add doctor
+    // ---------------------------------------------------------
+    // 4. دالة الإضافة 
+    // ---------------------------------------------------------
+
     public function store(Request $request)
     {
         $request->validate([
@@ -123,7 +135,10 @@ class DoctorManagementController extends Controller
         }
     }
 
-    //approve doctor
+    // ---------------------------------------------------------
+    // 5. دوال تغيير حالة الموافقة (Approve & Reject)
+    // ---------------------------------------------------------
+
     public function approve($id)
     {
         $doctor = DoctorProfile::findOrFail($id);
@@ -135,7 +150,6 @@ class DoctorManagementController extends Controller
         return back()->with('success', 'Doctor approved successfully.');
     }
 
-    //reject doctor
     public function reject($id)
     {
         $doctor = DoctorProfile::findOrFail($id);
@@ -146,4 +160,5 @@ class DoctorManagementController extends Controller
 
         return back()->with('success', 'Doctor rejected successfully.');
     }
+
 }
