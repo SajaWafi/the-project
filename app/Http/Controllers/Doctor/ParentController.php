@@ -12,19 +12,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ParentController extends Controller
-{
+{    //عرض صفحة أولياء الأمور.
     public function index(Request $request)
-    {
+    {   //يجيب ملف الدكتور الحالي من قاعدة البيانات.
         $doctor = DoctorProfile::where('user_id', auth()->id())->first();
 
         if (!$doctor) {
             return back()->withErrors(['doctor' => 'Doctor profile not found.']);
         }
-
+       // يجلب قيمة البحث.
         $search = trim($request->search ?? '');
 
         $parents = ParentProfile::with(['user', 'children.doctors'])
             ->get()
+            //لإخفاء أولياء الأمور غير المرتبطين بالدكتور الحالي filter
             ->filter(function ($parent) use ($doctor, $search) {
                 $linkedChildren = $parent->children->filter(function ($child) use ($doctor) {
                     return $child->doctors->contains('id', $doctor->id);
@@ -37,19 +38,20 @@ class ParentController extends Controller
                 if ($search === '') {
                     return true;
                 }
-
+            //بحث باسم الأب.
                 $parentName = strtolower(trim(
                     ($parent->user->first_name ?? '') . ' ' . ($parent->user->last_name ?? '')
                 ));
-
+           
                 $matchesParent = str_contains($parentName, strtolower($search));
-
+            //بحث باسم الطفل.
                 $matchesChild = $linkedChildren->contains(function ($child) use ($search) {
                     return str_contains(strtolower($child->name ?? ''), strtolower($search));
                 });
 
                 return $matchesParent || $matchesChild;
             })
+            //تحويل البيانات لشكل جاهز للواجهة. map
             ->map(function ($parent) use ($doctor) {
                 $linkedChild = $parent->children->first(function ($child) use ($doctor) {
                     return $child->doctors->contains('id', $doctor->id);
@@ -76,7 +78,7 @@ class ParentController extends Controller
 
         return view('doctor.parents', compact('parents', 'search'));
     }
-
+    //فتح ملف ولي الأمر
     public function show($id)
     {
         $doctor = DoctorProfile::where('user_id', auth()->id())->first();
@@ -102,7 +104,7 @@ class ParentController extends Controller
         if ($parentName === '') {
             $parentName = 'No Name';
         }
-
+        //حساب العمر
         $childAge = $linkedChild->birth_date
             ? Carbon::parse($linkedChild->birth_date)->age . ' years'
             : 'Not available';
@@ -141,7 +143,7 @@ class ParentController extends Controller
             'doctor' => ['id' => $doctor->id] 
         ]);
     }
-
+    //فتح صفحة المحادثة.
     public function chat($id)
     {
         $doctor = DoctorProfile::where('user_id', auth()->id())->first();
@@ -236,7 +238,9 @@ class ParentController extends Controller
                     'subtitle' => $linkedChild
                         ? $linkedChild->name . "'s parent"
                         : 'No child linked',
-                    'image' => asset('images/child.png'),
+                    'image' => !empty($parent->user->profile_image)
+                    ? asset('storage/' . ltrim($parent->user->profile_image, '/'))
+                    : asset('images/default-user.png'),
                     'profile_url' => route('doctor.parent.profile', ['id' => $parent->id]),
                     'chat_url' => route('doctor.chat', ['parentId' => $parent->id]),
                 ];
@@ -247,7 +251,7 @@ class ParentController extends Controller
             'parents' => $parents,
         ]);
     }
-
+    //إلغاء ربط ولي الأمر بالدكتور.
     public function removeParent($parentId)
     {
         $doctorProfile = auth()->user()->doctorProfile;

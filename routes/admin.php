@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\DoctorRequestManagementController;
 use App\Http\Controllers\Admin\AdminAppointmentController;
 use App\Http\Controllers\Admin\AdminAlertController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\BraceletController;
 
 
 Route::prefix('admin')
@@ -89,6 +90,9 @@ Route::prefix('admin')
 
                 // bracelets managment
                 Route::get('/bracelets', [BraceletController::class, 'index'])->name('bracelets.index');
+    Route::post('/bracelets', [BraceletController::class, 'store'])->name('bracelets.store');
+    Route::put('/bracelets/{id}', [BraceletController::class, 'update'])->name('bracelets.update');
+    Route::delete('/bracelets/{id}', [BraceletController::class, 'destroy'])->name('bracelets.destroy');
 
             //appointmentsMangegment
             Route::get('/appointments', [AdminAppointmentController::class, 'index'])

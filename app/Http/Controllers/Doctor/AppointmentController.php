@@ -48,7 +48,7 @@ class AppointmentController extends Controller
         }
 
         $parents = ParentProfile::with(['user', 'children'])
-            ->whereHas('children.doctors', function ($query) use ($doctorProfile) {
+            ->whereHas('children.doctors', function ($query) use ($doctorProfile) { //wherehas للتأكد من جلب أولياء الأمور المرتبطين فعلاً بالطبيب.
                 $query->where('doctor_profiles.id', $doctorProfile->id);
             })
             ->get();
@@ -65,7 +65,7 @@ class AppointmentController extends Controller
     {
         $request->validate([
             'parent_id' => 'required|exists:parent_profiles,id',
-            'workplace_id' => 'required|exists:workplaces,id',
+            'workplace_id' => 'required|exists:workplaces,id', //exists منع إدخال IDs غير موجودة.
             'date' => 'required|date',
             'from_hour' => 'required|integer|min:1|max:12',
             'from_minute' => 'required|integer|in:0,15,30,45',
@@ -90,6 +90,7 @@ class AppointmentController extends Controller
 
         $child = $parent->children->first(function ($child) use ($doctorProfile) {
             return $child->doctors->contains('id', $doctorProfile->id);
+            //ما وظيفة contains()؟Collectionالتحقق من وجود عنصر داخل 
         });
 
         if (!$child) {

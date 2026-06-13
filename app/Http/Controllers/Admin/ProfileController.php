@@ -57,9 +57,9 @@ class ProfileController extends Controller
             'last_name'             => 'required|string|max:255',
             'email'                 => 'required|email|unique:users,email',
             'phone'                 => 'nullable|string|max:20',
-            'gender'                => 'required|in:Male,Female', // ⬅️ إضافة التحقق من الجنس
-            'password'              => 'required|min:8|same:password_confirmation', // ⬅️ ربط الباسورد بالتأكيد
-            'password_confirmation' => 'required|min:8', // ⬅️ حقل التأكيد
+            'gender'                => 'required|in:Male,Female', 
+            'password'              => 'required|min:8|same:password_confirmation', //  ربط الباسورد بالتأكيد
+            'password_confirmation' => 'required|min:8', //  حقل التأكيد
         ]);
 
         // إنشاء المستخدم الجديد وحفظه في الداتابيز
@@ -68,7 +68,7 @@ class ProfileController extends Controller
         $newAdmin->last_name = $request->last_name;
         $newAdmin->email = $request->email;
         $newAdmin->phone = $request->phone;
-        $newAdmin->gender = $request->gender; // ⬅️ حفظ الجنس
+        $newAdmin->gender = $request->gender; 
         $newAdmin->password = Hash::make($request->password);
         $newAdmin->role = 'admin'; // تعيين الصلاحية كأدمن
         $newAdmin->save();

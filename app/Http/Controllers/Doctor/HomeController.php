@@ -13,7 +13,7 @@ class HomeController extends Controller
         $user = auth()->user();
 
         if (!$user || !$user->doctorProfile) {
-            abort(404, 'Doctor profile not found.');
+            abort(404, 'Doctor profile not found.'); //abort يوقف التنفيذ ويرجع خطأ
         }
 
         $doctorProfile = $user->doctorProfile;
@@ -24,8 +24,9 @@ class HomeController extends Controller
             ->where('doctor_id', $doctorProfile->id)
             ->whereDate('date', '>=', now()->toDateString())
             ->orderBy('date')
+            //لتحويل الوقت إلى صيغة 24 ساعة.
             ->orderByRaw("
-                CASE 
+                CASE  
                     WHEN from_period = 'AM' AND from_hour = 12 THEN 0
                     WHEN from_period = 'AM' THEN from_hour
                     WHEN from_period = 'PM' AND from_hour = 12 THEN 12

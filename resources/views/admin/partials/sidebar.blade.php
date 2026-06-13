@@ -9,15 +9,22 @@
         <div class="admin-sidebar-title">
             TAIF PROJECT
         </div>
-    </div>
+        </div>
 
-    <div class="admin-sidebar-menu">
+        <div class="admin-sidebar-menu">
         <a
             href="{{ route('admin.dashboard') }}"
             class="admin-sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
         >
             <i class="fas fa-th-large"></i>
             <span>Dashboard</span>
+        </a>
+
+        <a href="{{ route('admin.bracelets.index') }}" 
+        class="admin-sidebar-link {{ request()->routeIs('admin.bracelets.*') ? 'active' : '' }}"
+        >
+            <i class="fas fa-microchip"></i>
+            <span>Manage bracelets</span>
         </a>
 
         <a

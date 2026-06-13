@@ -344,11 +344,11 @@
 </div>
 <script>
     const searchInput = document.getElementById('searchInput');
-    const parentsList = document.getElementById('parentsList');
-    const searchUrl = @json(route('doctor.parents.search.ajax'));
+    const parentsList = document.getElementById('parentsList'); //يجلب الـ div الذي ستعرض داخله النتائج.
+    const searchUrl = @json(route('doctor.parents.search.ajax'));//Blade تنفذ route وتضع الرابط داخل JavaScript.
 
     let searchTimeout = null;
-
+//مسؤولة عن إنشاء بطاقات أولياء الأمور وعرضها داخل الصفحة.
     function renderParents(parents) {
         if (!parents.length) {
             parentsList.innerHTML = `
@@ -360,11 +360,15 @@
         }
 
         let html = '';
-
+//ينشئ Card لكل Parent.
         parents.forEach(parent => {
             html += `
                 <div class="parent-card">
-                    <img src="${parent.image}" alt="parent image">
+                    <img
+                    src="${parent.image}"
+                    alt="parent image"
+                    onerror="this.src='/images/default-user.png'"
+                >
 
                     <div class="info">
                         <div class="name">${parent.name}</div>

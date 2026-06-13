@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="header">
-        <a href="javascript:void(0)" class="back-link">‹</a>
+        <a href="#" onclick="history.back(); return false;" class="back-link">‹</a>
         <div class="title">Create Account</div>
     </div>
 
@@ -37,8 +37,8 @@
         <div class="terms">
             <input type="checkbox" name="agree" value="1" {{ old('agree') ? 'checked' : '' }}>
             <div>
-                I agree to the <a href="#">Terms & Conditions</a><br>
-                and <a href="#">Privacy Policy</a>
+                I agree to the Terms & Conditions</a><br>
+                and <a href="{{ route('privacy') }}">Privacy Policy</a>
             </div>
         </div>
 

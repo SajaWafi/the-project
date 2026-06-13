@@ -286,23 +286,30 @@
     </form>
 
     <script>
+        // ---------------------------------------------------------
+        // 1. نظام التبويبات (Tab Navigation - SPA Feel)
+        // ---------------------------------------------------------
         function openTab(evt, tabName) {
+            //[DOM Manipulation]: إخفاء كل محتويات التبويبات أولاً
             let tabPanels = document.getElementsByClassName("tab-panel");
             for (let i = 0; i < tabPanels.length; i++) {
                 tabPanels[i].classList.remove("active");
             }
-
+            // إزالة حالة (النشط) من كل الأزرار
             let tabBtns = document.getElementsByClassName("tab-btn");
             for (let i = 0; i < tabBtns.length; i++) {
                 tabBtns[i].classList.remove("active");
             }
-
+            //[State Update]: إظهار التبويبة المطلوبة وتفعيل الزر الذي تم النقر عليه
             document.getElementById(tabName).classList.add("active");
             evt.currentTarget.classList.add("active");
         }
-
+        // ---------------------------------------------------------
+        // 2. إظهار/إخفاء كلمة المرور (UX Enhancement)
+        // ---------------------------------------------------------
         function togglePassword(inputId, icon) {
             const input = document.getElementById(inputId);
+            //[Attribute Toggling]: تغيير نوع الحقل برمجياً بين password و text
             if (input.type === "password") {
                 input.type = "text";
                 icon.classList.remove('fa-eye-slash');
@@ -313,7 +320,9 @@
                 icon.classList.add('fa-eye-slash');
             }
         }
-
+        // ---------------------------------------------------------
+        // 3. التحكم بالنوافذ المنبثقة (Modal Controls)
+        // ---------------------------------------------------------
         function openLogoutModal() {
             document.getElementById('logoutModal').style.display = 'flex';
         }

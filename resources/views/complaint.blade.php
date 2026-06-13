@@ -163,7 +163,7 @@
                 Please select the category of your issue and provide details. Our administration team will review it.
             </p>
 
-            <form action="{{ route('parent.complaints.store') }}" method="POST">
+            <form action="{{ route('complaints.store') }}" method="POST">
                 @csrf
 
                 <div class="form-group">

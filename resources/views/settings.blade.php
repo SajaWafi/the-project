@@ -487,7 +487,7 @@
                 <div class="section-chip">Support</div>
 
                 <div class="settings-list">
-                    <a href="{{ url('/complaint') }}" class="settings-item">
+                    <a href="{{ route('complaints.create') }}" class="settings-item">
                         <div class="settings-left">
                             <div class="settings-icon">
                                 <svg viewBox="0 0 24 24" fill="none">

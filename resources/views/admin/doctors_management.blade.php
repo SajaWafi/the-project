@@ -604,23 +604,8 @@
 
             <div class="admin-status-wrapper">
                 <div class="admin-status-text">
-                    <div class="admin-status-title">
-                        Admin Panel
-                    </div>
-
-                    <small class="admin-online-status">
-                        <i class="fas fa-circle me-1"></i>
-                        Online
-                    </small>
+                
                 </div>
-
-                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                    @csrf
-
-                    <button type="submit" class="admin-logout-button">
-                        <i class="fas fa-sign-out-alt text-danger"></i>
-                    </button>
-                </form>
             </div>
         </div>
 
@@ -1104,7 +1089,9 @@
 
         const doctorSearchInput = document.getElementById('doctorSearchInput');
         const doctorApprovalFilter = document.getElementById('doctorApprovalFilter');
-
+        // ---------------------------------------------------------
+        // 1. دالة الفلترة المزدوجة (Client-Side Filtering)
+        // ---------------------------------------------------------
         function filterDoctorsTable() {
             const searchTerm = doctorSearchInput
                 ? doctorSearchInput.value.toLowerCase().trim()
@@ -1113,17 +1100,17 @@
             const selectedApproval = doctorApprovalFilter
                 ? doctorApprovalFilter.value
                 : 'all';
-
+        // جلب جميع صفوف الأطباء في الجدول
             const doctorRows = document.querySelectorAll('#doctorTableBody tr');
 
             doctorRows.forEach(function (row) {
                 if (!row.dataset.approval) {
                     return;
                 }
-
+        // سحب النص المعروض في الصف والحالة المخفية في (data-attributes)
                 const rowText = row.innerText.toLowerCase();
                 const rowApproval = row.dataset.approval;
-
+        // التحقق المنطقي: هل يتطابق النص؟ وهل تتطابق الحالة؟
                 const matchesSearch = rowText.includes(searchTerm);
                 const matchesApproval =
                     selectedApproval === 'all' || rowApproval === selectedApproval;
@@ -1139,7 +1126,9 @@
         if (doctorApprovalFilter) {
             doctorApprovalFilter.addEventListener('change', filterDoctorsTable);
         }
-
+    // ---------------------------------------------------------
+    // 2. دالة عرض التفاصيل (View Modal Population)
+    // ---------------------------------------------------------
         document.querySelectorAll('.js-view-doctor').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('viewDoctorName').innerText =
@@ -1160,7 +1149,9 @@
                 document.getElementById('doctorViewModal').style.display = 'flex';
             });
         });
-
+    // ---------------------------------------------------------
+    // 3. دالة التعديل (Dynamic Form Routing)
+    // ---------------------------------------------------------
         document.querySelectorAll('.js-edit-doctor').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('editDoctorFirstName').value =
@@ -1171,18 +1162,20 @@
 
                 document.getElementById('editDoctorSpecialization').value =
                     this.dataset.specialization || '';
-
+    // [Dynamic Action]: تركيب مسار التعديل برمجياً ليتطابق مع الـ ID الخاص بالطبيب المختار
                 document.getElementById('doctorUpdateForm').action =
                     '/admin/doctors/' + this.dataset.id;
 
                 document.getElementById('doctorEditModal').style.display = 'flex';
             });
         });
-
+    // ---------------------------------------------------------
+    // 4. دالة الحذف (Safe Deletion Flow)
+    // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-doctor').forEach(function (button) {
             button.addEventListener('click', function () {
                 doctorDeleteForm = this.closest('form');
-
+    // عرض اسم الدكتور في رسالة التأكيد
                 document.getElementById('deleteDoctorName').innerText =
                     this.dataset.name || 'this doctor';
 
@@ -1191,7 +1184,7 @@
         });
 
         const confirmDoctorDeleteButton = document.getElementById('confirmDoctorDeleteButton');
-
+    // [Programmatic Submission]: إرسال الفورم برمجياً بعد موافقة الأدمن
         if (confirmDoctorDeleteButton) {
             confirmDoctorDeleteButton.addEventListener('click', function () {
                 if (doctorDeleteForm) {
@@ -1199,7 +1192,9 @@
                 }
             });
         }
-
+    // ---------------------------------------------------------
+    // 5. دوال التحكم بالواجهة (UX Polish)
+    // ---------------------------------------------------------
         function closeAdminModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
