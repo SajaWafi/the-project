@@ -20,6 +20,7 @@ class DoctorManagementController extends Controller
         return view('admin.doctors_management', compact('doctors'));
     }
 
+    //update doctor
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -54,6 +55,7 @@ class DoctorManagementController extends Controller
         }
     }
 
+    //delete doctor
     public function destroy($id)
     {
         $doctor = DoctorProfile::with('user')->findOrFail($id);
@@ -76,67 +78,72 @@ class DoctorManagementController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
+
+    //add doctor
     public function store(Request $request)
-{
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'phone' => 'nullable|string|max:30',
-        'gender' => 'nullable|in:Male,Female',
-        'password' => 'required|string|min:6',
-        'specialization' => 'required|string|max:255',
-        'bio' => 'nullable|string|max:1000',
-    ]);
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:30',
+            'gender' => 'nullable|in:Male,Female',
+            'password' => 'required|string|min:6',
+            'specialization' => 'required|string|max:255',
+            'bio' => 'nullable|string|max:1000',
+        ]);
 
-    DB::beginTransaction();
+        DB::beginTransaction();
 
-    try {
-        $user = User::create([
-            'role' => 'doctor',
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'gender' => $request->gender,
-            'password' => Hash::make($request->password),
+        try {
+            $user = User::create([
+                'role' => 'doctor',
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'password' => Hash::make($request->password),
+                'approval_status' => 'approved',
+            ]);
+
+            DoctorProfile::create([
+                'user_id' => $user->id,
+                'specialization' => $request->specialization,
+                'bio' => $request->bio,
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', 'Doctor added successfully.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    //approve doctor
+    public function approve($id)
+    {
+        $doctor = DoctorProfile::findOrFail($id);
+
+        $doctor->update([
             'approval_status' => 'approved',
         ]);
 
-        DoctorProfile::create([
-            'user_id' => $user->id,
-            'specialization' => $request->specialization,
-            'bio' => $request->bio,
+        return back()->with('success', 'Doctor approved successfully.');
+    }
+
+    //reject doctor
+    public function reject($id)
+    {
+        $doctor = DoctorProfile::findOrFail($id);
+
+        $doctor->update([
+            'approval_status' => 'rejected',
         ]);
 
-        DB::commit();
-
-        return back()->with('success', 'Doctor added successfully.');
-    } catch (\Throwable $e) {
-        DB::rollBack();
-
-        return back()->with('error', $e->getMessage());
+        return back()->with('success', 'Doctor rejected successfully.');
     }
-}
-public function approve($id)
-{
-    $doctor = DoctorProfile::findOrFail($id);
-
-    $doctor->update([
-        'approval_status' => 'approved',
-    ]);
-
-    return back()->with('success', 'Doctor approved successfully.');
-}
-
-public function reject($id)
-{
-    $doctor = DoctorProfile::findOrFail($id);
-
-    $doctor->update([
-        'approval_status' => 'rejected',
-    ]);
-
-    return back()->with('success', 'Doctor rejected successfully.');
-}
 }

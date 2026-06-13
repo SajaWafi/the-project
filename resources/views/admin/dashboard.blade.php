@@ -351,6 +351,7 @@
     const registrationData = @json($doctorRegistrationsData);
     const labelsData = @json($daysLabels);
 
+    //doctor registration chart
     const ctx1 = document.getElementById('registrationChart').getContext('2d');
 
     new Chart(ctx1, {
@@ -455,15 +456,10 @@
         );
     }
 
-<<<<<<< Updated upstream
+
     // تم تعديل اسم المتغير هنا ليتطابق مع الكنترولر
     const complaintsData = @json($complaintsData ?? []);
-=======
 
-  
-
-  const complaintsData = @json($complaintsChartData);
->>>>>>> Stashed changes
 
     new Chart(ctxComplaints, {
         type: 'bar',
