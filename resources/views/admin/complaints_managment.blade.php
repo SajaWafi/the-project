@@ -288,380 +288,257 @@ body {
 </style>
 
 <body>
+    @include('admin.partials.sidebar')
 
-  @include('admin.partials.sidebar')
-
-
-<div class="complaints-container">
-
-    <div class="complaints-header">
-        <div>
-            <h3 class="complaints-title">Complaints Management</h3>
-            <div class="complaints-subtitle">
-                Manage all complaints from doctors and parents
-            </div>
-        </div>
-    </div>
-
-    <div class="complaints-card">
-
-        <div class="complaints-table-header">
-            <h6 class="complaints-table-title">
-                Complaints Directory
-            </h6>
-
-            <div style="display:flex; gap:15px; margin-bottom:20px;">
-
-                <!-- role Filter -->
-                <select id="roleFilter" class="filter-select">
-                    <option value="">All Roles</option>
-                    <option value="doctor">Doctor</option>
-                    <option value="parent">Parent</option>
-                </select>
-
-                <!-- category Filter -->
-               <select id="categoryFilter" class="filter-select">
-                    <option value="all">All Categories</option>
-                    <option value="system error or bug">System Error or Bug</option>
-                    <option value="technical issue">Technical Issue</option>
-                    <option value="parent dispute">Issue regarding a Parent</option>
-                    <option value="doctor issue">Issue regarding a Doctor</option>
-                    <option value="general suggestion">General Suggestion</option>
-                    <option value="other">Other</option>
-                </select>
-
-                <input
-                    type="text"
-                    id="complaintSearch"
-                    class="form-control complaints-search"
-                    placeholder="Search..."
-                >
+    <div class="complaints-container">
+        <div class="complaints-header">
+            <div>
+                <h3 class="complaints-title">Complaints Management</h3>
+                <div class="complaints-subtitle">
+                    Manage all complaints from doctors and parents
+                </div>
             </div>
         </div>
 
-        <table class="complaints-table">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Role</th>
-                    <th>Category</th>
-                    <th>Complaint</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th style="text-align:center;">Actions</th>
-                </tr>
-            </thead>
+        <div class="complaints-card">
+            <div class="complaints-table-header">
+                <h6 class="complaints-table-title">
+                    Complaints Directory
+                </h6>
 
-            <tbody id="complaintsTableBody">
+                <form action="{{ route('admin.complaints.index') }}" method="GET" id="searchForm" style="display:flex; gap:15px; margin-bottom:20px; align-items: center; justify-content: flex-end;">
+                    
+                    <select name="role" id="roleFilter" class="filter-select form-control form-control-sm" style="width: auto;">
+                        <option value="all" {{ request('role') == 'all' ? 'selected' : '' }}>All Roles</option>
+                        <option value="doctor" {{ request('role') == 'doctor' ? 'selected' : '' }}>Doctor</option>
+                        <option value="parent" {{ request('role') == 'parent' ? 'selected' : '' }}>Parent</option>
+                    </select>
 
-                @forelse($complaints as $complaint)
+                  <select name="category" id="categoryFilter" class="filter-select form-control form-control-sm" style="width: auto;">
+                    <option value="all" {{ request('category') == 'all' ? 'selected' : '' }}>All Categories</option>
+                    <option value="system_error_or_bug" {{ request('category') == 'system_error_or_bug' ? 'selected' : '' }}>System Error or Bug</option>
+                    <option value="technical_issue" {{ request('category') == 'technical_issue' ? 'selected' : '' }}>Technical Issue</option>
+                    <option value="parent_dispute" {{ request('category') == 'parent_dispute' ? 'selected' : '' }}>Issue regarding a Parent</option>
+                    <option value="doctor_issue" {{ request('category') == 'doctor_issue' ? 'selected' : '' }}>Issue regarding a Doctor</option>
+                    <option value="general_suggestion" {{ request('category') == 'general_suggestion' ? 'selected' : '' }}>General Suggestion</option>
+                    <option value="other" {{ request('category') == 'other' ? 'selected' : '' }}>Other</option>
+                </select>
 
-                @php
-                    $user = $complaint->user;
+                    <input
+                        type="text"
+                        name="search"
+                        id="complaintSearch"
+                        class="form-control complaints-search form-control-sm"
+                        placeholder="Search name, email, or message..."
+                        value="{{ request('search') }}"
+                        style="width: 250px;"
+                    >
+                </form>
+            </div>
 
-                    $fullName = $user
-                        ? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''))
-                        : 'Unknown User';
+            <table class="complaints-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Category</th>
+                        <th>Complaint</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th style="text-align:center;">Actions</th>
+                    </tr>
+                </thead>
 
-                    $role = $user->role ?? 'Parent';
-
-                    $image = $user && $user->profile_image
-                        ? asset('storage/' . $user->profile_image)
-                        : asset('images/default-user.png');
-                @endphp
-                <!-- تخزين دور المستخدم و الكاتيجوري في data-attributes مخفية -->
-                <tr 
-                    data-role="{{ strtolower($role) }}"
-                    data-category="{{ $complaint->category }}"
-                >
-
-                    <td>
-                        <div class="user-info">
-
-                            <div class="user-image">
-                                <img src="{{ $image }}">
-                            </div>
-
-                            <div>
-                                <div class="user-name">
-                                    {{ $fullName }}
-                                </div>
-
-                                <div class="user-role">
-                                    {{ $user->email ?? 'No Email' }}
-                                </div>
-                            </div>
-
-                        </div>
-                    </td>
-
-                    <td>
-                        <span class="role-badge {{ $role == 'doctor' ? 'role-doctor' : 'role-parent' }}">
-                            {{ ucfirst($role) }}
-                        </span>
-                    </td>
-
-                    <td>
-                        {{ $complaint->category }}
-                    </td>
-
-                    <td>
-                        {{ $complaint->message }}
-                    </td>
-
-                    <td>
-                        <span class="status-badge {{ $complaint->status == 'resolved' ? 'status-resolved' : 'status-pending' }}">
-                            {{ ucfirst($complaint->status) }}
-                        </span>
-                    </td>
-
-                    <td>
-                        {{ $complaint->created_at->format('Y-m-d') }}
-                    </td>
-
-                    <td>
-
-                        <div class="action-buttons">
+                <tbody id="complaintsTableBody">
+                    @forelse($complaints as $complaint)
+                        @php
+                            $user = $complaint->user;
+                            $fullName = $user ? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) : 'Unknown User';
+                            $role = $user->role ?? 'Parent';
+                            $image = $user && $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/default-user.png');
+                        @endphp
                         
-                            <button
-                                class="action-btn view-btn js-view-complaint"
-                                data-user="{{ $fullName }}"
-                                data-role="{{ ucfirst($role) }}"
-                                data-category="{{ $complaint->category }}"
-                                data-message="{{ $complaint->message }}"
-                            >
-                                <i class="fas fa-eye"></i>
-                            </button>
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-image">
+                                        <img src="{{ $image }}">
+                                    </div>
+                                    <div>
+                                        <div class="user-name">{{ $fullName }}</div>
+                                        <div class="user-role">{{ $user->email ?? 'No Email' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="role-badge {{ $role == 'doctor' ? 'role-doctor' : 'role-parent' }}">
+                                    {{ ucfirst($role) }}
+                                </span>
+                            </td>
+                            <td>{{ ucwords(str_replace('_', ' ', $complaint->category)) }}</td>
+                            <td>{{ Str::limit($complaint->message, 30) }}</td>
+                            <td>
+                                <span class="status-badge {{ $complaint->status == 'resolved' ? 'status-resolved' : 'status-pending' }}">
+                                    {{ ucfirst($complaint->status) }}
+                                </span>
+                            </td>
+                            <td>{{ $complaint->created_at->format('Y-m-d') }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view-btn js-view-complaint"
+                                        data-user="{{ $fullName }}"
+                                        data-role="{{ ucfirst($role) }}"
+                                        data-category="{{ $complaint->category }}"
+                                        data-message="{{ $complaint->message }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
 
-                            <form
-                                action="{{ route('admin.complaints.destroy', $complaint->id) }}"
-                                method="POST"
-                            >
-                                @csrf
-                                @method('DELETE')
+                                    <form action="{{ route('admin.complaints.destroy', $complaint->id) }}" method="POST" style="margin: 0;">
+                                        @csrf @method('DELETE')
+                                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                    </form>
 
-                                <button class="action-btn delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+                                    <form action="{{ route('admin.complaints.update', $complaint->id) }}" method="POST" style="margin: 0;">
+                                        @csrf @method('PUT')
+                                        <button type="button" class="action-btn update-btn"
+                                            data-id="{{ $complaint->id }}"
+                                            data-status="{{ $complaint->status }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                No complaints found matching your criteria.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
 
-                            <form
-                                action="{{ route('admin.complaints.update', $complaint->id) }}"
-                                method="POST"
-                            >
-                                @csrf
-                                @method('PUT')
-                                <button
-                                    type="button"
-                                    class="action-btn update-btn"
-                                    data-id="{{ $complaint->id }}"
-                                    data-status="{{ $complaint->status }}"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </button>
-
-                            </form>
-                        </div>
-
-                    </td>
-
-                </tr>
-
-                @empty
-
-                <tr>
-                    <td colspan="6" class="text-center py-5 text-muted">
-                        No complaints found
-                    </td>
-                </tr>
-
-                @endforelse
-
-            </tbody>
-        </table>
-
-    </div>
-</div>
-
-<!-- View Modal -->
-
-<div class="modal-overlay" id="complaintModal">
-
-    <div class="modal-box">
-
-        <div class="modal-header">
-            Complaint Details
-
-            <span class="close-modal" onclick="closeComplaintModal()">
-                &times;
-            </span>
+            @if($complaints->count())
+                <div class="admin-pagination-wrapper" style="padding: 15px; border-top: 1px solid #eee; display: flex; justify-content: center; background-color: #fff; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+                    {{ $complaints->links() }}
+                </div>
+            @endif
         </div>
+    </div>
 
-        <div class="modal-body">
-
-            <h5 id="modalUserName"></h5>
-
-            <div class="mb-3">
-                <span id="modalUserRole" class="role-badge"></span>
+    <div class="modal-overlay" id="complaintModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                Complaint Details
+                <span class="close-modal" onclick="closeComplaintModal()">&times;</span>
             </div>
-
-            <div class="complaint-category" id="modalComplaintCategory"></div>
-            <div class="complaint-message" id="modalComplaintMessage"></div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- Update Status Modal -->
-<div class="modal-overlay" id="updateModal">
-
-    <div class="modal-box">
-
-        <div class="modal-header">
-            Update Complaint Status
-
-            <span class="close-modal" onclick="closeUpdateModal()">
-                &times;
-            </span>
-        </div>
-
-        <div class="modal-body">
-
-            <input type="hidden" id="complaintId">
-
-            <div class="mb-3">
-                <label class="form-label">Status</label>
-
-                <select id="complaintStatus" class="form-control">
-                    <option value="pending">Pending</option>
-                    <option value="resolved">Resolved</option>
-                </select>
+            <div class="modal-body">
+                <h5 id="modalUserName"></h5>
+                <div class="mb-3"><span id="modalUserRole" class="role-badge"></span></div>
+                <div class="complaint-category" id="modalComplaintCategory" style="font-weight: bold; margin-bottom: 10px; color: var(--taif-blue);"></div>
+                <div class="complaint-message" id="modalComplaintMessage" style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid var(--taif-orange);"></div>
             </div>
-
-            <button class="btn btn-primary w-100" onclick="saveStatus()">
-                Save Changes
-            </button>
-
         </div>
-
     </div>
 
-</div>
-<script>
-    // ---------------------------------------------------------
-    // 1. الفلترة الفورية (Client-Side Search & Multi-Filter)
-    // ---------------------------------------------------------
-    const searchInput = document.getElementById('complaintSearch');
-    const roleFilter = document.getElementById('roleFilter');
-    const categoryFilter = document.getElementById('categoryFilter');
+    <div class="modal-overlay" id="updateModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                Update Complaint Status
+                <span class="close-modal" onclick="closeUpdateModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="complaintId">
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select id="complaintStatus" class="form-control">
+                        <option value="pending">Pending</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary w-100" onclick="saveStatus()" style="background-color: var(--taif-blue); border: none;">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
 
-    function filterComplaintsTable() {
-        // سحب القيم وتوحيد حالة الأحرف (Normalization) لمنع أخطاء الـ Case-Sensitivity
-        const searchValue = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        const selectedRole = roleFilter ? roleFilter.value.toLowerCase().trim() : '';
-        const selectedCategory = categoryFilter ? categoryFilter.value.toLowerCase().trim() : 'all';
-
-        const rows = document.querySelectorAll('#complaintsTableBody tr');
-
-        rows.forEach(row => {
-            // سحب البيانات من الـ Dataset وتوحيدها (Replace _ with space لضمان المطابقة)
-            const rowRole = (row.dataset.role || '').toLowerCase().trim();
-            let rowCategory = (row.dataset.category || '').toLowerCase().trim();
-            rowCategory = rowCategory.replace(/_/g, ' '); //يستخدم (Regex) باش يبدل أي شرطة سفلية _ بمسافة عادية
-
-            const rowText = row.innerText.toLowerCase();
-
-            // 💡 [Logic Conditions]: التحقق من الشروط الثلاثة
-            const matchesSearch = rowText.includes(searchValue);
-            const matchesRole = !selectedRole || selectedRole === 'all' || rowRole === selectedRole;
-            const matchesCategory = selectedCategory === 'all' || rowCategory.includes(selectedCategory);
-
-            // إظهار الصف فقط إذا تحققت الشروط الثلاثة معاً (AND Logic)
-            if (matchesSearch && matchesRole && matchesCategory) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+    <script>
+        // ---------------------------------------------------------
+        // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
+        // ---------------------------------------------------------
+        let searchTimeout = null;
+        const searchForm = document.getElementById('searchForm');
+        
+        document.getElementById('complaintSearch')?.addEventListener('keyup', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => { if (searchForm) searchForm.submit(); }, 500);
         });
-    }
 
-    // ربط الفلترة بالأحداث (Event Listeners)
-    if (searchInput) searchInput.addEventListener('keyup', filterComplaintsTable);
-    if (roleFilter) roleFilter.addEventListener('change', filterComplaintsTable);
-    if (categoryFilter) categoryFilter.addEventListener('change', filterComplaintsTable);
+        document.getElementById('roleFilter')?.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
+        document.getElementById('categoryFilter')?.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
 
-    // ---------------------------------------------------------
-    // 2. دالة عرض التفاصيل (View Modal Population)
-    // ---------------------------------------------------------
-    document.querySelectorAll('.js-view-complaint').forEach(button => {
-        button.addEventListener('click', function () {
-            // 💡 [DOM Manipulation]: حقن بيانات الشكوى من الزر إلى النافذة المنبثقة
-            document.getElementById('modalUserName').innerText = this.dataset.user || 'Unknown';
-            document.getElementById('modalUserRole').innerText = this.dataset.role || 'N/A';
-            document.getElementById('modalComplaintMessage').innerText = this.dataset.message || 'No details provided.';
-            document.getElementById('modalComplaintCategory').innerText = this.dataset.category || 'N/A';
-
-            document.getElementById('complaintModal').style.display = 'flex';
+        // ---------------------------------------------------------
+        // 2. دوال عرض التفاصيل (View Modal)
+        // ---------------------------------------------------------
+        document.querySelectorAll('.js-view-complaint').forEach(button => {
+            button.addEventListener('click', function () {
+                document.getElementById('modalUserName').innerText = this.dataset.user || 'Unknown';
+                document.getElementById('modalUserRole').innerText = this.dataset.role || 'N/A';
+                document.getElementById('modalComplaintMessage').innerText = this.dataset.message || 'No details provided.';
+                document.getElementById('modalComplaintCategory').innerText = this.dataset.category || 'N/A';
+                document.getElementById('complaintModal').style.display = 'flex';
+            });
         });
-    });
 
-    function closeComplaintModal() {
-        document.getElementById('complaintModal').style.display = 'none';
-    }
+        function closeComplaintModal() {
+            document.getElementById('complaintModal').style.display = 'none';
+        }
 
-    // ---------------------------------------------------------
-    // 3. تجهيز نافذة التعديل السريع (Update Modal)
-    // ---------------------------------------------------------
-    document.querySelectorAll('.update-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            // تخزين الـ ID الخاص بالشكوى في حقل مخفي (Hidden Input) لاستخدامه لاحقاً في الـ Fetch
-            document.getElementById('complaintId').value = this.dataset.id;
-            document.getElementById('complaintStatus').value = this.dataset.status;
-
-            document.getElementById('updateModal').style.display = 'flex';
+        // ---------------------------------------------------------
+        // 3. تجهيز نافذة التعديل السريع (Update Modal)
+        // ---------------------------------------------------------
+        document.querySelectorAll('.update-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                document.getElementById('complaintId').value = this.dataset.id;
+                document.getElementById('complaintStatus').value = this.dataset.status;
+                document.getElementById('updateModal').style.display = 'flex';
+            });
         });
-    });
 
-    function closeUpdateModal() {
-        document.getElementById('updateModal').style.display = 'none';
-    }
+        function closeUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
 
-    // ---------------------------------------------------------
-    // 4. التحديث في الخلفية (AJAX Fetch API) 
-    // ---------------------------------------------------------
-    function saveStatus() {
-        const id = document.getElementById('complaintId').value;
-        const status = document.getElementById('complaintStatus').value;
+        // ---------------------------------------------------------
+        // 4. التحديث في الخلفية (AJAX Fetch API) 
+        // ---------------------------------------------------------
+        function saveStatus() {
+            const id = document.getElementById('complaintId').value;
+            const status = document.getElementById('complaintStatus').value;
 
-        // 💡 [Asynchronous Request]: إرسال البيانات للسيرفر في الخلفية بدون إعادة تحميل الصفحة
-        fetch(`/admin/complaints/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                // 💡 [Security]: إرفاق توكن الحماية لمنع هجمات CSRF
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                status: status
+            fetch(`/admin/complaints/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ status: status })
             })
-        })
-        .then(response => response.json()) // 💡 [Data Parsing]: تحويل استجابة السيرفر إلى كائن JSON
-        .then(data => {
-            if(data.success) {
-                location.reload(); // 💡 [State Sync]: إعادة تحميل الصفحة لتحديث الألوان (Badges)
-            } else {
-                alert("Error: Could not update status.");
-            }
-        })
-        .catch(error => {
-            // 💡 [Error Handling]: اصطياد الأخطاء في حال انقطاع النت أو توقف السيرفر
-            console.error('Error:', error);
-            alert("An error occurred. Check the console.");
-        });
-    }
-</script>
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload(); 
+                } else {
+                    alert("Error: Could not update status.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Check the console.");
+            });
+        }
+    </script>
 </body>
 </html>

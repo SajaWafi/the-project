@@ -39,6 +39,7 @@ public function index(Request $request)
 
         return view('admin.doctors_management', compact('doctors'));
     }
+
     // ---------------------------------------------------------
     // 2. دالة التعديل 
     // ---------------------------------------------------------
@@ -76,9 +77,11 @@ public function index(Request $request)
             return back()->with('error', $e->getMessage());
         }
     }
+
     // ---------------------------------------------------------
     // 3. دالة الحذف (Destroy)
     // ---------------------------------------------------------
+
     public function destroy($id)
     {
         $doctor = DoctorProfile::with('user')->findOrFail($id);
@@ -101,54 +104,58 @@ public function index(Request $request)
             return back()->with('error', $e->getMessage());
         }
     }
+
     // ---------------------------------------------------------
     // 4. دالة الإضافة 
     // ---------------------------------------------------------
+
     public function store(Request $request)
-{
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'phone' => 'nullable|string|max:30',
-        'gender' => 'nullable|in:Male,Female',
-        'password' => 'required|string|min:6',
-        'specialization' => 'required|string|max:255',
-        'bio' => 'nullable|string|max:1000',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        $user = User::create([
-            'role' => 'doctor',
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'gender' => $request->gender,
-            'password' => Hash::make($request->password),
-            'approval_status' => 'approved',
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:30',
+            'gender' => 'nullable|in:Male,Female',
+            'password' => 'required|string|min:6',
+            'specialization' => 'required|string|max:255',
+            'bio' => 'nullable|string|max:1000',
         ]);
 
-        DoctorProfile::create([
-            'user_id' => $user->id,
-            'specialization' => $request->specialization,
-            'bio' => $request->bio,
-        ]);
+        DB::beginTransaction();
 
-        DB::commit();
+        try {
+            $user = User::create([
+                'role' => 'doctor',
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'password' => Hash::make($request->password),
+                'approval_status' => 'approved',
+            ]);
 
-        return back()->with('success', 'Doctor added successfully.');
-    } catch (\Throwable $e) {
-        DB::rollBack();
+            DoctorProfile::create([
+                'user_id' => $user->id,
+                'specialization' => $request->specialization,
+                'bio' => $request->bio,
+            ]);
 
-        return back()->with('error', $e->getMessage());
+            DB::commit();
+
+            return back()->with('success', 'Doctor added successfully.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return back()->with('error', $e->getMessage());
+        }
     }
-}
+
     // ---------------------------------------------------------
     // 5. دوال تغيير حالة الموافقة (Approve & Reject)
     // ---------------------------------------------------------
+
     public function approve($id)
     {
         $doctor = DoctorProfile::findOrFail($id);
@@ -170,4 +177,5 @@ public function index(Request $request)
 
         return back()->with('success', 'Doctor rejected successfully.');
     }
-    }
+
+}

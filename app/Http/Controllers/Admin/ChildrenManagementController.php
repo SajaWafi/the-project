@@ -13,15 +13,22 @@ class ChildrenManagementController extends Controller
     /**
      * عرض قائمة الأطفال مع بيانات أولياء أمورهم
      */
-    public function index()
-    {
-        // جلب الأطفال مع علاقة ولي الأمر (parentProfile -> user)
-        $children = Child::with('parentProfile.user')
-            ->latest()
-            ->paginate(10);
+  public function index(Request $request)
+{
+    // جلب الأطفال مع بيانات أولياء أمورهم
+    $query = \App\Models\Child::with('parentProfile.user')->latest();
 
-        return view('admin.children_management', compact('children'));
+    // 💡 فلترة البحث: تبحث بالاسم
+    if ($request->filled('search')) {
+        $searchTerm = $request->search;
+        $query->where('name', 'like', "%{$searchTerm}%");
     }
+
+    // الـ appends تحافظ على الكلمة المكتوبة لما تنقزي للصفحة الثانية
+    $children = $query->paginate(10)->appends($request->query());
+
+    return view('admin.children_management', compact('children'));
+}
     // دالة التعديل (Update)
     public function update($id, Request $request)
     {

@@ -401,7 +401,7 @@
     </style>
 </head>
 <body>
-  @include('admin.partials.sidebar')
+    @include('admin.partials.sidebar')
 
     <div class="admin-main-content text-start">
         <div class="admin-page-header">
@@ -409,18 +409,12 @@
                 <h4 class="admin-page-title">
                     Linking Requests Management
                 </h4>
-
                 <small class="admin-page-subtitle">
                     Manage doctor requests sent to parents
                 </small>
             </div>
-
             <div class="admin-status-wrapper">
-                <div class="admin-status-text">
-                
-                </div>
-
-               
+                <div class="admin-status-text"></div>
             </div>
         </div>
 
@@ -430,29 +424,31 @@
                     Requests Directory
                 </h6>
 
-                <div style="display: flex; gap: 10px; align-items: center;">
+                <form action="{{ route('admin.doctor-requests.index') }}" method="GET" id="searchForm" style="display: flex; gap: 10px; align-items: center;">
                     <select
+                        name="status"
                         id="requestStatusFilter"
                         class="form-control form-control-sm request-status-filter"
                         style="width: 160px; background: #f8fafc;"
                     >
-                        <option value="all">All statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="accepted">Accepted</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All statuses</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Accepted</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                     </select>
 
                     <div class="request-search-wrapper">
                         <i class="fas fa-search request-search-icon"></i>
-
                         <input
                             type="text"
+                            name="search"
                             id="requestSearchInput"
+                            value="{{ request('search') }}"
                             class="form-control form-control-sm request-search-input"
-                            placeholder="Search..."
+                            placeholder="Search doctor or parent..."
                         >
                     </div>
-                </div>
+                </form>
             </div>
 
             <table class="request-table">
@@ -481,7 +477,7 @@
                             );
 
                             $child = $requestItem->parent?->children?->first();
-                        //[Match Expression]: ميزة حديثة في PHP 8 لربط الحالة بصنف  CSS مباشرة (أنظف من switch-case)
+                        //[Match Expression]: ميزة حديثة في PHP 8 لربط الحالة بصنف  CSS مباشرة
                             $statusClass = match($requestItem->status) {
                                 'accepted' => 'status-accepted',
                                 'rejected' => 'status-rejected',
@@ -491,21 +487,16 @@
 
                         <tr data-status="{{ $requestItem->status }}">
                             <td>{{ $doctorName ?: 'N/A' }}</td>
-
                             <td>{{ $parentName ?: 'N/A' }}</td>
-
                             <td>{{ $child->name ?? 'N/A' }}</td>
-
                             <td>
                                 <span class="request-status-badge {{ $statusClass }}">
-                                    {{ $requestItem->status }}
+                                    {{ ucfirst($requestItem->status) }}
                                 </span>
                             </td>
-
                             <td>
                                 {{ $requestItem->created_at->format('M d, Y') }}
                             </td>
-
                             <td>
                                 <div class="request-action-buttons">
                                     <button
@@ -514,52 +505,31 @@
                                         data-doctor="{{ $doctorName ?: 'N/A' }}"
                                         data-parent="{{ $parentName ?: 'N/A' }}"
                                         data-child="{{ $child->name ?? 'N/A' }}"
-                                        data-status="{{ $requestItem->status }}"
+                                        data-status="{{ ucfirst($requestItem->status) }}"
                                         data-date="{{ $requestItem->created_at->format('M d, Y h:i A') }}"
                                     >
                                         <i class="fas fa-eye"></i>
                                     </button>
 
                                     @if($requestItem->status === 'pending')
-                                        <form
-                                            action="{{ route('admin.doctor-requests.accept', $requestItem->id) }}"
-                                            method="POST"
-                                            class="m-0"
-                                        >
+                                        <form action="{{ route('admin.doctor-requests.accept', $requestItem->id) }}" method="POST" class="m-0">
                                             @csrf
-
-                                            <button
-                                                type="submit"
-                                                class="request-action-button request-action-accept"
-                                            >
+                                            <button type="submit" class="request-action-button request-action-accept" title="Accept Request">
                                                 Accept
                                             </button>
                                         </form>
 
-                                        <form
-                                            action="{{ route('admin.doctor-requests.reject', $requestItem->id) }}"
-                                            method="POST"
-                                            class="m-0"
-                                        >
+                                        <form action="{{ route('admin.doctor-requests.reject', $requestItem->id) }}" method="POST" class="m-0">
                                             @csrf
-
-                                            <button
-                                                type="submit"
-                                                class="request-action-button request-action-reject"
-                                            >
+                                            <button type="submit" class="request-action-button request-action-reject" title="Reject Request">
                                                 Reject
                                             </button>
                                         </form>
                                     @endif
 
-                                    <form
-                                        action="{{ route('admin.doctor-requests.destroy', $requestItem->id) }}"
-                                        method="POST"
-                                        class="m-0"
-                                    >
+                                    <form action="{{ route('admin.doctor-requests.destroy', $requestItem->id) }}" method="POST" class="m-0">
                                         @csrf
                                         @method('DELETE')
-
                                         <button
                                             type="button"
                                             class="request-action-button request-action-delete js-delete-request"
@@ -593,36 +563,25 @@
                 <i class="fas fa-link"></i>
                 Request Details
             </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('requestViewModal')"
-            >
-                &times;
-            </span>
-
+            <span class="admin-modal-close" onclick="closeAdminModal('requestViewModal')">&times;</span>
             <div class="admin-modal-body">
                 <div class="view-request-details-box">
                     <div class="view-request-info-row">
                         <span class="view-request-info-label">Doctor</span>
                         <span class="view-request-info-value" id="viewRequestDoctor"></span>
                     </div>
-
                     <div class="view-request-info-row">
                         <span class="view-request-info-label">Parent</span>
                         <span class="view-request-info-value" id="viewRequestParent"></span>
                     </div>
-
                     <div class="view-request-info-row">
                         <span class="view-request-info-label">Child</span>
                         <span class="view-request-info-value" id="viewRequestChild"></span>
                     </div>
-
                     <div class="view-request-info-row">
                         <span class="view-request-info-label">Status</span>
                         <span class="view-request-info-value" id="viewRequestStatus"></span>
                     </div>
-
                     <div class="view-request-info-row">
                         <span class="view-request-info-label">Sent At</span>
                         <span class="view-request-info-value" id="viewRequestDate"></span>
@@ -638,45 +597,20 @@
                 <i class="fas fa-trash"></i>
                 Delete Request
             </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('requestDeleteModal')"
-            >
-                &times;
-            </span>
-
+            <span class="admin-modal-close" onclick="closeAdminModal('requestDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="delete-warning-icon">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-
-                <h4 class="delete-title">
-                    Are you sure?
-                </h4>
-
+                <h4 class="delete-title">Are you sure?</h4>
                 <p class="delete-message">
                     You are about to delete request:
                     <strong id="deleteRequestName">this request</strong>.
                     This action cannot be undone.
                 </p>
-
                 <div class="delete-actions">
-                    <button
-                        type="button"
-                        class="delete-cancel-button"
-                        onclick="closeAdminModal('requestDeleteModal')"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="button"
-                        class="delete-confirm-button"
-                        id="confirmRequestDeleteButton"
-                    >
-                        Delete
-                    </button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('requestDeleteModal')">Cancel</button>
+                    <button type="button" class="delete-confirm-button" id="confirmRequestDeleteButton">Delete</button>
                 </div>
             </div>
         </div>
@@ -685,46 +619,31 @@
     <script>
         let requestDeleteForm = null;
 
+        // ---------------------------------------------------------
+        // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
+        // ---------------------------------------------------------
+        let searchTimeout = null;
         const requestSearchInput = document.getElementById('requestSearchInput');
         const requestStatusFilter = document.getElementById('requestStatusFilter');
-        // ---------------------------------------------------------
-        // دالة الفلترة المزدوجة (Multi-criteria Client-Side Filtering)
-        // ---------------------------------------------------------
-        function filterRequestsTable() {
-            const searchTerm = requestSearchInput
-                ? requestSearchInput.value.toLowerCase().trim()
-                : '';
+        const searchForm = document.getElementById('searchForm');
 
-            const selectedStatus = requestStatusFilter
-                ? requestStatusFilter.value
-                : 'all';
-            // جلب كل صفوف الجدول
-            const requestRows = document.querySelectorAll('#requestTableBody tr');
-
-            requestRows.forEach(function (row) {
-                if (!row.dataset.status) {
-                    return;
-                }
-
-                const rowText = row.innerText.toLowerCase();// النص المعروض في الصف
-                const rowStatus = row.dataset.status; // حالة الطلب المخفية في data-status
-
-                const matchesSearch = rowText.includes(searchTerm);
-                const matchesStatus = selectedStatus === 'all' || rowStatus === selectedStatus;
-                // إظهار الصف فقط إذا تحقق الشرطان معاً (&&)
-                row.style.display = matchesSearch && matchesStatus ? '' : 'none';
-            });
-        }
-        // ربط الأحداث: البحث الفوري مع الكتابة، وتغيير القائمة المنسدلة
         if (requestSearchInput) {
-            requestSearchInput.addEventListener('keyup', filterRequestsTable);
+            requestSearchInput.addEventListener('keyup', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (searchForm) searchForm.submit();
+                }, 500);
+            });
         }
 
         if (requestStatusFilter) {
-            requestStatusFilter.addEventListener('change', filterRequestsTable);
+            requestStatusFilter.addEventListener('change', function () {
+                if (searchForm) searchForm.submit();
+            });
         }
+
         // ---------------------------------------------------------
-        // دالة عرض التفاصيل (DOM Manipulation)
+        // 2. دالة عرض التفاصيل (DOM Manipulation)
         // ---------------------------------------------------------
         document.querySelectorAll('.js-view-request').forEach(function (button) {
             button.addEventListener('click', function () {
@@ -737,16 +656,14 @@
                 document.getElementById('requestViewModal').style.display = 'flex';
             });
         });
+
         // ---------------------------------------------------------
-        // دوال الحذف (Safe Deletion Flow)
+        // 3. دوال الحذف (Safe Deletion Flow)
         // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-request').forEach(function (button) {
             button.addEventListener('click', function () {
                 requestDeleteForm = this.closest('form');
-
-                document.getElementById('deleteRequestName').innerText =
-                    this.dataset.name || 'this request';
-
+                document.getElementById('deleteRequestName').innerText = this.dataset.name || 'this request';
                 document.getElementById('requestDeleteModal').style.display = 'flex';
             });
         });
@@ -757,6 +674,9 @@
             }
         });
 
+        // ---------------------------------------------------------
+        // 4. دوال التحكم بالواجهة (Modal Triggers)
+        // ---------------------------------------------------------
         function closeAdminModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }

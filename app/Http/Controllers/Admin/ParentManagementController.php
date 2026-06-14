@@ -15,14 +15,25 @@ class ParentManagementController extends Controller
     // ---------------------------------------------------------
     // 1. دالة العرض (Index)
     // ---------------------------------------------------------
-    public function index()
-    {
-        $parents = ParentProfile::with(['user', 'children'])
-            ->latest()
-            ->paginate(10);
+   public function index(Request $request)
+{
+    $query = ParentProfile::with(['user', 'children'])->latest();
 
-        return view('admin.parents_management', compact('parents'));
+    // 💡 فلترة البحث: تبحث في اسم الأب أو اسم العائلة أو رقم الهاتف
+    if ($request->filled('search')) {
+        $searchTerm = $request->search;
+        
+        $query->whereHas('user', function($q) use ($searchTerm) {
+            $q->where('first_name', 'like', "%{$searchTerm}%")
+              ->orWhere('last_name', 'like', "%{$searchTerm}%")
+              ->orWhere('phone', 'like', "%{$searchTerm}%");
+        });
     }
+
+    $parents = $query->paginate(10)->appends($request->query());
+
+    return view('admin.parents_management', compact('parents'));
+}
     // ---------------------------------------------------------
     // 2. دالة التعديل (Update - تعديل ثلاثي الأبعاد)
     // ---------------------------------------------------------

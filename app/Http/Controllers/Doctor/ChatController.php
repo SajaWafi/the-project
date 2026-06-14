@@ -30,24 +30,27 @@ class ChatController extends Controller
         if (!$linkedChild) {
             abort(404, 'Parent is not linked to this doctor.');
         }
-        //إنشاء المحادثة
-        $conversation = Conversation::firstOrCreate([ //لمنع إنشاء أكثر من محادثة لنفس الدكتور وولي الأمر.
+
+        // إنشاء المحادثة
+        $conversation = Conversation::firstOrCreate([
             'doctor_id' => $doctor->id,
             'parent_id' => $parent->id,
             'child_id'  => $linkedChild->id,
         ]);
-        //جلب الرسائل
+
+        // جلب الرسائل
         $messages = Message::where('conversation_id', $conversation->id)
             ->orderBy('created_at', 'asc')
             ->get();
 
-        $parentName = trim(
-            ($parent->user->first_name ?? '') . ' ' . ($parent->user->last_name ?? '')
-        );
+        $parentName = trim(($parent->user->first_name ?? '') . ' ' . ($parent->user->last_name ?? ''));
 
         if ($parentName === '') {
             $parentName = 'Parent';
         }
+
+        // 💡 التحقق هل الدكتور داير كتم للمحادثة هذي؟
+        $isMuted = $conversation->doctor_muted_until && $conversation->doctor_muted_until > now();
 
         return view('doctor.chat', [
             'parent' => [
@@ -56,7 +59,37 @@ class ChatController extends Controller
                 'image' => $parent->user->profile_image ?? null,
             ],
             'messages' => $messages,
+            'isMuted' => $isMuted, // 💡 تمرير حالة الكتم للواجهة
         ]);
+    }
+
+    // 💡 دالة الكتم الجديدة
+    public function muteConversation(Request $request, $parentId)
+    {
+        $doctor = DoctorProfile::where('user_id', auth()->id())->first();
+        $conversation = Conversation::where('doctor_id', $doctor->id)
+                                    ->where('parent_id', $parentId)
+                                    ->firstOrFail();
+
+        $duration = $request->duration;
+        $mutedUntil = null;
+
+        // حساب وقت انتهاء الكتم بناءً على اختيار الدكتور
+        if ($duration === '1hour') {
+            $mutedUntil = now()->addHour();
+        } elseif ($duration === '1day') {
+            $mutedUntil = now()->addDay();
+        } elseif ($duration === '1month') {
+            $mutedUntil = now()->addMonth();
+        } elseif ($duration === 'forever') {
+            $mutedUntil = now()->addYears(100);
+        } // إذا كان unmute بيقعد null
+
+        $conversation->update([
+            'doctor_muted_until' => $mutedUntil
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function send(Request $request, $parentId)
@@ -82,7 +115,7 @@ class ChatController extends Controller
             if (!$linkedChild) {
                 return response()->json(['message' => 'Parent is not linked to this doctor.'], 404);
             }
-            //التحقق من وجود رسالة أو ملف
+
             if (!$request->filled('message') && !$request->hasFile('file')) {
                 return response()->json(['message' => 'Message or file is required.'], 422);
             }
@@ -119,22 +152,25 @@ class ChatController extends Controller
                 'read_at' => null,
             ]);
 
-            // --- إضافة إشعار لولي الأمر ---
-            $notifyMessage = 'Sent you a new message.';
-            if ($type == 'image') {
-                $notifyMessage = 'Sent you an image.';
-            } elseif ($type == 'file') {
-                $notifyMessage = 'Sent you a file.';
-            }
+            // 💡 حارس الإشعارات: نبعث إشعار للأب فقط لو ما كانش دايرلنا كتم
+            $isParentMuted = $conversation->parent_muted_until && $conversation->parent_muted_until > now();
 
-            Notification::create([
-                'user_id' => $parent->user_id, // توجيه الإشعار لحساب ولي الأمر
-                'related_id' => auth()->user()->doctorProfile->id,
-                'title' => 'New Message from Dr. ' . auth()->user()->first_name,
-                'message' => $notifyMessage,
-                'type' => 'chat_message',
-            ]);
-            // -----------------------------
+            if (!$isParentMuted) {
+                $notifyMessage = 'Sent you a new message.';
+                if ($type == 'image') {
+                    $notifyMessage = 'Sent you an image.';
+                } elseif ($type == 'file') {
+                    $notifyMessage = 'Sent you a file.';
+                }
+
+                Notification::create([
+                    'user_id' => $parent->user_id,
+                    'related_id' => auth()->user()->doctorProfile->id,
+                    'title' => 'New Message from Dr. ' . auth()->user()->first_name,
+                    'message' => $notifyMessage,
+                    'type' => 'chat_message',
+                ]);
+            }
 
             return response()->json([
                 'id' => $message->id,
@@ -145,9 +181,7 @@ class ChatController extends Controller
                 'time' => $message->created_at->format('H:i'),
             ]);
         } catch (\Throwable $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -192,14 +226,17 @@ class ChatController extends Controller
                 'read_at' => null,
             ]);
 
-            // --- إضافة إشعار بصمة صوت لولي الأمر ---
-            Notification::create([
-                'user_id' => $parent->user_id, // توجيه الإشعار لحساب ولي الأمر
-                'title' => 'New Message from Dr. ' . auth()->user()->first_name,
-                'message' => 'Sent you a voice message.',
-                'type' => 'chat_message',
-            ]);
-            // ---------------------------------------
+            // 💡 حارس الإشعارات للصوت
+            $isParentMuted = $conversation->parent_muted_until && $conversation->parent_muted_until > now();
+
+            if (!$isParentMuted) {
+                Notification::create([
+                    'user_id' => $parent->user_id, 
+                    'title' => 'New Message from Dr. ' . auth()->user()->first_name,
+                    'message' => 'Sent you a voice message.',
+                    'type' => 'chat_message',
+                ]);
+            }
 
             return response()->json([
                 'id' => $message->id,
@@ -208,9 +245,7 @@ class ChatController extends Controller
                 'time' => $message->created_at->format('H:i'),
             ]);
         } catch (\Throwable $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 

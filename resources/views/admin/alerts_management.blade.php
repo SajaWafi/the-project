@@ -529,7 +529,6 @@
         }
     </style>
 </head>
-
 <body>
     @include('admin.partials.sidebar')
 
@@ -539,12 +538,10 @@
                 <h4 class="admin-page-title">
                     Alerts Management
                 </h4>
-
                 <small class="admin-page-subtitle">
                     Monitor and manage system alerts
                 </small>
             </div>
-
         </div>
 
         @if(session('success'))
@@ -573,240 +570,154 @@
                     Alerts Directory
                 </h6>
 
-                <div class="alerts-filter-search-wrapper">
-                    <select
-                        id="alertTypeFilter"
-                        class="form-control form-control-sm alerts-type-filter"
-                    >
-                        <option value="all">All types</option>
-                        <option value="panic">Panic</option>
-                        <option value="heart_rate">Heart Rate</option>
-                        <option value="safe_zone">Safe Zone</option>
-                        <option value="activity">Activity</option>
+                <form action="{{ route('admin.alerts.index') }}" method="GET" id="searchForm" class="alerts-filter-search-wrapper" style="display: flex; gap: 10px; align-items: center; justify-content: flex-end;">
+                    
+                    <select name="type" id="alertTypeFilter" class="form-control form-control-sm alerts-type-filter">
+                        <option value="all" {{ request('type') == 'all' ? 'selected' : '' }}>All types</option>
+                        <option value="panic" {{ request('type') == 'panic' ? 'selected' : '' }}>Panic</option>
+                        <option value="heart_rate" {{ request('type') == 'heart_rate' ? 'selected' : '' }}>Heart Rate</option>
+                        <option value="safe_zone" {{ request('type') == 'safe_zone' ? 'selected' : '' }}>Safe Zone</option>
+                        <option value="activity" {{ request('type') == 'activity' ? 'selected' : '' }}>Activity</option>
                     </select>
 
-                    <select
-                        id="alertReadFilter"
-                        class="form-control form-control-sm alerts-read-filter"
-                    >
-                        <option value="all">All read status</option>
-                        <option value="read">Read</option>
-                        <option value="unread">Unread</option>
+                    <select name="read_status" id="alertReadFilter" class="form-control form-control-sm alerts-read-filter">
+                        <option value="all" {{ request('read_status') == 'all' ? 'selected' : '' }}>All read status</option>
+                        <option value="read" {{ request('read_status') == 'read' ? 'selected' : '' }}>Read</option>
+                        <option value="unread" {{ request('read_status') == 'unread' ? 'selected' : '' }}>Unread</option>
                     </select>
 
-                    <select
-                        id="alertDateFilter"
-                        class="form-control form-control-sm alerts-date-filter"
-                    >
-                        <option value="all">All dates</option>
-                        <option value="today">Today</option>
-                        <option value="yesterday">Yesterday</option>
-                        <option value="week">This Week</option>
+                    <select name="date_filter" id="alertDateFilter" class="form-control form-control-sm alerts-date-filter">
+                        <option value="all" {{ request('date_filter') == 'all' ? 'selected' : '' }}>All dates</option>
+                        <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>Today</option>
+                        <option value="yesterday" {{ request('date_filter') == 'yesterday' ? 'selected' : '' }}>Yesterday</option>
+                        <option value="week" {{ request('date_filter') == 'week' ? 'selected' : '' }}>This Week</option>
                     </select>
 
                     <div class="alerts-search-wrapper">
                         <i class="fas fa-search alerts-search-icon"></i>
-
                         <input
                             type="text"
+                            name="search"
                             id="alertSearchInput"
+                            value="{{ request('search') }}"
                             class="form-control form-control-sm alerts-search-input"
-                            placeholder="Search..."
+                            placeholder="Search title or message..."
                         >
                     </div>
-                </div>
+                </form>
             </div>
 
-            <table class="alerts-table">
-                <thead>
-                    <tr>
-                        <th style="width: 50px; text-align: center;">#</th>
-                        
-                        <th>Title</th>
-                        <th>Message</th>
-                        <th>Type</th>
-                        <th>Parent</th>
-                        <th>Child</th>
-                        <th>Read</th>
-                        <th>Sent At</th>
-                        <th style="text-align:center;">Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody id="alertsTableBody">
-                    @forelse($alerts as $alert)
-                        @php
-                            $parentName = trim(
-                                ($alert->parent->user->first_name ?? '') . ' ' .
-                                ($alert->parent->user->last_name ?? '')
-                            );
-
-                            if ($parentName === '') {
-                                $parentName = 'N/A';
-                            }
-
-                            $childName = $alert->child->name ?? 'N/A';
-
-                            $alertType = $alert->alert_type ?? 'default';
-
-                            $typeClass = match($alertType) {
-                                'panic' => 'type-panic',
-                                'heart_rate' => 'type-heart_rate',
-                                'safe_zone' => 'type-safe_zone',
-                                'activity' => 'type-activity',
-                                default => 'type-default',
-                            };
-
-                            $alertDate = \Carbon\Carbon::parse($alert->sent_at ?? $alert->created_at);
-
-                            $dateType = 'old';
-
-                            if ($alertDate->isToday()) {
-                                $dateType = 'today';
-                            } elseif ($alertDate->isYesterday()) {
-                                $dateType = 'yesterday';
-                            } elseif ($alertDate->greaterThanOrEqualTo(now()->subWeek())) {
-                                $dateType = 'week';
-                            }
-
-                            $readType = $alert->is_read ? 'read' : 'unread';
-                        @endphp
-
-                        <tr
-                            data-type="{{ $alertType }}"
-                            data-read="{{ $readType }}"
-                            data-date-type="{{ $dateType }}"
-                        >
-                            <td style="text-align: center; font-weight: bold; color: #718096;">
-                                {{ $alerts->firstItem() + $loop->index }}
-                            </td>
-
-                            <td>
-                                <div class="alert-title-cell">
-                                    {{ $alert->title }}
-                                </div>
-                            </td>
-
-                            <td>
-                                <div class="alert-message-preview">
-                                    {{ $alert->message }}
-                                </div>
-                            </td>
-
-                            <td>
-                                <span class="alert-type-badge {{ $typeClass }}">
-                                    {{ str_replace('_', ' ', $alertType) }}
-                                </span>
-                            </td>
-
-                            <td>{{ $parentName }}</td>
-
-                            <td>{{ $childName }}</td>
-
-                            <td>
-                                <span class="alert-read-badge {{ $alert->is_read ? 'read-yes' : 'read-no' }}">
-                                    {{ $alert->is_read ? 'Read' : 'Unread' }}
-                                </span>
-                            </td>
-
-                            <td>
-                                {{ $alertDate->format('M d, Y h:i A') }}
-                            </td>
-
-                            <td>
-                                <div class="alerts-action-buttons">
-                                    <button
-                                        type="button"
-                                        class="alerts-action-button alerts-action-view js-view-alert"
-                                        data-title="{{ $alert->title }}"
-                                        data-message="{{ $alert->message }}"
-                                        data-type="{{ str_replace('_', ' ', $alertType) }}"
-                                        data-parent="{{ $parentName }}"
-                                        data-child="{{ $childName }}"
-                                        data-read="{{ $alert->is_read ? 'Read' : 'Unread' }}"
-                                        data-sent-at="{{ $alertDate->format('M d, Y h:i A') }}"
-                                        data-panic-event="{{ $alert->panic_event_id ?? 'N/A' }}"
-                                    >
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-
-                                    @if(!$alert->is_read)
-                                        <form
-                                            action="{{ route('admin.alerts.mark-read', $alert->id) }}"
-                                            method="POST"
-                                            class="m-0"
-                                        >
-                                            @csrf
-
-                                            <button
-                                                type="submit"
-                                                class="alerts-action-button alerts-action-read"
-                                                title="Mark as read"
-                                            >
-                                                Read
-                                            </button>
-                                        </form>
-                                    @else
-                                        <form
-                                            action="{{ route('admin.alerts.mark-unread', $alert->id) }}"
-                                            method="POST"
-                                            class="m-0"
-                                        >
-                                            @csrf
-
-                                            <button
-                                                type="submit"
-                                                class="alerts-action-button alerts-action-unread"
-                                                title="Mark as unread"
-                                            >
-                                                Unread
-                                            </button>
-                                        </form>
-                                    @endif
-
-                                    <form
-                                        action="{{ route('admin.alerts.destroy', $alert->id) }}"
-                                        method="POST"
-                                        class="m-0"
-                                    >
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button
-                                            type="button"
-                                            class="alerts-action-button alerts-action-delete js-delete-alert"
-                                            data-name="{{ $alert->title }}"
-                                        >
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
+            <div class="table-responsive">
+                <table class="alerts-table" style="margin-bottom: 0;">
+                    <thead>
                         <tr>
-                            <td colspan="9">
-                                <div class="empty-state">
-                                    <div class="empty-state-icon">
-                                        <i class="fas fa-bell"></i>
-                                    </div>
-
-                                    <div class="empty-state-title">
-                                        No alerts found
-                                    </div>
-
-                                    <div class="empty-state-text">
-                                        Alerts will appear here once the system starts generating them.
-                                    </div>
-                                </div>
-                            </td>
+                            <th style="width: 50px; text-align: center;">#</th>
+                            <th>Title</th>
+                            <th>Message</th>
+                            <th>Type</th>
+                            <th>Parent</th>
+                            <th>Child</th>
+                            <th>Read</th>
+                            <th>Sent At</th>
+                            <th style="text-align:center;">Actions</th>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody id="alertsTableBody">
+                        @forelse($alerts as $alert)
+                            @php
+                                $parentName = trim(($alert->parent->user->first_name ?? '') . ' ' . ($alert->parent->user->last_name ?? ''));
+                                if ($parentName === '') $parentName = 'N/A';
+                                
+                                $childName = $alert->child->name ?? 'N/A';
+                                $alertType = $alert->alert_type ?? 'default';
+
+                                $typeClass = match($alertType) {
+                                    'panic' => 'type-panic',
+                                    'heart_rate' => 'type-heart_rate',
+                                    'safe_zone' => 'type-safe_zone',
+                                    'activity' => 'type-activity',
+                                    default => 'type-default',
+                                };
+
+                                $alertDate = \Carbon\Carbon::parse($alert->sent_at ?? $alert->created_at);
+                            @endphp
+
+                            <tr>
+                                <td style="text-align: center; font-weight: bold; color: #718096;">
+                                    {{ $alerts->firstItem() + $loop->index }}
+                                </td>
+                                <td>
+                                    <div class="alert-title-cell">{{ $alert->title }}</div>
+                                </td>
+                                <td>
+                                    <div class="alert-message-preview">{{ Str::limit($alert->message, 40) }}</div>
+                                </td>
+                                <td>
+                                    <span class="alert-type-badge {{ $typeClass }}">
+                                        {{ str_replace('_', ' ', $alertType) }}
+                                    </span>
+                                </td>
+                                <td>{{ $parentName }}</td>
+                                <td>{{ $childName }}</td>
+                                <td>
+                                    <span class="alert-read-badge {{ $alert->is_read ? 'read-yes' : 'read-no' }}">
+                                        {{ $alert->is_read ? 'Read' : 'Unread' }}
+                                    </span>
+                                </td>
+                                <td>{{ $alertDate->format('M d, Y h:i A') }}</td>
+                                <td>
+                                    <div class="alerts-action-buttons" style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                        <button type="button" class="alerts-action-button alerts-action-view js-view-alert"
+                                            data-title="{{ $alert->title }}"
+                                            data-message="{{ $alert->message }}"
+                                            data-type="{{ str_replace('_', ' ', $alertType) }}"
+                                            data-parent="{{ $parentName }}"
+                                            data-child="{{ $childName }}"
+                                            data-read="{{ $alert->is_read ? 'Read' : 'Unread' }}"
+                                            data-sent-at="{{ $alertDate->format('M d, Y h:i A') }}"
+                                            data-panic-event="{{ $alert->panic_event_id ?? 'N/A' }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+
+                                        @if(!$alert->is_read)
+                                            <form action="{{ route('admin.alerts.mark-read', $alert->id) }}" method="POST" style="margin: 0;">
+                                                @csrf
+                                                <button type="submit" class="alerts-action-button alerts-action-read" title="Mark as read">Read</button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('admin.alerts.mark-unread', $alert->id) }}" method="POST" style="margin: 0;">
+                                                @csrf
+                                                <button type="submit" class="alerts-action-button alerts-action-unread" title="Mark as unread">Unread</button>
+                                            </form>
+                                        @endif
+
+                                        <form action="{{ route('admin.alerts.destroy', $alert->id) }}" method="POST" style="margin: 0;">
+                                            @csrf @method('DELETE')
+                                            <button type="button" class="alerts-action-button alerts-action-delete js-delete-alert" data-name="{{ $alert->title }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon"><i class="fas fa-bell"></i></div>
+                                        <div class="empty-state-title">No alerts found</div>
+                                        <div class="empty-state-text">Alerts will appear here once the system starts generating them.</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
             @if($alerts->count())
-                <div class="p-3">
+                <div class="admin-pagination-wrapper" style="padding: 15px; border-top: 1px solid #eee; display: flex; justify-content: center; background-color: #fff; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
                     {{ $alerts->links() }}
                 </div>
             @endif
@@ -815,185 +726,60 @@
 
     <div id="alertViewModal" class="admin-modal-overlay view-alert-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header">
-                <i class="fas fa-bell"></i>
-                Alert Details
-            </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('alertViewModal')"
-            >
-                &times;
-            </span>
-
+            <div class="admin-modal-header"><i class="fas fa-bell"></i> Alert Details</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('alertViewModal')">&times;</span>
             <div class="admin-modal-body">
                 <div class="view-alert-details-box">
-                    <div class="view-alert-info-row">
-                        <span class="view-alert-info-label">Title</span>
-                        <span class="view-alert-info-value" id="viewAlertTitle"></span>
-                    </div>
-
-                    <div class="view-alert-info-row">
-                        <span class="view-alert-info-label">Type</span>
-                        <span class="view-alert-info-value" id="viewAlertType"></span>
-                    </div>
-
-                    <div class="view-alert-info-row">
-                        <span class="view-alert-info-label">Parent</span>
-                        <span class="view-alert-info-value" id="viewAlertParent"></span>
-                    </div>
-
-                    <div class="view-alert-info-row">
-                        <span class="view-alert-info-label">Child</span>
-                        <span class="view-alert-info-value" id="viewAlertChild"></span>
-                    </div>
-
-                    <div class="view-alert-info-row">
-                        <span class="view-alert-info-label">Read Status</span>
-                        <span class="view-alert-info-value" id="viewAlertRead"></span>
-                    </div>
-
-                    <div class="view-alert-info-row">
-                        <span class="view-alert-info-label">Sent At</span>
-                        <span class="view-alert-info-value" id="viewAlertSentAt"></span>
-                    </div>
-
-                    <div class="view-alert-info-row">
-                        <span class="view-alert-info-label">Panic Event ID</span>
-                        <span class="view-alert-info-value" id="viewAlertPanicEvent"></span>
-                    </div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">Title</span><span class="view-alert-info-value" id="viewAlertTitle"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">Type</span><span class="view-alert-info-value" id="viewAlertType"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">Parent</span><span class="view-alert-info-value" id="viewAlertParent"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">Child</span><span class="view-alert-info-value" id="viewAlertChild"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">Read Status</span><span class="view-alert-info-value" id="viewAlertRead"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">Sent At</span><span class="view-alert-info-value" id="viewAlertSentAt"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">Panic Event ID</span><span class="view-alert-info-value" id="viewAlertPanicEvent"></span></div>
                 </div>
-
-                <div class="view-alert-message" id="viewAlertMessage"></div>
+                <div class="view-alert-message" id="viewAlertMessage" style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 8px; border-left: 4px solid var(--taif-blue);"></div>
             </div>
         </div>
     </div>
 
     <div id="alertDeleteModal" class="admin-modal-overlay delete-alert-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header">
-                <i class="fas fa-trash"></i>
-                Delete Alert
-            </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('alertDeleteModal')"
-            >
-                &times;
-            </span>
-
+            <div class="admin-modal-header"><i class="fas fa-trash"></i> Delete Alert</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('alertDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
-                <div class="delete-warning-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-
-                <h4 class="delete-title">
-                    Are you sure?
-                </h4>
-
-                <p class="delete-message">
-                    You are about to delete alert:
-                    <strong id="deleteAlertName">this alert</strong>.
-                    This action cannot be undone.
-                </p>
-
+                <div class="delete-warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h4 class="delete-title">Are you sure?</h4>
+                <p class="delete-message">You are about to delete alert:<br><strong id="deleteAlertName">this alert</strong>.<br>This action cannot be undone.</p>
                 <div class="delete-actions">
-                    <button
-                        type="button"
-                        class="delete-cancel-button"
-                        onclick="closeAdminModal('alertDeleteModal')"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="button"
-                        class="delete-confirm-button"
-                        id="confirmAlertDeleteButton"
-                    >
-                        Delete
-                    </button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('alertDeleteModal')">Cancel</button>
+                    <button type="button" class="delete-confirm-button" id="confirmAlertDeleteButton">Delete</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. ذاكرة مؤقتة لحفظ الـ Form اللي بنمسحوها باش ما نمسحوش تنبيه بالغلط
         let alertDeleteForm = null;
-        // 2. التقاط عناصر الفلترة من الشاشة (مربع البحث والقوائم المنسدلة)
-        const alertSearchInput = document.getElementById('alertSearchInput');
-        const alertTypeFilter = document.getElementById('alertTypeFilter');
-        const alertReadFilter = document.getElementById('alertReadFilter');
-        const alertDateFilter = document.getElementById('alertDateFilter');
 
         // ---------------------------------------------------------
-        // العقل المدبر: دالة الفلترة الفورية (Client-Side Filtering)
-        // ميزتها: تفلتر البيانات في المتصفح في ثواني بدون الضغط على السيرفر
+        // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
         // ---------------------------------------------------------
+        let searchTimeout = null;
+        const searchForm = document.getElementById('searchForm');
+        
+        document.getElementById('alertSearchInput')?.addEventListener('keyup', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => { if (searchForm) searchForm.submit(); }, 500);
+        });
 
-        function filterAlertsTable() {
-            const searchTerm = alertSearchInput
-                ? alertSearchInput.value.toLowerCase().trim()
-                : '';
+        // إرسال الفورم فوراً عند تغيير أي قائمة منسدلة
+        document.getElementById('alertTypeFilter')?.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
+        document.getElementById('alertReadFilter')?.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
+        document.getElementById('alertDateFilter')?.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
 
-            const selectedType = alertTypeFilter
-                ? alertTypeFilter.value
-                : 'all';
-
-            const selectedRead = alertReadFilter
-                ? alertReadFilter.value
-                : 'all';
-
-            const selectedDate = alertDateFilter
-                ? alertDateFilter.value
-                : 'all';
-            // المرور على كل صفوف الجدول
-            const rows = document.querySelectorAll('#alertsTableBody tr');
-
-            rows.forEach(function (row) {
-                if (!row.dataset.type) { 
-                    return;
-                }
-            // سحب البيانات المخفية (Data Attributes) من كل صف
-                const rowText = row.innerText.toLowerCase();
-                const rowType = row.dataset.type; // تسحب نوع التنبيه من الـ HTML
-                const rowRead = row.dataset.read;
-                const rowDateType = row.dataset.dateType;
-
-                const matchesSearch = rowText.includes(searchTerm);
-                const matchesType = selectedType === 'all' || rowType === selectedType;
-                const matchesRead = selectedRead === 'all' || rowRead === selectedRead;
-                const matchesDate = selectedDate === 'all' || rowDateType === selectedDate;
-
-                row.style.display =
-                    matchesSearch && matchesType && matchesRead && matchesDate
-                        ? ''
-                        : 'none';
-            });
-        }
-            // ---------------------------------------------------------
-            // مراقبة الأحداث (Event Listeners): تشغيل الفلترة تلقائياً
-            // ---------------------------------------------------------
-        if (alertSearchInput) {
-            alertSearchInput.addEventListener('keyup', filterAlertsTable);
-        }
-
-        if (alertTypeFilter) {
-            alertTypeFilter.addEventListener('change', filterAlertsTable);
-        }
-
-        if (alertReadFilter) {
-            alertReadFilter.addEventListener('change', filterAlertsTable);
-        }
-
-        if (alertDateFilter) {
-            alertDateFilter.addEventListener('change', filterAlertsTable);
-        }
         // ---------------------------------------------------------
-        // دالة زر (العرض): سحب البيانات وعرضها في نافذة منبثقة (Modal)
+        // 2. دوال عرض التفاصيل والحذف
         // ---------------------------------------------------------
         document.querySelectorAll('.js-view-alert').forEach(function (button) {
             button.addEventListener('click', function () {
@@ -1005,45 +791,27 @@
                 document.getElementById('viewAlertSentAt').innerText = this.dataset.sentAt || 'N/A';
                 document.getElementById('viewAlertPanicEvent').innerText = this.dataset.panicEvent || 'N/A';
                 document.getElementById('viewAlertMessage').innerText = this.dataset.message || 'N/A';
-
                 document.getElementById('alertViewModal').style.display = 'flex';
             });
         });
-        // ---------------------------------------------------------
-        // دالة زر (الحذف) في الجدول: تحضير الفورم للحذف وتجنب الأخطاء الكارثية
-        // ---------------------------------------------------------
+
         document.querySelectorAll('.js-delete-alert').forEach(function (button) {
             button.addEventListener('click', function () {
                 alertDeleteForm = this.closest('form');
-
-                document.getElementById('deleteAlertName').innerText =
-                    this.dataset.name || 'this alert';
-
+                document.getElementById('deleteAlertName').innerText = this.dataset.name || 'this alert';
                 document.getElementById('alertDeleteModal').style.display = 'flex';
             });
         });
-        // ---------------------------------------------------------
-        // دالة زر (تأكيد الحذف) داخل النافذة المنبثقة
-        // ---------------------------------------------------------
-        const confirmAlertDeleteButton = document.getElementById('confirmAlertDeleteButton');
 
-        if (confirmAlertDeleteButton) {
-            confirmAlertDeleteButton.addEventListener('click', function () {
-                if (alertDeleteForm) {
-                    alertDeleteForm.submit(); // إرسال طلب الحذف الفعلي للسيرفر
-                }
+        const confirmBtn = document.getElementById('confirmAlertDeleteButton');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function () {
+                if (alertDeleteForm) alertDeleteForm.submit();
             });
         }
 
-        function closeAdminModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        window.onclick = function (event) {
-            if (event.target.classList.contains('admin-modal-overlay')) {
-                event.target.style.display = 'none';
-            }
-        };
+        function closeAdminModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        window.onclick = function (event) { if (event.target.classList.contains('admin-modal-overlay')) event.target.style.display = 'none'; };
     </script>
 </body>
 </html>

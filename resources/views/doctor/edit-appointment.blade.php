@@ -285,7 +285,8 @@
                         type="date"
                         id="appointmentDate"
                         name="date"
-                        value="{{ old('date', $appointment->date) }}"
+                        value="{{ old('date') }}"
+                        min="{{ now()->toDateString() }}" 
                         class="date-picker"
                     >
                 </div>

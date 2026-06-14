@@ -351,6 +351,7 @@
     const registrationData = @json($doctorRegistrationsData);
     const labelsData = @json($daysLabels);
 
+    //doctor registration chart
     const ctx1 = document.getElementById('registrationChart').getContext('2d');
 
     new Chart(ctx1, {

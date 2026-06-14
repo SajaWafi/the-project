@@ -9,7 +9,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        /* (ضعي كل الـ CSS الخاص بك هنا كما هو بدون أي تغيير) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { display: flex; justify-content: center; align-items: center; background: #edf1f4; min-height: 100vh; font-family: Arial, sans-serif; padding: 20px; }
         .mobile-screen { width: 390px; height: 844px; max-width: 100%; max-height: 95vh; border-radius: 30px; overflow-y: auto; overflow-x: hidden; position: relative; background: #f9f9f9; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14); scrollbar-width: none; }
@@ -25,7 +24,7 @@
         .safezone-sheet { width: 100%; background: #f7f7f7; border-radius: 18px; padding: 14px 14px 18px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
         .safezone-title { font-size: 16px; font-weight: 800; color: #111; margin-bottom: 4px; }
         .safezone-text { font-size: 13px; color: #666; line-height: 1.35; margin-bottom: 10px; }
-        .map-box { position: relative; width: 100%; height: 295px; border-radius: 6px; overflow: hidden; margin-bottom: 10px; background: #dbeafe; }
+        .map-box { position: relative; width: 100%; height: 295px; border-radius: 6px; overflow: hidden; margin-bottom: 10px; background: #dbeafe; z-index: 1; }
         #realMap { width: 100%; height: 100%; }
         .radius-label { font-size: 14px; font-weight: 500; color: #202020; margin-bottom: 8px; }
         .slider-wrap { margin-bottom: 14px; }
@@ -44,6 +43,22 @@
         .safezone-reset { background: #e5e7eb; color: #111; }
         .safezone-save { background: #bcecdf; color: #111; }
         .alert-message { font-size: 13px; color: #14c414; margin-bottom: 10px; text-align: center; font-weight: bold; }
+        
+        .leaflet-control-locate { background-color: #fff; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: 0.2s; }
+        .leaflet-control-locate:hover { background-color: #f0f0f0; }
+
+        /* 💡 تم التعديل: إعطاء z-index عالي جداً لخانة البحث باش تغطي على كل شيء */
+        /* 💡 تنسيقات خانة البحث الجديدة (متطابقة مع صفحة اللوكيشن) */
+        .search-wrapper { position: relative; width: 100%; margin-bottom: 15px; z-index: 9999; }
+        .search-bar { background: #fff; border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06); width: 100%; border: 1px solid #eaeaea; }
+        .search-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .search-icon { width: 18px; height: 18px; color: #2f80ed; display: block; cursor: pointer; }
+        .search-input { border: none; outline: none; background: transparent; width: 100%; font-size: 13px; color: #333; }
+        .search-input::placeholder { color: #aaa; }
+        .search-results-popup { position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; background: #fff; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); max-height: 200px; overflow-y: auto; display: none; flex-direction: column; border: 1px solid #f0f0f0; }
+        .search-result-item { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #f0f0f0; cursor: pointer; text-align: left; color: #333; }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item:hover { background: #f0f8ff; color: #2f80ed; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -51,7 +66,7 @@
     <div class="mobile-screen">
         <div class="content">
             <div class="header">
-                <button class="back-btn" onclick="window.location.href='{{ route('parents.location') }}'" type="button" aria-label="Back">
+                <button class="back-btn" onclick="window.location.href='{{ route('location') }}'" type="button" aria-label="Back">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -61,15 +76,15 @@
             </div>
 
             <div class="safezone-sheet">
-   @if ($errors->any())
-    <div style="background: #fee2e2; color: #ef4444; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 13px;">
-        <ul style="margin-left: 20px;">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+                @if ($errors->any())
+                <div style="background: #fee2e2; color: #ef4444; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 13px;">
+                    <ul style="margin-left: 20px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
                 
                 @if(session('success'))
                     <div class="alert-message">{{ session('success') }}</div>
@@ -83,7 +98,22 @@
                 <div class="map-box">
                     <div id="realMap"></div>
                 </div>
-<form id="zoneForm" action="{{ route('safe.zone.store') }}" method="POST" onsubmit="return prepareFormData();">
+
+               <!-- 💡 خانة البحث المدمجة (بنفس تصميم الـ Location) -->
+                <div class="search-wrapper">
+                    <div class="search-bar">
+                        <div class="search-left">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" onclick="searchMapLocation()">
+                                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.5"/>
+                                <path d="M20 20L17 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                            <input type="text" id="mapSearchInput" class="search-input" placeholder="Search for a place (e.g. Tripoli)..." autocomplete="off">
+                        </div>
+                    </div>
+                    <div id="searchResults" class="search-results-popup"></div>
+                </div>
+                
+                <form id="zoneForm" action="{{ route('safe.zone.store') }}" method="POST" onsubmit="return prepareFormData();">
                     @csrf
                     <input type="hidden" name="center_latitude" id="inputLat">
                     <input type="hidden" name="center_longitude" id="inputLng">
@@ -109,6 +139,7 @@
                         <button type="submit" class="safezone-btn safezone-save">Save</button>
                     </div>
                 </form>
+
                 <div class="saved-title" style="margin-top: 20px;">Saved Locations</div>
 
                 @forelse($safeZones as $zone)
@@ -155,6 +186,52 @@
                 attribution: ''
             }).addTo(map);
 
+            L.Control.Locate = L.Control.extend({
+                onAdd: function(map) {
+                    var btn = L.DomUtil.create('div', 'leaflet-control-locate');
+                    btn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2f80ed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>`;
+                    btn.title = "موقعي الحالي";
+
+                    L.DomEvent.disableClickPropagation(btn);
+
+                    btn.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        if (navigator.geolocation) {
+                            btn.style.opacity = '0.5'; 
+                            
+                            navigator.geolocation.getCurrentPosition(
+                                function(pos) {
+                                    btn.style.opacity = '1';
+                                    let currentLat = pos.coords.latitude;
+                                    let currentLng = pos.coords.longitude;
+                                    let newLatLng = new L.LatLng(currentLat, currentLng);
+
+                                    map.flyTo(newLatLng, 16, { animate: true, duration: 1.5 });
+                                    if (marker) marker.setLatLng(newLatLng);
+                                    if (circle) circle.setLatLng(newLatLng);
+
+                                    document.getElementById('inputLat').value = currentLat;
+                                    document.getElementById('inputLng').value = currentLng;
+                                },
+                                function(error) {
+                                    btn.style.opacity = '1';
+                                    alert("تعذر تحديد موقعك. يرجى تفعيل الموقع (GPS) وإعطاء الصلاحية للمتصفح.");
+                                },
+                                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } 
+                            );
+                        } else {
+                            alert("متصفحك لا يدعم ميزة تحديد الموقع.");
+                        }
+                    };
+
+                    return btn;
+                }
+            });
+            
+            new L.Control.Locate({ position: 'topright' }).addTo(map);
+
             const customIcon = L.divIcon({
                 html: `
                     <div style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;">
@@ -183,35 +260,111 @@
             map.on('click', function (e) {
                 marker.setLatLng(e.latlng);
                 circle.setLatLng(e.latlng);
+                
+                document.getElementById('inputLat').value = e.latlng.lat;
+                document.getElementById('inputLng').value = e.latlng.lng;
             });
 
             setTimeout(() => { map.invalidateSize(); }, 200);
         }
 
-        // دالة عرض المكان المحفوظ على الخريطة
+        // 💡 تم التعديل: تحسين وتخصيص البحث لليبيا فقط باللغة العربية
+        async function searchMapLocation() {
+            const query = document.getElementById('mapSearchInput').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (query.length < 2) {
+                alert("يرجى كتابة حرفين على الأقل للبحث");
+                return;
+            }
+
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #666; text-align: center;">جاري البحث...</div>';
+
+            try {
+                // إضافة countrycodes=ly للبحث داخل ليبيا فقط، و accept-language=ar للعربية
+                const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=ly&accept-language=ar`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">لم يتم العثور على نتائج. تأكد من اسم المنطقة.</div>';
+                    return;
+                }
+
+                resultsDiv.innerHTML = '';
+                data.forEach(place => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    
+                    // استخراج اسم منطقي ومرتب للعرض
+                    let displayName = place.display_name;
+                    item.textContent = displayName;
+                    
+                    item.onclick = function() {
+                        const lat = parseFloat(place.lat);
+                        const lng = parseFloat(place.lon);
+                        const newLatLng = new L.LatLng(lat, lng);
+
+                        if (map) map.flyTo(newLatLng, 15, { animate: true, duration: 1.5 });
+                        if (marker) marker.setLatLng(newLatLng);
+                        if (circle) circle.setLatLng(newLatLng);
+
+                        document.getElementById('inputLat').value = lat;
+                        document.getElementById('inputLng').value = lng;
+                        
+                        // ناخذوا الاسم الأول من النتيجة باش نعبوا بيه خانة الاسم
+                        let shortName = place.name || displayName.split(',')[0];
+                        document.getElementById('zoneName').value = shortName;
+                        
+                        resultsDiv.style.display = 'none';
+                    };
+                    resultsDiv.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error("Search error:", error);
+                resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">حدث خطأ في الاتصال بخدمة البحث.</div>';
+            }
+        }
+
+        // إخفاء القائمة لما تضغطي في أي مكان فاضي
+        document.addEventListener('click', function(e) {
+            const resultsDiv = document.getElementById('searchResults');
+            const searchInput = document.getElementById('mapSearchInput');
+            const searchBtn = document.querySelector('.search-btn');
+            
+            if (e.target !== searchInput && e.target !== searchBtn && !searchBtn.contains(e.target) && !resultsDiv.contains(e.target)) {
+                resultsDiv.style.display = 'none';
+            }
+        });
+
+        // تشغيل البحث لما نضغط زر Enter في الكيبورد بدون ما ندير Refresh للصفحة
+        document.getElementById('mapSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                searchMapLocation();
+            }
+        });
+
+        // -----------------------------------------------------
+
         function viewSavedZone(lat, lng, radius) {
             let newLatLng = new L.LatLng(lat, lng);
             
-            // 1. تحريك الماركر والدائرة للمكان الجديد
             if (marker) marker.setLatLng(newLatLng);
             if (circle) {
                 circle.setLatLng(newLatLng);
                 circle.setRadius(radius);
             }
 
-            // 2. تحديث شريط السحب والرقم باش يطابقوا المكان المحفوظ
             radiusSlider.value = radius;
             radiusValue.textContent = radius;
 
-            // 3. تحريك الخريطة بنعومة (زي جوجل ماب)
             if (map) {
-                map.flyTo(newLatLng, 16, {
-                    animate: true,
-                    duration: 1.5 // سرعة الطيران للخريطة (ثانية ونصف)
-                });
+                map.flyTo(newLatLng, 16, { animate: true, duration: 1.5 });
             }
             
-            // تحديث الحقول المخفية تحسباً لو الأب يبي يعدل ويحفظ من جديد
             document.getElementById('inputLat').value = lat;
             document.getElementById('inputLng').value = lng;
             document.getElementById('inputRadius').value = radius;
@@ -221,7 +374,7 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     function (pos) { initMap(pos.coords.latitude, pos.coords.longitude); },
-                    function () { initMap(); }
+                    function () { initMap(); } 
                 );
             } else {
                 initMap();
@@ -235,22 +388,22 @@
 
         radiusSlider.addEventListener('input', function () {
             updateSafeCircle(this.value);
+            document.getElementById('inputRadius').value = this.value;
         });
 
         function resetSafeZone() {
             radiusSlider.value = 100;
             updateSafeCircle(100);
+            document.getElementById('inputRadius').value = 100;
             if (map && marker) {
                 map.setView(marker.getLatLng(), 15);
             }
         }
 
-        // إرسال البيانات
-       // هذي الدالة تتنفذ تلقائياً لما تضغطي على زر Save
         function prepareFormData() {
             if (!marker) {
                 alert("الرجاء انتظار تحميل الخريطة");
-                return false; // يمنع الإرسال لو الخريطة ما فتحتش
+                return false;
             }
 
             const nameInput = document.getElementById('zoneName').value.trim();
@@ -261,16 +414,14 @@
 
             const latlng = marker.getLatLng();
             
-            // تعبئة الحقول المخفية بالإحداثيات
             document.getElementById('inputLat').value = latlng.lat;
             document.getElementById('inputLng').value = latlng.lng;
             document.getElementById('inputRadius').value = radiusSlider.value;
 
-            return true; // يسمح للارافل باستلام الفورم
+            return true;
         }
 
         getUserLocation();
     </script>
-
 </body>
 </html>

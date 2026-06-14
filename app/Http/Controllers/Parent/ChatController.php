@@ -7,7 +7,7 @@ use App\Models\Conversation;
 use App\Models\DoctorProfile;
 use App\Models\Message;
 use App\Models\ParentProfile;
-use App\Models\Notification; // تم إضافة مودل الإشعارات
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -43,13 +43,14 @@ class ChatController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        $doctorName = trim(
-            ($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? '')
-        );
+        $doctorName = trim(($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? ''));
 
         if ($doctorName === '') {
             $doctorName = 'Doctor';
         }
+
+        // 💡 التحقق هل الأب داير كتم للمحادثة هذي؟
+        $isMuted = $conversation->parent_muted_until && $conversation->parent_muted_until > now();
 
         return view('parents.chat', [
             'doctor' => [
@@ -58,7 +59,36 @@ class ChatController extends Controller
                 'image' => $doctor->user->profile_image ?? null,
             ],
             'messages' => $messages,
+            'isMuted' => $isMuted, // 💡 تمرير حالة الكتم للواجهة
         ]);
+    }
+
+    // 💡 دالة الكتم الجديدة الخاصة بولي الأمر
+    public function muteConversation(Request $request, $doctorId)
+    {
+        $parent = ParentProfile::where('user_id', auth()->id())->firstOrFail();
+        $conversation = Conversation::where('parent_id', $parent->id)
+                                    ->where('doctor_id', $doctorId)
+                                    ->firstOrFail();
+
+        $duration = $request->duration;
+        $mutedUntil = null;
+
+        if ($duration === '1hour') {
+            $mutedUntil = now()->addHour();
+        } elseif ($duration === '1day') {
+            $mutedUntil = now()->addDay();
+        } elseif ($duration === '1month') {
+            $mutedUntil = now()->addMonth();
+        } elseif ($duration === 'forever') {
+            $mutedUntil = now()->addYears(100);
+        }
+
+        $conversation->update([
+            'parent_muted_until' => $mutedUntil
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function send(Request $request, $doctorId)
@@ -123,22 +153,25 @@ class ChatController extends Controller
                 'read_at' => null,
             ]);
 
-            // --- إضافة إشعار للدكتور ---
-            $notifyMessage = 'Sent you a new message.';
-            if ($type == 'image') {
-                $notifyMessage = 'Sent you an image.';
-            } elseif ($type == 'file') {
-                $notifyMessage = 'Sent you a file.';
-            }
+            // 💡 حارس الإشعارات: نبعث إشعار للدكتور فقط لو مش داير كتم للأب
+            $isDoctorMuted = $conversation->doctor_muted_until && $conversation->doctor_muted_until > now();
 
-            Notification::create([
-                'user_id' => $doctor->user_id, // توجيه الإشعار لحساب الدكتور
-                'related_id' => auth()->user()->parentProfile->id,
-                'title' => 'New Message from ' . auth()->user()->first_name,
-                'message' => $notifyMessage,
-                'type' => 'chat_message',
-            ]);
-            // ---------------------------
+            if (!$isDoctorMuted) {
+                $notifyMessage = 'Sent you a new message.';
+                if ($type == 'image') {
+                    $notifyMessage = 'Sent you an image.';
+                } elseif ($type == 'file') {
+                    $notifyMessage = 'Sent you a file.';
+                }
+
+                Notification::create([
+                    'user_id' => $doctor->user_id,
+                    'related_id' => auth()->user()->parentProfile->id,
+                    'title' => 'New Message from ' . auth()->user()->first_name,
+                    'message' => $notifyMessage,
+                    'type' => 'chat_message',
+                ]);
+            }
 
             return response()->json([
                 'id' => $message->id,
@@ -149,9 +182,7 @@ class ChatController extends Controller
                 'time' => $message->created_at->format('H:i'),
             ]);
         } catch (\Throwable $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -198,14 +229,17 @@ class ChatController extends Controller
                 'read_at' => null,
             ]);
 
-            // --- إضافة إشعار بصمة صوت للدكتور ---
-            Notification::create([
-                'user_id' => $doctor->user_id, // توجيه الإشعار لحساب الدكتور
-                'title' => 'New Message from ' . auth()->user()->first_name,
-                'message' => 'Sent you a voice message.',
-                'type' => 'chat_message',
-            ]);
-            // ------------------------------------
+            // 💡 حارس الإشعارات للصوت
+            $isDoctorMuted = $conversation->doctor_muted_until && $conversation->doctor_muted_until > now();
+
+            if (!$isDoctorMuted) {
+                Notification::create([
+                    'user_id' => $doctor->user_id,
+                    'title' => 'New Message from ' . auth()->user()->first_name,
+                    'message' => 'Sent you a voice message.',
+                    'type' => 'chat_message',
+                ]);
+            }
 
             return response()->json([
                 'id' => $message->id,
@@ -214,9 +248,7 @@ class ChatController extends Controller
                 'time' => $message->created_at->format('H:i'),
             ]);
         } catch (\Throwable $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 

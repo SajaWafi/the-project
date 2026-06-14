@@ -768,6 +768,7 @@
         </div>
     </div>
 
+    <!-- view doctor modal -->
     <div id="doctorViewModal" class="admin-modal-overlay view-doctor-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header"><i class="fas fa-id-card"></i> Doctor Profile</div>
@@ -790,6 +791,7 @@
         </div>
     </div>
 
+    <!-- edit doctor modal -->
     <div id="doctorEditModal" class="admin-modal-overlay edit-doctor-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header"><i class="fas fa-user-edit"></i> Edit Information</div>
@@ -815,6 +817,7 @@
         </div>
     </div>
 
+    <!-- delete doctor modal -->
     <div id="doctorDeleteModal" class="admin-modal-overlay delete-doctor-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header"><i class="fas fa-trash"></i> Delete Doctor</div>
@@ -830,6 +833,10 @@
             </div>
         </div>
     </div>
+
+
+
+    <!-- create doctor modal -->
 
     <div id="doctorCreateModal" class="admin-modal-overlay create-doctor-modal">
         <div class="admin-modal-box">

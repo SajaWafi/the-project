@@ -59,7 +59,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::post('/chat/{parentId}/send', [ChatController::class, 'send'])->name('chat.send');
     Route::delete('/chat/message/{messageId}', [ChatController::class, 'deleteMessage'])->name('chat.message.delete');
     Route::post('/chat/{parentId}/send-audio', [ChatController::class, 'sendAudio'])->name('chat.sendAudio');
-
+    Route::post('/chat/{parentId}/mute', [ChatController::class, 'muteConversation'])->name('chat.mute');
     /*
     |--------------------------------------------------------------------------
     | Appointments Management
@@ -70,8 +70,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::post('/add-appointment', [AppointmentController::class, 'store'])->name('add.appointment.store');
     Route::get('/edit-appointment/{id}', [AppointmentController::class, 'edit'])->name('edit.appointment');
     Route::put('/update-appointment/{id}', [AppointmentController::class, 'update'])->name('update.appointment');
-    Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.delete');
-
+    Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
     /*
     |--------------------------------------------------------------------------
     | Workplace Timings

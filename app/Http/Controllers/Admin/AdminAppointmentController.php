@@ -12,16 +12,62 @@ class AdminAppointmentController extends Controller
     // ---------------------------------------------------------
     // دالة العرض: تجيب المواعيد مرتبة زمنياً بذكاء
     // ---------------------------------------------------------
-    public function index()
+public function index(\Illuminate\Http\Request $request)
     {
-        $appointments = Appointment::with([
+        // 1. تحديد تاريخ اليوم الحالي
+        $today = \Carbon\Carbon::today()->toDateString();
+
+        // 💡 [Automated State Transition]: أي موعد فات تاريخه يتحول تلقائياً إلى "مكتمل"
+        // شملنا الحالات (pending, scheduled, cancelled) باش الكود يصلح الداتا بيز توا تلقائياً
+        \App\Models\Appointment::whereDate('date', '<', $today)
+            ->whereIn('status', ['pending', 'scheduled', 'cancelled'])
+            ->update(['status' => 'completed']);
+
+        // 2. تجهيز الاستعلام الأساسي مع العلاقات
+        $query = \App\Models\Appointment::with([
                 'doctor.user',
                 'parent.user',
                 'child',
                 'workplace',
-            ])
-            ->orderBy('date')
-            //(Raw SQL): تحويل وقت 12-ساعة (AM/PM) إلى 24-ساعة وهمياً باش يترتبوا صح!
+            ]);
+
+        // 3. فلترة البحث (مبنية على اسم الطفل بالدرجة الأولى)
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            
+            $query->where(function($q) use ($searchTerm) {
+                $q->whereHas('child', function($sub) use ($searchTerm) {
+                    $sub->where('name', 'like', "%{$searchTerm}%");
+                })
+                ->orWhereHas('doctor.user', function($sub) use ($searchTerm) {
+                    $sub->where('first_name', 'like', "%{$searchTerm}%")
+                        ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                })
+                ->orWhereHas('parent.user', function($sub) use ($searchTerm) {
+                    $sub->where('first_name', 'like', "%{$searchTerm}%")
+                        ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                });
+            });
+        }
+
+        // 4. فلترة حالة الموعد
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        // 5. فلترة تاريخ الموعد
+        if ($request->filled('date_filter') && $request->date_filter !== 'all') {
+            if ($request->date_filter === 'today') {
+                $query->whereDate('date', $today);
+            } elseif ($request->date_filter === 'upcoming') {
+                $query->whereDate('date', '>', $today);
+            } elseif ($request->date_filter === 'past') {
+                $query->whereDate('date', '<', $today);
+            }
+        }
+
+        // 6. الترتيب بالوقت والتاريخ، ثم التقسيم (Pagination)
+        $appointments = $query->orderBy('date')
             ->orderByRaw("
                 CASE 
                     WHEN from_period = 'AM' AND from_hour = 12 THEN 0
@@ -31,11 +77,11 @@ class AdminAppointmentController extends Controller
                 END
             ")
             ->orderBy('from_minute')
-            ->paginate(10);
+            ->paginate(10)
+            ->appends($request->query());
 
         return view('admin.appointments_management', compact('appointments'));
     }
-
     public function update(Request $request, $id)
     {
         $request->validate([
