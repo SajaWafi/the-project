@@ -66,7 +66,7 @@ class AppointmentController extends Controller
         $request->validate([
             'parent_id' => 'required|exists:parent_profiles,id',
             'workplace_id' => 'required|exists:workplaces,id', //exists منع إدخال IDs غير موجودة.
-            'date' => 'required|date',
+            'date' => 'required|date|after_or_equal:today',
             'from_hour' => 'required|integer|min:1|max:12',
             'from_minute' => 'required|integer|in:0,15,30,45',
             'from_period' => 'required|in:AM,PM',
@@ -143,7 +143,7 @@ class AppointmentController extends Controller
     {
         $request->validate([
             'parent_id' => 'required|exists:parent_profiles,id',
-            'date' => 'required|date',
+            'date' => 'required|date|after_or_equal:today',
             'from_hour' => 'required|integer|min:1|max:12',
             'from_minute' => 'required|integer|in:0,15,30,45',
             'from_period' => 'required|in:AM,PM',

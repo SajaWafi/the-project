@@ -355,6 +355,7 @@
                 id="appointmentDate"
                 name="date"
                 value="{{ old('date') }}"
+                min="{{ now()->toDateString() }}" 
                 class="date-picker"
             >
         </div>
@@ -478,84 +479,4 @@
     </div>
 </body>
 
-<script>/*
-    const patients = [
-        { id: 1, name: 'Jane Doe' },
-        { id: 2, name: 'Ali Salah' },
-        { id: 3, name: 'Hifa Jaber' }
-    ];
-
-    const searchInput = document.getElementById('patient_search');
-    const patientIdInput = document.getElementById('patient_id');
-    const suggestionsBox = document.getElementById('patient_suggestions');
-
-    searchInput.addEventListener('input', function () {
-        const value = this.value.toLowerCase().trim();
-        suggestionsBox.innerHTML = '';
-        patientIdInput.value = '';
-
-        if (value === '') {
-            suggestionsBox.style.display = 'none';
-            return;
-        }
-
-        const filteredPatients = patients.filter(patient =>
-            patient.name.toLowerCase().includes(value)
-        );
-
-        if (filteredPatients.length === 0) {
-            suggestionsBox.style.display = 'none';
-            return;
-        }
-
-        filteredPatients.forEach(patient => {
-            const item = document.createElement('div');
-            item.classList.add('suggestion-item');
-            item.textContent = patient.name;
-
-            item.addEventListener('click', function () {
-                searchInput.value = patient.name;
-                patientIdInput.value = patient.id;
-                suggestionsBox.style.display = 'none';
-            });
-
-            suggestionsBox.appendChild(item);
-        });
-
-        suggestionsBox.style.display = 'block';
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.field-block')) {
-            suggestionsBox.style.display = 'none';
-        }
-    });
-
-    
-    const parentSelect = document.getElementById('parent_id');
-    const childSelect = document.getElementById('child_id');
-
-    function filterChildren() {
-        const selectedParent = parentSelect.value;
-        const options = childSelect.querySelectorAll('option');
-
-        options.forEach(option => {
-            if (!option.value) {
-                option.hidden = false;
-                return;
-            }
-
-            option.hidden = option.dataset.parent !== selectedParent;
-        });
-
-        const selectedOption = childSelect.options[childSelect.selectedIndex];
-        if (selectedOption && selectedOption.value && selectedOption.dataset.parent !== selectedParent) {
-            childSelect.value = '';
-        }
-    }
-
-    parentSelect.addEventListener('change', filterChildren);
-    window.addEventListener('load', filterChildren);*/
-</script> 
-</body>
 </html>

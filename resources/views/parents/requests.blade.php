@@ -219,32 +219,33 @@ body {
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
             </div>
 
-         @foreach($appointmentNotices as $appNotice)
-    @php
-        // نجيبوا بيانات الدكتور بناءً على related_id الموجود في الإشعار
-        $doctor = \App\Models\DoctorProfile::find($appNotice->related_id);
-        $doctorName = $doctor ? ($doctor->user->first_name . ' ' . $doctor->user->last_name) : 'Doctor';
-    @endphp
-
-    <div class="notice-box" style="margin: 0 12px 10px; background: #fff4d9; border: 1px solid #f0cf7a; color: #8a5a00; border-radius: 14px; padding: 12px; font-size: 13px; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-        <div class="notice-title" style="font-weight: 700; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
-            
-            <span>Appointment Updated by Dr. {{ $doctorName }} ⚠️</span>
-            
-            <span style="font-size: 11px; font-weight: normal; color: #b37400;">
-                {{ $appNotice->created_at->diffForHumans() }}
-            </span>
-        </div>
-        <div>{{ $appNotice->message }}</div>
-    </div>
-@endforeach
-
             <div class="list">
                 
+                {{-- 1. إشعارات تحديث المواعيد --}}
+                @foreach($appointmentNotices as $appNotice)
+                    @php
+                        // جلب بيانات الدكتور بناءً على related_id الموجود في الإشعار
+                        $doctor = \App\Models\DoctorProfile::find($appNotice->related_id);
+                        $doctorName = $doctor ? ($doctor->user->first_name . ' ' . $doctor->user->last_name) : 'Doctor';
+                    @endphp
+
+                    <div class="notice-box" style="margin: 0 0 12px; background: #fff4d9; border: 1px solid #f0cf7a; color: #8a5a00; border-radius: 14px; padding: 12px; font-size: 13px; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <div class="notice-title" style="font-weight: 700; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Appointment Updated by Dr. {{ $doctorName }} ⚠️</span>
+                            <span style="font-size: 11px; font-weight: normal; color: #b37400;">
+                                {{ $appNotice->created_at->diffForHumans() }}
+                            </span>
+                        </div>
+                        <div>{{ $appNotice->message }}</div>
+                    </div>
+                @endforeach
+
+
+                {{-- 2. إشعارات رسائل المحادثات الجديدة --}}
                 @foreach($notifications as $relatedId => $doctorMessages)
                     @if($relatedId && $doctorMessages->isNotEmpty())
                         @php
-                            // نجيبوا بيانات أحدث رسالة في المجموعة
+                            // جلب بيانات أحدث رسالة في المجموعة
                             $latestMsg = $doctorMessages->first();
                         @endphp
                         
@@ -283,8 +284,10 @@ body {
                     @endif
                 @endforeach
 
+
+                {{-- 3. طلبات الربط القادمة من الأطباء --}}
                 @forelse($requests as $request)
-                    <div class="card">
+                    <div class="card" style="margin-bottom: 12px;">
                         @php
                             $profileImage = $request->doctor?->user?->profile_image;
                             $doctorImage = $profileImage ? asset('storage/' . $profileImage) : asset('images/default-user.png');
@@ -318,7 +321,6 @@ body {
                             @elseif($request->status == 'rejected')
                                 <div class="specialty" style="color: #c62828;">Request Rejected ❌</div>
                             @endif
-
                         </div>
                     </div>
                 @empty
@@ -330,5 +332,6 @@ body {
                     </div>
                 @endforelse
 
+            </div>
             </div> </div> </div> </body>
 </html>
