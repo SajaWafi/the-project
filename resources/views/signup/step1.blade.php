@@ -39,6 +39,18 @@
             <input class="input" type="text" name="phone" value="{{ old('phone', session('phone')) }}">
         </div>
 
+        <label>Gender:</label>
+
+        <div class="select-box">
+            <select name="gender">
+                <option value="">Select </option>
+                <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+            </select>
+        </div>
+
+        <br>
+
         <label>Kinship:</label>
 
         <div class="select-box">

@@ -30,10 +30,10 @@
 
     <div class="field">
         <label>Gender:</label>
-        <select class="input" name="gender">
-            <option value="" disabled {{ old('gender', session('signup.gender')) ? '' : 'selected' }}>Select option...</option>
-            <option value="Male" {{ old('gender', session('signup.gender')) == 'Male' ? 'selected' : '' }}>Male</option>
-            <option value="Female" {{ old('gender', session('signup.gender')) == 'Female' ? 'selected' : '' }}>Female</option>
+        <select class="input" name="child_gender">
+            <option value="" disabled {{ old('child_gender', session('signup.child_gender')) ? '' : 'selected' }}>Select option...</option>
+            <option value="Male" {{ old('child_gender', session('signup.child_gender')) == 'Male' ? 'selected' : '' }}>Male</option>
+            <option value="Female" {{ old('child_gender', session('signup.child_gender')) == 'Female' ? 'selected' : '' }}>Female</option>
         </select>
     </div>
 

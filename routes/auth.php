@@ -192,6 +192,7 @@ Route::post('/step1', function (Request $request) {
         'last_name' => 'required|string|max:255',
         'phone' => 'required|string|max:30',
         'relation_to_child' => 'required|string|max:255',
+        'gender' => 'required|in:Male,Female',
     ]);
 
     session([
@@ -199,6 +200,7 @@ Route::post('/step1', function (Request $request) {
         'signup.last_name' => $request->last_name,
         'signup.phone' => $request->phone,
         'signup.relation_to_child' => $request->relation_to_child,
+        'signup.gender' => $request->gender,
     ]);
 
     return redirect()->route('step2');
@@ -226,7 +228,8 @@ Route::post('/step2', function (Request $request) {
     $user = User::create([
         'role' => 'parent',
         'first_name' => $signup['first_name'],
-        'last_name' => $signup['last_name'],
+        'last_name' => $signup['last_name'],    
+        'gender' => $signup['gender'],
         'email' => $request->email,
         'phone' => $signup['phone'],
         'password' => Hash::make($request->password),
@@ -265,13 +268,13 @@ Route::get('/step3', function () {
 Route::post('/step3', function (Request $request) {
     $request->validate([
         'child_name' => 'required|string|max:255',
-        'gender' => 'required|in:Male,Female',
+        'child_gender' => 'required|in:Male,Female',
         'dob' => 'required|date',
     ]);
 
     session([
         'signup.child_name' => $request->child_name,
-        'signup.child_gender' => $request->gender,
+        'signup.child_gender' => $request->child_gender,
         'signup.child_birth_date' => $request->dob,
     ]);
 
