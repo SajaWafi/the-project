@@ -16,7 +16,7 @@ use App\Models\PanicEvent;
 use App\Models\Notification;
 use App\Models\RecommendationRule;
 use App\Models\ComparisonRule;
-use App\Models\Location; // تمت الإضافة باش نجيبو مكان النوبة
+use App\Models\Location; 
 
 class ReportController extends Controller
 {
@@ -24,10 +24,10 @@ class ReportController extends Controller
     {
         $period = $request->get('period', 'week');
         
-        // 1. هنا السحر: نحدثوا التقرير بالداتا الحقيقية من الإسوارة قبل ما نعرضوه!
+        // 1. تحديث التقرير بالداتا الحقيقية
         $this->syncRealBraceletData($period);
 
-        // 2. نجيبوا التقرير بعد ما تم تحديثه
+        // 2. جلب التقرير 
         $report = $this->buildReportData($period);
 
         if (!$report) {
@@ -64,10 +64,8 @@ class ReportController extends Controller
         $child = Child::where('parent_id', $parentProfile->id)->first();
         if (!$child) return;
 
-        // تحديد التواريخ
         $startDate = $period === 'week' ? Carbon::now()->subDays(7) : Carbon::now()->subDays(30);
 
-        // جلب القراءات الحقيقية
         $readings = SensorReading::where('child_id', $child->id)
             ->where('created_at', '>=', $startDate)
             ->get();
@@ -76,36 +74,34 @@ class ReportController extends Controller
             ->where('created_at', '>=', $startDate)
             ->get();
 
-        // الخروج من السيف زون (مؤقتاً 0 لين نجهزو جدولها)
         $safeZoneBreaches = 0; 
 
-        // مسح تقرير هذه الفترة القديم لإعادة حسابه بالداتا الجديدة
-        MedicalReport::where('child_id', $child->id)->where('report_type', $period)->delete();
+        // مسح تقرير هذه الفترة القديم لإعادة حسابه
+        // التعديل الجديد: تحديث تقرير الشهر/الأسبوع الحالي فقط والاحتفاظ بالتاريخ القديم
+        MedicalReport::where('child_id', $child->id)
+            ->where('report_type', $period)
+            ->where('report_month', now()->month)
+            ->where('report_year', now()->year)
+            ->delete();
 
-        // إذا مافيش قراءات نهائياً، نوقفوا هنا
         if ($readings->isEmpty() && $episodes->isEmpty()) return;
 
-        // 1. حساب الإحصائيات الأساسية (النبض والخطوات)
         $avgHeartRate = $readings->avg('heart_rate') ? round($readings->avg('heart_rate')) : 0;
         $peakHeartRate = $readings->max('heart_rate') ?? 0;
         $minHeartRate = $readings->where('heart_rate', '>', 0)->min('heart_rate') ?? 0;
-        
-        // حساب الخطوات بناءً على الحركة
         $avgSteps = $readings->avg('motion_level') ? round($readings->avg('motion_level') * 15) : 0;
 
-        // 2. حساب نسبة التغير للمقارنة بالفترة السابقة
         $previousEpisodes = 0; 
         $currentEpisodes = $episodes->count();
         
         if ($previousEpisodes > 0) {
             $comparisonPercentage = (($currentEpisodes - $previousEpisodes) / $previousEpisodes) * 100;
         } elseif ($currentEpisodes > 0) {
-            $comparisonPercentage = 100; // زيادة 100% لأن مفيش نوبات سابقة
+            $comparisonPercentage = 100; 
         } else {
-            $comparisonPercentage = 0; // مستقر
+            $comparisonPercentage = 0; 
         }
 
-        // 3. سحب الملخص الطبي (Critical Summary) من جدول comparison_rules 
         $comparisonRule = ComparisonRule::where('is_active', true)
             ->where('min_value', '<=', $comparisonPercentage)
             ->where(function($query) use ($comparisonPercentage) {
@@ -116,7 +112,7 @@ class ReportController extends Controller
         $summaryText = $comparisonRule ? $comparisonRule->message_en : 'Report generated from actual physical device data.';
         $statusText = $comparisonRule ? $comparisonRule->status : 'Stable';
 
-        // 4. إنشاء التقرير الحقيقي في الداتا بيز
+        // 4. إنشاء التقرير 
         $report = MedicalReport::create([
             'child_id' => $child->id,
             'report_type' => $period,
@@ -132,10 +128,12 @@ class ReportController extends Controller
             'average_steps' => $avgSteps, 
             'safe_zone_exit_count' => $safeZoneBreaches,
             'comparison_percentage' => round($comparisonPercentage),
-            'summary_text' => $summaryText
+            'summary_text' => $summaryText,
+            'avg_episode_duration_min' => 0, 
+            'longest_episode_duration_min' => 0 
         ]);
 
-        // 5. توليد التوصيات الذكية من جدول recommendation_rules 
+        // 5. التوصيات الذكية
         $activeRules = RecommendationRule::where('is_active', true)->get()->keyBy('rule_key');
         $recommendationsToInsert = [];
         $sortOrder = 1;
@@ -145,11 +143,6 @@ class ReportController extends Controller
         } 
         elseif ($comparisonPercentage >= 10 && isset($activeRules['noticeable_episodes_increase'])) {
             $recommendationsToInsert[] = ['message' => $activeRules['noticeable_episodes_increase']->message, 'priority_level' => $activeRules['noticeable_episodes_increase']->priority, 'sort_order' => $sortOrder++];
-        }
-
-        $avgEpisodeDuration = $episodes->avg('duration_min') ?? 0;
-        if ($avgEpisodeDuration >= 10 && isset($activeRules['long_episode_duration'])) {
-            $recommendationsToInsert[] = ['message' => $activeRules['long_episode_duration']->message, 'priority_level' => $activeRules['long_episode_duration']->priority, 'sort_order' => $sortOrder++];
         }
 
         if ($peakHeartRate >= 140 && $avgSteps < 500 && isset($activeRules['high_hr_low_activity'])) {
@@ -173,15 +166,16 @@ class ReportController extends Controller
         }
 
         // ========================================================
-        // 6. تفاصيل النوبات الحقيقية (التحديث الذكي الجديد)
+        // 6. تفاصيل النوبات الحقيقية
         // ========================================================
+        
+        $allDurations = []; 
+
         foreach ($episodes as $ep) {
             
-            // 1. جلب النبض الحقيقي وقت حدوث النوبة
             $relatedReading = SensorReading::find($ep->sensor_reading_id);
             $actualHeartRate = $relatedReading ? $relatedReading->heart_rate : $peakHeartRate;
 
-            // 2. جلب المكان
             $locationName = 'Tracked Location';
             if ($ep->location_id) {
                 $loc = Location::find($ep->location_id);
@@ -190,29 +184,48 @@ class ReportController extends Controller
                 $locationName = 'Coords: ' . $relatedReading->place_value;
             }
 
-            // 3. حساب المدة الحقيقية
-            $duration = 5; // افتراضي 5 دقائق
-            if ($ep->started_at && $ep->ended_at) {
-                $duration = Carbon::parse($ep->started_at)->diffInMinutes(Carbon::parse($ep->ended_at));
-                if ($duration < 1) $duration = 1; 
+            $start = $ep->started_at ? Carbon::parse($ep->started_at) : Carbon::parse($ep->created_at);
+            
+            if ($ep->ended_at) {
+                $end = Carbon::parse($ep->ended_at);
+                $duration = $start->diffInMinutes($end);
+            } else {
+                $duration = 10; 
             }
 
-            // 4. تحديد الوقت والتاريخ الدقيق
-            $eventDate = $ep->started_at ? $ep->started_at : $ep->created_at;
+            if ($duration < 1) {
+                $duration = 1; 
+            }
 
-            // 5. حفظ التفاصيل الحقيقية في التقرير
-            $report->episodeDetails()->create([
+            $allDurations[] = $duration;
+            $eventDate = $start->toDateTimeString();
+
+            \App\Models\ReportEpisodeDetail::create([
+                'report_id'      => $report->id, 
                 'panic_event_id' => $ep->id,
-                'episode_title'  => $ep->event_type ?? 'Panic/Anxiety Event',
+                'episode_title'  => $ep->event_type ?? 'Panic Attack',
                 'episode_date'   => $eventDate, 
                 'location_name'  => $locationName,
-                'duration_min'   => $duration,
+                'duration_min'   => $duration, 
                 'heart_rate'     => $actualHeartRate,
                 'severity'       => $ep->severity ?? 'High'
             ]);
+            
+            // 9. إضافة التنبيهات (Alert History) للتقرير
+            // كل نوبة هلع نحولوها لتنبيه باش تنعرض في واجهة التقرير
+            $report->alertHistory()->create([
+                'alert_text' => 'Panic Event Detected (' . ($ep->severity ?? 'High') . ') on ' . $start->format('M d, h:i A')
+            ]);
+        }
+        
+        // تنبيه في حالة الخروج من السيف زون
+        if ($safeZoneBreaches > 0) {
+            $report->alertHistory()->create([
+                'alert_text' => 'Child exited the safe zone ' . $safeZoneBreaches . ' times.'
+            ]);
         }
 
-        // 7. الرسوم البيانية الحقيقية
+        // 8. الرسوم البيانية الحقيقية
         $groupedReadings = $readings->groupBy(function($date) {
             return Carbon::parse($date->created_at)->format('M d');
         });
@@ -250,11 +263,19 @@ class ReportController extends Controller
         $childModel = Child::where('parent_id', $parentProfile->id)->first();
         if (!$childModel) return null;
 
-        $dbReport = MedicalReport::with(['recommendations', 'episodeDetails', 'alertHistory', 'episodeTrends', 'heartRateTrends'])
+        // تجهيز الاستعلام
+        $query = MedicalReport::with(['recommendations', 'episodeDetails', 'alertHistory', 'episodeTrends', 'heartRateTrends'])
             ->where('child_id', $childModel->id)
-            ->where('report_type', $period)
-            ->latest()
-            ->first();
+            ->where('report_type', $period);
+
+        // 🔥 التعديل: إجبار الواجهة تعرض تقرير الشهر والسنة الحالية فقط باش ما يطلعلناش الهستوري القديم
+        if ($period === 'month') {
+            $query->where('report_month', now()->month)
+                  ->where('report_year', now()->year);
+        }
+
+        // جلب التقرير
+        $dbReport = $query->latest()->first();
 
         $latestReading = SensorReading::where('child_id', $childModel->id)->latest('created_at')->first();
 
@@ -274,8 +295,10 @@ class ReportController extends Controller
             'episodes_count' => $dbReport->total_episodes,
             'previous_episodes_count' => $dbReport->previous_period_episodes,
             'episode_trend_text' => $dbReport->summary_text ?? 'Real device data loaded.',
+            
             'avg_episode_duration' => $dbReport->avg_episode_duration_min ?? 0,
             'longest_episode_duration' => $dbReport->longest_episode_duration_min ?? 0,
+            
             'medical_recommendations' => $dbReport->recommendations->sortBy('sort_order')->pluck('message')->toArray(),
             'avg_heart_rate' => $dbReport->average_heart_rate ?? 0,
             'peak_heart_rate' => $dbReport->peak_heart_rate ?? 0,
@@ -285,17 +308,20 @@ class ReportController extends Controller
             'chart_labels' => $dbReport->episodeTrends->sortBy('point_order')->pluck('point_label')->toArray(),
             'chart_episodes' => $dbReport->episodeTrends->sortBy('point_order')->pluck('episode_count')->toArray(),
             'chart_heart_rate' => $dbReport->heartRateTrends->sortBy('point_order')->pluck('heart_rate_value')->toArray(),
+            
             'episodes' => $dbReport->episodeDetails->map(function($ep) {
                 return [
                     'status' => $ep->episode_title,
                     'date' => Carbon::parse($ep->episode_date)->format('M d, Y'),
-                    'time' => Carbon::parse($ep->episode_date)->format('H:i A'), // هذي اللي حتعرض الوقت صح في كرت النوبة!
+                    'time' => Carbon::parse($ep->episode_date)->format('h:i A'), 
                     'location' => $ep->location_name,
-                    'duration' => $ep->duration_min . ' mins',
+                    'duration' => $ep->duration_min . ' mins', 
                     'heart_rate' => $ep->heart_rate,
                     'trigger' => $ep->severity,
                 ];
             })->toArray(),
+            
+            // توا التنبيهات حتنعرض صح لأننا حفظناها فوق
             'alerts' => $dbReport->alertHistory->pluck('alert_text')->toArray(),
             
             'trigger_insights' => [
@@ -324,7 +350,7 @@ class ReportController extends Controller
             'avg_steps' => 0, 'safe_zone_breaches' => 0,
             'chart_labels' => [], 'chart_episodes' => [], 'chart_heart_rate' => [],
             'episodes' => [], 
-            'alerts' => [],
+            'alerts' => [], // تطلع فاضية في حال مافيش تقرير
             'trigger_insights' => ['Not enough data to determine triggers yet.']
         ];
     }

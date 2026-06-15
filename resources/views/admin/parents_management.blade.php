@@ -547,11 +547,8 @@
         opacity: 0.9;
     }
     </style>
-</head>
-
 <body>
-
- @include('admin.partials.sidebar')
+    @include('admin.partials.sidebar')
 
     <div class="admin-main-content text-start">
         <div class="admin-page-header">
@@ -559,7 +556,6 @@
                 <h4 class="admin-page-title">
                     Parent Management
                 </h4>
-
                 <small class="admin-page-subtitle">
                     Manage parents and their children information
                 </small>
@@ -567,16 +563,11 @@
 
             <div class="admin-status-wrapper">
                 <div class="admin-status-text">
-                    <div class="admin-status-title">
-                        Admin Panel
-                    </div>
-
+                    <div class="admin-status-title">Admin Panel</div>
                     <small class="admin-online-status">
-                        <i class="fas fa-circle me-1"></i>
-                        Online
+                        <i class="fas fa-circle me-1"></i> Online
                     </small>
                 </div>
-
                 <button class="admin-logout-button">
                     <i class="fas fa-sign-out-alt text-danger"></i>
                 </button>
@@ -584,32 +575,27 @@
         </div>
 
         <div class="parent-management-card">
-           <div class="parent-table-header">
-    <h6 class="parent-table-title">
-        Parents Directory
-    </h6>
+            <div class="parent-table-header">
+                <h6 class="parent-table-title">Parents Directory</h6>
 
-    <div style="display:flex; gap:10px; align-items:center;">
-        <button
-            type="button"
-            class="add-new-button"
-            onclick="openAdminModal('parentCreateModal')"
-        >
-            + Add Parent
-        </button>
+                <form action="{{ route('admin.parents.index') }}" method="GET" id="searchForm" style="display:flex; gap:10px; align-items:center;">
+                    <button type="button" class="add-new-button" onclick="openAdminModal('parentCreateModal')">
+                        + Add Parent
+                    </button>
 
-        <div class="parent-search-wrapper">
-            <i class="fas fa-search parent-search-icon"></i>
-
-            <input
-                type="text"
-                id="parentSearchInput"
-                class="form-control form-control-sm parent-search-input"
-                placeholder="Search..."
-            >
-        </div>
-    </div>
-</div>
+                    <div class="parent-search-wrapper">
+                        <i class="fas fa-search parent-search-icon"></i>
+                        <input
+                            type="text"
+                            name="search"
+                            id="parentSearchInput"
+                            value="{{ request('search') }}"
+                            class="form-control form-control-sm parent-search-input"
+                            placeholder="Search names or phones..."
+                        >
+                    </div>
+                </form>
+            </div>
 
             <table id="parentManagementTable" class="parent-table">
                 <thead>
@@ -618,7 +604,6 @@
                         <th>Phone</th>
                         <th>Relation</th>
                         <th>Child</th>
-                        <th>Autism Level</th>
                         <th>Joined Date</th>
                         <th style="text-align: center;">Actions</th>
                     </tr>
@@ -628,7 +613,6 @@
                     @forelse($parents as $parent)
                         @php
                             $child = $parent->children->first();
-
                             $parentFullName = trim(($parent->user->first_name ?? '') . ' ' . ($parent->user->last_name ?? ''));
 
                             if ($parentFullName === '') {
@@ -644,53 +628,23 @@
                             <td>
                                 <div class="parent-info-cell">
                                     <div class="parent-profile-image">
-                                        <img
-                                            src="{{ $parentImage }}"
-                                            alt="Parent Profile"
-                                        >
+                                        <img src="{{ $parentImage }}" alt="Parent Profile">
                                     </div>
-
                                     <div>
-                                        <div class="parent-full-name">
-                                            {{ $parentFullName }}
-                                        </div>
-
-                                        <div class="parent-email">
-                                            {{ $parent->user->email ?? 'N/A' }}
-                                        </div>
+                                        <div class="parent-full-name">{{ $parentFullName }}</div>
+                                        <div class="parent-email">{{ $parent->user->email ?? 'N/A' }}</div>
                                     </div>
                                 </div>
                             </td>
-
+                            <td>{{ $parent->user->phone ?? 'N/A' }}</td>
+                            <td>{{ $parent->relation_to_child ?? 'N/A' }}</td>
                             <td>
-                                {{ $parent->user->phone ?? 'N/A' }}
+                                <span class="child-name-badge">{{ $child->name ?? 'N/A' }}</span>
                             </td>
-
-                            <td>
-                                {{ $parent->relation_to_child ?? 'N/A' }}
-                            </td>
-
-                            <td>
-                                <span class="child-name-badge">
-                                    {{ $child->name ?? 'N/A' }}
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="autism-level-badge">
-                                    {{ $child->autism_level ?? 'N/A' }}
-                                </span>
-                            </td>
-
-                            <td>
-                                {{ $parent->created_at->format('M d, Y') }}
-                            </td>
-
+                            <td>{{ $parent->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="parent-action-buttons">
-                                    <button
-                                        type="button"
-                                        class="parent-action-button parent-action-view js-view-parent"
+                                    <button type="button" class="parent-action-button parent-action-view js-view-parent"
                                         data-name="{{ $parentFullName }}"
                                         data-email="{{ $parent->user->email ?? 'N/A' }}"
                                         data-phone="{{ $parent->user->phone ?? 'N/A' }}"
@@ -698,14 +652,11 @@
                                         data-child-name="{{ $child->name ?? 'N/A' }}"
                                         data-child-gender="{{ $child->gender ?? 'N/A' }}"
                                         data-autism-level="{{ $child->autism_level ?? 'N/A' }}"
-                                        data-image="{{ $parentImage }}"
-                                    >
+                                        data-image="{{ $parentImage }}">
                                         <i class="fas fa-eye"></i>
                                     </button>
 
-                                    <button
-                                        type="button"
-                                        class="parent-action-button parent-action-edit js-edit-parent"
+                                    <button type="button" class="parent-action-button parent-action-edit js-edit-parent"
                                         data-id="{{ $parent->id }}"
                                         data-first-name="{{ $parent->user->first_name ?? '' }}"
                                         data-last-name="{{ $parent->user->last_name ?? '' }}"
@@ -713,24 +664,14 @@
                                         data-relation="{{ $parent->relation_to_child ?? '' }}"
                                         data-child-name="{{ $child->name ?? '' }}"
                                         data-child-gender="{{ $child->gender ?? '' }}"
-                                        data-autism-level="{{ $child->autism_level ?? '' }}"
-                                    >
+                                        data-autism-level="{{ $child->autism_level ?? '' }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
 
-                                    <form
-                                        action="{{ route('admin.parents.destroy', $parent->id) }}"
-                                        method="POST"
-                                        class="m-0"
-                                    >
+                                    <form action="{{ route('admin.parents.destroy', $parent->id) }}" method="POST" class="m-0">
                                         @csrf
                                         @method('DELETE')
-
-                                        <button
-                                            type="button"
-                                            class="parent-action-button parent-action-delete js-delete-parent"
-                                            data-name="{{ $parentFullName }}"
-                                        >
+                                        <button type="button" class="parent-action-button parent-action-delete js-delete-parent" data-name="{{ $parentFullName }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -739,9 +680,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5 text-muted">
-                                No parents found.
-                            </td>
+                            <td colspan="6" class="text-center py-5 text-muted">No parents found.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -755,51 +694,32 @@
 
     <div id="parentViewModal" class="admin-modal-overlay view-parent-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header">
-                <i class="fas fa-id-card"></i>
-                Parent Profile
-            </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('parentViewModal')"
-            >
-                &times;
-            </span>
-
+            <div class="admin-modal-header"><i class="fas fa-id-card"></i> Parent Profile</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('parentViewModal')">&times;</span>
             <div class="admin-modal-body text-center">
-                <div class="view-parent-large-image">
-                    <i class="fas fa-user"></i>
-                </div>
-
+                <div class="view-parent-large-image"><i class="fas fa-user"></i></div>
                 <h3 id="viewParentName" class="view-parent-name"></h3>
-
                 <div class="view-parent-details-box">
                     <div class="view-parent-info-row">
                         <span class="view-parent-info-label">Email</span>
                         <span class="view-parent-info-value" id="viewParentEmail"></span>
                     </div>
-
                     <div class="view-parent-info-row">
                         <span class="view-parent-info-label">Phone</span>
                         <span class="view-parent-info-value" id="viewParentPhone"></span>
                     </div>
-
                     <div class="view-parent-info-row">
                         <span class="view-parent-info-label">Relation</span>
                         <span class="view-parent-info-value" id="viewParentRelation"></span>
                     </div>
-
                     <div class="view-parent-info-row">
                         <span class="view-parent-info-label">Child</span>
                         <span class="view-parent-info-value" id="viewChildName"></span>
                     </div>
-
                     <div class="view-parent-info-row">
                         <span class="view-parent-info-label">Child Gender</span>
                         <span class="view-parent-info-value" id="viewChildGender"></span>
                     </div>
-
                     <div class="view-parent-info-row">
                         <span class="view-parent-info-label">Autism Level</span>
                         <span class="view-parent-info-value" id="viewAutismLevel"></span>
@@ -811,118 +731,52 @@
 
     <div id="parentEditModal" class="admin-modal-overlay edit-parent-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header">
-                <i class="fas fa-user-edit"></i>
-                Edit Parent
-            </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('parentEditModal')"
-            >
-                &times;
-            </span>
-
+            <div class="admin-modal-header"><i class="fas fa-user-edit"></i> Edit Parent</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('parentEditModal')">&times;</span>
             <div class="admin-modal-body">
                 <form id="parentUpdateForm" method="POST">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="parent-edit-section-title">
-                        Parent Information
-                    </div>
-
+                    @csrf @method('PUT')
+                    <div class="parent-edit-section-title">Parent Information</div>
                     <div class="parent-edit-form-group">
                         <label>First Name</label>
-
-                        <input
-                            type="text"
-                            id="editParentFirstName"
-                            name="first_name"
-                            class="parent-edit-input"
-                        >
+                        <input type="text" id="editParentFirstName" name="first_name" class="parent-edit-input">
                     </div>
-
                     <div class="parent-edit-form-group">
                         <label>Last Name</label>
-
-                        <input
-                            type="text"
-                            id="editParentLastName"
-                            name="last_name"
-                            class="parent-edit-input"
-                        >
+                        <input type="text" id="editParentLastName" name="last_name" class="parent-edit-input">
                     </div>
-
                     <div class="parent-edit-form-group">
                         <label>Phone</label>
-
-                        <input
-                            type="text"
-                            id="editParentPhone"
-                            name="phone"
-                            class="parent-edit-input"
-                        >
+                        <input type="text" id="editParentPhone" name="phone" class="parent-edit-input">
                     </div>
-
                     <div class="parent-edit-form-group">
                         <label>Relation To Child</label>
-
-                        <input
-                            type="text"
-                            id="editParentRelation"
-                            name="relation_to_child"
-                            class="parent-edit-input"
-                        >
+                        <input type="text" id="editParentRelation" name="relation_to_child" class="parent-edit-input">
                     </div>
 
-                    <div class="parent-edit-section-title">
-                        Child Information
-                    </div>
-
+                    <div class="parent-edit-section-title">Child Information</div>
                     <div class="parent-edit-form-group">
                         <label>Child Name</label>
-
-                        <input
-                            type="text"
-                            id="editChildName"
-                            name="child_name"
-                            class="parent-edit-input"
-                        >
+                        <input type="text" id="editChildName" name="child_name" class="parent-edit-input">
                     </div>
-
                     <div class="parent-edit-form-group">
                         <label>Child Gender</label>
-
-                        <select
-                            id="editChildGender"
-                            name="child_gender"
-                            class="parent-edit-select"
-                        >
+                        <select id="editChildGender" name="child_gender" class="parent-edit-select">
                             <option value="">Select gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                         </select>
                     </div>
-
                     <div class="parent-edit-form-group">
                         <label>Autism Level</label>
-
-                        <select
-                            id="editAutismLevel"
-                            name="autism_level"
-                            class="parent-edit-select"
-                        >
+                        <select id="editAutismLevel" name="autism_level" class="parent-edit-select">
                             <option value="">Select level</option>
                             <option value="Mild">Mild</option>
                             <option value="Moderate">Moderate</option>
                             <option value="Severe">Severe</option>
                         </select>
                     </div>
-
-                    <button type="submit" class="parent-edit-save-button">
-                        Save Changes
-                    </button>
+                    <button type="submit" class="parent-edit-save-button">Save Changes</button>
                 </form>
             </div>
         </div>
@@ -930,175 +784,115 @@
 
     <div id="parentDeleteModal" class="admin-modal-overlay delete-parent-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header">
-                <i class="fas fa-trash"></i>
-                Delete Parent
-            </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('parentDeleteModal')"
-            >
-                &times;
-            </span>
-
+            <div class="admin-modal-header"><i class="fas fa-trash"></i> Delete Parent</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('parentDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
-                <div class="delete-warning-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-
-                <h4 class="delete-title">
-                    Are you sure?
-                </h4>
-
-                <p class="delete-message">
-                    You are about to delete
-                    <strong id="deleteParentName">this parent</strong>.
-                    This action cannot be undone.
-                </p>
-
+                <div class="delete-warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h4 class="delete-title">Are you sure?</h4>
+                <p class="delete-message">You are about to delete <strong id="deleteParentName">this parent</strong>. This action cannot be undone.</p>
                 <div class="delete-actions">
-                    <button
-                        type="button"
-                        class="delete-cancel-button"
-                        onclick="closeAdminModal('parentDeleteModal')"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="button"
-                        class="delete-confirm-button"
-                        id="confirmParentDeleteButton"
-                    >
-                        Delete
-                    </button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('parentDeleteModal')">Cancel</button>
+                    <button type="button" class="delete-confirm-button" id="confirmParentDeleteButton">Delete</button>
                 </div>
             </div>
         </div>
     </div>
- <div id="parentCreateModal" class="admin-modal-overlay create-parent-modal">
-    <div class="admin-modal-box">
-        <div class="admin-modal-header" style="background: var(--taif-blue);">
-            <i class="fas fa-user-plus"></i>
-            Add Parent And Child
-        </div>
 
-        <span
-            class="admin-modal-close"
-            onclick="closeAdminModal('parentCreateModal')"
-        >
-            &times;
-        </span>
+    <div id="parentCreateModal" class="admin-modal-overlay create-parent-modal">
+        <div class="admin-modal-box">
+            <div class="admin-modal-header" style="background: var(--taif-blue);"><i class="fas fa-user-plus"></i> Add Parent And Child</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('parentCreateModal')">&times;</span>
+            <div class="admin-modal-body">
+                <form action="{{ route('admin.parents.store') }}" method="POST">
+                    @csrf
+                    <div class="parent-edit-section-title">Parent Information</div>
+                    <div class="parent-edit-form-group">
+                        <label>First Name</label>
+                        <input type="text" name="first_name" class="parent-edit-input" required>
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="last_name" class="parent-edit-input" required>
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" class="parent-edit-input" required>
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Phone</label>
+                        <input type="text" name="phone" class="parent-edit-input">
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Gender</label>
+                        <select name="gender" class="parent-edit-select">
+                            <option value="">Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" class="parent-edit-input" required>
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Relation To Child</label>
+                        <input type="text" name="relation_to_child" class="parent-edit-input">
+                    </div>
 
-        <div class="admin-modal-body">
-            <form action="{{ route('admin.parents.store') }}" method="POST">
-                @csrf
-
-                <div class="parent-edit-section-title">
-                    Parent Information
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" class="parent-edit-input" required>
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" class="parent-edit-input" required>
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" class="parent-edit-input" required>
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Phone</label>
-                    <input type="text" name="phone" class="parent-edit-input">
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Gender</label>
-                    <select name="gender" class="parent-edit-select">
-                        <option value="">Select gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" class="parent-edit-input" required>
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Relation To Child</label>
-                    <input type="text" name="relation_to_child" class="parent-edit-input">
-                </div>
-
-                <div class="parent-edit-section-title">
-                    Child Information
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Child Name</label>
-                    <input type="text" name="child_name" class="parent-edit-input" required>
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Child Gender</label>
-                    <select name="child_gender" class="parent-edit-select">
-                        <option value="">Select gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Child Birth Date</label>
-                    <input type="date" name="child_birth_date" class="parent-edit-input">
-                </div>
-
-                <div class="parent-edit-form-group">
-                    <label>Autism Level</label>
-                    <select name="autism_level" class="parent-edit-select">
-                        <option value="">Select level</option>
-                        <option value="Mild">Mild</option>
-                        <option value="Moderate">Moderate</option>
-                        <option value="Severe">Severe</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="parent-edit-save-button">
-                    Add Parent And Child
-                </button>
-            </form>
+                    <div class="parent-edit-section-title">Child Information</div>
+                    <div class="parent-edit-form-group">
+                        <label>Child Name</label>
+                        <input type="text" name="child_name" class="parent-edit-input" required>
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Child Gender</label>
+                        <select name="child_gender" class="parent-edit-select">
+                            <option value="">Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Child Birth Date</label>
+                        <input type="date" name="child_birth_date" class="parent-edit-input">
+                    </div>
+                    <div class="parent-edit-form-group">
+                        <label>Autism Level</label>
+                        <select name="autism_level" class="parent-edit-select">
+                            <option value="">Select level</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="parent-edit-save-button">Add Parent And Child</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
     <script>
         let parentDeleteForm = null;
+
         // ---------------------------------------------------------
-        // 1. الفلترة الفورية (Client-Side Live Search)
+        // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
         // ---------------------------------------------------------
+        let searchTimeout = null;
         const parentSearchInput = document.getElementById('parentSearchInput');
+        const searchForm = document.getElementById('searchForm');
 
         if (parentSearchInput) {
-            //[Event Listener]: التفاعل مع كل حرف يُكتب (keyup) لتقديم استجابة فورية (Zero Latency)
             parentSearchInput.addEventListener('keyup', function () {
-                const searchTerm = this.value.toLowerCase();
-                const parentRows = document.querySelectorAll('#parentTableBody tr');
-        //[DOM Manipulation]: إخفاء أو إظهار السطر بناءً على تطابق النص (يبحث في اسم الأب والطفل معاً)
-                parentRows.forEach(function (row) {
-                    row.style.display = row.innerText.toLowerCase().includes(searchTerm) ? '' : 'none';
-                });
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (searchForm) searchForm.submit();
+                }, 500);
             });
         }
-    // ---------------------------------------------------------
-    // 2. دالة عرض التفاصيل (Composite Data Population)
-    // ---------------------------------------------------------
+
+        // ---------------------------------------------------------
+        // 2. دالة عرض التفاصيل (Composite Data Population)
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-view-parent').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('viewParentName').innerText = this.dataset.name || 'N/A';
@@ -1112,9 +906,10 @@
                 document.getElementById('parentViewModal').style.display = 'flex';
             });
         });
-    // ---------------------------------------------------------
-    // 3. دالة التعديل (Dynamic Form Routing & Pre-filling)
-    // ---------------------------------------------------------
+
+        // ---------------------------------------------------------
+        // 3. دالة التعديل (Dynamic Form Routing & Pre-filling)
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-edit-parent').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('editParentFirstName').value = this.dataset.firstName || '';
@@ -1124,35 +919,43 @@
                 document.getElementById('editChildName').value = this.dataset.childName || '';
                 document.getElementById('editChildGender').value = this.dataset.childGender || '';
                 document.getElementById('editAutismLevel').value = this.dataset.autismLevel || '';
-        //[Dynamic Action]: تركيب مسار التعديل برمجياً ليتطابق مع ID الأب المختار
-                document.getElementById('parentUpdateForm').action = '/admin/parents/' + this.dataset.id;
+
+                if (document.getElementById('parentUpdateForm')) {
+                    document.getElementById('parentUpdateForm').action = '/admin/parents/' + this.dataset.id;
+                }
                 document.getElementById('parentEditModal').style.display = 'flex';
             });
         });
-    // ---------------------------------------------------------
-    // 4. دوال الحذف (Safe Deletion Flow)
-    // ---------------------------------------------------------
+
+        // ---------------------------------------------------------
+        // 4. دوال الحذف (Safe Deletion Flow)
+        // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-parent').forEach(function (button) {
             button.addEventListener('click', function () {
                 parentDeleteForm = this.closest('form');
-
-                document.getElementById('deleteParentName').innerText =
-                    this.dataset.name || 'this parent';
-
+                document.getElementById('deleteParentName').innerText = this.dataset.name || 'this parent';
                 document.getElementById('parentDeleteModal').style.display = 'flex';
             });
         });
 
-        document.getElementById('confirmParentDeleteButton').addEventListener('click', function () {
-            if (parentDeleteForm) {
-                parentDeleteForm.submit();
-            }
-        });
-    // ---------------------------------------------------------
-    // 5. دوال التحكم بنوافذ الـ Modals (UX Polish)
-    // ---------------------------------------------------------
+        const confirmParentDeleteBtn = document.getElementById('confirmParentDeleteButton');
+        if (confirmParentDeleteBtn) {
+            confirmParentDeleteBtn.addEventListener('click', function () {
+                if (parentDeleteForm) {
+                    parentDeleteForm.submit();
+                }
+            });
+        }
+
+        // ---------------------------------------------------------
+        // 5. دوال التحكم بنوافذ الـ Modals (UX Polish)
+        // ---------------------------------------------------------
         function closeAdminModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
+        }
+
+        function openAdminModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
         }
 
         window.onclick = function (event) {
@@ -1160,9 +963,6 @@
                 event.target.style.display = 'none';
             }
         };
-        function openAdminModal(modalId) {
-    document.getElementById(modalId).style.display = 'flex';
-}
     </script>
 </body>
 </html>

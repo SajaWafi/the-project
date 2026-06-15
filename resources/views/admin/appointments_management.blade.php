@@ -471,9 +471,8 @@
         }
     </style>
 </head>
-
 <body>
-   @include('admin.partials.sidebar')
+    @include('admin.partials.sidebar')
 
     <div class="admin-main-content text-start">
         <div class="admin-page-header">
@@ -481,16 +480,13 @@
                 <h4 class="admin-page-title">
                     Appointment Management
                 </h4>
-
                 <small class="admin-page-subtitle">
                     Manage all appointments in the system
                 </small>
             </div>
 
             <div class="admin-status-wrapper">
-                <div class="admin-status-text">
-                </div>
-
+                <div class="admin-status-text"></div>
             </div>
         </div>
 
@@ -500,39 +496,43 @@
                     Appointments Directory
                 </h6>
 
-                <div class="appointment-filter-search-wrapper">
+                <form action="{{ route('admin.appointments.index') }}" method="GET" id="searchForm" class="appointment-filter-search-wrapper" style="display: flex; gap: 10px; align-items: center; justify-content: flex-end;">
+                    
                     <select
+                        name="status"
                         id="appointmentStatusFilter"
                         class="form-control form-control-sm appointment-status-filter"
                     >
-                        <option value="all">All statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="scheduled">Scheduled</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All statuses</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
 
                     <select
+                        name="date_filter"
                         id="appointmentDateFilter"
                         class="form-control form-control-sm appointment-date-filter"
                     >
-                        <option value="all">All dates</option>
-                        <option value="today">Today</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="past">Past</option>
+                        <option value="all" {{ request('date_filter') == 'all' ? 'selected' : '' }}>All dates</option>
+                        <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>Today</option>
+                        <option value="upcoming" {{ request('date_filter') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
+                        <option value="past" {{ request('date_filter') == 'past' ? 'selected' : '' }}>Past</option>
                     </select>
 
                     <div class="appointment-search-wrapper">
                         <i class="fas fa-search appointment-search-icon"></i>
-
                         <input
                             type="text"
+                            name="search"
                             id="appointmentSearchInput"
+                            value="{{ request('search') }}"
                             class="form-control form-control-sm appointment-search-input"
-                            placeholder="Search..."
+                            placeholder="Search doctor or parent..."
                         >
                     </div>
-                </div>
+                </form>
             </div>
 
             <table class="appointment-table">
@@ -552,7 +552,6 @@
                 <tbody id="appointmentTableBody">
                     @forelse($appointments as $appointment)
                         @php
-                //استخدام '??' (Null Coalescing) يحمي النظام من الانهيار في حال كان هناك حقل مفقود (Defensive Programming)
                             $doctorName = trim(
                                 ($appointment->doctor->user->first_name ?? '') . ' ' .
                                 ($appointment->doctor->user->last_name ?? '')
@@ -565,20 +564,15 @@
 
                             $status = $appointment->status ?? 'pending';
 
-                   // دالة match() أسرع وأنظف في كتابة الأكواد من switch-case التقليدية
                             $statusClass = match($status) {
                                 'scheduled' => 'status-scheduled',
                                 'completed' => 'status-completed',
                                 'cancelled' => 'status-cancelled',
                                 default => 'status-pending',
                             };
-                    // استخدام مكتبة Carbon لمعالجة التاريخ في الـ View، وهو تطبيق لمبدأ Data Normalization in UI
 
                             $appointmentDate = \Carbon\Carbon::parse($appointment->date);
-                            $dateType = $appointmentDate->isToday()
-                                ? 'today'
-                                : ($appointmentDate->isFuture() ? 'upcoming' : 'past');
-                    //: استخدام str_pad يجبر الوقت على الظهور بتنسيق 00:00 (مثل 09:00 بدلاً من 9:0) لتجميل الواجهة
+                            
                             $timeText =
                                 str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) . ':' .
                                 str_pad($appointment->from_minute, 2, '0', STR_PAD_LEFT) . ' ' .
@@ -589,10 +583,7 @@
                                 $appointment->to_period;
                         @endphp
 
-                        <tr
-                            data-status="{{ $status }}"
-                            data-date-type="{{ $dateType }}"
-                        >
+                        <tr data-status="{{ $status }}">
                             <td>{{ $doctorName ?: 'N/A' }}</td>
                             <td>{{ $parentName ?: 'N/A' }}</td>
                             <td>{{ $appointment->child->name ?? 'N/A' }}</td>
@@ -606,7 +597,6 @@
                             </td>
                             <td>
                                 <div class="appointment-action-buttons">
-                                 <!--زر العرض -->  
                                     <button
                                         type="button"
                                         class="appointment-action-button appointment-action-view js-view-appointment"
@@ -621,7 +611,7 @@
                                     >
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                        <!-- زر التعديل -->
+                                    
                                     <button
                                         type="button"
                                         class="appointment-action-button appointment-action-edit js-edit-appointment"
@@ -638,7 +628,7 @@
                                     >
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                <!-- زر الحذف -->
+
                                     <form
                                         action="{{ route('admin.appointments.destroy', $appointment->id) }}"
                                         method="POST"
@@ -646,7 +636,6 @@
                                     >
                                         @csrf
                                         @method('DELETE')
-
                                         <button
                                             type="button"
                                             class="appointment-action-button appointment-action-delete js-delete-appointment"
@@ -676,59 +665,18 @@
 
     <div id="appointmentViewModal" class="admin-modal-overlay view-appointment-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header">
-                <i class="fas fa-calendar-check"></i>
-                Appointment Details
-            </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('appointmentViewModal')"
-            >
-                &times;
-            </span>
-
+            <div class="admin-modal-header"><i class="fas fa-calendar-check"></i> Appointment Details</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('appointmentViewModal')">&times;</span>
             <div class="admin-modal-body">
                 <div class="view-appointment-details-box">
-                    <div class="view-appointment-info-row">
-                        <span class="view-appointment-info-label">Doctor</span>
-                        <span class="view-appointment-info-value" id="viewAppointmentDoctor"></span>
-                    </div>
-
-                    <div class="view-appointment-info-row">
-                        <span class="view-appointment-info-label">Parent</span>
-                        <span class="view-appointment-info-value" id="viewAppointmentParent"></span>
-                    </div>
-
-                    <div class="view-appointment-info-row">
-                        <span class="view-appointment-info-label">Child</span>
-                        <span class="view-appointment-info-value" id="viewAppointmentChild"></span>
-                    </div>
-                    
-                    <div class="view-appointment-info-row">
-                        <span class="view-appointment-info-label">Workplace</span>
-                        <span class="view-appointment-info-value" id="viewAppointmentWorkplace"></span>
-                    </div>
-
-                    <div class="view-appointment-info-row">
-                        <span class="view-appointment-info-label">Date</span>
-                        <span class="view-appointment-info-value" id="viewAppointmentDate"></span>
-                    </div>
-
-                    <div class="view-appointment-info-row">
-                        <span class="view-appointment-info-label">Time</span>
-                        <span class="view-appointment-info-value" id="viewAppointmentTime"></span>
-                    </div>
-
-                    <div class="view-appointment-info-row">
-                        <span class="view-appointment-info-label">Status</span>
-                        <span class="view-appointment-info-value" id="viewAppointmentStatus"></span>
-                    </div>
-
-                    <div class="view-appointment-info-row">
-                        <span class="view-appointment-info-label">Note</span>
-                        <span class="view-appointment-info-value" id="viewAppointmentNote"></span>
-                    </div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Doctor</span><span class="view-appointment-info-value" id="viewAppointmentDoctor"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Parent</span><span class="view-appointment-info-value" id="viewAppointmentParent"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Child</span><span class="view-appointment-info-value" id="viewAppointmentChild"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Workplace</span><span class="view-appointment-info-value" id="viewAppointmentWorkplace"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Date</span><span class="view-appointment-info-value" id="viewAppointmentDate"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Time</span><span class="view-appointment-info-value" id="viewAppointmentTime"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Status</span><span class="view-appointment-info-value" id="viewAppointmentStatus"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Note</span><span class="view-appointment-info-value" id="viewAppointmentNote"></span></div>
                 </div>
             </div>
         </div>
@@ -736,107 +684,45 @@
 
     <div id="appointmentEditModal" class="admin-modal-overlay edit-appointment-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header">
-                <i class="fas fa-edit"></i>
-                Edit Appointment
-            </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('appointmentEditModal')"
-            >
-                &times;
-            </span>
-
+            <div class="admin-modal-header"><i class="fas fa-edit"></i> Edit Appointment</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('appointmentEditModal')">&times;</span>
             <div class="admin-modal-body">
                 <form id="appointmentUpdateForm" method="POST">
-                    @csrf
-                    @method('PUT')
-
+                    @csrf @method('PUT')
                     <div class="appointment-edit-form-group">
                         <label>Date</label>
-                        <input
-                            type="date"
-                            id="editAppointmentDate"
-                            name="date"
-                            class="appointment-edit-input"
-                        >
+                        <input type="date" id="editAppointmentDate" name="date" class="appointment-edit-input">
                     </div>
-
                     <div class="appointment-edit-form-group">
                         <label>Time Since</label>
-
                         <div class="time-grid">
-                            <select id="editFromHour" name="from_hour" class="appointment-edit-select">
-                                @for($i = 1; $i <= 12; $i++)
-                                    <option value="{{ $i }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
-                                @endfor
-                            </select>
-
-                            <select id="editFromMinute" name="from_minute" class="appointment-edit-select">
-                                @foreach([0, 15, 30, 45] as $minute)
-                                    <option value="{{ $minute }}">{{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}</option>
-                                @endforeach
-                            </select>
-
-                            <select id="editFromPeriod" name="from_period" class="appointment-edit-select">
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                            </select>
+                            <select id="editFromHour" name="from_hour" class="appointment-edit-select">@for($i = 1; $i <= 12; $i++)<option value="{{ $i }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>@endfor</select>
+                            <select id="editFromMinute" name="from_minute" class="appointment-edit-select">@foreach([0, 15, 30, 45] as $minute)<option value="{{ $minute }}">{{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}</option>@endforeach</select>
+                            <select id="editFromPeriod" name="from_period" class="appointment-edit-select"><option value="AM">AM</option><option value="PM">PM</option></select>
                         </div>
                     </div>
-
                     <div class="appointment-edit-form-group">
                         <label>Time To</label>
-
                         <div class="time-grid">
-                            <select id="editToHour" name="to_hour" class="appointment-edit-select">
-                                @for($i = 1; $i <= 12; $i++)
-                                    <option value="{{ $i }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
-                                @endfor
-                            </select>
-
-                            <select id="editToMinute" name="to_minute" class="appointment-edit-select">
-                                @foreach([0, 15, 30, 45] as $minute)
-                                    <option value="{{ $minute }}">{{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}</option>
-                                @endforeach
-                            </select>
-
-                            <select id="editToPeriod" name="to_period" class="appointment-edit-select">
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                            </select>
+                            <select id="editToHour" name="to_hour" class="appointment-edit-select">@for($i = 1; $i <= 12; $i++)<option value="{{ $i }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>@endfor</select>
+                            <select id="editToMinute" name="to_minute" class="appointment-edit-select">@foreach([0, 15, 30, 45] as $minute)<option value="{{ $minute }}">{{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}</option>@endforeach</select>
+                            <select id="editToPeriod" name="to_period" class="appointment-edit-select"><option value="AM">AM</option><option value="PM">PM</option></select>
                         </div>
                     </div>
-
                     <div class="appointment-edit-form-group">
                         <label>Status</label>
-
-                        <select
-                            id="editAppointmentStatus"
-                            name="status"
-                            class="appointment-edit-select"
-                        >
+                        <select id="editAppointmentStatus" name="status" class="appointment-edit-select">
                             <option value="pending">Pending</option>
                             <option value="scheduled">Scheduled</option>
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>
                         </select>
                     </div>
-
                     <div class="appointment-edit-form-group">
                         <label>Note</label>
-
-                        <textarea
-                            id="editAppointmentNote"
-                            name="note"
-                            class="appointment-edit-textarea"
-                        ></textarea>
+                        <textarea id="editAppointmentNote" name="note" class="appointment-edit-textarea"></textarea>
                     </div>
-
-                    <button type="submit" class="appointment-edit-save-button">
-                        Save Changes
-                    </button>
+                    <button type="submit" class="appointment-edit-save-button">Save Changes</button>
                 </form>
             </div>
         </div>
@@ -844,109 +730,51 @@
 
     <div id="appointmentDeleteModal" class="admin-modal-overlay delete-appointment-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header">
-                <i class="fas fa-trash"></i>
-                Delete Appointment
-            </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('appointmentDeleteModal')"
-            >
-                &times;
-            </span>
-
+            <div class="admin-modal-header"><i class="fas fa-trash"></i> Delete Appointment</div>
+            <span class="admin-modal-close" onclick="closeAdminModal('appointmentDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
-                <div class="delete-warning-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-
-                <h4 class="delete-title">
-                    Are you sure?
-                </h4>
-
-                <p class="delete-message">
-                    You are about to delete appointment:
-                    <strong id="deleteAppointmentName">this appointment</strong>.
-                    This action cannot be undone.
-                </p>
-
+                <div class="delete-warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h4 class="delete-title">Are you sure?</h4>
+                <p class="delete-message">You are about to delete appointment:<br><strong id="deleteAppointmentName">this appointment</strong>.<br>This action cannot be undone.</p>
                 <div class="delete-actions">
-                    <button
-                        type="button"
-                        class="delete-cancel-button"
-                        onclick="closeAdminModal('appointmentDeleteModal')"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="button"
-                        class="delete-confirm-button"
-                        id="confirmAppointmentDeleteButton"
-                    >
-                        Delete
-                    </button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('appointmentDeleteModal')">Cancel</button>
+                    <button type="button" class="delete-confirm-button" id="confirmAppointmentDeleteButton">Delete</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. ذاكرة مؤقتة لحفظ فورم الحذف
         let appointmentDeleteForm = null;
-        // 2. التقاط عناصر الفلترة (بحث، حالة، تاريخ)
+
+        // ---------------------------------------------------------
+        // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
+        // ---------------------------------------------------------
+        let searchTimeout = null;
+        const searchForm = document.getElementById('searchForm');
         const appointmentSearchInput = document.getElementById('appointmentSearchInput');
         const appointmentStatusFilter = document.getElementById('appointmentStatusFilter');
         const appointmentDateFilter = document.getElementById('appointmentDateFilter');
-        // ---------------------------------------------------------
-        // دالة الفلترة الفورية (Client-Side Filtering)
-        // ---------------------------------------------------------
-        function filterAppointmentsTable() {
-            const searchTerm = appointmentSearchInput
-                ? appointmentSearchInput.value.toLowerCase().trim()
-                : '';
 
-            const selectedStatus = appointmentStatusFilter
-                ? appointmentStatusFilter.value
-                : 'all';
-
-            const selectedDateType = appointmentDateFilter
-                ? appointmentDateFilter.value
-                : 'all';
-
-            const rows = document.querySelectorAll('#appointmentTableBody tr');
-
-            rows.forEach(function (row) {
-                if (!row.dataset.status) {
-                    return;
-                }
-
-                const rowText = row.innerText.toLowerCase();
-                const rowStatus = row.dataset.status;
-                const rowDateType = row.dataset.dateType; // تسحب نوع التاريخ (اليوم، قادم، ماضي)
-                // فحص تطابق الشروط الثلاثة مع بعض
-                const matchesSearch = rowText.includes(searchTerm);
-                const matchesStatus = selectedStatus === 'all' || rowStatus === selectedStatus;
-                const matchesDate = selectedDateType === 'all' || rowDateType === selectedDateType;
-
-                row.style.display = matchesSearch && matchesStatus && matchesDate ? '' : 'none';
+        if (appointmentSearchInput) {
+            appointmentSearchInput.addEventListener('keyup', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (searchForm) searchForm.submit();
+                }, 500);
             });
         }
-        // تشغيل الفلترة عند الكتابة أو تغيير القوائم المنسدلة
-        if (appointmentSearchInput) {
-            appointmentSearchInput.addEventListener('keyup', filterAppointmentsTable);
-        }
 
+        // إرسال الفورم فوراً عند تغيير أي قائمة منسدلة
         if (appointmentStatusFilter) {
-            appointmentStatusFilter.addEventListener('change', filterAppointmentsTable);
+            appointmentStatusFilter.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
+        }
+        if (appointmentDateFilter) {
+            appointmentDateFilter.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
         }
 
-        if (appointmentDateFilter) {
-            appointmentDateFilter.addEventListener('change', filterAppointmentsTable);
-        }
         // ---------------------------------------------------------
-        // دالة عرض التفاصيل (View Modal)
+        // 2. دالة عرض التفاصيل
         // ---------------------------------------------------------
         document.querySelectorAll('.js-view-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
@@ -962,8 +790,9 @@
                 document.getElementById('appointmentViewModal').style.display = 'flex';
             });
         });
+
         // ---------------------------------------------------------
-        // دالة التعديل الذكية (Dynamic Form Action) 
+        // 3. دالة التعديل
         // ---------------------------------------------------------
         document.querySelectorAll('.js-edit-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
@@ -976,32 +805,31 @@
                 document.getElementById('editToPeriod').value = this.dataset.toPeriod || '';
                 document.getElementById('editAppointmentStatus').value = this.dataset.status || 'pending';
                 document.getElementById('editAppointmentNote').value = this.dataset.note || '';
-           //  تغيير رابط الفورم (Action) ديناميكياً ليطابق ID الموعد!
-                document.getElementById('appointmentUpdateForm').action =
-                    '/admin/appointments/' + this.dataset.id;
 
+                if(document.getElementById('appointmentUpdateForm')) {
+                    document.getElementById('appointmentUpdateForm').action = '/admin/appointments/' + this.dataset.id;
+                }
                 document.getElementById('appointmentEditModal').style.display = 'flex';
             });
         });
+
         // ---------------------------------------------------------
-        // دوال الحذف والإغلاق
+        // 4. دوال الحذف والإغلاق
         // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
                 appointmentDeleteForm = this.closest('form');
-
-                document.getElementById('deleteAppointmentName').innerText =
-                    this.dataset.name || 'this appointment';
-
+                document.getElementById('deleteAppointmentName').innerText = this.dataset.name || 'this appointment';
                 document.getElementById('appointmentDeleteModal').style.display = 'flex';
             });
         });
 
-        document.getElementById('confirmAppointmentDeleteButton').addEventListener('click', function () {
-            if (appointmentDeleteForm) {
-                appointmentDeleteForm.submit();
-            }
-        });
+        const confirmBtn = document.getElementById('confirmAppointmentDeleteButton');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function () {
+                if (appointmentDeleteForm) appointmentDeleteForm.submit();
+            });
+        }
 
         function closeAdminModal(modalId) {
             document.getElementById(modalId).style.display = 'none';

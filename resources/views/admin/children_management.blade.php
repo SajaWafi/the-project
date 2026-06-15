@@ -586,14 +586,12 @@
 <body>
     @include('admin.partials.sidebar')
 
-    <!-- Main Content -->
     <div class="admin-main-content text-start">
         <div class="admin-page-header">
             <div>
                 <h4 class="admin-page-title">
                     Children Management
                 </h4>
-
                 <small class="admin-page-subtitle">
                     Manage all children in the system
                 </small>
@@ -611,16 +609,17 @@
                     Children Directory
                 </h6>
 
-                <div class="children-search-wrapper">
+                <form action="{{ route('admin.children.index') }}" method="GET" id="searchForm" class="children-search-wrapper">
                     <i class="fas fa-search children-search-icon"></i>
-
                     <input
                         type="text"
+                        name="search"
                         id="childrenSearchInput"
+                        value="{{ request('search') }}"
                         class="form-control form-control-sm children-search-input"
-                        placeholder="Search..."
+                        placeholder="Search child name..."
                     >
-                </div>
+                </form>
             </div>
 
             <table id="childrenManagementTable" class="children-table">
@@ -662,12 +661,10 @@
                                             alt="Children Profile"
                                         >
                                     </div>
-
                                     <div>
                                         <div class="children-full-name">
                                             {{ $child->name }}
                                         </div>
-
                                     </div>
                                 </div>
                             </td>
@@ -698,8 +695,7 @@
 
                             <td>
                                 <div class="children-action-buttons">
-                                  <!-- زر العرض -->
-                                    <button
+                                  <button
                                         type="button"
                                         class="children-action-button children-action-view js-view-children"
                                         data-name="{{ $childFullName }}"
@@ -707,10 +703,10 @@
                                         data-autism-level="{{ $child->autism_level ?? 'N/A' }}"
                                         data-gender="{{ $child->gender ?? 'N/A' }}"
                                         data-birth-date="{{ $child->birth_date ?? 'N/A' }}"
+                                        data-image="{{ $childImage }}"
                                     >
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <!-- زر التعديل -->
                                     <button
                                         type="button"
                                         class="children-action-button children-action-edit js-edit-children"
@@ -731,7 +727,6 @@
                                     >
                                         @csrf
                                         @method('DELETE')
-                                        <!-- زر الحذف -->
                                         <button
                                             type="button"
                                             class="children-action-button children-action-delete js-delete-children"
@@ -745,69 +740,50 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
+                            <td colspan="7" class="text-center py-5 text-muted">
                                 No children found.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+            
+            <div class="p-3">
+                {{ $children->links() }}
+            </div>
         </div>
     </div>
 
-    <!-- View children Modal -->
     <div id="childrenViewModal" class="admin-modal-overlay view-children-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
                 <i class="fas fa-id-card"></i>
                 Children Profile
             </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('childrenViewModal')"
-            >
-                &times;
-            </span>
-
+            <span class="admin-modal-close" onclick="closeAdminModal('childrenViewModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="view-doctor-large-image">
-                    <img
-                        id="viewChildrenImage"
-                        src="{{ asset('images/default-user.png') }}"
-                        alt="children Image"
-                    >
+                    <img id="viewChildrenImage" src="{{ asset('images/default-user.png') }}" alt="children Image">
                 </div>
-
                 <h3 id="viewchildrenName" class="view-children-name"></h3>
-
-                <span
-                    id="viewChildrenSpecialization"
-                    class="children-specialization-badge d-inline-block mb-4"
-                    style="font-size: 13px;"
-                ></span>
-
+                <span id="viewChildrenSpecialization" class="children-specialization-badge d-inline-block mb-4" style="font-size: 13px;"></span>
                 <div class="view-children-details-box">
                     <div class="view-children-info-row">
                         <span class="view-children-info-label">Child name</span>
                         <span class="view-children-info-value" id="viewChildrenName"></span>
                     </div>
-
                     <div class="view-children-info-row">
                         <span class="view-children-info-label">Parent name</span>
                         <span class="view-children-info-value" id="viewParentName"></span>
                     </div>
-
                     <div class="view-children-info-row">
                         <span class="view-children-info-label">Autism level</span>
                         <span class="view-children-info-value" id="viewAutismLevel"></span>
                     </div>
-
                     <div class="view-children-info-row">
                         <span class="view-children-info-label">Gender</span>
                         <span class="view-children-info-value" id="viewGender"></span>
                     </div>
-
                     <div class="view-children-info-row">
                         <span class="view-children-info-label">Birth date</span>
                         <span class="view-children-info-value" id="viewBirthDate"></span>
@@ -817,89 +793,46 @@
         </div>
     </div>
 
-    <!-- Edit children Modal -->
     <div id="childrenEditModal" class="admin-modal-overlay edit-children-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
                 <i class="fas fa-user-edit"></i>
                 Edit Information
             </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('childrenEditModal')"
-            >
-                &times;
-            </span>
-
+            <span class="admin-modal-close" onclick="closeAdminModal('childrenEditModal')">&times;</span>
             <div class="admin-modal-body">
                 <form id="childrenUpdateForm" method="POST">
                     @csrf
                     @method('PUT')
-
                     <div class="children-edit-form-group">
                         <label>Id</label>
-
-                        <input
-                            type="text"
-                            id="editchildId"
-                            name="id"
-                            class="children-edit-input"
-                            readonly
-                        >
+                        <input type="text" id="editchildId" name="id" class="children-edit-input" readonly>
                     </div>
-
                     <div class="children-edit-form-group">
                         <label> Child name</label>
-
-                        <input
-                            type="text"
-                            id="editchildrenName"
-                            name="name"
-                            class="children-edit-input"
-                        >
+                        <input type="text" id="editchildrenName" name="name" class="children-edit-input">
                     </div>
-
                     <div class="children-edit-form-group">
                         <label>Autism Level</label>
-
-                        <select
-                            id="editAutismLevel"
-                            name="autism_level"
-                            class="children-edit-input"
-                        >
+                        <select id="editAutismLevel" name="autism_level" class="children-edit-input">
                             <option value="">Select Level</option>
                             <option value="Mild">Mild</option>
                             <option value="Moderate">Moderate</option>
                             <option value="Severe">Severe</option>
                         </select>
                     </div>
-
                     <div class="children-edit-form-group">
                         <label>Gender</label>
-
-                        <select
-                            id="editGender"
-                            name="gender"
-                            class="children-edit-input"
-                        >
+                        <select id="editGender" name="gender" class="children-edit-input">
                             <option value="">Select Gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                         </select>
                     </div>
-
                     <div class="children-edit-form-group">
                         <label>Birth Date</label>
-
-                        <input
-                            type="date"
-                            id="editBirthDate"
-                            name="birth_date"
-                            class="children-edit-input"
-                        >
+                        <input type="date" id="editBirthDate" name="birth_date" class="children-edit-input">
                     </div>
-
                     <button type="submit" class="children-edit-save-button">
                         Save Changes
                     </button>
@@ -908,52 +841,26 @@
         </div>
     </div>
 
-    <!-- Delete children Modal -->
     <div id="childrenDeleteModal" class="admin-modal-overlay delete-children-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
                 <i class="fas fa-trash"></i>
                 Delete children
             </div>
-
-            <span
-                class="admin-modal-close"
-                onclick="closeAdminModal('childrenDeleteModal')"
-            >
-                &times;
-            </span>
-
+            <span class="admin-modal-close" onclick="closeAdminModal('childrenDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="delete-warning-icon">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-
-                <h4 class="delete-title">
-                    Are you sure?
-                </h4>
-
+                <h4 class="delete-title">Are you sure?</h4>
                 <p class="delete-message">
                     You are about to delete
                     <strong id="deletechildrenName">this children</strong>.
                     This action cannot be undone.
                 </p>
-
                 <div class="delete-actions">
-                    <button
-                        type="button"
-                        class="delete-cancel-button"
-                        onclick="closeAdminModal('childrenDeleteModal')"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="button"
-                        class="delete-confirm-button"
-                        id="confirmchildrenDeleteButton"
-                    >
-                        Delete
-                    </button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('childrenDeleteModal')">Cancel</button>
+                    <button type="button" class="delete-confirm-button" id="confirmchildrenDeleteButton">Delete</button>
                 </div>
             </div>
         </div>
@@ -964,17 +871,18 @@
     let childrenDeleteForm = null;
 
     // ---------------------------------------------------------
-    // 1. دالة البحث الفوري (Client-Side Live Search)
+    // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
     // ---------------------------------------------------------
+    let searchTimeout = null;
     const childrenSearchInput = document.getElementById('childrenSearchInput');
+    const searchForm = document.getElementById('searchForm');
+
     if (childrenSearchInput) {
-        // حدث keyup: يشتغل مع كل حرف ينكتب في الكيبورد
         childrenSearchInput.addEventListener('keyup', function () {
-            const searchTerm = this.value.toLowerCase();
-            const childrenRows = document.querySelectorAll('#childrenTableBody tr');
-            childrenRows.forEach(function (row) {
-                row.style.display = row.innerText.toLowerCase().includes(searchTerm) ? '' : 'none';
-            });
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (searchForm) searchForm.submit();
+            }, 500);
         });
     }
 
@@ -983,10 +891,11 @@
     // ---------------------------------------------------------
     document.querySelectorAll('.js-view-children').forEach(function (button) {
         button.addEventListener('click', function () {
-            const d = this.dataset;// [Clean Code]: تخزين الـ dataset في متغير قصير لتجنب التكرار
+            const d = this.dataset; 
              
              // حقن البيانات في النافذة المنبثقة (DOM Manipulation)
             document.getElementById('viewchildrenName').innerText = d.name || 'N/A';
+            document.getElementById('viewChildrenName').innerText = d.name || 'N/A'; // added to fill the row
             document.getElementById('viewParentName').innerText = d.parentName || 'N/A';
             document.getElementById('viewAutismLevel').innerText = d.autismLevel || 'N/A';
             document.getElementById('viewGender').innerText = d.gender || 'N/A';
@@ -1040,10 +949,12 @@
             document.getElementById('childrenDeleteModal').style.display = 'flex';
         });
     });
+    
     // تنفيذ الحذف الفعلي بعد التأكيد
-    document.getElementById('confirmChildrenDeleteButton').addEventListener('click', function () {
+    document.getElementById('confirmchildrenDeleteButton').addEventListener('click', function () {
         if (childrenDeleteForm) childrenDeleteForm.submit();
     });
+
     // ---------------------------------------------------------
     // 5. دوال إغلاق النوافذ (UX Polish)
     // ---------------------------------------------------------

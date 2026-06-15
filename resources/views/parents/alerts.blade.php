@@ -346,13 +346,13 @@
                                 @if(is_null($alert->parent_response))
                                     <span id="safe-text-{{ $alert->id }}">Is the child with you?</span>
                                     
-                                    <form action="{{ route('parents.alerts.response', $alert->id) }}" method="POST" style="display: inline;">
+                                    <form action="{{ route('alerts.response', $alert->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         <input type="hidden" name="parent_response" value="yes">
                                         <button type="submit" class="safe-btn btn-yes">Yes</button>
                                     </form>
 
-                                    <form action="{{ route('parents.alerts.response', $alert->id) }}" method="POST" style="display: inline;">
+                                    <form action="{{ route('alerts.response', $alert->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         <input type="hidden" name="parent_response" value="no">
                                         <button type="submit" class="safe-btn btn-no">No</button>

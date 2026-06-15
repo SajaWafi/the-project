@@ -136,7 +136,7 @@ Route::prefix('parents')->middleware(['auth', 'role:parent'])->group(function ()
     Route::post('/chat/{doctorId}/send', [ChatController::class, 'send'])->name('chat.send');
     Route::post('/chat/{doctorId}/send-audio', [ChatController::class, 'sendAudio'])->name('chat.sendAudio');
     Route::delete('/chat/message/{messageId}', [ChatController::class, 'deleteMessage'])->name('chat.message.delete');
-
+    Route::post('/chat/{doctorId}/mute', [ChatController::class, 'muteConversation'])->name('chat.mute');
     /*
     |--------------------------------------------------------------------------
     | Reports

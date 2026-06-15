@@ -408,7 +408,7 @@
                         </svg>
                     </button>
 
-                    <a href="{{ route('doctor.chat', $doctor['id'] ?? 1) }}" class="stack-btn chat-btn" title="Chat">
+                    <a href="{{ route('doctor.chat', $parent['user_id'] ?? $parent['id']) }}" class="stack-btn chat-btn" title="Chat">
                         💬
                     </a>
                 </div>

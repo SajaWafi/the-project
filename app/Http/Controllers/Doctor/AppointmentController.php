@@ -11,8 +11,10 @@ use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
-    // 1. دالة عرض المواعيد
-    public function index()
+    // ---------------------------------------------------------
+    // 1. 💡 دالة عرض المواعيد (فلترة بالتواريخ بدل الحالة)
+    // ---------------------------------------------------------
+    public function index(Request $request)
     {
         $doctorProfile = auth()->user()->doctorProfile;
 
@@ -20,10 +22,45 @@ class AppointmentController extends Controller
             abort(404, 'Doctor profile not found.');
         }
 
-        $appointments = Appointment::with(['parent.user', 'child'])
+        $query = Appointment::with(['parent.user', 'child'])
             ->where('doctor_id', $doctorProfile->id)
-            ->whereDate('date', '>=', now()->toDateString())
-            ->orderBy('date')
+            ->where('status', '!=', 'cancelled'); // إخفاء الملغية فقط
+
+        // 🔍 الفلترة بالبحث النصي
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->whereHas('parent.user', function($sub) use ($searchTerm) {
+                    $sub->where('first_name', 'like', "%{$searchTerm}%")
+                        ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                })
+                ->orWhereHas('child', function($sub) use ($searchTerm) {
+                    $sub->where('name', 'like', "%{$searchTerm}%");
+                });
+            });
+        }
+
+        // 📅 الفلترة بالتواريخ (اليوم، غداً، هذا الأسبوع)
+        $today = \Carbon\Carbon::today()->toDateString();
+        $dateFilter = $request->input('date_filter', 'all');
+
+        if ($dateFilter === 'today') {
+            $query->whereDate('date', $today);
+        } elseif ($dateFilter === 'tomorrow') {
+            $query->whereDate('date', \Carbon\Carbon::tomorrow()->toDateString());
+        } elseif ($dateFilter === 'week') {
+            // هذا الأسبوع (من اليوم ولمدة 7 أيام)
+            $query->whereBetween('date', [
+                $today, 
+                \Carbon\Carbon::today()->addDays(7)->toDateString()
+            ]);
+        } else {
+            // All (كل المواعيد من اليوم فصاعداً)
+            $query->whereDate('date', '>=', $today);
+        }
+
+        // ترتيب المواعيد
+        $appointments = $query->orderBy('date')
             ->orderByRaw("
                 CASE 
                     WHEN from_period = 'AM' AND from_hour = 12 THEN 0
@@ -33,7 +70,7 @@ class AppointmentController extends Controller
                 END
             ")
             ->orderBy('from_minute')
-            ->get();
+            ->get(); 
 
         return view('doctor.appointments', compact('appointments'));
     }
@@ -48,7 +85,7 @@ class AppointmentController extends Controller
         }
 
         $parents = ParentProfile::with(['user', 'children'])
-            ->whereHas('children.doctors', function ($query) use ($doctorProfile) { //wherehas للتأكد من جلب أولياء الأمور المرتبطين فعلاً بالطبيب.
+            ->whereHas('children.doctors', function ($query) use ($doctorProfile) {
                 $query->where('doctor_profiles.id', $doctorProfile->id);
             })
             ->get();
@@ -67,6 +104,7 @@ class AppointmentController extends Controller
             'parent_id' => 'required|exists:parent_profiles,id',
             'workplace_id' => 'required|exists:workplaces,id', //exists منع إدخال IDs غير موجودة.
             'date' => 'required|date|after_or_equal:today',
+
             'from_hour' => 'required|integer|min:1|max:12',
             'from_minute' => 'required|integer|in:0,15,30,45',
             'from_period' => 'required|in:AM,PM',
@@ -90,7 +128,6 @@ class AppointmentController extends Controller
 
         $child = $parent->children->first(function ($child) use ($doctorProfile) {
             return $child->doctors->contains('id', $doctorProfile->id);
-            //ما وظيفة contains()؟Collectionالتحقق من وجود عنصر داخل 
         });
 
         if (!$child) {
@@ -172,7 +209,6 @@ class AppointmentController extends Controller
             return back()->withErrors(['parent_id' => 'This parent has no child linked.'])->withInput();
         }
 
-        // تحديث الموعد
         $appointment->update([
             'parent_id' => $request->parent_id,
             'child_id' => $child->id,
@@ -183,16 +219,16 @@ class AppointmentController extends Controller
             'to_hour' => $request->to_hour,
             'to_minute' => $request->to_minute,
             'to_period' => $request->to_period,
+            'status' => 'scheduled',
             'note' => $request->note,
         ]);
 
-        // ⚠️ إرسال الإشعار لولي الأمر بتغيير الموعد ⚠️
         Notification::create([
-            'user_id'    => $parent->user_id, // حساب ولي الأمر
-            'related_id' => $doctorProfile->id, // رقم الدكتور اللي غير الموعد
+            'user_id'    => $parent->user_id,
+            'related_id' => $doctorProfile->id,
             'title'      => 'Appointment Updated',
             'message'    => 'The doctor has changed the appointment time. Please review the request and confirm your response.',
-            'type'       => 'appointment_update', // نوع الإشعار الخاص بالمواعيد
+            'type'       => 'appointment_update',
         ]);
 
         return redirect()->route('doctor.appointments')->with('success', 'Appointment updated successfully.');
@@ -201,15 +237,12 @@ class AppointmentController extends Controller
     // 6. دالة حذف الموعد
     public function destroy($id)
     {
-        $doctorProfile = auth()->user()->doctorProfile;
+        $appointment = Appointment::findOrFail($id);
 
-        if (!$doctorProfile) {
-            return back()->withErrors(['doctor' => 'Doctor profile not found.']);
-        }
+        $appointment->update([
+            'status' => 'cancelled'
+        ]);
 
-        $appointment = Appointment::where('doctor_id', $doctorProfile->id)->findOrFail($id);
-        $appointment->delete();
-
-        return back()->with('success', 'Appointment deleted successfully.');
+        return redirect()->back()->with('success', 'Appointment has been cancelled successfully.');
     }
 }

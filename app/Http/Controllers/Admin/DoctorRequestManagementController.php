@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DoctorRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DoctorRequestManagementController extends Controller
@@ -11,18 +12,39 @@ class DoctorRequestManagementController extends Controller
     // ---------------------------------------------------------
     // 1. دالة العرض (Index)
     // ---------------------------------------------------------
-    public function index()
-    {
-        $requests = DoctorRequest::with([
-                'doctor.user',
-                'parent.user',
-                'parent.children',
-            ])
-            ->latest()
-            ->paginate(10);
+ public function index(Request $request)
+{
+    // جلب الطلبات مع العلاقات الأساسية لتجنب مشكلة N+1
+    $query = \App\Models\DoctorRequest::with(['doctor.user', 'parent.user', 'parent.children'])->latest();
 
-        return view('admin.doctor_requests_management', compact('requests'));
+    // 💡 1. فلترة البحث (نبحث في اسم الدكتور أو اسم الأب)
+    if ($request->filled('search')) {
+        $searchTerm = $request->search;
+        
+        $query->where(function($q) use ($searchTerm) {
+            // البحث داخل علاقة الدكتور
+            $q->whereHas('doctor.user', function($subQ) use ($searchTerm) {
+                $subQ->where('first_name', 'like', "%{$searchTerm}%")
+                     ->orWhere('last_name', 'like', "%{$searchTerm}%");
+            })
+            // أو البحث داخل علاقة ولي الأمر
+            ->orWhereHas('parent.user', function($subQ) use ($searchTerm) {
+                $subQ->where('first_name', 'like', "%{$searchTerm}%")
+                     ->orWhere('last_name', 'like', "%{$searchTerm}%");
+            });
+        });
     }
+
+    // 💡 2. فلترة حالة الطلب (Pending, Accepted, Rejected)
+    if ($request->filled('status') && $request->status !== 'all') {
+        $query->where('status', $request->status);
+    }
+
+    // جلب البيانات مع الحفاظ على متغيرات الـ URL للصفحات التالية
+    $requests = $query->paginate(10)->appends($request->query());
+
+ return view('admin.doctor_requests_management', compact('requests'));
+}
 
     public function accept($id)
     {

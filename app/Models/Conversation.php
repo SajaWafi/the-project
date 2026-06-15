@@ -8,10 +8,12 @@ class Conversation extends Model
 {
     protected $table = 'conversations';
 
-    protected $fillable = [
+   protected $fillable = [
         'doctor_id',
         'parent_id',
         'child_id',
+        'doctor_muted_until', // <-- ضيفي هذا
+        'parent_muted_until'  // <-- وضيفي هذا
     ];
 
     public function messages()

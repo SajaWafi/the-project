@@ -82,7 +82,7 @@
                     
                     <div class="bracelet-id-badge">ID: {{ $child->bracelet_id }}</div>
 
-                    <form action="{{ route('parents.bracelet.disconnect') }}" method="POST">
+                    <form action="{{ route('bracelet.disconnect') }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-disconnect">Disconnect Device</button>
                     </form>

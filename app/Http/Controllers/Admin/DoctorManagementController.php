@@ -14,11 +14,28 @@ class DoctorManagementController extends Controller
     // ---------------------------------------------------------
     // 1. دالة العرض (Index)
     // ---------------------------------------------------------
-    public function index()
+public function index(Request $request)
     {
-        $doctors = DoctorProfile::with('user')
-            ->latest()
-            ->paginate(10);
+        // 1. بداية الاستعلام (نجيبوا ملفات الأطباء مع بيانات المستخدم)
+        $query = \App\Models\DoctorProfile::with('user')->latest();
+
+        // 2. فلترة حالة القبول (هذا اللي كان مفقود أو ما يخدمش عندك!)
+        if ($request->filled('approval') && $request->approval !== 'all') {
+            // 💡 ملاحظة: تأكدي إن اسم الحقل في جدول الداتا بيز هو فعلاً 'approval_status'
+            $query->where('approval_status', $request->approval);
+        }
+
+        // 3. فلترة البحث بالاسم
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->whereHas('user', function($q) use ($searchTerm) {
+                $q->where('first_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('last_name', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // 4. جلب البيانات مع الحفاظ على الفلاتر في الـ Pagination
+        $doctors = $query->paginate(10)->appends($request->query());
 
         return view('admin.doctors_management', compact('doctors'));
     }
