@@ -91,9 +91,10 @@
             <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
         </div>
 
+        <!--add appointment button-->
         <a href="{{ route('doctor.add.appointment') }}" class="add-btn"><i class="fas fa-plus-circle me-1"></i> Add Appointment</a>
 
-        <!-- 💡 فورم الفلترة والبحث بتواريخ المواعيد -->
+        <!-- filter and search form -->
         <form action="{{ route('doctor.appointments') }}" method="GET" id="doctorFilterForm" class="doctor-filter-form">
             <input 
                 type="text" 
@@ -110,6 +111,7 @@
             </select>
         </form>
 
+        <!--appointments list-->
         @forelse($appointments as $appointment)
             @php
                 $appointmentDate = \Carbon\Carbon::parse($appointment->date);
@@ -118,6 +120,7 @@
                 $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
             @endphp
 
+            <!--appointment card-->
             <div class="schedule-card">
                 <div class="appointment-box">
                     <div class="times">
@@ -168,190 +171,56 @@
             </div>
         @endforelse
 
-    </div> <!-- End Content -->
+        </div> 
 
-    <!-- navbar -->
-    <div class="bottom-nav">
-        <a href="{{ route('doctor.parents') }}" class="nav-item {{ request()->routeIs('doctor.parents') ? 'active' : '' }}">
-            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 18c1.2-2.8 3.3-4.2 5.5-4.2s4.3 1.4 5.5 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 9v6M15 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </a>
-        <a href="{{ route('doctor.home') }}" class="nav-item {{ request()->routeIs('doctor.home') ? 'active' : '' }}">
-            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-        </a>
-        <a href="{{ route('doctor.appointments') }}" class="nav-item {{ request()->routeIs('doctor.appointments') ? 'active' : '' }}">
-            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </a>
-    </div>
+        <!-- navbar -->
+        <div class="bottom-nav">
+            <a href="{{ route('doctor.parents') }}" class="nav-item {{ request()->routeIs('doctor.parents') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 18c1.2-2.8 3.3-4.2 5.5-4.2s4.3 1.4 5.5 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 9v6M15 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </a>
+            <a href="{{ route('doctor.home') }}" class="nav-item {{ request()->routeIs('doctor.home') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="{{ route('doctor.appointments') }}" class="nav-item {{ request()->routeIs('doctor.appointments') ? 'active' : '' }}">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </a>
+        </div>
 
-    <!-- النافذة المطابقة لتصميم الـ Logout -->
-    <div id="customConfirmModal" class="doctor-modal-overlay">
-        <div class="doctor-modal-box">
-            <div class="doctor-modal-title">Cancel Appointment</div>
-            <div class="doctor-modal-text">Are you sure you want to cancel this appointment?</div>
-            <div class="doctor-modal-actions">
-                <button type="button" class="btn-modal-cancel" onclick="closeCustomModal()">Cancel</button>
-                <button type="button" class="btn-modal-confirm" onclick="submitCustomModal()">Yes, Cancel</button>
+        <!-- cancel appointment message -->
+        <div id="customConfirmModal" class="doctor-modal-overlay">
+            <div class="doctor-modal-box">
+                <div class="doctor-modal-title">Cancel Appointment</div>
+                <div class="doctor-modal-text">Are you sure you want to cancel this appointment?</div>
+                <div class="doctor-modal-actions">
+                    <button type="button" class="btn-modal-cancel" onclick="closeCustomModal()">Cancel</button>
+                    <button type="button" class="btn-modal-confirm" onclick="submitCustomModal()">Yes, Cancel</button>
+                </div>
             </div>
         </div>
-    </div>
+    </div> 
 
-</div> <!-- End Phone -->
+    <!-- delete form -->
+    <form id="masterDeleteForm" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
 
-<form id="masterDeleteForm" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-</form>
+    <script>
+        // cancel appointment message
+        let deleteUrl = '';
+        function openCustomModal(url) { deleteUrl = url; document.getElementById('customConfirmModal').style.display = 'flex'; }
+        function closeCustomModal() { document.getElementById('customConfirmModal').style.display = 'none'; deleteUrl = ''; }
+        function submitCustomModal() { if(deleteUrl) { let form = document.getElementById('masterDeleteForm'); form.action = deleteUrl; form.submit(); } }
 
-<script>
-    let deleteUrl = '';
-    function openCustomModal(url) { deleteUrl = url; document.getElementById('customConfirmModal').style.display = 'flex'; }
-    function closeCustomModal() { document.getElementById('customConfirmModal').style.display = 'none'; deleteUrl = ''; }
-    function submitCustomModal() { if(deleteUrl) { let form = document.getElementById('masterDeleteForm'); form.action = deleteUrl; form.submit(); } }
-
-    // إرسال الفورم لما الدكتور يكتب في مربع البحث
-    let searchTimeout = null;
-    document.querySelector('.doctor-search-input').addEventListener('keyup', function () {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => { document.getElementById('doctorFilterForm').submit(); }, 500);
-    });
-</script>
+        // إرسال الفورم لما الدكتور يكتب في مربع البحث
+        // search input
+        let searchTimeout = null;
+        document.querySelector('.doctor-search-input').addEventListener('keyup', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => { document.getElementById('doctorFilterForm').submit(); }, 500);
+        });
+    </script>
 
 </body>
 </html>
 
-
-    <!--
-    
-    /* 🔹 كارد المواعيد */
-.appointment-card {
-    background: #efd7b8;
-    border-radius: 20px;
-    padding: 14px;
-    margin-bottom: 18px;
-}
-
-/* 🔹 صف الأيام */
-.days-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-/* 🔹 كل يوم */
-.day {
-    width: 42px;
-    height: 56px;
-    border-radius: 18px;
-    background: #fff;
-    text-align: center;
-    font-size: 12px;
-    padding-top: 6px;
-}
-
-/* 🔹 اليوم النشط */
-.day.active {
-    background: #e28c3d;
-    color: white;
-}
-
-/* 🔹 صندوق الموعد */
-.schedule-box {
-    background: #fff;
-    border-radius: 16px;
-    padding: 12px;
-}
-
-/* 🔹 أوقات */
-.times {
-    font-size: 12px;
-    color: #e28c3d;
-    line-height: 2;
-}
-
-/* 🔹 تفاصيل الموعد */
-.event {
-    background: #efd7b8;
-    border-radius: 14px;
-    padding: 10px;
-    margin-left: 40px;
-}
-
-/* 🔹 اسم */
-.event-title {
-    font-weight: bold;
-    color: #e28c3d;
-}
-
-/* 🔹 وصف */
-.event-sub {
-    font-size: 13px;
-}
-    
-    
-
-
-
-
-
--->
-
-
- <!--
-
-
-
-
-    <div class="appointment-card">
-
-        <div class="days-row">
-            <div class="day">9<br>MON</div>
-            <div class="day">10<br>TUE</div>
-            <div class="day active">11<br>WED</div>
-            <div class="day">12<br>THU</div>
-            <div class="day">13<br>FRI</div>
-            <div class="day">14<br>SAT</div>
-        </div>
-
-        <div class="schedule-box">
-            <div class="times">
-                9 AM<br>10 AM<br>11 AM<br>12 AM
-            </div>
-
-            <div class="event">
-                <div class="event-title">Ali Salah</div>
-                <div class="event-sub">Periodic review</div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="appointment-card">
-
-        <div class="days-row">
-            <div class="day">9<br>MON</div>
-            <div class="day">10<br>TUE</div>
-            <div class="day">11<br>WED</div>
-            <div class="day">12<br>THU</div>
-            <div class="day active">13<br>FRI</div>
-            <div class="day">14<br>SAT</div>
-        </div>
-
-        <div class="schedule-box">
-            <div class="times">
-                1 PM<br>2 PM<br>3 PM<br>4 PM
-            </div>
-
-            <div class="event">
-                <div class="event-title">Hifa Jaber</div>
-                <div class="event-sub">Periodic review</div>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-   
-
-
--->

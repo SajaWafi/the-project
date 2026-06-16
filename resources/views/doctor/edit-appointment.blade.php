@@ -278,6 +278,7 @@
                 @csrf
                 @method('PUT')
 
+                <!-- date section -->
                 <div class="date-section">
                     <div class="field-title">Select Date</div>
 
@@ -285,7 +286,7 @@
                         type="date"
                         id="appointmentDate"
                         name="date"
-                        value="{{ old('date') }}"
+                        value="{{ old('date',$appointment->date) }}"
                         min="{{ now()->toDateString() }}" 
                         class="date-picker"
                     >
@@ -293,6 +294,7 @@
 
                 <div class="form-wrap">
 
+                    <!-- time section -->
                     <div class="field-block">
                         <div class="field-title">Time Since</div>
                         <div class="time-row">
@@ -359,6 +361,7 @@
                         </div>
                     </div>
 
+                    <!-- parent section -->
                     <div class="field-block">
                         <div class="field-title">Choose Parent</div>
                         <div class="sub-label">Full Name</div>
@@ -373,6 +376,7 @@
                         </select>
                     </div>
 
+                    <!-- workplace section -->
                     <div class="field-block">
                         <div class="field-title">Choose Workplace</div>
                         <div class="sub-label">Place Name</div>

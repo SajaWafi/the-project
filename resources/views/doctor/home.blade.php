@@ -179,6 +179,7 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
             </div>
 
+            <!--profile-->
             <div class="profile-card">
                 <a href="{{ route('doctor.request') }}" class="chat-btn">
                     <svg class="chat-svg" viewBox="0 0 24 24" fill="none">
@@ -205,6 +206,7 @@
                     </div>
                 </div>
 
+                <!--workplace-->
                 <div class="workplace-row">
                     @forelse($workplaces as $workplace)
                         <div class="workplace-pill">
@@ -226,6 +228,7 @@
                 </div>
             @endif
 
+            <!--today's appointments-->
             <div class="section-chip">Today's Appointments</div>
 
             @php
@@ -276,6 +279,7 @@
             @endforelse
         </div>
 
+        <!--navbar-->
         <div class="bottom-nav">
             <a href="{{ route('doctor.parents') }}" class="nav-item {{ request()->routeIs('doctor.parents') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 18c1.2-2.8 3.3-4.2 5.5-4.2s4.3 1.4 5.5 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 9v6M15 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>

@@ -78,11 +78,11 @@
         }
 
         .logo {
-        position: absolute;
-    right: 10px;
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
+            position: absolute;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
         }
 
         .logo img {
@@ -93,231 +93,231 @@
 
       /* 🔹 شكل حقل التاريخ */
 
-.date-section{
-    padding: 0 22px;
-}
-.date-picker {
-    width: 100%;
-    height: 50px;
-    border-radius: 18px;
-    border: none;
-    outline: none;
-    background: #efdcc2;
-    padding: 0 22px;
-    font-size: 18px;
-    color: #e28c3d;
-    font-weight: bold;
-    border-bottom: none;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    padding-top: 10px;
-}
-
-/* 🔹 لما تختار التاريخ */
-.date-picker:focus {
-    background: #f5cfa5;
-}
-
-/* 🔹 نخلي الأيقونة أوضح */
-.date-picker::-webkit-calendar-picker-indicator {
-    filter: invert(48%) sepia(92%) saturate(500%) hue-rotate(10deg);
-    cursor: pointer;
-}
-        /* ===== Form area ===== */
-        .form-wrap {
-            padding: 0 22px;
+        .date-section{
+        padding: 0 22px;
+        }
+        .date-picker {
+        width: 100%;
+        height: 50px;
+        border-radius: 18px;
+        border: none;
+        outline: none;
+        background: #efdcc2;
+        padding: 0 22px;
+        font-size: 18px;
+        color: #e28c3d;
+        font-weight: bold;
+        border-bottom: none;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        padding-top: 10px;
         }
 
-        /* ===== Section title inside form ===== */
-        .field-title {
-            color: #eb9443;
-            font-size: 14px;
-            font-weight: 400;
-            margin-bottom: 6px;
+        /* 🔹 لما تختار التاريخ */
+        .date-picker:focus {
+        background: #f5cfa5;
         }
 
-        /* ===== Divider line ===== */
-        .field-block {
-            margin-bottom: 14px;
-            padding-bottom: 10px;
-            border-bottom: 1.5px solid #efb37f;
-        }
-
-        .field-block.no-border {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        /* ===== Time row ===== */
-        .time-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding-left: 6px;
-        }
-
-        .time-box {
-            min-width: 54px;
-            font-size: 26px;
-            font-weight: 700;
-            color: #484848;
-            border-bottom: 3px solid #5a5a5a;
-            line-height: 1;
-            padding-bottom: 2px;
-            text-align: center;
-        }
-
-        .time-unit {
-            min-width: 62px;
-        }
-
-        .time-select-wrap {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .time-arrow {
-            color: #eb9443;
-            font-size: 14px;
-            margin-top: 6px;
-        }
-
-        /* ===== Label above input ===== */
-        .sub-label {
-            color: #4b4b4b;
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
-
-        /* ===== Select / input common style ===== */
-        .select-field,
-        .text-field,
-        .textarea-field {
-            width: 100%;
-            border: none;
-            outline: none;
-            background: #f7e5cf;
-            color: #eb9443;
-            font-size: 20px;
-            border-radius: 16px;
-            padding: 0 14px;
-        }
-
-        .select-field,
-        .text-field {
-            height: 42px;
-        }
-
-        .select-field {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg fill='%23eb9443' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 38px;
-        }
-
-        .text-field::placeholder,
-        .textarea-field::placeholder {
-            color: #9a8f84;
-        }
-
-        /* ===== Textarea ===== */
-        .textarea-field {
-            min-height: 118px;
-            resize: none;
-            padding-top: 14px;
-            border: 1.5px solid #efc79f;
-            background: rgba(255,255,255,0.35);
-            font-size: 14px;
-            color: #555;
-        }
-
-        /* ===== Buttons area ===== */
-        .actions {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .primary-btn,
-        .secondary-btn {
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            height: 42px;
-            min-width: 210px;
-        }
-
-        .primary-btn {
-            background: #eb9a4a;
-            color: #fff;
-        }
-
-        .secondary-btn {
-            background: #f7e5cf;
-            color: #eb9443;
-            min-width: 200px;
-        }
-
-        /* ===== Validation errors ===== */
-        .error-box {
-            background: #ffe7e7;
-            color: #b60000;
-            padding: 10px 12px;
-            border-radius: 10px;
-            margin: 0 22px 12px;
-            font-size: 13px;
-        }
-
-            .field-block {
-        position: relative;
-    }
-
-    .suggestions-box {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: #fff;
-        border: 1px solid #ddd;
-        border-top: none;
-        max-height: 180px;
-        overflow-y: auto;
-        z-index: 1000;
-        display: none;
-    }
-
-    .suggestion-item {
-        padding: 10px;
+        /* 🔹 نخلي الأيقونة أوضح */
+        .date-picker::-webkit-calendar-picker-indicator {
+        filter: invert(48%) sepia(92%) saturate(500%) hue-rotate(10deg);
         cursor: pointer;
-    }
+        }
+            /* ===== Form area ===== */
+            .form-wrap {
+                padding: 0 22px;
+            }
 
-    .suggestion-item:hover {
-        background: #f2f2f2;
-    }
-             .back-btn {
-    position: absolute;
-    left: 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #2f80ed;
-    padding: 6px;
-}
+            /* ===== Section title inside form ===== */
+            .field-title {
+                color: #eb9443;
+                font-size: 14px;
+                font-weight: 400;
+                margin-bottom: 6px;
+            }
 
-.back-btn svg {
-    width: 26px;
-    height: 26px;
-}
+            /* ===== Divider line ===== */
+            .field-block {
+                margin-bottom: 14px;
+                padding-bottom: 10px;
+                border-bottom: 1.5px solid #efb37f;
+            }
+
+            .field-block.no-border {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+
+            /* ===== Time row ===== */
+            .time-row {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding-left: 6px;
+            }
+
+            .time-box {
+                min-width: 54px;
+                font-size: 26px;
+                font-weight: 700;
+                color: #484848;
+                border-bottom: 3px solid #5a5a5a;
+                line-height: 1;
+                padding-bottom: 2px;
+                text-align: center;
+            }
+
+            .time-unit {
+                min-width: 62px;
+            }
+
+            .time-select-wrap {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .time-arrow {
+                color: #eb9443;
+                font-size: 14px;
+                margin-top: 6px;
+            }
+
+            /* ===== Label above input ===== */
+            .sub-label {
+                color: #4b4b4b;
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+
+            /* ===== Select / input common style ===== */
+            .select-field,
+            .text-field,
+            .textarea-field {
+                width: 100%;
+                border: none;
+                outline: none;
+                background: #f7e5cf;
+                color: #eb9443;
+                font-size: 20px;
+                border-radius: 16px;
+                padding: 0 14px;
+            }
+
+            .select-field,
+            .text-field {
+                height: 42px;
+            }
+
+            .select-field {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                background-image: url("data:image/svg+xml;utf8,<svg fill='%23eb9443' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+                background-repeat: no-repeat;
+                background-position: right 12px center;
+                padding-right: 38px;
+            }
+
+            .text-field::placeholder,
+            .textarea-field::placeholder {
+                color: #9a8f84;
+            }
+
+            /* ===== Textarea ===== */
+            .textarea-field {
+                min-height: 118px;
+                resize: none;
+                padding-top: 14px;
+                border: 1.5px solid #efc79f;
+                background: rgba(255,255,255,0.35);
+                font-size: 14px;
+                color: #555;
+            }
+
+            /* ===== Buttons area ===== */
+            .actions {
+                margin-top: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 18px;
+            }
+
+            .primary-btn,
+            .secondary-btn {
+                text-decoration: none;
+                border: none;
+                cursor: pointer;
+                border-radius: 16px;
+                font-size: 16px;
+                font-weight: 700;
+                height: 42px;
+                min-width: 210px;
+            }
+
+            .primary-btn {
+                background: #eb9a4a;
+                color: #fff;
+            }
+
+            .secondary-btn {
+                background: #f7e5cf;
+                color: #eb9443;
+                min-width: 200px;
+            }
+
+            /* ===== Validation errors ===== */
+            .error-box {
+                background: #ffe7e7;
+                color: #b60000;
+                padding: 10px 12px;
+                border-radius: 10px;
+                margin: 0 22px 12px;
+                font-size: 13px;
+            }
+
+                .field-block {
+            position: relative;
+        }
+
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background: #f2f2f2;
+        }
+                    .back-btn {
+        position: absolute;
+        left: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #2f80ed;
+        padding: 6px;
+        }
+
+        .back-btn svg {
+        width: 26px;
+        height: 26px;
+        }
     </style>
 </head>
 <body>
@@ -347,6 +347,7 @@
     <form action="{{ route('doctor.add.appointment.store') }}" method="POST">
         @csrf
 
+        <!-- date section -->
         <div class="date-section">
             <div class="field-title">Select Date</div>
 
@@ -362,6 +363,7 @@
 
         <div class="form-wrap">
 
+            <!-- time section-->
             <div class="field-block">
                 <div class="field-title">Time Since</div>
                 <div class="time-row">
@@ -428,11 +430,12 @@
                 </div>
             </div>
 
+            <!-- parent section -->
             <div class="field-block">
                 <div class="field-title">Choose Parent</div>
                 <div class="sub-label">Full Name</div>
 
-               <select name="parent_id" id="parent_id" class="select-field">
+                <select name="parent_id" id="parent_id" class="select-field">
                     <option value="">Select parent</option>
                     @foreach($parents as $parent)
                         <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
@@ -442,6 +445,7 @@
                 </select>
             </div>
 
+            <!-- workplace section -->
             <div class="field-block">
                 <div class="field-title">Choose Workplace</div>
                 <div class="sub-label">Place Name</div>
@@ -459,11 +463,13 @@
                 </select>
             </div>
 
+            <!-- note section -->
             <div class="field-block no-border">
                 <div class="field-title">Add note</div>
                 <textarea name="note" class="textarea-field" placeholder="Enter Your Note Here..">{{ old('note') }}</textarea>
             </div>
 
+            <!-- buttons section -->
             <div class="actions">
                 <button type="submit" class="primary-btn">Add new Appointment</button>
 
