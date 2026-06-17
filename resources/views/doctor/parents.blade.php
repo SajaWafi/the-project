@@ -88,28 +88,28 @@
         }
 
         .search {
-    flex: 1;
-    height: 36px;
-    border-radius: 20px;
-    background: rgba(34,193,166,0.25);
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    gap: 6px;
-}
+            flex: 1;
+            height: 36px;
+            border-radius: 20px;
+            background: rgba(34,193,166,0.25);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 6px;
+        }
 
-.search input {
-    border: none;
-    outline: none;
-    background: transparent;
-    width: 100%;
-    font-size: 14px;
-    color: #333;
-}
+        .search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-size: 14px;
+            color: #333;
+        }
 
-.search input::placeholder {
-    color: #777;
-}
+        .search input::placeholder {
+            color: #777;
+        }
 
         .parent-card {
             background: #a8d3cc;
@@ -164,7 +164,7 @@
         }
 
         /* navbar */
-.bottom-nav {
+        .bottom-nav {
             position: absolute;
             left: 0;
             right: 0;
@@ -227,19 +227,19 @@
             font-size:18px;
         }
          .back-btn {
-    position: absolute;
-    left: 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #2f80ed;
-    padding: 6px;
-}
+            position: absolute;
+            left: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+        }
 
-.back-btn svg {
-    width: 26px;
-    height: 26px;
-}
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
+        }
 
     </style>
 </head>
@@ -258,6 +258,7 @@
             <img src="{{ asset('images/logo.png') }}" class="logo">
         </div>
 
+        <!-- search -->
         <div class="top-bar">
             <a href="{{ route('doctor.children.search') }}" class="add-btn">+</a>
 
@@ -273,6 +274,7 @@
             </form>
         </div>
 
+        <!-- parents list -->
         <div id="parentsList">
     @forelse($parents as $parent)
         <div class="parent-card">
@@ -314,7 +316,7 @@
     </div>
 
 
-            <!-- navbar -->
+        <!-- navbar -->
         <div class="bottom-nav">
 
             <a href="{{ route('doctor.parents') }}" class="nav-item {{ request()->routeIs('doctor.parents') ? 'active' : '' }}">
@@ -344,11 +346,12 @@
 </div>
 <script>
     const searchInput = document.getElementById('searchInput');
-    const parentsList = document.getElementById('parentsList'); //يجلب الـ div الذي ستعرض داخله النتائج.
-    const searchUrl = @json(route('doctor.parents.search.ajax'));//Blade تنفذ route وتضع الرابط داخل JavaScript.
+    const parentsList = document.getElementById('parentsList'); 
+    const searchUrl = @json(route('doctor.parents.search.ajax'));
 
     let searchTimeout = null;
-//مسؤولة عن إنشاء بطاقات أولياء الأمور وعرضها داخل الصفحة.
+
+    //function to render parents
     function renderParents(parents) {
         if (!parents.length) {
             parentsList.innerHTML = `
@@ -360,7 +363,8 @@
         }
 
         let html = '';
-//ينشئ Card لكل Parent.
+    
+        //function to render parents
         parents.forEach(parent => {
             html += `
                 <div class="parent-card">

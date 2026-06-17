@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 class ChildController extends Controller
 {
+    //search page for child
     public function searchPage()
     {
         $doctor = DoctorProfile::where('user_id', auth()->id())->first();
@@ -25,6 +26,7 @@ class ChildController extends Controller
         return view('doctor.search-child', compact('linkedChildIds'));
     }
 
+    //find child
     public function find(Request $request)
     {
         $request->validate([
@@ -53,7 +55,8 @@ class ChildController extends Controller
         return view('doctor.search-child', compact('children', 'search', 'linkedChildIds'));
     }
 
-public function attach($id)
+    //attach child
+    public function attach($id)
     {
         $doctor = auth()->user()->doctorProfile;
         if (!$doctor) return back()->withErrors(['doctor' => 'Doctor profile not found.']);

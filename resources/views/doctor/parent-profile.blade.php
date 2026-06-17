@@ -55,19 +55,19 @@
         }
 
       .back-btn {
-    position: absolute;
-    left: 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #2f80ed;
-    padding: 6px;
-}
+            position: absolute;
+            left: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+        }
 
-.back-btn svg {
-    width: 26px;
-    height: 26px;
-}
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
+        }
          .title {
         font-size: 28px;
         font-weight: 800;
@@ -191,28 +191,28 @@
         }
 
       .info-pill {
-    min-width: 118px;
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 6px 12px;
-    text-align: center;
-    font-size: 14px;
-    color: #0f766e; /* أخضر أوضح */
-    line-height: 1.2;
+            min-width: 118px;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 6px 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #0f766e; /* أخضر أوضح */
+            line-height: 1.2;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
 
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-}
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
 
-.icon {
-    width: 16px;
-    height: 16px;
-    fill: #14b8a6; /* لون الأيقونة */
-}
+        .icon {
+            width: 16px;
+            height: 16px;
+            fill: #14b8a6; /* لون الأيقونة */
+        }
      
         .section-chip {
             display: inline-block;
@@ -414,94 +414,95 @@
                 </div>
 
               <img
-    class="parent-image"
-    src="{{ !empty($parent['image'])
-        ? asset('storage/' . $parent['image'])
-        : asset('images/default-user.png') }}"
-    alt="Parent"
-/>
+                class="parent-image"
+                src="{{ !empty($parent['image'])
+                    ? asset('storage/' . $parent['image'])
+                    : asset('images/default-user.png') }}"
+                alt="Parent"
+              />
 
                 <div class="parent-name">{{ $parent['name'] ?? 'Ali Saloh' }}</div>
                 <div class="parent-subtitle">{{ $parent['subtitle'] ?? "Ahmed Salah’s father" }}</div>
 
                <div class="info-row">
 
-    <!-- Phone -->
-    <div class="info-pill">
-        <svg viewBox="0 0 24 24" class="icon">
-            <path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.24c1.1.36 2.3.56 3.6.56a1 1 0 011 1V21a1 1 0 01-1 1C10.3 22 2 13.7 2 3a1 1 0 011-1h3.5a1 1 0 011 1c0 1.3.2 2.5.56 3.6a1 1 0 01-.25 1L6.6 10.8z"/>
-        </svg>
-        {{ $parent['phone'] ?? '09X - XXXXXXX' }}
-    </div>
+        <!-- Phone -->
+        <div class="info-pill">
+            <svg viewBox="0 0 24 24" class="icon">
+                <path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.24c1.1.36 2.3.56 3.6.56a1 1 0 011 1V21a1 1 0 01-1 1C10.3 22 2 13.7 2 3a1 1 0 011-1h3.5a1 1 0 011 1c0 1.3.2 2.5.56 3.6a1 1 0 01-.25 1L6.6 10.8z"/>
+            </svg>
+            {{ $parent['phone'] ?? '09X - XXXXXXX' }}
+        </div>
 
-    <!-- Autism -->
-    <div class="info-pill">
-        <svg viewBox="0 0 24 24" class="icon">
-            <path d="M12 2C8 2 6 5 6 8c0 1.5.5 2.5 1.5 3.5C6.5 12.5 6 13.5 6 15c0 3 2 5 6 5s6-2 6-5c0-1.5-.5-2.5-1.5-3.5C17.5 10.5 18 9.5 18 8c0-3-2-6-6-6z"/>
-        </svg>
-        {{ $parent['autism_level'] ?? 'Mild' }}
-    </div>
+        <!-- Autism -->
+        <div class="info-pill">
+            <svg viewBox="0 0 24 24" class="icon">
+                <path d="M12 2C8 2 6 5 6 8c0 1.5.5 2.5 1.5 3.5C6.5 12.5 6 13.5 6 15c0 3 2 5 6 5s6-2 6-5c0-1.5-.5-2.5-1.5-3.5C17.5 10.5 18 9.5 18 8c0-3-2-6-6-6z"/>
+            </svg>
+            {{ $parent['autism_level'] ?? 'Mild' }}
+        </div>
 
-    <!-- Age -->
-    <div class="info-pill">
-        <svg viewBox="0 0 24 24" class="icon">
-            <path d="M12 12c2.7 0 5-2.3 5-5S14.7 2 12 2 7 4.3 7 7s2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/>
-        </svg>
-        {{ $parent['age'] ?? 'child age: 10' }}
-    </div>
+        <!-- Age -->
+        <div class="info-pill">
+            <svg viewBox="0 0 24 24" class="icon">
+                <path d="M12 12c2.7 0 5-2.3 5-5S14.7 2 12 2 7 4.3 7 7s2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/>
+            </svg>
+            {{ $parent['age'] ?? 'child age: 10' }}
+        </div>
 
-</div>
+    </div>
 
 
             </div>
 
             <div class="section-chip">Appointment</div>
 
-<!--schedule-card -->
-@forelse($appointments as $appointment)
-    @php
-        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
-        $isToday = $appointmentDate->isToday();
-        $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
-    @endphp
+            <!--schedule-card -->
+            @forelse($appointments as $appointment)
+                @php
+                    $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+                    $isToday = $appointmentDate->isToday();
+                    $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+                @endphp
 
-    <div class="schedule-card">
-        <div class="appointment-box">
-            <div class="times">
-                <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
-                <div>|</div>
-                <div>|</div>
-                <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
-            </div>
-
-            <div class="appointment-content">
-                <div class="appointment-header">
-                    <span>{{ $headerText }}</span>
-                </div>
-
-                <div class="appointment-main">
-                    <div class="appointment-info">
-                        <div class="appointment-sub">
-                            Child: {{ $appointment->child->name ?? 'N/A' }}
+                <div class="schedule-card">
+                    <div class="appointment-box">
+                        <div class="times">
+                            <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                            <div>|</div>
+                            <div>|</div>
+                            <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
                         </div>
 
-                        <div class="note">
-                            {{ $appointment->note }}
+                        <div class="appointment-content">
+                            <div class="appointment-header">
+                                <span>{{ $headerText }}</span>
+                            </div>
+
+                            <div class="appointment-main">
+                                <div class="appointment-info">
+                                    <div class="appointment-sub">
+                                        Child: {{ $appointment->child->name ?? 'N/A' }}
+                                    </div>
+
+                                    <div class="note">
+                                        {{ $appointment->note }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-@empty
-    <div class="schedule-card">
-        <div class="appointment-box">
-            <div class="appointment-content">
-                <span class="mmm">No upcoming appointments with this parent</span>
-            </div>
-        </div>
-    </div>
-@endforelse
+                <br>
+            @empty
+                <div class="schedule-card">
+                    <div class="appointment-box">
+                        <div class="appointment-content">
+                            <span class="mmm">No upcoming appointments with this parent</span>
+                        </div>
+                    </div>
+                </div>
+            @endforelse
 
         </div>
 
@@ -518,26 +519,29 @@
                     </button>
 
                     <form action="{{ route('doctor.parent.remove', $parent['id']) }}" method="POST">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="modal-delete-btn" onclick="closeDeleteModal()">
-        Yes, Delete
-    </button>
-</form>
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="modal-delete-btn" onclick="closeDeleteModal()">
+                            Yes, Delete
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // delete modal
         function openDeleteModal() {
             document.getElementById('deleteModal').classList.add('show');
         }
 
+        // close delete modal
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.remove('show');
         }
 
+        // close delete modal when click outside
         document.addEventListener('click', function (event) {
             const modal = document.getElementById('deleteModal');
 

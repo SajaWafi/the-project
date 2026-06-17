@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 class DoctorRequestController extends Controller
 {
     // دالة عرض الطلبات في واجهة الدكتور
-// دالة عرض الطلبات في واجهة الدكتور
     public function index()
     {
         // 1. نجيبوا بروفايل الدكتور الحالي
@@ -25,7 +24,7 @@ class DoctorRequestController extends Controller
             ->where('doctor_id', $doctorProfile->id)
             ->orderBy('created_at', 'desc')
             ->get()
-            ->unique('parent_id'); // 🔥 هذا هو السطر السحري اللي يمنع التكرار
+            ->unique('parent_id');
 
         // 3. جلب إشعارات الشات لآخر 7 أيام وتجميعها
         $notifications = \App\Models\Notification::where('user_id', auth()->id())
