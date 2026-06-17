@@ -12,11 +12,13 @@ class ResetPasswordMail extends Mailable
 
     public $code;
 
+    //receive code
     public function __construct($code)
     {
         $this->code = $code;
     }
 
+    //build email and subject
     public function build()
     {
         return $this->subject('Password Reset Code - Taif System')

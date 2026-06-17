@@ -2,16 +2,18 @@
 
 namespace App\Http\Middleware;
 
-use Closure; //في Middleware يمثل الدالة التالية في سلسلة التنفيذ.
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DoctorApprovedMiddleware
 {
+    //check if doctor is approved
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::user();
 
+        //if user is doctor
         if ($user && $user->role === 'doctor') {
             $doctorProfile = $user->doctorProfile;
 
@@ -21,7 +23,7 @@ class DoctorApprovedMiddleware
                     ->with('error', 'Your account is waiting for admin approval.');
             }
         }
-        //يسمح للطلب بالاستمرار.
+        
         return $next($request);
     }
 }

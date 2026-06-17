@@ -20,7 +20,7 @@ use App\Mail\ResetPasswordMail;
 Route::get('/', function () {
     $dashboard = null;
 
-    // لو المستخدم مسجل دخوله (Remembered) نحددوا وجهته بناءً على الصلاحية
+    // redirect to dashboard if user is logged in
     if (Auth::check()) {
         $user = Auth::user();
         
@@ -41,7 +41,6 @@ Route::get('/', function () {
         }
     }
 
-    // نبعتوا متغير $dashboard للواجهة
     return view('welcome-screen', compact('dashboard'));
 })->name('welcome');
 
@@ -49,21 +48,19 @@ Route::get('/welcome-second', function () {
     return view('welcome-second');
 })->name('welcome.second');
 
+// doctor pending approval page
 Route::get('/doctor/pending-approval', function () {
     return view('doctor.pending-approval');
 })->name('doctor.pending.approval');
 
-// مسار صفحة الدكتور المرفوض أو المعطل
-// مسار صفحة الدكتور المرفوض أو المعطل
+// doctor rejected page
 Route::get('/doctor/rejected', function () {
-    $status = 'rejected'; // قيمة افتراضية احتياطية
+    $status = 'rejected';
 
-    // لو الدكتور مسجل دخوله، نجيبوا حالته الفعلية من الداتا بيز
     if (Auth::check() && Auth::user()->doctorProfile) {
         $status = Auth::user()->doctorProfile->approval_status;
     }
 
-    // نبعتوا المتغير للصفحة باستخدام compact
     return view('doctor.rejected', compact('status'));
 })->name('doctor.rejected');
 
@@ -84,6 +81,7 @@ Route::get('/login', function () {
         }
 
         if ($user->role === 'doctor') {
+            // redirect doctor to pending approval page if not approved
             if (!$user->doctorProfile || $user->doctorProfile->approval_status === 'pending') {
                 return redirect()->route('doctor.pending.approval');
             } elseif (in_array($user->doctorProfile->approval_status, ['rejected', 'suspended'])) {
@@ -141,7 +139,7 @@ Route::post('/login', function (Request $request) {
 
 
 // =======================
-// حماية الصفحات (Protected Routes)
+// protected routes
 // =======================
 Route::get('/parents/home', function () {
     if (!Auth::check()) return redirect()->route('login.page');
@@ -224,7 +222,7 @@ Route::post('/step2', function (Request $request) {
         return redirect()->route('signup.step1')->withErrors(['Please complete step 1 first.']);
     }
 
-    // إنشاء الحساب مبدئياً لحين تفعيله
+    // create temprory user
     $user = User::create([
         'role' => 'parent',
         'first_name' => $signup['first_name'],
@@ -248,7 +246,7 @@ Route::post('/step2', function (Request $request) {
         'verification_user_id' => $user->id, // لحفظ الرقم للتحقق
     ]);
 
-    // توليد الكود وإرساله
+    // توليد الكود التحقق وإرساله
     $code = rand(100000, 999999);
     $user->update([
         'email_verification_code' => $code,
@@ -260,7 +258,7 @@ Route::post('/step2', function (Request $request) {
     return redirect()->route('signup.verify');
 })->name('signup.step2.post');
 
-// Step 3 (بيانات الطفل - تفتح بعد التحقق بنجاح)
+// Step 3
 Route::get('/step3', function () {
     return view('signup.step3');
 })->name('signup.step3');
@@ -406,7 +404,7 @@ Route::post('/doctor/signup/step3', function (Request $request) {
 
     session(['verification_user_id' => $user->id]);
 
-    // توليد الكود وإرساله للدكتور
+    // توليد كود التحقق وإرساله للدكتور
     $code = rand(100000, 999999);
     $user->update([
         'email_verification_code' => $code,
@@ -445,21 +443,18 @@ Route::post('/signup/verify', function (Request $request) {
         return back()->withErrors(['code' => 'The verification code has expired.']);
     }
 
-    // تفعيل حساب المستخدم بنجاح
     $user->update([
         'email_verified_at' => now(),
         'email_verification_code' => null,
         'email_verification_code_expires_at' => null,
     ]);
 
-    // إذا كان دكتور، يذهب إلى شاشة الانتظار
     if ($user->role === 'doctor') {
         session()->forget('verification_user_id');
         return redirect()->route('doctor.pending.approval')
             ->with('success', 'Email verified! Your account is waiting for admin approval.');
     }
-
-    // إذا كان ولي أمر، يكمل خطوة الطفل الثالثة
+ 
     return redirect()->route('signup.step3')->with('success', 'Email verified successfully! Please complete your child information.');
 })->name('verify.email.submit');
 
