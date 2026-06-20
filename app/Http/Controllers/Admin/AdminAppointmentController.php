@@ -17,8 +17,6 @@ public function index(\Illuminate\Http\Request $request)
         // 1. تحديد تاريخ اليوم الحالي
         $today = \Carbon\Carbon::today()->toDateString();
 
-        // 💡 [Automated State Transition]: أي موعد فات تاريخه يتحول تلقائياً إلى "مكتمل"
-        // شملنا الحالات (pending, scheduled, cancelled) باش الكود يصلح الداتا بيز توا تلقائياً
         \App\Models\Appointment::whereDate('date', '<', $today)
             ->whereIn('status', ['pending', 'scheduled', 'cancelled'])
             ->update(['status' => 'completed']);

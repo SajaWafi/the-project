@@ -151,7 +151,7 @@
 
     <div class="mobile-container">
         <div class="mobile-header">
-            <a href="{{ route('settings') }}" class="back-arrow">
+           <a href="javascript:history.back()" class="back-arrow">
                 <i class="fas fa-chevron-left"></i>
             </a>
             <h4 class="page-title">Complaints</h4>

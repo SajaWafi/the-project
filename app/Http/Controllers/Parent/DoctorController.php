@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DoctorRequest;
 
 class DoctorController extends Controller
-{
+{   //عرض جميع الأطباء المرتبطين بأطفال الأب.
     public function index()
     {
         $parent = ParentProfile::with(['children.doctors.user'])
@@ -21,7 +21,7 @@ class DoctorController extends Controller
         if (!$parent) {
             return back()->withErrors(['parent' => 'Parent profile not found.']);
         }
-
+        //باش نجمع فيها الأطباء.
         $doctors = collect();
 
         foreach ($parent->children as $child) {
@@ -33,7 +33,7 @@ class DoctorController extends Controller
                 if ($doctorName === '') {
                     $doctorName = 'No Name';
                 }
-
+            //تخزين بيانات الدكتور
                 $doctors->push([
                     'id' => $doctor->id,
                     'name' => $doctorName,
@@ -47,7 +47,7 @@ class DoctorController extends Controller
 
         return view('parents.doctors', compact('doctors'));
     }
-
+    //عرض الملف الشخصي لدكتور معين.
     public function show($id)
     {
         $parent = ParentProfile::with(['children.doctors.user'])
@@ -67,7 +67,7 @@ class DoctorController extends Controller
         if (!$isLinked) {
             abort(404);
         }
-
+  
         $doctorName = trim(
             ($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? '')
         );
@@ -75,7 +75,7 @@ class DoctorController extends Controller
         if ($doctorName === '') {
             $doctorName = 'No Name';
         }
-
+        //تجهيز البيانات
         $data = [
             'id' => $doctor->id,
             'name' => $doctorName,
@@ -88,7 +88,7 @@ class DoctorController extends Controller
         $child = $parent->children->first(function ($child) use ($doctor) {
             return $child->doctors->contains('id', $doctor->id);
         });
-
+        //جلب المواعيد
         $appointments = collect();
 
         if ($child) {
@@ -96,7 +96,7 @@ class DoctorController extends Controller
                 ->where('parent_id', $parent->id)
                 ->where('doctor_id', $doctor->id)
                 ->where('child_id', $child->id)
-                ->whereDate('date', '>=', now()->toDateString())
+                ->whereDate('date', '>=', now()->toDateString()) //المواعيد القادمة فقط.
                 ->orderBy('date')
                 ->orderByRaw("
                     CASE 
@@ -109,7 +109,7 @@ class DoctorController extends Controller
                 ->orderBy('from_minute')
                 ->get();
         }
-
+       // جلب أماكن العمل
         $workplaces = Workplace::where('doctor_id', $doctor->id)
             ->latest()
             ->get();
@@ -121,7 +121,7 @@ class DoctorController extends Controller
             'workplaces' => $workplaces,
         ]);
     }
-
+    //فتح صفحة المحادثة
     public function chat($id)
     {
         $parent = ParentProfile::with(['children.doctors.user'])
@@ -155,33 +155,10 @@ class DoctorController extends Controller
             'name' => $doctorName,
             'image' => $doctor->user->profile_image ?? null,
         ];
-
+        //فتح صفحة الشات
         return view('parents.chat', ['doctor' => $data]);
     }
-    
-    public function delete($doctorId)
-    {
-        $parent = \App\Models\ParentProfile::with('children.doctors')
-            ->where('user_id', auth()->id())
-            ->first();
-
-        if (!$parent) {
-            return back()->withErrors(['parent' => 'Parent profile not found.']);
-        }
-
-        $doctor = \App\Models\DoctorProfile::findOrFail($doctorId);
-
-        foreach ($parent->children as $child) {
-            if ($child->doctors->contains('id', $doctor->id)) {
-                $child->doctors()->detach($doctor->id);
-            }
-        }
-
-        return redirect()
-            ->route('parents.doctors')
-            ->with('success', 'Doctor removed successfully.');
-    }
-
+    //فك الارتباط بالدكتور
     public function removeDoctor($doctorId)
     {
         $parentProfile = auth()->user()->parentProfile;
@@ -201,6 +178,6 @@ class DoctorController extends Controller
             ->where('parent_id', $parentProfile->id)
             ->delete();
 
-        return redirect()->route('parents.doctors')->with('success', 'تم حذف الدكتور وإلغاء الارتباط بنجاح.');
+        return redirect()->route('doctors')->with('success', 'The doctor was deleted and the link was successfully removed.');
     }
 }

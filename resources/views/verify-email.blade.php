@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
-    <title>Verify Email</title>
+    <meta charset="UTF-8">
+    <title>{{ __('Verify Email') }}</title>
 </head>
 <body>
 
-    <h2>Verify Your Email</h2>
+    <h2>{{ __('Verify Your Email') }}</h2>
 
-    <p>We sent a verification code to your email.</p>
+    <p>{{ __('We sent a verification code to your email.') }}</p>
 
     @if(session('success'))
         <p style="color: green;">{{ session('success') }}</p>
@@ -29,21 +30,21 @@
         <input
             type="text"
             name="code"
-            placeholder="Enter 6 digit code"
+            placeholder="{{ __('Enter 6 digit code') }}"
             maxlength="6"
             required
         >
 
         <br><br>
 
-        <button type="submit">Verify</button>
+        <button type="submit">{{ __('Verify') }}</button>
     </form>
 
     <br>
 
     <form method="POST" action="{{ route('verify.email.resend') }}">
         @csrf
-        <button type="submit">Resend Code</button>
+        <button type="submit">{{ __('Resend Code') }}</button>
     </form>
 
 </body>

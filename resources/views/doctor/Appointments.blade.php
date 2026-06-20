@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appointment Management - Taif Project</title>
+    <title>{{ __('Appointment Management - Taif Project') }}</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,9 +21,11 @@
 
         .header { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 15px 0; margin-bottom: 12px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); margin-left: -12px; margin-right: -12px; padding-left: 12px; padding-right: 12px; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
         .title { text-align: center; font-size: 28px; font-weight: 800; color: #1d567e; }
-        .logo { position: absolute; right: 10px; width: 80px; height: 80px; object-fit: contain; }
+        
+        /* 💡 استخدام الخصائص المنطقية للاتجاهين */
+        .logo { position: absolute; inset-inline-end: 10px; width: 80px; height: 80px; object-fit: contain; }
         .logo img { width: 100%; height: 100%; object-fit: cover; }
-        .back-btn { position: absolute; left: 10px; background: transparent; border: none; cursor: pointer; color: #2f80ed; padding: 6px; }
+        .back-btn { position: absolute; inset-inline-start: 10px; background: transparent; border: none; cursor: pointer; color: #2f80ed; padding: 6px; transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }}; }
         .back-btn svg { width: 26px; height: 26px; }
 
         /* 💡 تنسيق فورم البحث والفلترة بالتواريخ */
@@ -35,8 +37,7 @@
         }
         .doctor-search-input::placeholder { color: #d09c6f; }
         .doctor-status-select {
-            width: 140px; /* 💡 عرض أكبر للكلمات */
-            border: 1px solid #e28c3d; border-radius: 12px; padding: 8px; font-size: 13px; outline: none; background: #e28c3d; color: white; cursor: pointer; font-weight: 600;
+            width: 140px; border: 1px solid #e28c3d; border-radius: 12px; padding: 8px; font-size: 13px; outline: none; background: #e28c3d; color: white; cursor: pointer; font-weight: 600;
         }
 
         .add-btn { display: block; width: 100%; margin: 0 auto 16px; background: #e28c3d; color: white; text-align: center; padding: 12px; border-radius: 15px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 10px rgba(226, 140, 61, 0.3); }
@@ -61,7 +62,7 @@
         .mmm { color: #e28c3d; font-size: 14px; font-weight: 700; text-align: center; margin: 0 auto; }
 
         /* navbar & Modals */
-        .bottom-nav { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: #2f80ed; border-radius: 0 0 20px 20px; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .bottom-nav { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: #2f80ed; border-radius: 0 0 20px 20px; display: flex; justify-content: space-around; align-items: center; z-index: 1000; direction: ltr; }
         .nav-item { width: 48px; height: 48px; border-radius: 14px; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.65); transition: 0.2s; text-decoration: none; }
         .nav-svg { width: 22px; height: 22px; }
         .nav-item.active { background: rgba(255,255,255,0.18); color: #ffffff; transform: translateY(-2px); }
@@ -87,26 +88,25 @@
             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-            <div class="title">Appointments</div>
+            <div class="title">{{ __('Appointments') }}</div>
             <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
         </div>
 
-        <a href="{{ route('doctor.add.appointment') }}" class="add-btn"><i class="fas fa-plus-circle me-1"></i> Add Appointment</a>
+        <a href="{{ route('doctor.add.appointment') }}" class="add-btn"><i class="fas fa-plus-circle me-1"></i> {{ __('Add Appointment') }}</a>
 
-        <!-- 💡 فورم الفلترة والبحث بتواريخ المواعيد -->
         <form action="{{ route('doctor.appointments') }}" method="GET" id="doctorFilterForm" class="doctor-filter-form">
             <input 
                 type="text" 
                 name="search" 
                 class="doctor-search-input" 
-                placeholder="Search patient..." 
+                placeholder="{{ __('Search patient...') }}" 
                 value="{{ request('search') }}"
             >
             <select name="date_filter" class="doctor-status-select" onchange="document.getElementById('doctorFilterForm').submit();">
-                <option value="all" {{ request('date_filter') == 'all' ? 'selected' : '' }}>All</option>
-                <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>Today</option>
-                <option value="tomorrow" {{ request('date_filter') == 'tomorrow' ? 'selected' : '' }}>Tomorrow</option>
-                <option value="week" {{ request('date_filter') == 'week' ? 'selected' : '' }}>This Week</option>
+                <option value="all" {{ request('date_filter') == 'all' ? 'selected' : '' }}>{{ __('All') }}</option>
+                <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>{{ __('Today') }}</option>
+                <option value="tomorrow" {{ request('date_filter') == 'tomorrow' ? 'selected' : '' }}>{{ __('Tomorrow') }}</option>
+                <option value="week" {{ request('date_filter') == 'week' ? 'selected' : '' }}>{{ __('This Week') }}</option>
             </select>
         </form>
 
@@ -115,16 +115,16 @@
                 $appointmentDate = \Carbon\Carbon::parse($appointment->date);
                 $isToday = $appointmentDate->isToday();
                 $parentName = trim(($appointment->parent->user->first_name ?? '') . ' ' . ($appointment->parent->user->last_name ?? ''));
-                $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+                $headerText = $appointmentDate->format('d l') . ($isToday ? ' - ' . __('Today') : '');
             @endphp
 
             <div class="schedule-card">
                 <div class="appointment-box">
                     <div class="times">
-                        <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                        <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ __($appointment->from_period) }}</div>
                         <div>|</div>
                         <div>|</div>
-                        <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
+                        <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ __($appointment->to_period) }}</div>
                     </div>
 
                     <div class="appointment-content">
@@ -135,20 +135,20 @@
                         <div class="appointment-main">
                             <div class="appointment-info">
                                 <div class="doctor-row">
-                                    <div class="doctor-name">{{ $parentName ?: 'Parent not found' }}</div>
+                                    <div class="doctor-name">{{ $parentName ?: __('Parent not found') }}</div>
                                 </div>
-                                <div class="appointment-sub">Child: {{ $appointment->child->name ?? 'N/A' }}</div>
-                                <div class="appointment-sub">Place: {{ $appointment->workplace->place_name }}</div>
+                                <div class="appointment-sub">{{ __('Child:') }} {{ $appointment->child->name ?? __('N/A') }}</div>
+                                <div class="appointment-sub">{{ __('Place:') }} {{ $appointment->workplace->place_name }}</div>
                                 @if($appointment->note)
                                     <div class="note" style="color: #2f2f2f; font-size: 13px; margin-top: 6px; font-style: italic;">"{{ Str::limit($appointment->note, 30) }}"</div>
                                 @endif
                             </div>
 
                             <div class="doctor-actions">
-                                <button type="button" class="action-icon-btn" onclick="openCustomModal('{{ route('doctor.appointments.destroy', $appointment->id) }}')" title="Cancel Appointment">
+                                <button type="button" class="action-icon-btn" onclick="openCustomModal('{{ route('doctor.appointments.destroy', $appointment->id) }}')" title="{{ __('Cancel Appointment') }}">
                                     <i class="fas fa-times"></i>
                                 </button>
-                                <a href="{{ route('doctor.edit.appointment', $appointment->id) }}" class="action-icon-link" title="Edit Appointment">
+                                <a href="{{ route('doctor.edit.appointment', $appointment->id) }}" class="action-icon-link" title="{{ __('Edit Appointment') }}">
                                     <i class="fas fa-pen"></i>
                                 </a>
                             </div>
@@ -161,17 +161,14 @@
                 <div class="appointment-box">
                     <div class="appointment-content">
                         <div class="appointment-content">
-                            <span class="mmm">No upcoming appointments</span>
+                            <span class="mmm">{{ __('No upcoming appointments') }}</span>
                         </div>
                     </div>
                 </div>
             </div>
         @endforelse
 
-    </div> <!-- End Content -->
-
-    <!-- navbar -->
-    <div class="bottom-nav">
+    </div> <div class="bottom-nav">
         <a href="{{ route('doctor.parents') }}" class="nav-item {{ request()->routeIs('doctor.parents') ? 'active' : '' }}">
             <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 18c1.2-2.8 3.3-4.2 5.5-4.2s4.3 1.4 5.5 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 9v6M15 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </a>
@@ -183,21 +180,18 @@
         </a>
     </div>
 
-    <!-- النافذة المطابقة لتصميم الـ Logout -->
     <div id="customConfirmModal" class="doctor-modal-overlay">
         <div class="doctor-modal-box">
-            <div class="doctor-modal-title">Cancel Appointment</div>
-            <div class="doctor-modal-text">Are you sure you want to cancel this appointment?</div>
+            <div class="doctor-modal-title">{{ __('Cancel Appointment') }}</div>
+            <div class="doctor-modal-text">{{ __('Are you sure you want to cancel this appointment?') }}</div>
             <div class="doctor-modal-actions">
-                <button type="button" class="btn-modal-cancel" onclick="closeCustomModal()">Cancel</button>
-                <button type="button" class="btn-modal-confirm" onclick="submitCustomModal()">Yes, Cancel</button>
+                <button type="button" class="btn-modal-cancel" onclick="closeCustomModal()">{{ __('Cancel') }}</button>
+                <button type="button" class="btn-modal-confirm" onclick="submitCustomModal()">{{ __('Yes, Cancel') }}</button>
             </div>
         </div>
     </div>
 
-</div> <!-- End Phone -->
-
-<form id="masterDeleteForm" method="POST" style="display: none;">
+</div> <form id="masterDeleteForm" method="POST" style="display: none;">
     @csrf
     @method('DELETE')
 </form>

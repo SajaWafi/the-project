@@ -24,6 +24,7 @@ class MedicalRulesSeeder extends Seeder
                 'min_value' => 50.00,
                 'max_value' => null, // +50% or more
                 'status' => 'Needs Monitoring',
+                //زيادة كبيرة في النوبات، يُنصح بالمراقبة اللصيقة ومراجعة الطبيب.
                 'message_ar' => 'Significant increase in episodes. Close monitoring is recommended and medical review may be needed.',
                 'message_en' => 'Significant increase in episodes. Close monitoring is recommended and medical review may be needed.',
                 'created_at' => now(), 'updated_at' => now()
@@ -33,6 +34,7 @@ class MedicalRulesSeeder extends Seeder
                 'min_value' => 10.00,
                 'max_value' => 49.99, // 10% to 49%
                 'status' => 'Slight Worsening',
+                //زيادة ملحوظة مقارنة بالفترة السابقة، راجع المسببات.
                 'message_ar' => 'Noticeable increase compared with the previous period. Review possible triggers and monitor closely.',
                 'message_en' => 'Noticeable increase compared with the previous period. Review possible triggers and monitor closely.',
                 'created_at' => now(), 'updated_at' => now()
@@ -40,8 +42,9 @@ class MedicalRulesSeeder extends Seeder
             [
                 'rule_key' => 'stable_condition',
                 'min_value' => -9.99,
-                'max_value' => 9.99, // -9% to +9%
+                'max_value' => 9.99, // -9% to +9% //النسبة بين -9.99% (نقصان بسيط) إلى 9.99% (زيادة بسيطة)
                 'status' => 'Stable',
+                //تبدو الحالة مستقرة مقارنة بالفترة السابقة. استمر في المراقبة المنتظمة
                 'message_ar' => 'Condition appears stable compared with the previous period. Continue regular monitoring.',
                 'message_en' => 'Condition appears stable compared with the previous period. Continue regular monitoring.',
                 'created_at' => now(), 'updated_at' => now()
@@ -49,17 +52,19 @@ class MedicalRulesSeeder extends Seeder
             [
                 'rule_key' => 'noticeable_improvement',
                 'min_value' => -49.99,
-                'max_value' => -10.00, // -10% to -49%
+                'max_value' => -10.00, // -10% to -49% //لو النوبات نقصت بنسبة 10% إلى 49.99% (النسبة بالسالب).
                 'status' => 'Improving',
+                //تحسن ملحوظ مقارنة بالفترة السابقة. استمر في خطة الدعم الحالية
                 'message_ar' => 'Noticeable improvement compared with the previous period. Continue the current support plan.',
                 'message_en' => 'Noticeable improvement compared with the previous period. Continue the current support plan.',
                 'created_at' => now(), 'updated_at' => now()
             ],
             [
                 'rule_key' => 'significant_improvement',
-                'min_value' => null, // -50% or less
+                'min_value' => null, // -50% or less //لو النوبات نقصت بنسبة 50% أو أكثر.
                 'max_value' => -50.00, 
                 'status' => 'Significant Improvement',
+                //تحسن ملحوظ مقارنة بالفترة السابقة. استمر في المتابعة ومراجعة العوامل الإيجابية مع الطبيب.
                 'message_ar' => 'Significant improvement compared with the previous period. Continue monitoring and review positive factors with the doctor.',
                 'message_en' => 'Significant improvement compared with the previous period. Continue monitoring and review positive factors with the doctor.',
                 'created_at' => now(), 'updated_at' => now()
@@ -73,49 +78,49 @@ class MedicalRulesSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
         $recommendationRules = [
-            [
+            [ //لو النوبات زادت بشكل كبير، يعطيه أولوية (حرجة - Critical) ونصيحة بمراجعة الطبيب.
                 'rule_key' => 'high_episodes_increase',
                 'title' => 'Significant Episode Increase',
                 'message' => 'Significant increase in episodes. Strict monitoring is advised, and a medical review is highly recommended.',
                 'priority' => 'critical',
                 'created_at' => now(), 'updated_at' => now()
             ],
-            [
+            [//لو الزيادة ملحوظة، الأولوية (عالية - High) وينصحه يراجع بيئة الطفل زي الإضاءة والدوشة.
                 'rule_key' => 'noticeable_episodes_increase',
                 'title' => 'Noticeable Episode Increase',
                 'message' => 'Noticeable increase detected. Please review potential environmental triggers like noise, lighting, or routine changes.',
                 'priority' => 'high',
                 'created_at' => now(), 'updated_at' => now()
             ],
-            [
+            [//لو مدة نوبة الهلع كانت "طويلة جداً"، الأولوية (متوسطة - Medium).
                 'rule_key' => 'long_episode_duration',
                 'title' => 'Prolonged Episode Duration',
                 'message' => 'Episode duration is unusually long. Please log the details and discuss them with your healthcare provider.',
                 'priority' => 'medium',
                 'created_at' => now(), 'updated_at' => now()
             ],
-            [
+            [//(النبض عالي والحركة قليلة)، يعطيه أولوية (عالية) ويقول للأب "تأكد من قياس النبض لأن الطفل يبدو في حالة هلع وهو جالس"
                 'rule_key' => 'high_hr_low_activity',
                 'title' => 'High Resting Heart Rate',
                 'message' => 'High heart rate detected during low activity. Please monitor closely and re-measure.',
                 'priority' => 'high',
                 'created_at' => now(), 'updated_at' => now()
             ],
-            [
+            [//الخروج من الخريطة الأمنة. الأولوية (حرجة) والرسالة "تأكد من مكان الطفل فوراً".
                 'rule_key' => 'safe_zone_exit',
                 'title' => 'Safe Zone Breach',
                 'message' => 'Child has left the designated safe zone. Verify their location and safety immediately.',
                 'priority' => 'critical',
                 'created_at' => now(), 'updated_at' => now()
             ],
-            [
+            [//لو الإسوارة سجلت نوبة هلع صريحة، الرسالة تقول "انقل الطفل لبيئة هادئة وقلل المشتتات الحسية".
                 'rule_key' => 'panic_status',
                 'title' => 'Panic or Severe Anxiety',
                 'message' => 'Panic signs detected. Move the child to a calm environment, reduce sensory triggers, and intervene quickly.',
                 'priority' => 'critical',
                 'created_at' => now(), 'updated_at' => now()
             ],
-            [
+            [//لو كل شيء تمام، الأولوية (منخفضة - Low) والرسالة "العلامات الحيوية ممتازة، استمر على نفس الروتين"
                 'rule_key' => 'stable_condition',
                 'title' => 'Stable Condition',
                 'message' => 'Vital signs are normal and stable. Continue the current routine to maintain stability.',

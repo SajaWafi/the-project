@@ -99,7 +99,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/alert-sounds', function () {
         return view('doctor.alert-sounds'); 
     })->name('alert-sounds');
-
+Route::post('/toggle', [DoctorController::class, 'toggleSettings'])->name('settings.toggle');
     /*
     |--------------------------------------------------------------------------
     | Complaints

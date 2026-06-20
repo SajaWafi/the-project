@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Status - Taif</title>
+    <title>{{ __('Account Status - Taif') }}</title>
 
     <style>
         * {
@@ -63,9 +63,10 @@
             text-align: center;
         }
 
+        /* 💡 دعم الاتجاهين لمكان الشعار */
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0;
             width: 38px;
             height: 38px;
             object-fit: contain;
@@ -154,7 +155,7 @@
         <div class="content">
             
             <div class="header">
-                <div class="page-title">Account Status</div>
+                <div class="page-title">{{ __('Account Status') }}</div>
                 <img src="{{ asset('images/logo.png') }}" alt="Taif Logo" class="logo">
             </div>
 
@@ -162,21 +163,21 @@
                 <div class="status-card">
                     @if($status === 'rejected')
                         <div class="icon">❌</div>
-                        <h1>Application Rejected</h1>
-                        <p>We are sorry, but your application to join Taif as a doctor has been rejected by the administration.</p>
+                        <h1>{{ __('Application Rejected') }}</h1>
+                        <p>{{ __('We are sorry, but your application to join Taif as a doctor has been rejected by the administration.') }}</p>
                     @elseif($status === 'suspended')
                         <div class="icon">🚫</div>
-                        <h1>Account Suspended</h1>
-                        <p>Your doctor account has been temporarily suspended by the administration.</p>
+                        <h1>{{ __('Account Suspended') }}</h1>
+                        <p>{{ __('Your doctor account has been temporarily suspended by the administration.') }}</p>
                     @else
                         <div class="icon">⚠️</div>
-                        <h1>Account Unavailable</h1>
-                        <p>Your account is currently unavailable.</p>
+                        <h1>{{ __('Account Unavailable') }}</h1>
+                        <p>{{ __('Your account is currently unavailable.') }}</p>
                     @endif
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="logout-btn">Log out</button>
+                        <button type="submit" class="logout-btn">{{ __('Log out') }}</button>
                     </form>
                 </div>
             </div>

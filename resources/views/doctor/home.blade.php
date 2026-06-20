@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctors Profile</title>
+    <title>{{ __('Doctors Profile') }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -33,7 +33,7 @@
 
         .star {
             position: absolute;
-            left: -2px;
+            inset-inline-start: -2px; /* RTL Support */
             top: 110px;
             color: #f3d467;
             font-size: 26px;
@@ -62,11 +62,13 @@
 
         .back-btn {
             position: absolute;
-            left: 10px;
+            inset-inline-start: 10px; /* RTL Support */
             font-size: 30px;
             color: #3d78ff;
             text-decoration: none;
             line-height: 1;
+            /* قلب السهم في حالة العربي */
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .title {
@@ -76,10 +78,9 @@
             text-align: center;
         }
 
-        .logo { position: absolute; right: 0; width: 100px; height: 100px; object-fit: contain; }
+        .logo { position: absolute; inset-inline-end: 0; width: 100px; height: 100px; object-fit: contain; } /* RTL Support */
         .logo img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* 💡 تعديل الكرت الشخصي لتنظيف الزحمة */
         .profile-card {
             background: #bfc8f0;
             border-radius: 24px;
@@ -94,7 +95,9 @@
             width: 34px; height: 34px; border-radius: 50%;
             border: 2px solid #3d78ff; color: #3d78ff;
             display: flex; align-items: center; justify-content: center;
-            text-decoration: none; background: #fff; right: 10px; transition: 0.2s;
+            text-decoration: none; background: #fff; 
+            inset-inline-end: 10px; /* RTL Support */
+            transition: 0.2s;
         }
         .chat-btn { top: 10px; font-size: 17px; }
         .settings-btn { top: 50px; font-size: 18px; }
@@ -102,7 +105,8 @@
         .chat-svg { width: 20px; height: 20px; color: currentColor; }
 
         .top-profile {
-            display: flex; gap: 16px; align-items: center; margin-bottom: 16px; padding-right: 40px;
+            display: flex; gap: 16px; align-items: center; margin-bottom: 16px; 
+            padding-inline-end: 40px; /* RTL Support */
         }
 
         .doctor-image {
@@ -112,7 +116,6 @@
 
         .profile-info { flex: 1; }
 
-        /* 💡 إزالة الصناديق البيضاء المزعجة وجعل النص أنظف */
         .welcome-text { color: #4f82ff; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
         .patient-name { color: #1d567e; font-size: 20px; font-weight: 800; text-decoration: none; margin-bottom: 8px; display: block; }
         
@@ -127,7 +130,6 @@
         .workplace-name { color: #2d63f6; font-size: 14px; font-weight: 800; margin-bottom: 4px; }
         .workplace-meta { color: #555; font-size: 12px; line-height: 1.4; }
 
-        /* 💡 تعديل لون الـ Bio باش يكون مريح للعين (أزرق فاتح) */
         .about-box {
             background: #e6ecfc;
             color: #1d567e;
@@ -152,17 +154,14 @@
         .appointment-header { display: flex; justify-content: space-between; align-items: center; color: #2d63f6; font-size: 13px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px dotted #73a0ff; }
         .mmm { color: #2d63f6; font-size: 15px; font-weight: 700; text-align: center; display: block; padding: 10px; }
         .appointment-main { background: #bfc8f0; border-radius: 14px; padding: 10px 12px; margin-top: 14px; }
-        .doctor-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 3px; }
         .appointment-doctor-name { color: #2d63f6; font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .appointment-sub { color: #555; font-size: 14px; }
         .note { font-size: 13px; color: #444; margin-top: 6px; font-style: italic; }
 
-        /* navbar */
-        .bottom-nav { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: #2f80ed; border-radius: 0 0 20px 20px; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .bottom-nav { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: #2f80ed; border-radius: 0 0 20px 20px; display: flex; justify-content: space-around; align-items: center; z-index: 1000; direction: ltr; /* للحفاظ على ترتيب الأيقونات ثابت */ }
         .nav-item { width: 48px; height: 48px; border-radius: 14px; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.65); transition: 0.2s; text-decoration: none; }
         .nav-svg { width: 22px; height: 22px; }
         .nav-item.active { background: rgba(255,255,255,0.18); color: #ffffff; transform: translateY(-2px); }
-        .leaflet-control-attribution { font-size: 10px; }
     </style>
 </head>
 
@@ -175,7 +174,7 @@
     <div class="phone">
         <div class="content">
             <div class="header">
-                <div class="title">Home</div>
+                <div class="title">{{ __('Home') }}</div>
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
             </div>
 
@@ -196,12 +195,12 @@
                     </a>
 
                     <div class="profile-info">
-                        <div class="welcome-text">Welcome,</div>
+                        <div class="welcome-text">{{ __('Welcome,') }}</div>
                         <a href="{{ route('doctor.doctor-profile') }}" class="patient-name">
-                            Dr. {{ $user?->first_name }} {{ $user?->last_name }}
+                            {{ __('Dr.') }} {{ $user?->first_name }} {{ $user?->last_name }}
                         </a>
-                        <div class="specialize-label">Specialize In:</div>
-                        <div class="specialty-text">{{ $doctorProfile?->specialization ?? 'No specialization yet' }}</div>
+                        <div class="specialize-label">{{ __('Specialize In:') }}</div>
+                        <div class="specialty-text">{{ $doctorProfile?->specialization ?? __('No specialization yet') }}</div>
                     </div>
                 </div>
 
@@ -215,7 +214,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="workplace-pill"><div class="workplace-name">No workplace</div></div>
+                        <div class="workplace-pill"><div class="workplace-name">{{ __('No workplace') }}</div></div>
                     @endforelse
                 </div>
             </div>
@@ -226,7 +225,7 @@
                 </div>
             @endif
 
-            <div class="section-chip">Today's Appointments</div>
+            <div class="section-chip">{{ __('Today\'s Appointments') }}</div>
 
             @php
                 $todayAppointments = $appointments->filter(function ($appointment) {
@@ -239,16 +238,16 @@
                     $appointmentDate = \Carbon\Carbon::parse($appointment->date);
                     $isToday = $appointmentDate->isToday();
                     $parentName = trim(($appointment->parent->user->first_name ?? '') . ' ' . ($appointment->parent->user->last_name ?? ''));
-                    $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
+                    $headerText = $appointmentDate->format('d l') . ($isToday ? ' - ' . __('Today') : '');
                 @endphp
 
                 <div class="schedule-card">
                     <div class="appointment-box">
                         <div class="times">
-                            <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                            <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ __($appointment->from_period) }}</div>
                             <div>|</div>
                             <div>|</div>
-                            <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
+                            <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ __($appointment->to_period) }}</div>
                         </div>
 
                         <div class="appointment-content">
@@ -258,7 +257,7 @@
 
                             <div class="appointment-main">
                                 <div class="appointment-info">
-                                    <div class="appointment-sub">Child: {{ $appointment->child->name ?? 'N/A' }}</div>
+                                    <div class="appointment-sub">{{ __('Child:') }} {{ $appointment->child->name ?? __('N/A') }}</div>
                                     @if($appointment->note)
                                         <div class="note">"{{ $appointment->note }}"</div>
                                     @endif
@@ -270,7 +269,7 @@
             @empty
                 <div class="schedule-card">
                     <div class="appointment-box" style="display: block;">
-                        <span class="mmm">No appointments for today</span>
+                        <span class="mmm">{{ __('No appointments for today') }}</span>
                     </div>
                 </div>
             @endforelse

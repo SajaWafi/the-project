@@ -11,44 +11,48 @@ use Carbon\Carbon;
 
 class HomeController extends Controller
 {
+    // --- 1. إعداد بيانات الرسم البياني (بالساعات) ---
     public function home()
     {
-        // --- 1. إعداد بيانات الرسم البياني (بالساعات) ---
+        // جلب جميع القراءات المسجلة اليوم فقط.
         $todayReadings = SensorReading::whereDate('recorded_at', Carbon::today())->get();
         
+        // مصفوفات سيتم إرسالها للـ Chart.js.
         $chartLabels = [];
         $heartRatesChart = [];
         $motionLevelsChart = [];
+        
+        // نجعل النهاية هي الساعة الحالية، والبداية قبل 6 ساعات (المجموع 7 خانات)
+        $endHour = Carbon::now()->startOfHour();
+        $startHour = $endHour->copy()->subHours(6);
 
-        if ($todayReadings->isNotEmpty()) {
-            $startHour = Carbon::parse($todayReadings->min('recorded_at'))->startOfHour();
+        // إنشاء 7 ساعات متتالية تنتهي بالساعة الحالية
+        for ($i = 0; $i <= 6; $i++) {
+            $currentSlot = $startHour->copy()->addHours($i);
+            $chartLabels[] = $currentSlot->format('H:00');
             
-            for ($i = 0; $i < 7; $i++) {
-                $currentSlot = $startHour->copy()->addHours($i);
-                $chartLabels[] = $currentSlot->format('H:00');
-                
+            if ($todayReadings->isNotEmpty()) {
+                // تصفية القراءات (الفلترة) لهذه الساعة المحددة
                 $slotReadings = $todayReadings->filter(function($reading) use ($currentSlot) {
                     return Carbon::parse($reading->recorded_at)->format('H') == $currentSlot->format('H');
                 });
                 
                 if ($slotReadings->count() > 0) {
-                    $heartRatesChart[] = $slotReadings->avg('heart_rate');
-                    $motionLevelsChart[] = $slotReadings->avg('motion_level');
+                    $heartRatesChart[] = round($slotReadings->avg('heart_rate'));
+                    $motionLevelsChart[] = $slotReadings->max('motion_level');
                 } else {
                     $heartRatesChart[] = 0;
                     $motionLevelsChart[] = 0;
                 }
-            }
-        } else {
-            $startHour = Carbon::now()->startOfHour();
-            for ($i = 0; $i < 7; $i++) {
-                $chartLabels[] = $startHour->copy()->addHours($i)->format('H:00');
+            } else {
+                // في حال لم تُسجل أي قراءة اليوم
                 $heartRatesChart[] = 0;
                 $motionLevelsChart[] = 0;
             }
         }
 
         // --- 2. إعداد المربعات (النبض، الحالة، الاتصال) ---
+      // --- 2. إعداد المربعات (النبض، الحالة، الاتصال) ---
         $latest = SensorReading::latest('recorded_at')->first();
         $heartRate = 0;
         $activityStatus = 'No Data';
@@ -56,11 +60,13 @@ class HomeController extends Controller
 
         if ($latest) {
             $heartRate = $latest->heart_rate;
+            $motion = $latest->motion_level; // 👈 هادي اللي كانت ناقصة وسببت الخطأ
 
-            if ($heartRate >= 120 || $latest->motion_level >= 80) {
-                $activityStatus = 'Meltdown';
-            } elseif ($heartRate >= 100 || $latest->motion_level >= 50) {
-                $activityStatus = 'Anxious';
+            // استخدمنا activityStatus لأنها هي اللي تنبعث لصفحة الـ home
+            if ($heartRate >= 120 || $motion == 2) {
+                $activityStatus = 'Panic Episode';
+            } elseif ($heartRate >= 100 || $motion == 1) {
+                $activityStatus = 'Anxiety';
             } else {
                 $activityStatus = 'Calm';
             }
@@ -89,7 +95,8 @@ class HomeController extends Controller
             'heartRate', 'activityStatus', 'isConnected', 'appointments'
         ));
     }
-    
+
+    // التحقق من اتصال المستشعر (Online/Offline) وتحديث البيانات الحية
     public function getLiveData()
     {
         $user = auth()->user();
@@ -103,7 +110,7 @@ class HomeController extends Controller
         }
 
         // ==========================================
-        // 1. تجهيز بيانات الرسم البياني (تبدأ من لحظة تشغيل الإسوارة اليوم)
+        // 1. تجهيز بيانات الرسم البياني للـ 7 ساعات الأخيرة
         // ==========================================
         $todayReadings = SensorReading::where('child_id', $child->id)
                             ->whereDate('recorded_at', Carbon::today())
@@ -113,29 +120,26 @@ class HomeController extends Controller
         $heartRatesChart = [];
         $motionLevelsChart = [];
 
-        if ($todayReadings->isNotEmpty()) {
-            $startHour = Carbon::parse($todayReadings->min('recorded_at'))->startOfHour();
+        $endHour = Carbon::now()->startOfHour();
+        $startHour = $endHour->copy()->subHours(6);
+
+        for ($i = 0; $i <= 6; $i++) {
+            $currentSlot = $startHour->copy()->addHours($i);
+            $chartLabels[] = $currentSlot->format('H:00');
             
-            for ($i = 0; $i < 7; $i++) {
-                $currentSlot = $startHour->copy()->addHours($i);
-                $chartLabels[] = $currentSlot->format('H:00');
-                
+            if ($todayReadings->isNotEmpty()) {
                 $slotReadings = $todayReadings->filter(function($reading) use ($currentSlot) {
                     return Carbon::parse($reading->recorded_at)->format('H') == $currentSlot->format('H');
                 });
                 
                 if ($slotReadings->count() > 0) {
                     $heartRatesChart[] = round($slotReadings->avg('heart_rate'));
-                    $motionLevelsChart[] = round($slotReadings->avg('motion_level'));
+                    $motionLevelsChart[] = $slotReadings->max('motion_level');
                 } else {
                     $heartRatesChart[] = 0;
                     $motionLevelsChart[] = 0;
                 }
-            }
-        } else {
-            $startHour = Carbon::now()->startOfHour();
-            for ($i = 0; $i < 7; $i++) {
-                $chartLabels[] = $startHour->copy()->addHours($i)->format('H:00');
+            } else {
                 $heartRatesChart[] = 0;
                 $motionLevelsChart[] = 0;
             }
@@ -185,6 +189,7 @@ class HomeController extends Controller
         ]);
     }
 
+    // مخصصة للتعامل مع إشعارات الموبايل أو المتصفح (Push Notifications)
     public function saveToken(Request $request)
     {
         $request->validate(['token' => 'required']);

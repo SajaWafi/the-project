@@ -315,7 +315,7 @@ Route::post('/step4', function (Request $request) {
     session()->forget('signup');
     session()->forget('verification_user_id');
 
-    return redirect()->route('parents.home');
+    return redirect()->route('home');
 })->name('signup.step4.post');
 
 

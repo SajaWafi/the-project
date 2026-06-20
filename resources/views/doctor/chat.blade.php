@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Chat</title>
+    <title>{{ __('Doctor Chat') }}</title>
 
     <style>
         * {
@@ -82,7 +82,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             background: transparent;
             border: none;
             cursor: pointer;
@@ -91,6 +91,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .back-btn svg {
@@ -104,7 +105,7 @@
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
-            margin-left: 26px;
+            margin-inline-start: 26px;
         }
 
         .header-info {
@@ -153,7 +154,7 @@
         .mute-menu {
             position: absolute;
             top: 42px;
-            right: 0;
+            inset-inline-end: 0;
             width: 190px;
             background: #ffffff;
             border-radius: 14px;
@@ -172,7 +173,7 @@
             border: none;
             background: #ffffff;
             padding: 12px 14px;
-            text-align: left;
+            text-align: start;
             font-size: 14px;
             color: #3d4d63;
             cursor: pointer;
@@ -231,14 +232,15 @@
             word-wrap: break-word;
         }
 
+        /* 💡 استخدام الخصائص المنطقية للأطراف الحادة من الفقاعة */
         .bubble.me {
             background: #c9efe9;
-            border-bottom-right-radius: 8px;
+            border-end-end-radius: 8px;
         }
 
         .bubble.other {
             background: #cfe0ff;
-            border-bottom-left-radius: 8px;
+            border-end-start-radius: 8px;
         }
 
         .time {
@@ -272,7 +274,7 @@
         .message-action-menu {
             position: absolute;
             top: -6px;
-            right: 0;
+            inset-inline-end: 0;
             background: white;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
@@ -311,10 +313,12 @@
 
         .audio-card.me {
             background: #c9efe9;
+            border-end-end-radius: 8px;
         }
 
         .audio-card.other {
             background: #cfe0ff;
+            border-end-start-radius: 8px;
         }
 
         .audio-play-btn {
@@ -399,8 +403,8 @@
 
         .selected-file-preview {
             position: absolute;
-            left: 18px;
-            right: 42px;
+            inset-inline-start: 18px;
+            inset-inline-end: 42px;
             top: 50%;
             transform: translateY(-50%);
             font-size: 13px;
@@ -414,7 +418,7 @@
 
         .clear-file-btn {
             position: absolute;
-            right: 12px;
+            inset-inline-end: 12px;
             top: 50%;
             transform: translateY(-50%);
             width: 22px;
@@ -443,11 +447,12 @@
             font-size: 18px;
             cursor: pointer;
             flex-shrink: 0;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .recording-status {
             position: absolute;
-            left: 58px;
+            inset-inline-start: 58px;
             bottom: 92px;
             background: rgba(255,255,255,0.95);
             color: #444;
@@ -503,7 +508,7 @@
         .image-modal-close {
             position: absolute;
             top: 18px;
-            right: 22px;
+            inset-inline-end: 22px;
             background: rgba(255,255,255,0.15);
             color: white;
             border: none;
@@ -523,7 +528,7 @@
 </head>
 <body>
     @php
-        $parentName = $parent['name'] ?? 'Parent';
+        $parentName = $parent['name'] ?? __('Parent');
         $parentImage = !empty($parent['image'])
             ? asset('storage/' . $parent['image'])
             : asset('images/default-user.png');
@@ -545,18 +550,18 @@
 
             <div class="header-info">
                 <div class="parent-name">{{ $parentName }}</div>
-                <div class="online-status">• Online</div>
+                <div class="online-status">• {{ __('Online') }}</div>
             </div>
 
             <div class="menu-wrapper">
                 <button type="button" class="menu-btn" onclick="toggleMuteMenu()">⋮</button>
 
                 <div class="mute-menu" id="muteMenu">
-                    <button type="button" onclick="muteNotifications('1hour')">Mute for 1 hour</button>
-                    <button type="button" onclick="muteNotifications('1day')">Mute for 1 day</button>
-                    <button type="button" onclick="muteNotifications('1month')">Mute for 1 month</button>
-                    <button type="button" onclick="muteNotifications('forever')">Mute forever</button>
-                    <button type="button" onclick="unmuteNotifications()">Unmute</button>
+                    <button type="button" onclick="muteNotifications('1hour')">{{ __('Mute for 1 hour') }}</button>
+                    <button type="button" onclick="muteNotifications('1day')">{{ __('Mute for 1 day') }}</button>
+                    <button type="button" onclick="muteNotifications('1month')">{{ __('Mute for 1 month') }}</button>
+                    <button type="button" onclick="muteNotifications('forever')">{{ __('Mute forever') }}</button>
+                    <button type="button" onclick="unmuteNotifications()">{{ __('Unmute') }}</button>
                 </div>
             </div>
         </div>
@@ -626,7 +631,7 @@
                     @if($isMe)
                         <div class="message-action-menu">
                             <button type="button" class="message-action-btn" onclick="deleteMessage({{ $message->id }}, this)">
-                                Delete
+                                {{ __('Delete') }}
                             </button>
                         </div>
                     @endif
@@ -635,14 +640,14 @@
                 </div>
             @empty
                 <div class="empty-chat" id="emptyChat" style="text-align:center; color:#777; margin-top:20px;">
-                    No messages yet. Start the conversation.
+                    {{ __('No messages yet. Start the conversation.') }}
                 </div>
             @endforelse
         </div>
 
         <div class="recording-status" id="recordingStatus">
             <span class="recording-dot"></span>
-            <span>Recording...</span>
+            <span>{{ __('Recording...') }}</span>
             <span class="recording-time" id="recordingTime">00:00</span>
         </div>
 
@@ -677,7 +682,7 @@
                     name="message"
                     class="message-input"
                     id="messageInput"
-                    placeholder="Write Here..."
+                    placeholder="{{ __('Write Here...') }}"
                     autocomplete="off"
                 >
                 <div id="selectedFilePreview" class="selected-file-preview"></div>
@@ -693,8 +698,16 @@
         <button class="image-modal-close" type="button" onclick="closeImageModal()">×</button>
         <img id="imageModalPreview" src="" alt="Preview">
     </div>
+
 <script>
-    // 💡 نستقبل حالة الكتم من السيرفر مباشرة (يجب تمرير $isMuted من الـ Controller)
+    // 💡 إرسال الترجمات من Blade إلى JavaScript ليتم استخدامها في الرسائل الحية
+    const trans = {
+        online: "{{ __('Online') }}",
+        muted: "{{ __('Notifications muted') }}",
+        delete: "{{ __('Delete') }}",
+        openFile: "{{ __('Open file') }}"
+    };
+
     let isMutedStatus = {{ isset($isMuted) && $isMuted ? 'true' : 'false' }};
     let pressTimer = null;
     let isRecording = false;
@@ -709,7 +722,6 @@
         menu.classList.toggle('show');
     }
 
-    // 💡 دالة الكتم المُعدلة (تتصل بالسيرفر)
     function muteNotifications(duration) {
         fetch("{{ route('doctor.chat.mute', ['parentId' => $parent['id']]) }}", {
             method: 'POST',
@@ -731,7 +743,6 @@
         .catch(error => console.error('Error muting:', error));
     }
 
-    // 💡 دالة إلغاء الكتم (تتصل بالسيرفر)
     function unmuteNotifications() {
         fetch("{{ route('doctor.chat.mute', ['parentId' => $parent['id']]) }}", {
             method: 'POST',
@@ -762,10 +773,10 @@
         if (!status) return;
 
         if (isMuted()) {
-            status.textContent = '• Notifications muted';
+            status.textContent = '• ' + trans.muted;
             status.style.color = '#ff9500';
         } else {
-            status.textContent = '• Online';
+            status.textContent = '• ' + trans.online;
             status.style.color = '#34c759';
         }
     }
@@ -891,7 +902,7 @@
         const link = document.createElement('a');
         link.href = fileUrl;
         link.target = '_blank';
-        link.textContent = fileName || 'Open file';
+        link.textContent = fileName || trans.openFile;
         link.style.color = 'inherit';
         link.style.textDecoration = 'underline';
         link.style.wordBreak = 'break-all';
@@ -972,7 +983,7 @@
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'message-action-btn';
-            btn.textContent = 'Delete';
+            btn.textContent = trans.delete;
             btn.onclick = function () {
                 deleteMessage(messageId, btn);
             };

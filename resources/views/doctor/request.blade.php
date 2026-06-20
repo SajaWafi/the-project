@@ -1,169 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Request</title>
+<title>{{ __('Requests') }}</title>
 
 <style>
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-.header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-}
+    .header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 28px;
+        font-weight: 800;
+        color: #1f567f;
+        padding: 20px;
+    }
 
-.header {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-}
+    /* 💡 دعم زر الرجوع للاتجاهين */
+    .back-btn {
+        position: absolute;
+        inset-inline-start: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #2f80ed;
+        padding: 6px;
+        transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
+    }
 
-         .back-btn {
-    position: absolute;
-    left: 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #2f80ed;
-    padding: 6px;
-}
-
-.back-btn svg {
-    width: 26px;
-    height: 26px;
-}
+    .back-btn svg {
+        width: 26px;
+        height: 26px;
+    }
         
-body {
-    background:#111;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    font-family:Arial;
-}
+    body {
+        background: #111;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        margin: 0;
+    }
 
-.phone {
-    width: 100%;
-    max-width: 360px; /* هذا المهم */
-    max-height: 800px;
-    background: url('{{ asset('pics/bg.png') }}') no-repeat;
-    background-position: left;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-}
+    .phone {
+        width: 100%;
+        max-width: 360px;
+        max-height: 800px;
+        background: url('{{ asset('pics/bg.png') }}') no-repeat;
+        background-position: center;
+        background-size: cover;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
 
-/* header */
-.header {
-    text-align:center;
-    font-size:28px;
-    font-weight:800;
-    color:#1f567f;
-    padding:20px;
-}
-  .logo {
-            position: absolute;
-            right: 0;
-            width: 50px;
-            height: 34px;
-        }
-/* doctor cards */
-.list {
-    padding:10px;
-    overflow-y:auto;
-    height:580px;
-}
+    /* 💡 دعم الشعار للاتجاهين */
+    .logo {
+        position: absolute;
+        inset-inline-end: 0;
+        width: 50px;
+        height: 34px;
+    }
 
-.card {
-    background:#C3EDE5;
-    border-radius:20px;
-    padding:14px;
-    display:flex;
-    align-items:center;
-    margin-bottom:12px;
-}
+    /* doctor cards */
+    .list {
+        padding: 10px;
+        overflow-y: auto;
+        height: 580px;
+    }
 
-.card img {
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    object-fit:cover;
-}
+    .list::-webkit-scrollbar {
+        width: 4px;
+    }
+    .list::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
 
-.card-info {
-    margin-left:12px;
-    flex:1;
-}
+    .card {
+        background: #C3EDE5;
+        border-radius: 20px;
+        padding: 14px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
 
-.name {
-    font-weight:700;
-    color:#1f567f;
-}
+    .card img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
 
-.specialty {
-    font-size:14px;
-    color:#333;
-}
+    /* 💡 دعم المسافة الجانبية */
+    .card-info {
+        margin-inline-start: 12px;
+        flex: 1;
+    }
 
-.actions {
-    margin-top:8px;
-    display:flex;
-    gap:10px;
-}
+    .name {
+        font-weight: 700;
+        color: #1f567f;
+    }
 
-.btn-icon {
-    width:70px;
-    height:36px;
-    border-radius: 25px;
-    background:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    text-decoration:none;
-    color:#48C9B0;
-    font-size:12px;
-}
+    .specialty {
+        font-size: 14px;
+        color: #333;
+    }
 
-/* navbar */
-.bottom-nav {
-    position: sticky;
-    bottom: 0;
-    margin-top: auto;
-    background: #2f80ed;
-    border-radius: 24px 24px 0 0;
-    height: 64px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 10px;
-}
+    .actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 10px;
+    }
 
-.nav-item {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: rgba(255,255,255,0.6);
-    transition: 0.2s;
-}
+    .btn-icon {
+        width: 70px;
+        height: 36px;
+        border-radius: 25px;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: #48C9B0;
+        font-size: 12px;
+    }
 
-.nav-svg {
-    width: 22px;
-    height: 22px;
-}
+    /* navbar */
+    .bottom-nav {
+        position: sticky;
+        bottom: 0;
+        margin-top: auto;
+        background: #2f80ed;
+        border-radius: 24px 24px 0 0;
+        height: 64px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 10px;
+        direction: ltr; /* الحفاظ على ترتيب الأيقونات */
+    }
 
-/* 🔥 الحالة النشطة */
-.nav-item.active {
-    background: rgba(255,255,255,0.2);
-    color: #ffffff;
-    transform: translateY(-2px);
-}
+    .nav-item {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: rgba(255,255,255,0.6);
+        transition: 0.2s;
+    }
 
+    .nav-svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .nav-item.active {
+        background: rgba(255,255,255,0.2);
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
 </style>
 </head>
 <body>
@@ -177,18 +187,18 @@ body {
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>   
-                <div class="title">Requests</div>
+                <div class="title">{{ __('Requests') }}</div>
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo">
             </div>
         </div>
 
         @if(session('success'))
-            <div class="alert alert-success">
+            <div class="alert alert-success" style="padding: 10px; background: #e8fff0; color: #18794e; border-radius: 10px; margin: 0 10px 10px; font-size: 13px; text-align: center;">
                 {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
-            <div class="alert alert-danger">
+            <div class="alert alert-danger" style="padding: 10px; background: #ffe7e7; color: #b60000; border-radius: 10px; margin: 0 10px 10px; font-size: 13px; text-align: center;">
                 {{ session('error') }}
             </div>
         @endif
@@ -198,7 +208,6 @@ body {
             @foreach($notifications as $relatedId => $userMessages)
                 @if($relatedId && $userMessages->isNotEmpty())
                     @php
-                        // نجيبوا بيانات أحدث رسالة في المجموعة
                         $latestMsg = $userMessages->first();
                     @endphp
                     <a href="{{ route('doctor.chat', $relatedId) }}" class="notice-box" style="background: #eef2f6; border: 1px solid #cdd8e4; color: #1f567f; margin-bottom: 12px; border-radius: 20px; padding: 14px; font-size: 13px; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 12px; text-decoration: none;">
@@ -212,7 +221,7 @@ body {
                                 <span>
                                     {{ $latestMsg->title }} 
                                     @if($userMessages->count() > 1)
-                                        <span style="background: #1f567f; color: #fff; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-left: 4px;">{{ $userMessages->count() }}</span>
+                                        <span style="background: #1f567f; color: #fff; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-inline-start: 4px;">{{ $userMessages->count() }}</span>
                                     @endif
                                 </span>
                                 <span style="font-size: 11px; font-weight: normal; color: #7f8c8d;">
@@ -228,7 +237,7 @@ body {
                                 @endforeach
                                 
                                 @if($userMessages->count() > 3)
-                                    <div style="font-size: 10px; color: #7f8c8d; text-align: center; margin-top: 2px;">+ {{ $userMessages->count() - 3 }} more...</div>
+                                    <div style="font-size: 10px; color: #7f8c8d; text-align: center; margin-top: 2px;">+ {{ $userMessages->count() - 3 }} {{ __('more...') }}</div>
                                 @endif
                             </div>
                         </div>
@@ -249,15 +258,15 @@ body {
 
                     <div class="card-info">
                         <div class="name">
-                            {{ $request->parentProfile?->user?->first_name ?? 'ولي أمر' }} {{ $request->parentProfile?->user?->last_name ?? '' }}
+                            {{ $request->parentProfile?->user?->first_name ?? __('Parent') }} {{ $request->parentProfile?->user?->last_name ?? '' }}
                         </div>
                         
                         @if($request->status == 'pending')
-                            <div class="specialty" style="color: #030201;">Waiting for response ⏳</div>
+                            <div class="specialty" style="color: #030201;">{{ __('Waiting for response ⏳') }}</div>
                         @elseif($request->status == 'accepted')
-                            <div class="specialty" style="color: #021008;">Request Accepted ✔️</div>
+                            <div class="specialty" style="color: #021008;">{{ __('Request Accepted ✔️') }}</div>
                         @elseif($request->status == 'rejected')
-                            <div class="specialty" style="color: #070303;">Request Rejected ❌</div>
+                            <div class="specialty" style="color: #070303;">{{ __('Request Rejected ❌') }}</div>
                         @endif
 
                         <div class="actions">
@@ -266,7 +275,7 @@ body {
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-icon" style="border: none; cursor: pointer; color:#e74c3c;">
-                                        Cancel Request
+                                        {{ __('Cancel Request') }}
                                     </button>
                                 </form>
                             @endif
@@ -276,7 +285,7 @@ body {
             @empty
                 <div class="card">
                     <div class="card-info">
-                        <div class="name" style="text-align: center; width: 100%;">No requests sent yet</div>
+                        <div class="name" style="text-align: center; width: 100%;">{{ __('No requests sent yet') }}</div>
                     </div>
                 </div>
             @endforelse

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -204,63 +204,62 @@
 </head>
 <body>
 
-    <div class="mobile-screen">
-        <div class="content">
-            
-            <div class="header">
-                <button onclick="history.back()" class="back-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="logo-container">
-                <img src="{{ asset('images/logo.png') }}" alt="Taif Logo">
-            </div>
-
-            <h1 class="page-title">Verify Email</h1>
-            <div class="subtitle-container">
-                <h2 class="subtitle">Enter Verification Code<span class="star-icon">✨</span></h2>
-            </div>
-
-            @if(session('success'))
-                <div class="alert-success">{{ session('success') }}</div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert-error">{{ $errors->first() }}</div>
-            @endif
-
-            <form method="POST" action="{{ route('verify.email.submit') }}">
-                @csrf
-                <div class="input-group">
-                    <input 
-                        type="text" 
-                        name="code" 
-                        class="code-input"
-                        placeholder="000000" 
-                        maxlength="6" 
-                        required
-                        autocomplete="off"
-                    >
-                </div>
-                
-                <button type="submit" class="primary-btn">
-                    VERIFY
-                </button>
-            </form>
-
-            <div class="resend-container">
-                Didn't receive the code? 
-                <form method="POST" action="{{ route('verify.email.resend') }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="resend-btn">Resend</button>
-                </form>
-            </div>
-
+<div class="mobile-screen" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+    <div class="content">
+        
+        <div class="header">
+            <button onclick="history.back()" class="back-btn" aria-label="Back" 
+                    style="transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
         </div>
-    </div>
 
-</body>
+        <div class="logo-container">
+            <img src="{{ asset('images/logo.png') }}" alt="Taif Logo">
+        </div>
+
+        <h1 class="page-title">{{ __('Verify Email') }}</h1>
+        <div class="subtitle-container">
+            <h2 class="subtitle">{{ __('Enter Verification Code') }}<span class="star-icon">✨</span></h2>
+        </div>
+
+        @if(session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert-error">{{ $errors->first() }}</div>
+        @endif
+
+        <form method="POST" action="{{ route('verify.email.submit') }}">
+            @csrf
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    name="code" 
+                    class="code-input"
+                    placeholder="000000" 
+                    maxlength="6" 
+                    required
+                    autocomplete="off"
+                >
+            </div>
+            
+            <button type="submit" class="primary-btn">
+                {{ __('VERIFY') }}
+            </button>
+        </form>
+
+        <div class="resend-container">
+            {{ __('Didn\'t receive the code?') }} 
+            <form method="POST" action="{{ route('verify.email.resend') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="resend-btn">{{ __('Resend') }}</button>
+            </form>
+        </div>
+
+    </div>
+</div>
 </html>

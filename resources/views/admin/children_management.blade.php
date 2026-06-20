@@ -762,7 +762,7 @@
             </div>
             <span class="admin-modal-close" onclick="closeAdminModal('childrenViewModal')">&times;</span>
             <div class="admin-modal-body text-center">
-                <div class="view-doctor-large-image">
+                <div class="view-children-large-image">
                     <img id="viewChildrenImage" src="{{ asset('images/default-user.png') }}" alt="children Image">
                 </div>
                 <h3 id="viewchildrenName" class="view-children-name"></h3>

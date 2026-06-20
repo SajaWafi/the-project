@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-straight/css/uicons-solid-straight.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parents</title>
+    <title>{{ __('Parents') }}</title>
 
     <style>
         * {
@@ -60,9 +60,10 @@
             color: #1d567e;
         }
 
+        /* 💡 دعم الاتجاهين لشعار التطبيق */
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0;
             width: 50px;
             height: 34px;
         }
@@ -88,28 +89,28 @@
         }
 
         .search {
-    flex: 1;
-    height: 36px;
-    border-radius: 20px;
-    background: rgba(34,193,166,0.25);
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    gap: 6px;
-}
+            flex: 1;
+            height: 36px;
+            border-radius: 20px;
+            background: rgba(34,193,166,0.25);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 6px;
+        }
 
-.search input {
-    border: none;
-    outline: none;
-    background: transparent;
-    width: 100%;
-    font-size: 14px;
-    color: #333;
-}
+        .search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-size: 14px;
+            color: #333;
+        }
 
-.search input::placeholder {
-    color: #777;
-}
+        .search input::placeholder {
+            color: #777;
+        }
 
         .parent-card {
             background: #a8d3cc;
@@ -127,8 +128,9 @@
             object-fit: cover;
         }
 
+        /* 💡 دعم الاتجاه للمسافات */
         .info {
-            margin-left: 12px;
+            margin-inline-start: 12px;
             flex: 1;
         }
 
@@ -164,7 +166,7 @@
         }
 
         /* navbar */
-.bottom-nav {
+        .bottom-nav {
             position: absolute;
             left: 0;
             right: 0;
@@ -176,6 +178,7 @@
             justify-content: space-around;
             align-items: center;
             z-index: 1000;
+            direction: ltr; /* للحفاظ على ترتيب الأيقونات ثابت */
         }
 
         .nav-item {
@@ -190,29 +193,8 @@
             text-decoration: none;
         }
 
-        .nav-svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .nav-item.active {
-            background: rgba(255,255,255,0.18);
-            color: #ffffff;
-            transform: translateY(-2px);
-        }
-
-        .leaflet-control-attribution {
-            font-size: 10px;
-        }
-
-        .custom-marker {
-            width: 18px;
-            height: 18px;
-            background: #18b7b0;
-            border: 3px solid white;
-            border-radius: 50%;
-            box-shadow: 0 0 0 3px rgba(24,183,176,0.25);
-        }
+        .nav-svg { width: 22px; height: 22px; }
+        .nav-item.active { background: rgba(255,255,255,0.18); color: #ffffff; transform: translateY(-2px); }
 
         .btn-icon {
             width:36px;
@@ -226,21 +208,20 @@
             color:#1f567f;
             font-size:18px;
         }
-         .back-btn {
-    position: absolute;
-    left: 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #2f80ed;
-    padding: 6px;
-}
 
-.back-btn svg {
-    width: 26px;
-    height: 26px;
-}
+        /* 💡 زر الرجوع وقلب السهم */
+        .back-btn {
+            position: absolute;
+            inset-inline-start: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
+        }
 
+        .back-btn svg { width: 26px; height: 26px; }
     </style>
 </head>
 <body>
@@ -250,11 +231,11 @@
 
         <div class="header">
             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-            <div class="title">Parents</div>
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="title">{{ __('Parents') }}</div>
             <img src="{{ asset('images/logo.png') }}" class="logo">
         </div>
 
@@ -265,7 +246,7 @@
                 <span>🔍</span>
                 <input
                     type="text"
-                    placeholder="Search by parent or child name..."
+                    placeholder="{{ __('Search by parent or child name...') }}"
                     name="search"
                     id="searchInput"
                     value="{{ $search ?? '' }}"
@@ -274,101 +255,89 @@
         </div>
 
         <div id="parentsList">
-    @forelse($parents as $parent)
-        <div class="parent-card">
-            @php
-    $parentImage = !empty($parent['image'])
-        ? asset('storage/' . ltrim($parent['image'], '/'))
-        : asset('images/default-user.png');
-@endphp
+            @forelse($parents as $parent)
+                <div class="parent-card">
+                    @php
+                        $parentImage = !empty($parent['image'])
+                            ? asset('storage/' . ltrim($parent['image'], '/'))
+                            : asset('images/default-user.png');
+                    @endphp
 
-<img
-    src="{{ $parentImage }}"
-    alt="Parent"
-    onerror="this.onerror=null;this.src='{{ asset('images/default-user.png') }}';"
-    style="width:38px; height:38px; border-radius:50%; object-fit:cover;"
->
+                    <img
+                        src="{{ $parentImage }}"
+                        alt="{{ __('Parent image') }}"
+                        onerror="this.onerror=null;this.src='{{ asset('images/default-user.png') }}';"
+                        style="width:38px; height:38px; border-radius:50%; object-fit:cover;"
+                    >
 
-            <div class="info">
-                <div class="name">{{ $parent['name'] }}</div>
-                <div class="sub">{{ $parent['subtitle'] }}</div>
+                    <div class="info">
+                        <div class="name">{{ $parent['name'] }}</div>
+                        <div class="sub">{{ $parent['subtitle'] }}</div>
 
-                <div class="actions">
-                    <a href="{{ route('doctor.parent.profile', ['id' => $parent['id']]) }}" class="btn-icon">
-                        <i class="fi fi-sr-user"></i>
-                    </a>
+                        <div class="actions">
+                            <a href="{{ route('doctor.parent.profile', ['id' => $parent['id']]) }}" class="btn-icon">
+                                <i class="fi fi-sr-user"></i>
+                            </a>
 
-                    <a href="{{ route('doctor.chat', ['parentId' => $parent['id']]) }}" class="btn-icon">
-                        <i class="fi fi-ss-messages"></i>
-                    </a>
+                            <a href="{{ route('doctor.chat', ['parentId' => $parent['id']]) }}" class="btn-icon">
+                                <i class="fi fi-ss-messages"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @empty
+                <p style="text-align:center; color:#1d567e; margin-top:20px;">
+                    {{ __('No parents found') }}
+                </p>
+            @endforelse
         </div>
-    @empty
-        <p style="text-align:center; color:#1d567e; margin-top:20px;">
-            No parents found
-        </p>
-    @endforelse
-</div>
 
     </div>
 
-
-            <!-- navbar -->
-        <div class="bottom-nav">
-
-            <a href="{{ route('doctor.parents') }}" class="nav-item {{ request()->routeIs('doctor.parents') ? 'active' : '' }}">
-                    <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                        <circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/>
-                        <path d="M4.5 18c1.2-2.8 3.3-4.2 5.5-4.2s4.3 1.4 5.5 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        <path d="M18 9v6M15 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    </svg>
-            </a>
-
-            <a href="{{ route('doctor.home') }}" class="nav-item {{ request()->routeIs('doctor.home') ? 'active' : '' }}">
-                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                </svg>
-            </a>
-
-            <a href="{{ route('doctor.appointments') }}" class="nav-item {{ request()->routeIs('doctor.appointments') ? 'active' : '' }}">
-                <svg class="nav-svg" viewBox="0 0 24 24" fill="none">
-                    <rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
-                    <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </a>
-
+    <div class="bottom-nav">
+        <a href="{{ route('doctor.parents') }}" class="nav-item {{ request()->routeIs('doctor.parents') ? 'active' : '' }}">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 18c1.2-2.8 3.3-4.2 5.5-4.2s4.3 1.4 5.5 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 9v6M15 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </a>
+        <a href="{{ route('doctor.home') }}" class="nav-item {{ request()->routeIs('doctor.home') ? 'active' : '' }}">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path d="M4 10.5 12 4l8 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 10v9h10v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="{{ route('doctor.appointments') }}" class="nav-item {{ request()->routeIs('doctor.appointments') ? 'active' : '' }}">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </a>
     </div>
-
 </div>
+
 <script>
     const searchInput = document.getElementById('searchInput');
-    const parentsList = document.getElementById('parentsList'); //يجلب الـ div الذي ستعرض داخله النتائج.
-    const searchUrl = @json(route('doctor.parents.search.ajax'));//Blade تنفذ route وتضع الرابط داخل JavaScript.
+    const parentsList = document.getElementById('parentsList');
+    const searchUrl = @json(route('doctor.parents.search.ajax'));
+
+    // 💡 نقل النصوص ليتم ترجمتها في الـ JavaScript أيضاً
+    const noParentsFoundText = "{{ __('No parents found') }}";
+    const defaultUserImage = "{{ asset('images/default-user.png') }}";
 
     let searchTimeout = null;
-//مسؤولة عن إنشاء بطاقات أولياء الأمور وعرضها داخل الصفحة.
+
     function renderParents(parents) {
         if (!parents.length) {
             parentsList.innerHTML = `
                 <p style="text-align:center; color:#1d567e; margin-top:20px;">
-                    No parents found
+                    ${noParentsFoundText}
                 </p>
             `;
             return;
         }
 
         let html = '';
-//ينشئ Card لكل Parent.
         parents.forEach(parent => {
             html += `
                 <div class="parent-card">
                     <img
-                    src="${parent.image}"
-                    alt="parent image"
-                    onerror="this.src='/images/default-user.png'"
-                >
+                        src="${parent.image}"
+                        alt="{{ __('Parent image') }}"
+                        onerror="this.src='${defaultUserImage}'"
+                        style="width:38px; height:38px; border-radius:50%; object-fit:cover;"
+                    >
 
                     <div class="info">
                         <div class="name">${parent.name}</div>
