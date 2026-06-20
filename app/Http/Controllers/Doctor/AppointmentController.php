@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
-    // ---------------------------------------------------------
-    // 1. 💡 دالة عرض المواعيد (فلترة بالتواريخ بدل الحالة)
-    // ---------------------------------------------------------
+    /**
+     * Display a filtered list of appointments for the doctor.
+     */
     public function index(Request $request)
     {
         $doctorProfile = auth()->user()->doctorProfile;
@@ -24,9 +24,9 @@ class AppointmentController extends Controller
 
         $query = Appointment::with(['parent.user', 'child'])
             ->where('doctor_id', $doctorProfile->id)
-            ->where('status', '!=', 'cancelled'); // إخفاء الملغية فقط
+            ->where('status', '!=', 'cancelled');
 
-        // 🔍 الفلترة بالبحث النصي
+        //search filter
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
@@ -40,7 +40,7 @@ class AppointmentController extends Controller
             });
         }
 
-        // 📅 الفلترة بالتواريخ (اليوم، غداً، هذا الأسبوع)
+        //date filter
         $today = \Carbon\Carbon::today()->toDateString();
         $dateFilter = $request->input('date_filter', 'all');
 
@@ -49,17 +49,15 @@ class AppointmentController extends Controller
         } elseif ($dateFilter === 'tomorrow') {
             $query->whereDate('date', \Carbon\Carbon::tomorrow()->toDateString());
         } elseif ($dateFilter === 'week') {
-            // هذا الأسبوع (من اليوم ولمدة 7 أيام)
             $query->whereBetween('date', [
                 $today, 
                 \Carbon\Carbon::today()->addDays(7)->toDateString()
             ]);
         } else {
-            // All (كل المواعيد من اليوم فصاعداً)
             $query->whereDate('date', '>=', $today);
         }
 
-        // ترتيب المواعيد
+        //order by date and time
         $appointments = $query->orderBy('date')
             ->orderByRaw("
                 CASE 
@@ -75,7 +73,9 @@ class AppointmentController extends Controller
         return view('doctor.appointments', compact('appointments'));
     }
 
-    // 2. دالة عرض واجهة إضافة موعد
+    /**
+     * Show the form to create a new appointment.
+     */
     public function create()
     {
         $doctorProfile = auth()->user()->doctorProfile;
@@ -97,14 +97,15 @@ class AppointmentController extends Controller
         return view('doctor.add-appointment', compact('parents', 'workplaces'));
     }
 
-    // 3. دالة حفظ الموعد الجديد في الداتابيز
+    /**
+     * Store a newly created appointment.
+     */
     public function store(Request $request)
     {
         $request->validate([
             'parent_id' => 'required|exists:parent_profiles,id',
-            'workplace_id' => 'required|exists:workplaces,id', //exists منع إدخال IDs غير موجودة.
+            'workplace_id' => 'required|exists:workplaces,id',
             'date' => 'required|date|after_or_equal:today',
-
             'from_hour' => 'required|integer|min:1|max:12',
             'from_minute' => 'required|integer|in:0,15,30,45',
             'from_period' => 'required|in:AM,PM',
@@ -114,18 +115,21 @@ class AppointmentController extends Controller
             'note' => 'nullable|string|max:1000',
         ]);
 
+        //get doctor profile
         $doctorProfile = auth()->user()->doctorProfile;
 
         if (!$doctorProfile) {
             return back()->withErrors(['doctor' => 'Doctor profile not found.'])->withInput();
         }
 
+        //get parent profile
         $parent = ParentProfile::with(['children.doctors'])->find($request->parent_id);
 
         if (!$parent) {
             return back()->withErrors(['parent_id' => 'Selected parent not found.'])->withInput();
         }
 
+        //get child profile
         $child = $parent->children->first(function ($child) use ($doctorProfile) {
             return $child->doctors->contains('id', $doctorProfile->id);
         });
@@ -134,6 +138,7 @@ class AppointmentController extends Controller
             return back()->withErrors(['parent_id' => 'This parent is not linked to this doctor.'])->withInput();
         }
 
+        //get workplace profile
         $workplace = Workplace::where('id', $request->workplace_id)->where('doctor_id', $doctorProfile->id)->first();
 
         if (!$workplace) {
@@ -159,7 +164,9 @@ class AppointmentController extends Controller
         return redirect()->route('doctor.appointments')->with('success', 'Appointment added successfully.');
     }
 
-    // 4. دالة عرض واجهة تعديل الموعد
+    /**
+     * Show the form to edit an existing appointment.
+     */
     public function edit($id)
     {
         $doctorProfile = auth()->user()->doctorProfile;
@@ -175,7 +182,9 @@ class AppointmentController extends Controller
         return view('doctor.edit-appointment', compact('appointment', 'parents', 'workplaces'));
     }
 
-    // 5. دالة تحديث الموعد وإرسال إشعار للأب
+    /**
+     * Update an existing appointment and notify the parent.
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -187,22 +196,28 @@ class AppointmentController extends Controller
             'to_hour' => 'required|integer|min:1|max:12',
             'to_minute' => 'required|integer|in:0,15,30,45',
             'to_period' => 'required|in:AM,PM',
+            'workplace_id' => 'required|exists:workplaces,id',
             'note' => 'nullable|string|max:1000',
         ]);
 
+        //get doctor profile
         $doctorProfile = auth()->user()->doctorProfile;
 
         if (!$doctorProfile) {
             return back()->withErrors(['doctor' => 'Doctor profile not found.']);
         }
 
+        //get appointment
         $appointment = Appointment::where('doctor_id', $doctorProfile->id)->findOrFail($id);
+        
+        //get parent profile
         $parent = ParentProfile::with('children')->find($request->parent_id);
 
         if (!$parent) {
             return back()->withErrors(['parent_id' => 'Selected parent not found.'])->withInput();
         }
 
+        //get child profile
         $child = $parent->children->first();
 
         if (!$child) {
@@ -220,6 +235,7 @@ class AppointmentController extends Controller
             'to_minute' => $request->to_minute,
             'to_period' => $request->to_period,
             'status' => 'scheduled',
+            'workplace_id' => $request->workplace_id,
             'note' => $request->note,
         ]);
 
@@ -234,7 +250,9 @@ class AppointmentController extends Controller
         return redirect()->route('doctor.appointments')->with('success', 'Appointment updated successfully.');
     }
 
-    // 6. دالة حذف الموعد
+    /**
+     * Cancel an appointment.
+     */
     public function destroy($id)
     {
         $appointment = Appointment::findOrFail($id);

@@ -539,7 +539,7 @@
         <div class="bg-bottom-left"></div>
         <div class="bg-bottom-right"></div>
 
-        <div class="header">
+    <div class="header">
             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -574,7 +574,7 @@
 
                 <div class="message-row {{ $isMe ? 'me' : 'other' }}" data-message-id="{{ $message->id }}">
                     @if(($message->type ?? 'text') === 'text')
-                        <div class="bubble {{ $isMe ? 'me' : 'other' }}"
+                    <div class="bubble {{ $isMe ? 'me' : 'other' }}"
                             @if($isMe)
                                 oncontextmenu="openMessageMenu(event, this)"
                                 ontouchstart="startPress(event, this)"
@@ -585,7 +585,7 @@
                         </div>
 
                     @elseif(($message->type ?? '') === 'image')
-                        <div class="image-message {{ $isMe ? 'me' : 'other' }}"
+                    <div class="image-message {{ $isMe ? 'me' : 'other' }}"
                             @if($isMe)
                                 oncontextmenu="openMessageMenu(event, this)"
                                 ontouchstart="startPress(event, this)"
@@ -601,7 +601,7 @@
                         </div>
 
                     @elseif(($message->type ?? '') === 'file')
-                        <div class="bubble {{ $isMe ? 'me' : 'other' }}"
+                    <div class="bubble {{ $isMe ? 'me' : 'other' }}"
                             @if($isMe)
                                 oncontextmenu="openMessageMenu(event, this)"
                                 ontouchstart="startPress(event, this)"
@@ -614,7 +614,7 @@
                         </div>
 
                     @elseif(($message->type ?? '') === 'audio')
-                        <div class="audio-card {{ $isMe ? 'me' : 'other' }}"
+                    <div class="audio-card {{ $isMe ? 'me' : 'other' }}"
                             @if($isMe)
                                 oncontextmenu="openMessageMenu(event, this)"
                                 ontouchstart="startPress(event, this)"
@@ -629,7 +629,7 @@
                     @endif
 
                     @if($isMe)
-                        <div class="message-action-menu">
+                    <div class="message-action-menu">
                             <button type="button" class="message-action-btn" onclick="deleteMessage({{ $message->id }}, this)">
                                 {{ __('Delete') }}
                             </button>
@@ -717,11 +717,13 @@
     let recordingSeconds = 0;
     let recordingInterval = null;
 
+    // toggle mute menu
     function toggleMuteMenu() {
         const menu = document.getElementById('muteMenu');
         menu.classList.toggle('show');
     }
 
+    // mute notifications
     function muteNotifications(duration) {
         fetch("{{ route('doctor.chat.mute', ['parentId' => $parent['id']]) }}", {
             method: 'POST',
@@ -743,6 +745,7 @@
         .catch(error => console.error('Error muting:', error));
     }
 
+    // unmute notifications
     function unmuteNotifications() {
         fetch("{{ route('doctor.chat.mute', ['parentId' => $parent['id']]) }}", {
             method: 'POST',
@@ -764,10 +767,12 @@
         .catch(error => console.error('Error unmuting:', error));
     }
 
+    // check if notifications are muted
     function isMuted() {
         return isMutedStatus;
     }
 
+    // update parent status
     function updateParentStatus() {
         const status = document.querySelector('.online-status');
         if (!status) return;
@@ -781,6 +786,7 @@
         }
     }
 
+    // scroll chat to bottom
     function scrollChatToBottom() {
         const chatArea = document.getElementById('chatArea');
         if (chatArea) {
@@ -788,6 +794,7 @@
         }
     }
 
+    // open image modal
     function openImageModal(src) {
         const modal = document.getElementById('imageModal');
         const preview = document.getElementById('imageModalPreview');
@@ -795,6 +802,7 @@
         modal.classList.add('show');
     }
 
+    // close image modal
     function closeImageModal() {
         const modal = document.getElementById('imageModal');
         const preview = document.getElementById('imageModalPreview');
@@ -802,6 +810,7 @@
         preview.src = '';
     }
 
+    // clear selected file
     function clearSelectedFile() {
         const input = document.getElementById('messageInput');
         const fileInput = document.getElementById('fileInput');
@@ -815,12 +824,14 @@
         input.classList.remove('has-file');
     }
 
+    // close all message menus
     function closeAllMessageMenus() {
         document.querySelectorAll('.message-action-menu').forEach(menu => {
             menu.classList.remove('show');
         });
     }
 
+    // open message menu
     function openMessageMenu(event, element) {
         event.preventDefault();
         closeAllMessageMenus();
@@ -834,16 +845,19 @@
         }
     }
 
+    // start press
     function startPress(event, element) {
         pressTimer = setTimeout(() => {
             openMessageMenu(event, element);
         }, 500);
     }
 
+    // cancel press
     function cancelPress() {
         clearTimeout(pressTimer);
     }
 
+    // create text message
     function createTextMessage(text, timeText) {
         const chatArea = document.getElementById('chatArea');
 
@@ -863,6 +877,7 @@
         chatArea.appendChild(row);
     }
 
+    // create image message
     function createImageMessage(imageUrl, timeText) {
         const chatArea = document.getElementById('chatArea');
 
@@ -890,6 +905,7 @@
         chatArea.appendChild(row);
     }
 
+    // create file message
     function createFileMessage(fileUrl, fileName, timeText) {
         const chatArea = document.getElementById('chatArea');
 
@@ -918,6 +934,7 @@
         chatArea.appendChild(row);
     }
 
+    // create audio message
     function createAudioMessage(audioUrl, timeText, messageId = null) {
         const chatArea = document.getElementById('chatArea');
 
@@ -1000,6 +1017,7 @@
         chatArea.appendChild(row);
     }
 
+    // update recording time
     function updateRecordingTime() {
         recordingSeconds++;
         const mins = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
@@ -1007,6 +1025,7 @@
         document.getElementById('recordingTime').textContent = `${mins}:${secs}`;
     }
 
+    // send message
     async function sendMessage(event) {
         event.preventDefault();
 
@@ -1064,6 +1083,7 @@
         }
     }
 
+    // send audio blob
     async function sendAudioBlob(audioBlob) {
         try {
             const formData = new FormData();
@@ -1103,6 +1123,7 @@
         }
     }
 
+    // start recording
     async function startRecording() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1141,6 +1162,7 @@
         }
     }
 
+    // stop recording
     function stopRecording() {
         if (mediaRecorder && isRecording) {
             mediaRecorder.stop();
@@ -1154,6 +1176,7 @@
         }
     }
 
+    // delete message
     async function deleteMessage(messageId, button) {
         try {
             const url = "{{ route('doctor.chat.message.delete', ['messageId' => '__ID__']) }}".replace('__ID__', messageId);
@@ -1183,8 +1206,10 @@
         }
     }
 
+    // send message
     document.getElementById('chatForm').addEventListener('submit', sendMessage);
 
+    // file input change
     document.getElementById('fileInput').addEventListener('change', function () {
         const input = document.getElementById('messageInput');
         const filePreview = document.getElementById('selectedFilePreview');
@@ -1201,8 +1226,10 @@
         }
     });
 
+    // clear selected file
     document.getElementById('clearSelectedFile').addEventListener('click', clearSelectedFile);
 
+    // voice button click
     document.getElementById('voiceBtn').addEventListener('click', function () {
         if (!isRecording) {
             startRecording();
@@ -1211,12 +1238,14 @@
         }
     });
 
+    // image modal click
     document.getElementById('imageModal').addEventListener('click', function (e) {
         if (e.target.id === 'imageModal') {
             closeImageModal();
         }
     });
 
+    // document click
     document.addEventListener('click', function (event) {
         const muteMenu = document.getElementById('muteMenu');
         const muteBtn = document.querySelector('.menu-btn');
@@ -1233,6 +1262,7 @@
         }
     });
 
+    // window onload
     window.onload = function () {
         updateParentStatus();
         scrollChatToBottom();

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DoctorRequest;
 
 // الكنترولرات الأساسية
-use App\Http\Controllers\HomeController as MainHomeController; 
+use App\Http\Controllers\Parent\HomeController as MainHomeController; 
 use App\Http\Controllers\ReportController;
 
 // كنترولرات الأهل

@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Mail;
 
 class VerificationController extends Controller
 {
-    // 1. عرض واجهة إدخال الكود
+    // show verification page
     public function show()
     {
         return view('auth.verify-email'); 
     }
 
-    // 2. التحقق من الكود اللي دخله المستخدم
+    // verify code
     public function verify(Request $request)
     {
         $request->validate([
@@ -24,24 +24,23 @@ class VerificationController extends Controller
 
         $user = auth()->user();
 
-        // هل الكود غلط؟
+        // check if code is correct or not
         if ($user->email_verification_code !== $request->code) {
             return back()->withErrors(['code' => 'Invalid verification code.']);
         }
 
-        // هل الكود منتهي الصلاحية ؟
+        // check if code is expired or not
         if (now()->greaterThan($user->email_verification_code_expires_at)) {
             return back()->withErrors(['code' => 'The verification code has expired.']);
         }
 
-        // لو كل شيء تمام، نحدثوا حالة المستخدم
         $user->update([
             'email_verified_at' => now(),
-            'email_verification_code' => null, // نمسحوا الكود باش معاش يستعمله
+            'email_verification_code' => null, 
             'email_verification_code_expires_at' => null,
         ]);
 
-        // توجيه المستخدم للداشبورد حسب نوع حسابه
+        
         if ($user->role === 'parent') {
             return redirect()->route('parents.home')->with('success', 'Email verified successfully!');
         } elseif ($user->role === 'doctor') {
@@ -51,12 +50,12 @@ class VerificationController extends Controller
         return redirect('/')->with('success', 'Email verified!');
     }
 
-    // 3. إعادة إرسال الكود
+    // resend code
     public function resend()
     {
         $user = auth()->user();
         
-        $code = rand(100000, 999999); // كود جديد
+        $code = rand(100000, 999999); 
         
         $user->update([
             'email_verification_code' => $code,

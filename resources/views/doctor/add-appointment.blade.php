@@ -93,9 +93,10 @@
         }
 
         /* 🔹 شكل حقل التاريخ */
-        .date-section{
+        .date-section {
             padding: 0 22px;
         }
+
         .date-picker {
             width: 100%;
             height: 50px;
@@ -433,6 +434,7 @@
 
                         <select name="parent_id" id="parent_id" class="select-field">
                             <option value="">{{ __('Select parent') }}</option>
+                            <option value="all" {{ old('parent_id') == 'all' ? 'selected' : '' }}>{{ __('All Parents') }}</option>
                             @foreach($parents as $parent)
                                 <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
                                     {{ $parent->user->first_name ?? '' }} {{ $parent->user->last_name ?? '' }}
