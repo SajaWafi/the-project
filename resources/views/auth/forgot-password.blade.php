@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}" lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,28 +23,38 @@
     </style>
 </head>
 <body>
-    <div class="mobile-screen">
-        <div class="content">
-            <div class="header">
-                <button onclick="window.location.href='{{ route('login.page') }}'" class="back-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-            </div>
-            <div class="logo-container"><img src="{{ asset('images/logo.png') }}" alt="Taif Logo"></div>
-            <h1 class="page-title">Forgot Password</h1>
-            <p class="subtitle">Enter your registered email address to receive a password reset code.</p>
-
-            @if($errors->any()) <div class="alert-error">{{ $errors->first() }}</div> @endif
-
-            <form method="POST" action="{{ route('forgot.password.post') }}">
-                @csrf
-                <div class="input-group">
-                    <label class="input-label">Your email:</label>
-                    <input type="email" name="email" class="form-input" placeholder="example@gmail.com" required>
-                </div>
-                <button type="submit" class="primary-btn">SEND CODE</button>
-            </form>
+    <div class="mobile-screen" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+    <div class="content">
+        
+        <div class="header">
+            <button onclick="window.location.href='{{ route('login.page') }}'" class="back-btn" 
+                    style="transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
         </div>
+
+        <div class="logo-container">
+            <img src="{{ asset('images/logo.png') }}" alt="Taif Logo">
+        </div>
+
+        <h1 class="page-title">{{ __('Forgot Password') }}</h1>
+        <p class="subtitle" style="text-align: center;">{{ __('Enter your registered email address to receive a password reset code.') }}</p>
+
+        @if($errors->any()) 
+            <div class="alert-error">{{ $errors->first() }}</div> 
+        @endif
+
+        <form method="POST" action="{{ route('forgot.password.post') }}" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};">
+            @csrf
+            <div class="input-group">
+                <label class="input-label">{{ __('Your email:') }}</label>
+                <input type="email" name="email" class="form-input" placeholder="example@gmail.com" required>
+            </div>
+            <button type="submit" class="primary-btn">{{ __('SEND CODE') }}</button>
+        </form>
     </div>
+</div>
 </body>
 </html>

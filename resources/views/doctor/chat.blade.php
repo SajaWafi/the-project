@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Chat</title>
+    <title>{{ __('Doctor Chat') }}</title>
 
     <style>
         * {
@@ -82,7 +82,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             background: transparent;
             border: none;
             cursor: pointer;
@@ -91,6 +91,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .back-btn svg {
@@ -104,7 +105,7 @@
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
-            margin-left: 26px;
+            margin-inline-start: 26px;
         }
 
         .header-info {
@@ -153,7 +154,7 @@
         .mute-menu {
             position: absolute;
             top: 42px;
-            right: 0;
+            inset-inline-end: 0;
             width: 190px;
             background: #ffffff;
             border-radius: 14px;
@@ -172,7 +173,7 @@
             border: none;
             background: #ffffff;
             padding: 12px 14px;
-            text-align: left;
+            text-align: start;
             font-size: 14px;
             color: #3d4d63;
             cursor: pointer;
@@ -231,14 +232,15 @@
             word-wrap: break-word;
         }
 
+        /* 💡 استخدام الخصائص المنطقية للأطراف الحادة من الفقاعة */
         .bubble.me {
             background: #c9efe9;
-            border-bottom-right-radius: 8px;
+            border-end-end-radius: 8px;
         }
 
         .bubble.other {
             background: #cfe0ff;
-            border-bottom-left-radius: 8px;
+            border-end-start-radius: 8px;
         }
 
         .time {
@@ -272,7 +274,7 @@
         .message-action-menu {
             position: absolute;
             top: -6px;
-            right: 0;
+            inset-inline-end: 0;
             background: white;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
@@ -311,10 +313,12 @@
 
         .audio-card.me {
             background: #c9efe9;
+            border-end-end-radius: 8px;
         }
 
         .audio-card.other {
             background: #cfe0ff;
+            border-end-start-radius: 8px;
         }
 
         .audio-play-btn {
@@ -399,8 +403,8 @@
 
         .selected-file-preview {
             position: absolute;
-            left: 18px;
-            right: 42px;
+            inset-inline-start: 18px;
+            inset-inline-end: 42px;
             top: 50%;
             transform: translateY(-50%);
             font-size: 13px;
@@ -414,7 +418,7 @@
 
         .clear-file-btn {
             position: absolute;
-            right: 12px;
+            inset-inline-end: 12px;
             top: 50%;
             transform: translateY(-50%);
             width: 22px;
@@ -443,11 +447,12 @@
             font-size: 18px;
             cursor: pointer;
             flex-shrink: 0;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .recording-status {
             position: absolute;
-            left: 58px;
+            inset-inline-start: 58px;
             bottom: 92px;
             background: rgba(255,255,255,0.95);
             color: #444;
@@ -503,7 +508,7 @@
         .image-modal-close {
             position: absolute;
             top: 18px;
-            right: 22px;
+            inset-inline-end: 22px;
             background: rgba(255,255,255,0.15);
             color: white;
             border: none;
@@ -523,7 +528,7 @@
 </head>
 <body>
     @php
-        $parentName = $parent['name'] ?? 'Parent';
+        $parentName = $parent['name'] ?? __('Parent');
         $parentImage = !empty($parent['image'])
             ? asset('storage/' . $parent['image'])
             : asset('images/default-user.png');
@@ -534,8 +539,7 @@
         <div class="bg-bottom-left"></div>
         <div class="bg-bottom-right"></div>
 
-    <!-- header -->
-        <div class="header">
+    <div class="header">
             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -546,24 +550,22 @@
 
             <div class="header-info">
                 <div class="parent-name">{{ $parentName }}</div>
-                <div class="online-status">• Online</div>
+                <div class="online-status">• {{ __('Online') }}</div>
             </div>
 
-            <!-- mute menu -->
             <div class="menu-wrapper">
                 <button type="button" class="menu-btn" onclick="toggleMuteMenu()">⋮</button>
 
                 <div class="mute-menu" id="muteMenu">
-                    <button type="button" onclick="muteNotifications('1hour')">Mute for 1 hour</button>
-                    <button type="button" onclick="muteNotifications('1day')">Mute for 1 day</button>
-                    <button type="button" onclick="muteNotifications('1month')">Mute for 1 month</button>
-                    <button type="button" onclick="muteNotifications('forever')">Mute forever</button>
-                    <button type="button" onclick="unmuteNotifications()">Unmute</button>
+                    <button type="button" onclick="muteNotifications('1hour')">{{ __('Mute for 1 hour') }}</button>
+                    <button type="button" onclick="muteNotifications('1day')">{{ __('Mute for 1 day') }}</button>
+                    <button type="button" onclick="muteNotifications('1month')">{{ __('Mute for 1 month') }}</button>
+                    <button type="button" onclick="muteNotifications('forever')">{{ __('Mute forever') }}</button>
+                    <button type="button" onclick="unmuteNotifications()">{{ __('Unmute') }}</button>
                 </div>
             </div>
         </div>
 
-        <!-- chat area -->
         <div class="chat-area" id="chatArea">
             @forelse(($messages ?? []) as $message)
                 @php
@@ -572,8 +574,7 @@
 
                 <div class="message-row {{ $isMe ? 'me' : 'other' }}" data-message-id="{{ $message->id }}">
                     @if(($message->type ?? 'text') === 'text')
-                    <!-- text message when it's from doctor-->
-                        <div class="bubble {{ $isMe ? 'me' : 'other' }}"
+                    <div class="bubble {{ $isMe ? 'me' : 'other' }}"
                             @if($isMe)
                                 oncontextmenu="openMessageMenu(event, this)"
                                 ontouchstart="startPress(event, this)"
@@ -584,8 +585,7 @@
                         </div>
 
                     @elseif(($message->type ?? '') === 'image')
-                    <!-- image message when it's from doctor-->
-                        <div class="image-message {{ $isMe ? 'me' : 'other' }}"
+                    <div class="image-message {{ $isMe ? 'me' : 'other' }}"
                             @if($isMe)
                                 oncontextmenu="openMessageMenu(event, this)"
                                 ontouchstart="startPress(event, this)"
@@ -601,8 +601,7 @@
                         </div>
 
                     @elseif(($message->type ?? '') === 'file')
-                    <!-- file message when it's from doctor-->
-                        <div class="bubble {{ $isMe ? 'me' : 'other' }}"
+                    <div class="bubble {{ $isMe ? 'me' : 'other' }}"
                             @if($isMe)
                                 oncontextmenu="openMessageMenu(event, this)"
                                 ontouchstart="startPress(event, this)"
@@ -615,8 +614,7 @@
                         </div>
 
                     @elseif(($message->type ?? '') === 'audio')
-                    <!-- audio message when it's from doctor-->
-                        <div class="audio-card {{ $isMe ? 'me' : 'other' }}"
+                    <div class="audio-card {{ $isMe ? 'me' : 'other' }}"
                             @if($isMe)
                                 oncontextmenu="openMessageMenu(event, this)"
                                 ontouchstart="startPress(event, this)"
@@ -631,32 +629,28 @@
                     @endif
 
                     @if($isMe)
-                    <!-- delete message button when it's from doctor-->
-                        <div class="message-action-menu">
+                    <div class="message-action-menu">
                             <button type="button" class="message-action-btn" onclick="deleteMessage({{ $message->id }}, this)">
-                                Delete
+                                {{ __('Delete') }}
                             </button>
                         </div>
                     @endif
 
-                    <!-- message time when it's from doctor-->
                     <div class="time">{{ $message->created_at?->format('H:i') }}</div>
                 </div>
             @empty
                 <div class="empty-chat" id="emptyChat" style="text-align:center; color:#777; margin-top:20px;">
-                    No messages yet. Start the conversation.
+                    {{ __('No messages yet. Start the conversation.') }}
                 </div>
             @endforelse
         </div>
 
-        <!-- recording status when it's from doctor-->
         <div class="recording-status" id="recordingStatus">
             <span class="recording-dot"></span>
-            <span>Recording...</span>
+            <span>{{ __('Recording...') }}</span>
             <span class="recording-time" id="recordingTime">00:00</span>
         </div>
 
-        <!-- input bar -->
         <form
             class="input-bar-wrap"
             id="chatForm"
@@ -688,7 +682,7 @@
                     name="message"
                     class="message-input"
                     id="messageInput"
-                    placeholder="Write Here..."
+                    placeholder="{{ __('Write Here...') }}"
                     autocomplete="off"
                 >
                 <div id="selectedFilePreview" class="selected-file-preview"></div>
@@ -704,567 +698,575 @@
         <button class="image-modal-close" type="button" onclick="closeImageModal()">×</button>
         <img id="imageModalPreview" src="" alt="Preview">
     </div>
-    <script>
 
-        let isMutedStatus = {{ isset($isMuted) && $isMuted ? 'true' : 'false' }};
-        let pressTimer = null;
-        let isRecording = false;
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let recordingStream = null;
-        let recordingSeconds = 0;
-        let recordingInterval = null;
+<script>
+    // 💡 إرسال الترجمات من Blade إلى JavaScript ليتم استخدامها في الرسائل الحية
+    const trans = {
+        online: "{{ __('Online') }}",
+        muted: "{{ __('Notifications muted') }}",
+        delete: "{{ __('Delete') }}",
+        openFile: "{{ __('Open file') }}"
+    };
 
-        // toggle mute menu
-        function toggleMuteMenu() {
-            const menu = document.getElementById('muteMenu');
-            menu.classList.toggle('show');
-        }
+    let isMutedStatus = {{ isset($isMuted) && $isMuted ? 'true' : 'false' }};
+    let pressTimer = null;
+    let isRecording = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordingStream = null;
+    let recordingSeconds = 0;
+    let recordingInterval = null;
 
-        // mute notifications
-        function muteNotifications(duration) {
-            fetch("{{ route('doctor.chat.mute', ['parentId' => $parent['id']]) }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ duration: duration })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    isMutedStatus = true;
-                    document.getElementById('muteMenu').classList.remove('show');
-                    updateParentStatus();
-                }
-            })
-            .catch(error => console.error('Error muting:', error));
-        }
+    // toggle mute menu
+    function toggleMuteMenu() {
+        const menu = document.getElementById('muteMenu');
+        menu.classList.toggle('show');
+    }
 
-        // unmute notifications
-        function unmuteNotifications() {
-            fetch("{{ route('doctor.chat.mute', ['parentId' => $parent['id']]) }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ duration: 'unmute' })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    isMutedStatus = false;
-                    document.getElementById('muteMenu').classList.remove('show');
-                    updateParentStatus();
-                }
-            })
-            .catch(error => console.error('Error unmuting:', error));
-        }
-
-        // check if notifications are muted
-        function isMuted() {
-            return isMutedStatus;
-        }
-
-        // update parent status
-        function updateParentStatus() {
-            const status = document.querySelector('.online-status');
-            if (!status) return;
-
-            if (isMuted()) {
-                status.textContent = '• Notifications muted';
-                status.style.color = '#ff9500';
-            } else {
-                status.textContent = '• Online';
-                status.style.color = '#34c759';
+    // mute notifications
+    function muteNotifications(duration) {
+        fetch("{{ route('doctor.chat.mute', ['parentId' => $parent['id']]) }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ duration: duration })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                isMutedStatus = true;
+                document.getElementById('muteMenu').classList.remove('show');
+                updateParentStatus();
             }
-        }
+        })
+        .catch(error => console.error('Error muting:', error));
+    }
 
-        // scroll chat to bottom
-        function scrollChatToBottom() {
-            const chatArea = document.getElementById('chatArea');
-            if (chatArea) {
-                chatArea.scrollTop = chatArea.scrollHeight;
+    // unmute notifications
+    function unmuteNotifications() {
+        fetch("{{ route('doctor.chat.mute', ['parentId' => $parent['id']]) }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ duration: 'unmute' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                isMutedStatus = false;
+                document.getElementById('muteMenu').classList.remove('show');
+                updateParentStatus();
             }
+        })
+        .catch(error => console.error('Error unmuting:', error));
+    }
+
+    // check if notifications are muted
+    function isMuted() {
+        return isMutedStatus;
+    }
+
+    // update parent status
+    function updateParentStatus() {
+        const status = document.querySelector('.online-status');
+        if (!status) return;
+
+        if (isMuted()) {
+            status.textContent = '• ' + trans.muted;
+            status.style.color = '#ff9500';
+        } else {
+            status.textContent = '• ' + trans.online;
+            status.style.color = '#34c759';
         }
+    }
 
-        // open image modal
-        function openImageModal(src) {
-            const modal = document.getElementById('imageModal');
-            const preview = document.getElementById('imageModalPreview');
-            preview.src = src;
-            modal.classList.add('show');
+    // scroll chat to bottom
+    function scrollChatToBottom() {
+        const chatArea = document.getElementById('chatArea');
+        if (chatArea) {
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
-
-        // close image modal
-        function closeImageModal() {
-            const modal = document.getElementById('imageModal');
-            const preview = document.getElementById('imageModalPreview');
-            modal.classList.remove('show');
-            preview.src = '';
-        }
-
-        // clear selected file
-        function clearSelectedFile() {
-            const input = document.getElementById('messageInput');
-            const fileInput = document.getElementById('fileInput');
-            const filePreview = document.getElementById('selectedFilePreview');
-            const clearBtn = document.getElementById('clearSelectedFile');
-
-            fileInput.value = '';
-            filePreview.textContent = '';
-            filePreview.style.display = 'none';
-            clearBtn.style.display = 'none';
-            input.classList.remove('has-file');
-        }
-
-        // close all message menus
-        function closeAllMessageMenus() {
-            document.querySelectorAll('.message-action-menu').forEach(menu => {
-                menu.classList.remove('show');
-            });
-        }
-
-        // open message menu
-        function openMessageMenu(event, element) {
-            event.preventDefault();
-            closeAllMessageMenus();
-
-            const row = element.closest('.message-row');
-            if (!row) return;
-
-            const menu = row.querySelector('.message-action-menu');
-            if (menu) {
-                menu.classList.add('show');
-            }
-        }
-
-        // start press
-        function startPress(event, element) {
-            pressTimer = setTimeout(() => {
-                openMessageMenu(event, element);
-            }, 500);
-        }
-
-        // cancel press
-        function cancelPress() {
-            clearTimeout(pressTimer);
-        }
-
-        // create text message
-        function createTextMessage(text, timeText) {
-            const chatArea = document.getElementById('chatArea');
-
-            const row = document.createElement('div');
-            row.className = 'message-row me';
-
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble me';
-            bubble.textContent = text;
-
-            const time = document.createElement('div');
-            time.className = 'time';
-            time.textContent = timeText;
-
-            row.appendChild(bubble);
-            row.appendChild(time);
-            chatArea.appendChild(row);
-        }
-
-        // create image message
-        function createImageMessage(imageUrl, timeText) {
-            const chatArea = document.getElementById('chatArea');
-
-            const row = document.createElement('div');
-            row.className = 'message-row me';
-
-            const imageWrap = document.createElement('div');
-            imageWrap.className = 'image-message me';
-
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.className = 'chat-image';
-            img.onclick = function () {
-                openImageModal(imageUrl);
-            };
-
-            imageWrap.appendChild(img);
-
-            const time = document.createElement('div');
-            time.className = 'time';
-            time.textContent = timeText;
-
-            row.appendChild(imageWrap);
-            row.appendChild(time);
-            chatArea.appendChild(row);
-        }
-
-        // create file message
-        function createFileMessage(fileUrl, fileName, timeText) {
-            const chatArea = document.getElementById('chatArea');
-
-            const row = document.createElement('div');
-            row.className = 'message-row me';
-
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble me';
-
-            const link = document.createElement('a');
-            link.href = fileUrl;
-            link.target = '_blank';
-            link.textContent = fileName || 'Open file';
-            link.style.color = 'inherit';
-            link.style.textDecoration = 'underline';
-            link.style.wordBreak = 'break-all';
-
-            bubble.appendChild(link);
-
-            const time = document.createElement('div');
-            time.className = 'time';
-            time.textContent = timeText;
-
-            row.appendChild(bubble);
-            row.appendChild(time);
-            chatArea.appendChild(row);
-        }
-
-        // create audio message
-        function createAudioMessage(audioUrl, timeText, messageId = null) {
-            const chatArea = document.getElementById('chatArea');
-
-            const row = document.createElement('div');
-            row.className = 'message-row me';
-            if (messageId) {
-                row.setAttribute('data-message-id', messageId);
-            }
-
-            const card = document.createElement('div');
-            card.className = 'audio-card me';
-
-            if (messageId) {
-                card.setAttribute('oncontextmenu', 'openMessageMenu(event, this)');
-                card.setAttribute('ontouchstart', 'startPress(event, this)');
-                card.setAttribute('ontouchend', 'cancelPress()');
-            }
-
-            const playBtn = document.createElement('button');
-            playBtn.type = 'button';
-            playBtn.className = 'audio-play-btn';
-            playBtn.textContent = '▶';
-
-            const audio = document.createElement('audio');
-            audio.controls = true;
-            audio.className = 'audio-player';
-
-            const source = document.createElement('source');
-            source.src = audioUrl;
-
-            audio.appendChild(source);
-            card.appendChild(playBtn);
-            card.appendChild(audio);
-
-            playBtn.onclick = function () {
-                if (audio.paused) {
-                    audio.play();
-                    playBtn.textContent = '❚❚';
-                } else {
-                    audio.pause();
-                    playBtn.textContent = '▶';
-                }
-            };
-
-            audio.onended = function () {
-                playBtn.textContent = '▶';
-            };
-
-            audio.onpause = function () {
-                playBtn.textContent = '▶';
-            };
-
-            audio.onplay = function () {
-                playBtn.textContent = '❚❚';
-            };
-
-            row.appendChild(card);
-
-            if (messageId) {
-                const menu = document.createElement('div');
-                menu.className = 'message-action-menu';
-
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'message-action-btn';
-                btn.textContent = 'Delete';
-                btn.onclick = function () {
-                    deleteMessage(messageId, btn);
-                };
-
-                menu.appendChild(btn);
-                row.appendChild(menu);
-            }
-
-            const time = document.createElement('div');
-            time.className = 'time';
-            time.textContent = timeText;
-
-            row.appendChild(time);
-            chatArea.appendChild(row);
-        }
-
-        // update recording time
-        function updateRecordingTime() {
-            recordingSeconds++;
-            const mins = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
-            const secs = String(recordingSeconds % 60).padStart(2, '0');
-            document.getElementById('recordingTime').textContent = `${mins}:${secs}`;
-        }
-
-        // send message
-        async function sendMessage(event) {
-            event.preventDefault();
-
-            const chatForm = document.getElementById('chatForm');
-            const input = document.getElementById('messageInput');
-            const fileInput = document.getElementById('fileInput');
-
-            const text = input.value.trim();
-            const file = fileInput.files[0];
-
-            if (!text && !file) return;
-
-            try {
-                const formData = new FormData(chatForm);
-
-                const response = await fetch(chatForm.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                });
-
-                const raw = await response.text();
-                let data;
-
-                try {
-                    data = JSON.parse(raw);
-                } catch {
-                    throw new Error(raw);
-                }
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to send message');
-                }
-
-                const emptyChat = document.getElementById('emptyChat');
-                if (emptyChat) emptyChat.remove();
-
-                if (data.type === 'image') {
-                    createImageMessage(data.file_url, data.time);
-                } else if (data.type === 'file') {
-                    createFileMessage(data.file_url, data.file_name, data.time);
-                } else {
-                    createTextMessage(data.message ?? text, data.time ?? '');
-                }
-
-                input.value = '';
-                clearSelectedFile();
-                scrollChatToBottom();
-            } catch (error) {
-                alert(error.message || 'Failed to send message.');
-                console.error(error);
-            }
-        }
-
-        // send audio blob
-        async function sendAudioBlob(audioBlob) {
-            try {
-                const formData = new FormData();
-                formData.append('audio', audioBlob, 'voice-message.webm');
-
-                const response = await fetch("{{ route('doctor.chat.sendAudio', ['parentId' => $parent['id']]) }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: formData
-                });
-
-                const raw = await response.text();
-                let data;
-
-                try {
-                    data = JSON.parse(raw);
-                } catch {
-                    throw new Error(raw);
-                }
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to send audio');
-                }
-
-                const emptyChat = document.getElementById('emptyChat');
-                if (emptyChat) emptyChat.remove();
-
-                createAudioMessage(data.file_url, data.time, data.id);
-                scrollChatToBottom();
-            } catch (error) {
-                alert(error.message || 'Failed to send audio');
-                console.error(error);
-            }
-        }
-
-        // start recording
-        async function startRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-                recordingStream = stream;
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                recordingSeconds = 0;
-
-                mediaRecorder.ondataavailable = e => {
-                    if (e.data.size > 0) {
-                        audioChunks.push(e.data);
-                    }
-                };
-
-                mediaRecorder.onstop = async () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    await sendAudioBlob(audioBlob);
-
-                    if (recordingStream) {
-                        recordingStream.getTracks().forEach(track => track.stop());
-                    }
-                };
-
-                mediaRecorder.start();
-                isRecording = true;
-
-                document.getElementById('voiceBtn').classList.add('recording');
-                document.getElementById('voiceBtn').textContent = '⏹';
-                document.getElementById('recordingStatus').classList.add('show');
-
-                recordingInterval = setInterval(updateRecordingTime, 1000);
-            } catch (error) {
-                alert('اسم الخطأ: ' + error.name + '\nالرسالة: ' + error.message);
-                console.error(error);
-            }
-        }
-
-        // stop recording
-        function stopRecording() {
-            if (mediaRecorder && isRecording) {
-                mediaRecorder.stop();
-                isRecording = false;
-
-                document.getElementById('voiceBtn').classList.remove('recording');
-                document.getElementById('voiceBtn').textContent = '🎤';
-                document.getElementById('recordingStatus').classList.remove('show');
-
-                clearInterval(recordingInterval);
-            }
-        }
-
-        // delete message
-        async function deleteMessage(messageId, button) {
-            try {
-                const url = "{{ route('doctor.chat.message.delete', ['messageId' => '__ID__']) }}".replace('__ID__', messageId);
-
-                const response = await fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to delete message');
-                }
-
-                const row = button.closest('.message-row');
-                if (row) row.remove();
-
-                closeAllMessageMenus();
-            } catch (error) {
-                alert(error.message || 'Failed to delete message.');
-                console.error(error);
-            }
-        }
-
-        // send message
-        document.getElementById('chatForm').addEventListener('submit', sendMessage);
-
-        // file input change
-        document.getElementById('fileInput').addEventListener('change', function () {
-            const input = document.getElementById('messageInput');
-            const filePreview = document.getElementById('selectedFilePreview');
-            const clearBtn = document.getElementById('clearSelectedFile');
-
-            if (this.files[0]) {
-                input.value = '';
-                filePreview.textContent = this.files[0].name;
-                filePreview.style.display = 'block';
-                clearBtn.style.display = 'flex';
-                input.classList.add('has-file');
-            } else {
-                clearSelectedFile();
-            }
+    }
+
+    // open image modal
+    function openImageModal(src) {
+        const modal = document.getElementById('imageModal');
+        const preview = document.getElementById('imageModalPreview');
+        preview.src = src;
+        modal.classList.add('show');
+    }
+
+    // close image modal
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        const preview = document.getElementById('imageModalPreview');
+        modal.classList.remove('show');
+        preview.src = '';
+    }
+
+    // clear selected file
+    function clearSelectedFile() {
+        const input = document.getElementById('messageInput');
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('selectedFilePreview');
+        const clearBtn = document.getElementById('clearSelectedFile');
+
+        fileInput.value = '';
+        filePreview.textContent = '';
+        filePreview.style.display = 'none';
+        clearBtn.style.display = 'none';
+        input.classList.remove('has-file');
+    }
+
+    // close all message menus
+    function closeAllMessageMenus() {
+        document.querySelectorAll('.message-action-menu').forEach(menu => {
+            menu.classList.remove('show');
         });
+    }
 
-        // clear selected file
-        document.getElementById('clearSelectedFile').addEventListener('click', clearSelectedFile);
+    // open message menu
+    function openMessageMenu(event, element) {
+        event.preventDefault();
+        closeAllMessageMenus();
 
-        // voice button click
-        document.getElementById('voiceBtn').addEventListener('click', function () {
-            if (!isRecording) {
-                startRecording();
-            } else {
-                stopRecording();
-            }
-        });
+        const row = element.closest('.message-row');
+        if (!row) return;
 
-        // image modal click
-        document.getElementById('imageModal').addEventListener('click', function (e) {
-            if (e.target.id === 'imageModal') {
-                closeImageModal();
-            }
-        });
+        const menu = row.querySelector('.message-action-menu');
+        if (menu) {
+            menu.classList.add('show');
+        }
+    }
 
-        // document click
-        document.addEventListener('click', function (event) {
-            const muteMenu = document.getElementById('muteMenu');
-            const muteBtn = document.querySelector('.menu-btn');
+    // start press
+    function startPress(event, element) {
+        pressTimer = setTimeout(() => {
+            openMessageMenu(event, element);
+        }, 500);
+    }
 
-            if (muteMenu && muteBtn && !muteMenu.contains(event.target) && !muteBtn.contains(event.target)) {
-                muteMenu.classList.remove('show');
-            }
+    // cancel press
+    function cancelPress() {
+        clearTimeout(pressTimer);
+    }
 
-            if (!event.target.closest('.message-action-menu') &&
-                !event.target.closest('.bubble') &&
-                !event.target.closest('.image-message') &&
-                !event.target.closest('.audio-card')) {
-                closeAllMessageMenus();
-            }
-        });
+    // create text message
+    function createTextMessage(text, timeText) {
+        const chatArea = document.getElementById('chatArea');
 
-        // window onload
-        window.onload = function () {
-            updateParentStatus();
-            scrollChatToBottom();
+        const row = document.createElement('div');
+        row.className = 'message-row me';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble me';
+        bubble.textContent = text;
+
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = timeText;
+
+        row.appendChild(bubble);
+        row.appendChild(time);
+        chatArea.appendChild(row);
+    }
+
+    // create image message
+    function createImageMessage(imageUrl, timeText) {
+        const chatArea = document.getElementById('chatArea');
+
+        const row = document.createElement('div');
+        row.className = 'message-row me';
+
+        const imageWrap = document.createElement('div');
+        imageWrap.className = 'image-message me';
+
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.className = 'chat-image';
+        img.onclick = function () {
+            openImageModal(imageUrl);
         };
-    </script>
+
+        imageWrap.appendChild(img);
+
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = timeText;
+
+        row.appendChild(imageWrap);
+        row.appendChild(time);
+        chatArea.appendChild(row);
+    }
+
+    // create file message
+    function createFileMessage(fileUrl, fileName, timeText) {
+        const chatArea = document.getElementById('chatArea');
+
+        const row = document.createElement('div');
+        row.className = 'message-row me';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble me';
+
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.target = '_blank';
+        link.textContent = fileName || trans.openFile;
+        link.style.color = 'inherit';
+        link.style.textDecoration = 'underline';
+        link.style.wordBreak = 'break-all';
+
+        bubble.appendChild(link);
+
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = timeText;
+
+        row.appendChild(bubble);
+        row.appendChild(time);
+        chatArea.appendChild(row);
+    }
+
+    // create audio message
+    function createAudioMessage(audioUrl, timeText, messageId = null) {
+        const chatArea = document.getElementById('chatArea');
+
+        const row = document.createElement('div');
+        row.className = 'message-row me';
+        if (messageId) {
+            row.setAttribute('data-message-id', messageId);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'audio-card me';
+
+        if (messageId) {
+            card.setAttribute('oncontextmenu', 'openMessageMenu(event, this)');
+            card.setAttribute('ontouchstart', 'startPress(event, this)');
+            card.setAttribute('ontouchend', 'cancelPress()');
+        }
+
+        const playBtn = document.createElement('button');
+        playBtn.type = 'button';
+        playBtn.className = 'audio-play-btn';
+        playBtn.textContent = '▶';
+
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.className = 'audio-player';
+
+        const source = document.createElement('source');
+        source.src = audioUrl;
+
+        audio.appendChild(source);
+        card.appendChild(playBtn);
+        card.appendChild(audio);
+
+        playBtn.onclick = function () {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = '❚❚';
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶';
+            }
+        };
+
+        audio.onended = function () {
+            playBtn.textContent = '▶';
+        };
+
+        audio.onpause = function () {
+            playBtn.textContent = '▶';
+        };
+
+        audio.onplay = function () {
+            playBtn.textContent = '❚❚';
+        };
+
+        row.appendChild(card);
+
+        if (messageId) {
+            const menu = document.createElement('div');
+            menu.className = 'message-action-menu';
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'message-action-btn';
+            btn.textContent = trans.delete;
+            btn.onclick = function () {
+                deleteMessage(messageId, btn);
+            };
+
+            menu.appendChild(btn);
+            row.appendChild(menu);
+        }
+
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = timeText;
+
+        row.appendChild(time);
+        chatArea.appendChild(row);
+    }
+
+    // update recording time
+    function updateRecordingTime() {
+        recordingSeconds++;
+        const mins = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
+        const secs = String(recordingSeconds % 60).padStart(2, '0');
+        document.getElementById('recordingTime').textContent = `${mins}:${secs}`;
+    }
+
+    // send message
+    async function sendMessage(event) {
+        event.preventDefault();
+
+        const chatForm = document.getElementById('chatForm');
+        const input = document.getElementById('messageInput');
+        const fileInput = document.getElementById('fileInput');
+
+        const text = input.value.trim();
+        const file = fileInput.files[0];
+
+        if (!text && !file) return;
+
+        try {
+            const formData = new FormData(chatForm);
+
+            const response = await fetch(chatForm.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const raw = await response.text();
+            let data;
+
+            try {
+                data = JSON.parse(raw);
+            } catch {
+                throw new Error(raw);
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to send message');
+            }
+
+            const emptyChat = document.getElementById('emptyChat');
+            if (emptyChat) emptyChat.remove();
+
+            if (data.type === 'image') {
+                createImageMessage(data.file_url, data.time);
+            } else if (data.type === 'file') {
+                createFileMessage(data.file_url, data.file_name, data.time);
+            } else {
+                createTextMessage(data.message ?? text, data.time ?? '');
+            }
+
+            input.value = '';
+            clearSelectedFile();
+            scrollChatToBottom();
+        } catch (error) {
+            alert(error.message || 'Failed to send message.');
+            console.error(error);
+        }
+    }
+
+    // send audio blob
+    async function sendAudioBlob(audioBlob) {
+        try {
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'voice-message.webm');
+
+            const response = await fetch("{{ route('doctor.chat.sendAudio', ['parentId' => $parent['id']]) }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            });
+
+            const raw = await response.text();
+            let data;
+
+            try {
+                data = JSON.parse(raw);
+            } catch {
+                throw new Error(raw);
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to send audio');
+            }
+
+            const emptyChat = document.getElementById('emptyChat');
+            if (emptyChat) emptyChat.remove();
+
+            createAudioMessage(data.file_url, data.time, data.id);
+            scrollChatToBottom();
+        } catch (error) {
+            alert(error.message || 'Failed to send audio');
+            console.error(error);
+        }
+    }
+
+    // start recording
+    async function startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            recordingStream = stream;
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            recordingSeconds = 0;
+
+            mediaRecorder.ondataavailable = e => {
+                if (e.data.size > 0) {
+                    audioChunks.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                await sendAudioBlob(audioBlob);
+
+                if (recordingStream) {
+                    recordingStream.getTracks().forEach(track => track.stop());
+                }
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+
+            document.getElementById('voiceBtn').classList.add('recording');
+            document.getElementById('voiceBtn').textContent = '⏹';
+            document.getElementById('recordingStatus').classList.add('show');
+
+            recordingInterval = setInterval(updateRecordingTime, 1000);
+        } catch (error) {
+            alert('اسم الخطأ: ' + error.name + '\nالرسالة: ' + error.message);
+            console.error(error);
+        }
+    }
+
+    // stop recording
+    function stopRecording() {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+
+            document.getElementById('voiceBtn').classList.remove('recording');
+            document.getElementById('voiceBtn').textContent = '🎤';
+            document.getElementById('recordingStatus').classList.remove('show');
+
+            clearInterval(recordingInterval);
+        }
+    }
+
+    // delete message
+    async function deleteMessage(messageId, button) {
+        try {
+            const url = "{{ route('doctor.chat.message.delete', ['messageId' => '__ID__']) }}".replace('__ID__', messageId);
+
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to delete message');
+            }
+
+            const row = button.closest('.message-row');
+            if (row) row.remove();
+
+            closeAllMessageMenus();
+        } catch (error) {
+            alert(error.message || 'Failed to delete message.');
+            console.error(error);
+        }
+    }
+
+    // send message
+    document.getElementById('chatForm').addEventListener('submit', sendMessage);
+
+    // file input change
+    document.getElementById('fileInput').addEventListener('change', function () {
+        const input = document.getElementById('messageInput');
+        const filePreview = document.getElementById('selectedFilePreview');
+        const clearBtn = document.getElementById('clearSelectedFile');
+
+        if (this.files[0]) {
+            input.value = '';
+            filePreview.textContent = this.files[0].name;
+            filePreview.style.display = 'block';
+            clearBtn.style.display = 'flex';
+            input.classList.add('has-file');
+        } else {
+            clearSelectedFile();
+        }
+    });
+
+    // clear selected file
+    document.getElementById('clearSelectedFile').addEventListener('click', clearSelectedFile);
+
+    // voice button click
+    document.getElementById('voiceBtn').addEventListener('click', function () {
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    });
+
+    // image modal click
+    document.getElementById('imageModal').addEventListener('click', function (e) {
+        if (e.target.id === 'imageModal') {
+            closeImageModal();
+        }
+    });
+
+    // document click
+    document.addEventListener('click', function (event) {
+        const muteMenu = document.getElementById('muteMenu');
+        const muteBtn = document.querySelector('.menu-btn');
+
+        if (muteMenu && muteBtn && !muteMenu.contains(event.target) && !muteBtn.contains(event.target)) {
+            muteMenu.classList.remove('show');
+        }
+
+        if (!event.target.closest('.message-action-menu') &&
+            !event.target.closest('.bubble') &&
+            !event.target.closest('.image-message') &&
+            !event.target.closest('.audio-card')) {
+            closeAllMessageMenus();
+        }
+    });
+
+    // window onload
+    window.onload = function () {
+        updateParentStatus();
+        scrollChatToBottom();
+    };
+</script>
 </body>
 </html>

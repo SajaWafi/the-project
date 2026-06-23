@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Workplace</title>
+    <title>{{ __('Edit Workplace') }}</title>
     <style>
         /* ===== Reset عام ===== */
         * {
@@ -50,21 +50,6 @@
             border-radius: 10px;
         }
 
-        /* ===== شريط الحالة ===== */
-        .status-bar {
-            height: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 10px 12px 0;
-            font-size: 13px;
-            font-weight: 700;
-            color: #111;
-            margin-bottom: 6px;
-            position: relative;
-            z-index: 3;
-        }
-
         /* ===== الهيدر ===== */
         .header {
             position: relative;
@@ -79,18 +64,20 @@
         /* ===== زر الرجوع ===== */
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* 💡 دعم RTL */
             background: transparent;
             border: none;
             cursor: pointer;
             color: #2f80ed;
             padding: 6px;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }}; /* 💡 قلب السهم */
         }
 
         .back-btn svg {
             width: 26px;
             height: 26px;
         }
+
         /* ===== عنوان الصفحة ===== */
         .page-title {
             font-size: 28px;
@@ -102,7 +89,7 @@
         /* ===== الشعار ===== */
         .logo {
             position: absolute;
-            right: 10px;
+            inset-inline-end: 10px; /* 💡 دعم RTL */
             top: -2px;
             width: 34px;
             height: 34px;
@@ -124,6 +111,7 @@
             justify-content: space-between;
             gap: 8px;
             margin-bottom: 18px;
+            direction: ltr; /* للحفاظ على ترتيب الأيام من الأحد للسبت */
         }
 
         /* ===== زر اليوم ===== */
@@ -155,17 +143,6 @@
 
         .day-pill:hover {
             transform: scale(1.04);
-        }
-
-        /* ===== نجمة ديكورية ===== */
-        .star {
-            position: absolute;
-            left: 98px;
-            top: 182px;
-            color: #f0d46a;
-            font-size: 30px;
-            line-height: 1;
-            z-index: 1;
         }
 
         /* ===== الفورم ===== */
@@ -200,7 +177,7 @@
             display: flex;
             align-items: center;
             gap: 18px;
-            padding-left: 6px;
+            padding-inline-start: 6px; /* 💡 دعم RTL */
         }
 
         /* ===== اختيار الوقت ===== */
@@ -219,7 +196,9 @@
             color: #484848;
             border-bottom: 3px solid #5a5a5a;
             line-height: 1;
-            padding: 0 18px 2px 0;
+            padding: 0;
+            padding-inline-end: 18px; /* 💡 دعم RTL */
+            padding-bottom: 2px;
             min-width: 54px;
             appearance: none;
             -webkit-appearance: none;
@@ -234,7 +213,7 @@
         /* ===== سهم الوقت ===== */
         .time-arrow {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0; /* 💡 دعم RTL */
             top: 50%;
             transform: translateY(-20%);
             color: #2f66f3;
@@ -253,10 +232,6 @@
             padding: 0 14px;
             font-size: 15px;
             color: #333;
-        }
-
-        .text-input::placeholder {
-            color: #6e6e6e;
         }
 
         /* ===== الأزرار ===== */
@@ -319,13 +294,13 @@
         <div class="content">
 
             <div class="header">
-            <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
 
-                <div class="page-title">Edit Workplace</div>
+                <div class="page-title">{{ __('Edit Workplace') }}</div>
 
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
@@ -350,7 +325,7 @@
                                 value="{{ $day }}"
                                 {{ in_array($day, $selectedDays) ? 'checked' : '' }}
                             >
-                            <span>{{ $day }}</span>
+                            <span>{{ __($day) }}</span>
                         </label>
                     @endforeach
                 </div>
@@ -372,7 +347,7 @@
                 <div class="form-wrap">
 
                     <div class="field-block">
-                        <div class="field-title">Time Since</div>
+                        <div class="field-title">{{ __('Time Since') }}</div>
 
                         <div class="time-row">
                             <div class="time-select-wrap">
@@ -402,8 +377,8 @@
 
                             <div class="time-select-wrap">
                                 <select name="from_period" class="time-select period">
-                                    <option value="AM" {{ old('from_period', $workplace['from_period']) == 'AM' ? 'selected' : '' }}>AM</option>
-                                    <option value="PM" {{ old('from_period', $workplace['from_period']) == 'PM' ? 'selected' : '' }}>PM</option>
+                                    <option value="AM" {{ old('from_period', $workplace['from_period']) == 'AM' ? 'selected' : '' }}>{{ __('AM') }}</option>
+                                    <option value="PM" {{ old('from_period', $workplace['from_period']) == 'PM' ? 'selected' : '' }}>{{ __('PM') }}</option>
                                 </select>
                                 <span class="time-arrow">▼</span>
                             </div>
@@ -411,7 +386,7 @@
                     </div>
 
                     <div class="field-block">
-                        <div class="field-title">Time to</div>
+                        <div class="field-title">{{ __('Time to') }}</div>
 
                         <div class="time-row">
                             <div class="time-select-wrap">
@@ -441,8 +416,8 @@
 
                             <div class="time-select-wrap">
                                 <select name="to_period" class="time-select period">
-                                    <option value="AM" {{ old('to_period', $workplace['to_period']) == 'AM' ? 'selected' : '' }}>AM</option>
-                                    <option value="PM" {{ old('to_period', $workplace['to_period']) == 'PM' ? 'selected' : '' }}>PM</option>
+                                    <option value="AM" {{ old('to_period', $workplace['to_period']) == 'AM' ? 'selected' : '' }}>{{ __('AM') }}</option>
+                                    <option value="PM" {{ old('to_period', $workplace['to_period']) == 'PM' ? 'selected' : '' }}>{{ __('PM') }}</option>
                                 </select>
                                 <span class="time-arrow">▼</span>
                             </div>
@@ -450,21 +425,20 @@
                     </div>
 
                     <div class="field-block no-border">
-                        <div class="field-title" style="font-size:16px; color:#555; margin-bottom:8px;">Clinic Name</div>
+                        <div class="field-title" style="font-size:16px; color:#555; margin-bottom:8px;">{{ __('Clinic Name') }}</div>
                         <input
                             type="text"
                             name="place_name"
                             class="text-input"
                             value="{{ old('place_name', $workplace['place_name']) }}"
-                            placeholder=""
                         >
                     </div>
 
                     <div class="actions">
-                        <button type="submit" class="primary-btn">Update workplace</button>
+                        <button type="submit" class="primary-btn">{{ __('Update workplace') }}</button>
 
                         <a href="{{ route('doctor.workplace.timing') }}" class="secondary-btn">
-                            Cancel
+                            {{ __('Cancel') }}
                         </a>
                     </div>
                 </div>

@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'doctor.approved' => \App\Http\Middleware\DoctorApprovedMiddleware::class,
         ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\LanguageMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

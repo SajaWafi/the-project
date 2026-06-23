@@ -88,6 +88,8 @@ class ParentController extends Controller
         }
 
         $parent = ParentProfile::with(['user', 'children.doctors'])->findOrFail($id);
+        // عدلي هذا السطر تحديداً:
+$workplaces = \App\Models\Workplace::where('doctor_id', $doctor->id)->get();
 
         $linkedChild = $parent->children->first(function ($child) use ($doctor) {
             return $child->doctors->contains('id', $doctor->id);
@@ -117,6 +119,7 @@ class ParentController extends Controller
             'phone' => $parent->user->phone ?? 'No Phone',
             'autism_level' => $linkedChild->autism_level ?? 'Not set',
             'age' => $childAge,
+          
         ];
 
         $appointments = Appointment::with(['child'])
@@ -140,7 +143,8 @@ class ParentController extends Controller
             'parent' => $data,
             'appointments' => $appointments,
             'linkedChild' => $linkedChild,
-            'doctor' => ['id' => $doctor->id] 
+            'doctor' => ['id' => $doctor->id] ,
+            'workplaces' => $workplaces
         ]);
     }
     //فتح صفحة المحادثة.

@@ -4,6 +4,13 @@ require __DIR__ . '/parent.php';
 require __DIR__ . '/doctor.php';
 require __DIR__ . '/admin.php';
 require __DIR__ . '/api.php';
+
+Route::get('lang/{locale}', function ($locale) {
+    if (in_array($locale, ['ar', 'en'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('lang.switch');
 /*
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

@@ -14,18 +14,16 @@ class SafeZoneController extends Controller
     // عرض الواجهة مع الأماكن المحفوظة
     public function index()
     {
-        // 1. نجيبوا بروفايل الأب بناءً على اليوزر اللي خاش (16 -> يجيب 7)
         $parentProfile = ParentProfile::where('user_id', Auth::id())->first();
         
         $safeZones = collect();
         $child = null;
 
         if ($parentProfile) {
-            // 2. نجيبوا الطفل بناءً على رقم الأب في جدول الآباء (7)
             $child = Child::where('parent_id', $parentProfile->id)->first();
             
             if ($child) {
-                // 3. نجيبوا السيف زون متاع هذا الطفل
+                //نجيبوا السيف زون متاع هذا الطفل
                 $safeZones = SafeZone::where('child_id', $child->id)->get();
             }
         }
@@ -40,20 +38,20 @@ class SafeZoneController extends Controller
             'zone_name' => 'required|string|max:255',
             'center_latitude' => 'required|numeric',
             'center_longitude' => 'required|numeric',
-            'radius_meters' => 'required|numeric',
+            'radius_meters' => 'required|numeric|min:10'
         ]);
 
         // نفس التسلسل المنطقي للتخزين
         $parentProfile = ParentProfile::where('user_id', Auth::id())->first();
 
         if (!$parentProfile) {
-            return back()->with('error', 'إعدادات حساب الأب غير مكتملة.');
+            return back()->with('error', 'Parent account settings are incomplete.');
         }
 
         $child = Child::where('parent_id', $parentProfile->id)->first();
 
         if (!$child) {
-            return back()->with('error', 'لا يوجد طفل مربوط بهذا الحساب.');
+            return back()->with('error', 'No child is linked to this account.');
         }
 
         // التخزين النهائي
@@ -75,7 +73,7 @@ class SafeZoneController extends Controller
         $zone = SafeZone::findOrFail($id);
         
         $parentProfile = ParentProfile::where('user_id', Auth::id())->first();
-        
+        //يمنع ثغرة خطيرة (IDOR)، حيث لا يمكن لأي مستخدم آخر تغيير الـ ID
         if ($parentProfile) {
             $child = Child::where('parent_id', $parentProfile->id)->where('id', $zone->child_id)->first();
             

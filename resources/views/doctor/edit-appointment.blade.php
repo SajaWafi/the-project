@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Appointment</title>
+    <title>{{ __('Edit Appointment') }}</title>
     <style>
         * {
             margin: 0;
@@ -60,9 +60,10 @@
             color: #1d567e;
         }
 
+        /* 💡 دعم الاتجاهين RTL/LTR */
         .logo {
             position: absolute;
-            right: 10px;
+            inset-inline-end: 10px;
             top: -2px;
             width: 34px;
             height: 34px;
@@ -127,11 +128,12 @@
             padding-bottom: 0;
         }
 
+        /* 💡 دعم الاتجاهين RTL/LTR */
         .time-row {
             display: flex;
             align-items: center;
             gap: 14px;
-            padding-left: 6px;
+            padding-inline-start: 6px; 
         }
 
         .time-select-wrap {
@@ -159,6 +161,7 @@
             padding: 0 14px;
         }
 
+        /* 💡 دعم السهم للاتجاهين */
         .select-field {
             height: 42px;
             appearance: none;
@@ -166,8 +169,8 @@
             -moz-appearance: none;
             background-image: url("data:image/svg+xml;utf8,<svg fill='%23eb9443' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
             background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 38px;
+            background-position: {{ app()->getLocale() == 'ar' ? 'left 12px center' : 'right 12px center' }};
+            padding-inline-end: 38px;
         }
 
         .textarea-field {
@@ -198,6 +201,9 @@
             font-weight: 700;
             height: 42px;
             min-width: 210px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .primary-btn {
@@ -228,14 +234,17 @@
             margin: 0 22px 12px;
             font-size: 13px;
         }
-           .back-btn {
+        
+        /* 💡 زر الرجوع وقلب السهم */
+        .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             background: transparent;
             border: none;
             cursor: pointer;
             color: #2f80ed;
             padding: 6px;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .back-btn svg {
@@ -250,11 +259,11 @@
 
             <div class="header">
                 <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-                <div class="page-title">Edit Appointment</div>
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="page-title">{{ __('Edit Appointment') }}</div>
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
                 </div>
@@ -278,15 +287,14 @@
                 @csrf
                 @method('PUT')
 
-                <!-- date section -->
                 <div class="date-section">
-                    <div class="field-title">Select Date</div>
+                    <div class="field-title">{{ __('Select Date') }}</div>
 
                     <input
                         type="date"
                         id="appointmentDate"
                         name="date"
-                        value="{{ old('date',$appointment->date) }}"
+                        value="{{ old('date', \Carbon\Carbon::parse($appointment->date)->format('Y-m-d')) }}"
                         min="{{ now()->toDateString() }}" 
                         class="date-picker"
                     >
@@ -294,12 +302,11 @@
 
                 <div class="form-wrap">
 
-                    <!-- time section -->
                     <div class="field-block">
-                        <div class="field-title">Time Since</div>
+                        <div class="field-title">{{ __('Time Since') }}</div>
                         <div class="time-row">
                             <div class="time-select-wrap">
-                                <select name="from_hour" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                                <select name="from_hour" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-inline-end:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
                                     @for ($i = 1; $i <= 12; $i++)
                                         @php $hour = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
                                         <option value="{{ $i }}" {{ old('from_hour', $appointment->from_hour) == $i ? 'selected' : '' }}>
@@ -310,7 +317,7 @@
                             </div>
 
                             <div class="time-select-wrap">
-                                <select name="from_minute" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                                <select name="from_minute" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-inline-end:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
                                     @foreach ([0,15,30,45] as $minute)
                                         <option value="{{ $minute }}" {{ old('from_minute', $appointment->from_minute) == $minute ? 'selected' : '' }}>
                                             {{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}
@@ -320,19 +327,19 @@
                             </div>
 
                             <div class="time-select-wrap">
-                                <select name="from_period" class="select-field" style="width:92px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
-                                    <option value="AM" {{ old('from_period', $appointment->from_period) == 'AM' ? 'selected' : '' }}>AM</option>
-                                    <option value="PM" {{ old('from_period', $appointment->from_period) == 'PM' ? 'selected' : '' }}>PM</option>
+                                <select name="from_period" class="select-field" style="width:92px; background:transparent; border-radius:0; padding:0; padding-inline-end:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                                    <option value="AM" {{ old('from_period', $appointment->from_period) == 'AM' ? 'selected' : '' }}>{{ __('AM') }}</option>
+                                    <option value="PM" {{ old('from_period', $appointment->from_period) == 'PM' ? 'selected' : '' }}>{{ __('PM') }}</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="field-block">
-                        <div class="field-title">Time to</div>
+                        <div class="field-title">{{ __('Time to') }}</div>
                         <div class="time-row">
                             <div class="time-select-wrap">
-                                <select name="to_hour" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                                <select name="to_hour" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-inline-end:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
                                     @for ($i = 1; $i <= 12; $i++)
                                         @php $hour = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
                                         <option value="{{ $i }}" {{ old('to_hour', $appointment->to_hour) == $i ? 'selected' : '' }}>
@@ -343,7 +350,7 @@
                             </div>
 
                             <div class="time-select-wrap">
-                                <select name="to_minute" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                                <select name="to_minute" class="select-field" style="width:78px; background:transparent; border-radius:0; padding:0; padding-inline-end:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
                                     @foreach ([0,15,30,45] as $minute)
                                         <option value="{{ $minute }}" {{ old('to_minute', $appointment->to_minute) == $minute ? 'selected' : '' }}>
                                             {{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}
@@ -353,21 +360,20 @@
                             </div>
 
                             <div class="time-select-wrap">
-                                <select name="to_period" class="select-field" style="width:92px; background:transparent; border-radius:0; padding:0; padding-right:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
-                                    <option value="AM" {{ old('to_period', $appointment->to_period) == 'AM' ? 'selected' : '' }}>AM</option>
-                                    <option value="PM" {{ old('to_period', $appointment->to_period) == 'PM' ? 'selected' : '' }}>PM</option>
+                                <select name="to_period" class="select-field" style="width:92px; background:transparent; border-radius:0; padding:0; padding-inline-end:20px; font-size:26px; font-weight:700; color:#484848; border-bottom:3px solid #5a5a5a;">
+                                    <option value="AM" {{ old('to_period', $appointment->to_period) == 'AM' ? 'selected' : '' }}>{{ __('AM') }}</option>
+                                    <option value="PM" {{ old('to_period', $appointment->to_period) == 'PM' ? 'selected' : '' }}>{{ __('PM') }}</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- parent section -->
                     <div class="field-block">
-                        <div class="field-title">Choose Parent</div>
-                        <div class="sub-label">Full Name</div>
+                        <div class="field-title">{{ __('Choose Parent') }}</div>
+                        <div class="sub-label">{{ __('Full Name') }}</div>
 
                         <select name="parent_id" id="parent_id" class="select-field">
-                            <option value="">Select parent</option>
+                            <option value="">{{ __('Select parent') }}</option>
                             @foreach($parents as $parent)
                                 <option value="{{ $parent->id }}" {{ old('parent_id', $appointment->parent_id) == $parent->id ? 'selected' : '' }}>
                                     {{ $parent->user->first_name ?? '' }} {{ $parent->user->last_name ?? '' }}
@@ -376,13 +382,12 @@
                         </select>
                     </div>
 
-                    <!-- workplace section -->
                     <div class="field-block">
-                        <div class="field-title">Choose Workplace</div>
-                        <div class="sub-label">Place Name</div>
+                        <div class="field-title">{{ __('Choose Workplace') }}</div>
+                        <div class="sub-label">{{ __('Place Name') }}</div>
 
                         <select name="workplace_id" id="workplace_id" class="select-field">
-                            <option value="">Select workplace</option>
+                            <option value="">{{ __('Select workplace') }}</option>
                             @foreach($workplaces as $workplace)
                                 <option value="{{ $workplace->id }}" {{ old('workplace_id', $appointment->workplace_id ?? '') == $workplace->id ? 'selected' : '' }}>
                                     {{ $workplace->place_name }}
@@ -392,15 +397,15 @@
                     </div>
 
                     <div class="field-block no-border">
-                        <div class="field-title">Add note</div>
-                        <textarea name="note" class="textarea-field" placeholder="Enter Your Note Here..">{{ old('note', $appointment->note) }}</textarea>
+                        <div class="field-title">{{ __('Add note') }}</div>
+                        <textarea name="note" class="textarea-field" placeholder="{{ __('Enter Your Note Here..') }}">{{ old('note', $appointment->note) }}</textarea>
                     </div>
 
                     <div class="actions">
-                        <button type="submit" class="primary-btn">Update Appointment</button>
+                        <button type="submit" class="primary-btn">{{ __('Update Appointment') }}</button>
 
-                        <a href="{{ route('doctor.appointments') }}" class="secondary-btn" style="display:flex; align-items:center; justify-content:center;">
-                            Cancel
+                        <a href="{{ route('doctor.appointments') }}" class="secondary-btn">
+                            {{ __('Cancel') }}
                         </a>
                     </div>
 

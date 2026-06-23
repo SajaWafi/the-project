@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Child</title>
+    <title>{{ __('Search Child') }}</title>
 
     <style>
         * {
@@ -45,14 +45,20 @@
             position: relative;
             margin-bottom: 12px;
         }
-.back-btn {
+
+        /* 💡 دعم زر الرجوع للاتجاهين */
+        .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             background: transparent;
             border: none;
             cursor: pointer;
             color: #2f80ed;
             padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .back-btn svg {
@@ -66,9 +72,10 @@
             color: #1d567e;
         }
 
+        /* 💡 الشعار يتغير مكانه حسب اللغة */
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0;
             width: 42px;
             height: 28px;
         }
@@ -126,7 +133,7 @@
             font-size: 12px;
             color: #607581;
             margin-bottom: 14px;
-            padding-left: 4px;
+            padding-inline-start: 4px;
         }
 
         .msg {
@@ -134,6 +141,10 @@
             border-radius: 14px;
             margin-bottom: 14px;
             font-size: 13px;
+        }
+
+        .msg ul {
+            padding-inline-start: 18px;
         }
 
         .success {
@@ -151,7 +162,7 @@
             font-weight: bold;
             color: #1d567e;
             margin-bottom: 10px;
-            padding-left: 4px;
+            padding-inline-start: 4px;
         }
 
         .child-card {
@@ -273,17 +284,17 @@
     <div class="content">
 
         <div class="header">
-             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-            <div class="title">Add Child</div>
+            <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="title">{{ __('Add Child') }}</div>
             <img src="{{ asset('images/logo.png') }}" class="logo" alt="logo">
         </div>
 
         <div class="subtitle">
-            Search for a child and link them to your account
+            {{ __('Search for a child and link them to your account') }}
         </div>
 
         @if(session('success'))
@@ -296,7 +307,7 @@
 
         @if($errors->any())
             <div class="msg error">
-                <ul style="padding-left: 18px;">
+                <ul>
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -311,20 +322,20 @@
                     <input
                         type="text"
                         name="search"
-                        placeholder="Search by child name..."
+                        placeholder="{{ __('Search by child name...') }}"
                         value="{{ $search ?? '' }}"
                     >
-                    <button type="submit" class="search-btn">Go</button>
+                    <button type="submit" class="search-btn">{{ __('Go') }}</button>
                 </div>
             </form>
         </div>
 
         <div class="top-note">
-            Check the parent name before adding the child
+            {{ __('Check the parent name before adding the child') }}
         </div>
 
         @if(isset($children) && $children->count() > 0)
-            <div class="results-title">Search Results</div>
+            <div class="results-title">{{ __('Search Results') }}</div>
 
             @foreach($children as $child)
                 <div class="child-card">
@@ -336,26 +347,26 @@
                         <div class="child-name">{{ $child->name }}</div>
 
                         <div class="child-sub">
-                            Gender: {{ ucfirst($child->gender) }}
+                            {{ __('Gender') }}: {{ __($child->gender ?? 'Not set') }}
                         </div>
 
                         <div class="child-sub">
-                            Birth Date: {{ $child->birth_date }}
+                            {{ __('Birth Date') }}: {{ $child->birth_date }}
                         </div>
 
                         <div class="child-sub">
-                            Parent:
-                            {{ $child->parent?->user?->first_name ?? 'No parent name' }}
+                            {{ __('Parent') }}:
+                            {{ $child->parent?->user?->first_name ?? __('No parent name') }}
                         </div>
 
                         <span class="badge">
-                            Autism: {{ $child->autism_level ?? 'Not set' }}
+                            {{ __('Autism') }}: {{ $child->autism_level ?? __('Not set') }}
                         </span>
                     </div>
 
                     <div class="action-side">
                         @if(isset($linkedChildIds) && in_array($child->id, $linkedChildIds))
-                            <div class="added-label">Added</div>
+                            <div class="added-label">{{ __('Added') }}</div>
                         @else
                             <form action="{{ route('doctor.children.attach', $child->id) }}" method="POST">
                                 @csrf
@@ -368,13 +379,13 @@
 
         @elseif(request()->has('search'))
             <div class="empty-box">
-                <h3>No child found</h3>
-                <p>Try another name or spelling.</p>
+                <h3>{{ __('No child found') }}</h3>
+                <p>{{ __('Try another name or spelling.') }}</p>
             </div>
         @else
             <div class="empty-box">
-                <h3>Start searching</h3>
-                <p>Search by child name to link them to the doctor account.</p>
+                <h3>{{ __('Start searching') }}</h3>
+                <p>{{ __('Search by child name to link them to the doctor account.') }}</p>
             </div>
         @endif
 

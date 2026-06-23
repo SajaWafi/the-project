@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workplace</title>
+    <title>{{ __('Workplace') }}</title>
     <style>
         /* ===== Reset ===== */
         * {
@@ -53,7 +53,7 @@
         /* ===== Decorative star ===== */
         .star {
             position: absolute;
-            left: 105px;
+            inset-inline-start: 105px; /* 💡 دعم RTL */
             top: 173px;
             color: #f0d46a;
             font-size: 34px;
@@ -88,12 +88,25 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* 💡 دعم RTL */
             top: 0;
             font-size: 30px;
             line-height: 1;
             color: #3d78ff;
             text-decoration: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }}; /* 💡 قلب السهم في العربي */
+        }
+
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
         }
 
         .title {
@@ -104,11 +117,11 @@
         }
 
         .logo {
-           position: absolute;
-    right: 10px;
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
+            position: absolute;
+            inset-inline-end: 10px; /* 💡 دعم RTL */
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
         }
 
         .logo img {
@@ -116,30 +129,6 @@
             height: 100%;
             object-fit: cover;
         }
-
-        /* ===== Add button ===== */
-        .add-btn {
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #3d78ff;
-            color: #fff;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            line-height: 1;
-        }
-        .add-btn {
-    position: absolute;
-    right: 0;
-    top: 0;
-    transform: translateY(40px); /* 🔥 ينزل لتحت */
-}
 
         /* ===== Workplace list ===== */
         .work-list {
@@ -167,10 +156,10 @@
             margin-bottom: 14px;
         }
 
-        /* ===== Right action buttons ===== */
+        /* ===== Action buttons ===== */
         .actions {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0; /* 💡 دعم RTL */
             top: 2px;
             display: flex;
             gap: 10px;
@@ -217,44 +206,31 @@
             width: 100%;
             height: 100%;
         }
-         .back-btn {
-            position: absolute;
-            left: 0;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            color: #2f80ed;
-            padding: 6px;
-        }
 
-        .back-btn svg {
-            width: 26px;
-            height: 26px;
-        }
         /* 🔥 زر عائم تحت */
-.fab-btn {
-    position: absolute;
-    right: 16px;
-    bottom: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: #3d78ff;
-    color: #fff;
-    font-size: 30px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 20px rgba(61, 120, 255, 0.4);
-    z-index: 5;
-    transition: 0.2s;
-}
+        .fab-btn {
+            position: absolute;
+            inset-inline-end: 16px; /* 💡 دعم RTL */
+            bottom: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #3d78ff;
+            color: #fff;
+            font-size: 30px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(61, 120, 255, 0.4);
+            z-index: 5;
+            transition: 0.2s;
+        }
 
-/* تأثير ضغط */
-.fab-btn:active {
-    transform: scale(0.95);
-}
+        /* تأثير ضغط */
+        .fab-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -262,81 +238,80 @@
         <div class="content">
 
             <div class="header">
-                         <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
 
-                <div class="title">Workplace</div>
+                <div class="title">{{ __('Workplace') }}</div>
 
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
                 </div>
-
-                
             </div>
 
-<div class="work-list">
-    @forelse($workplaces as $workplace)
-        <div class="work-item">
-            <div class="place-chip">{{ $workplace->place_name }}</div>
+            <div class="work-list">
+                @forelse($workplaces as $workplace)
+                    <div class="work-item">
+                        <div class="place-chip">{{ $workplace->place_name }}</div>
 
-            <div class="actions">
-                <form action="{{ route('doctor.workplace.delete', $workplace->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="action-btn">×</button>
-                </form>
+                        <div class="actions">
+                            <form action="{{ route('doctor.workplace.delete', $workplace->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="action-btn">×</button>
+                            </form>
 
-                <a href="{{ route('doctor.edit-workplace', $workplace->id) }}" class="action-btn">
-                    ✎
-                </a>
-            </div>
+                            <a href="{{ route('doctor.edit-workplace', $workplace->id) }}" class="action-btn">
+                                ✎
+                            </a>
+                        </div>
 
-            <div class="info-row">
-                <div class="info-icon">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
-                        <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                </div>
-                <div>{{ $workplace->place_name }}</div>
-            </div>
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 20s6-5 6-10a6 6 0 1 0-12 0c0 5 6 10 6 10Z" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div>{{ $workplace->place_name }}</div>
+                        </div>
 
-            <div class="info-row">
-                <div class="info-icon">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-                        <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div>
-                    {{ $workplace->from_hour }}:{{ str_pad($workplace->from_minute, 2, '0', STR_PAD_LEFT) }}{{ $workplace->from_period }}
-                    -
-                    {{ $workplace->to_hour }}:{{ str_pad($workplace->to_minute, 2, '0', STR_PAD_LEFT) }}{{ $workplace->to_period }}
-                </div>
-            </div>
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div>
+                                {{ $workplace->from_hour }}:{{ str_pad($workplace->from_minute, 2, '0', STR_PAD_LEFT) }} {{ __($workplace->from_period) }}
+                                -
+                                {{ $workplace->to_hour }}:{{ str_pad($workplace->to_minute, 2, '0', STR_PAD_LEFT) }} {{ __($workplace->to_period) }}
+                            </div>
+                        </div>
 
-            <div class="info-row">
-                <div class="info-icon">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
-                        <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <div>
-                    {{ is_array($workplace->days) ? implode(' - ', $workplace->days) : '' }}
-                </div>
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <rect x="4" y="6" width="16" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div>
+                                {{ is_array($workplace->days) ? implode(' - ', array_map(fn($day) => __($day), $workplace->days)) : '' }}
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="work-item" style="text-align:center;">
+                        <div class="place-chip">{{ __('No workplaces yet') }}</div>
+                    </div>
+                @endforelse
             </div>
         </div>
-    @empty
-        <div class="work-item" style="text-align:center;">
-            <div class="place-chip">No workplaces yet</div>
-        </div>
-    @endforelse
-</div>
-        </div>
+
         <a href="{{ route('doctor.add.workplace') }}" class="fab-btn">+</a>
     </div>
 </body>

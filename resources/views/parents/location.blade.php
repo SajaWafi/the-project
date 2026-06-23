@@ -218,14 +218,14 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
-    let map;
-    let userMarker;
-    let safeZoneCircles = [];
-    let autoFollow = true; 
+    let map; //يمثل الخريطة نفسها.
+    let userMarker; //يمثل علامة الطفل على الخريطة.
+    let safeZoneCircles = []; //مصفوفة نخزن فيها دوائر المناطق الآمنة.
+    let autoFollow = true;  //الخريطة تتبع الطفل تلقائياً.
 
     const currentLat = {{ $latitude ?? 32.8872 }};
     const currentLng = {{ $longitude ?? 13.1913 }};
-    const safeZonesData = @json($safeZones ?? []);
+    const safeZonesData = @json($safeZones ?? []); //تحويل Safe Zones من Laravel إلى JSON.
 
     function createCustomIcon() {
         return L.divIcon({
@@ -235,11 +235,11 @@
             iconAnchor: [9, 9]
         });
     }
-
+    //إنشاء الخريطة
     function initMap(lat, lng) {
         if (map) { map.remove(); } 
-
-        map = L.map('map', { zoomControl: false }).setView([lat, lng], 17);
+    //تهيئة الخريطة وتحديد مستوى الرؤية
+        map = L.map('map', { zoomControl: false }).setView([lat, lng], 17);//حددت المركز على إحداثيات الطفل الحالية
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -247,57 +247,66 @@
         }).addTo(map);
 
         userMarker = L.marker([lat, lng], { icon: createCustomIcon() }).addTo(map);
-
+    //المرور على جميع المناطق الآمنة.
         safeZonesData.forEach(zone => {
             let circle = L.circle([zone.center_latitude, zone.center_longitude], {
                 radius: zone.radius_meters,
                 color: '#37d6c6',
                 weight: 2,
                 fillColor: '#55d7d0',
-                fillOpacity: 0.18
+                fillOpacity: 0.18,
+                dashArray: '4,6'
             }).addTo(map);
             safeZoneCircles.push(circle);
         });
-
+//إيقاف التتبع عند تحريك الخريطة إذا الأب حرك الخريطة بيده.
         map.on('dragstart', function() {
             autoFollow = false;
         });
     }
-
+    //وظيفتها البحث في OpenStreetMap
     async function searchMapLocation() {
         const query = document.getElementById('mapSearchInput').value.trim();
         const resultsDiv = document.getElementById('searchResults');
         
         if (query.length < 2) {
-            alert("يرجى كتابة حرفين على الأقل للبحث");
-            return;
-        }
+            resultsDiv.style.display = 'flex';
+            resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #4b60ff; text-align: center;">Please enter at least two letters for your search.</div>';
+            
+            // إخفاء الرسالة تلقائياً بعد 3 ثوانٍ 
+            setTimeout(() => {
+                resultsDiv.style.display = 'none';
+                resultsDiv.innerHTML = '';
+            }, 3000);
+    
+    return;
+}
 
         resultsDiv.style.display = 'flex';
-        resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #666; text-align: center;">جاري البحث...</div>';
+        resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #666; text-align: center;">Searching..</div>';
 
-        try {
+        try { //محرك بحث OpenStreetMap
             const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=ly&accept-language=ar`;
             const response = await fetch(apiUrl);
             const data = await response.json();
 
             if (data.length === 0) {
-                resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">لم يتم العثور على نتائج.</div>';
+                resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">No results were found.</div>';
                 return;
             }
-
+        //بناء القائمة المنسدلة ديناميكياً 
             resultsDiv.innerHTML = '';
             data.forEach(place => {
                 const item = document.createElement('div');
                 item.className = 'search-result-item';
                 item.textContent = place.display_name;
-                
+                //إذا ضغط الأب على نتيجة.
                 item.onclick = function() {
                     const lat = parseFloat(place.lat);
                     const lng = parseFloat(place.lon);
-                    
+                    //إيقاف التتبع
                     autoFollow = false; 
-                    
+                    //الخريطة تنتقل للمكان المختار.
                     if (map) map.flyTo([lat, lng], 16, { animate: true, duration: 1.5 });
                     
                     document.getElementById('mapSearchInput').value = place.name || place.display_name.split(',')[0];
@@ -308,10 +317,10 @@
 
         } catch (error) {
             console.error("Search error:", error);
-            resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">حدث خطأ في الاتصال.</div>';
+            resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">A communication error has occurred .</div>';
         }
     }
-
+        //الضغط بالخارج للإغلاق
     document.addEventListener('click', function(e) {
         const resultsDiv = document.getElementById('searchResults');
         const searchInput = document.getElementById('mapSearchInput');
@@ -319,14 +328,14 @@
             resultsDiv.style.display = 'none';
         }
     });
-
+    //البحث بزر Enter
     document.getElementById('mapSearchInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             searchMapLocation();
         }
     });
-
+    //تنقل الخريطة مباشرة إلى المنطقة الآمنة.
     function focusOnZone(lat, lng) {
         autoFollow = false; 
         if (map) {
@@ -336,7 +345,7 @@
             });
         }
     }
-
+    //المسؤول عن تشغيل الخريطة أول ما تفتح الصفحة، وبرمجة زر "تحديد موقع الطفل"  
     document.addEventListener('DOMContentLoaded', function() {
         initMap(currentLat, currentLng);
 
@@ -351,6 +360,7 @@
         });
 
         setInterval(function() {
+            //الجافاسكربت هنا يرسل طلب صامت (في الخلفية) للينك location.live
             fetch('{{ route("location.live") ?? "" }}')
                 .then(response => response.ok ? response.json() : null)
                 .then(data => {

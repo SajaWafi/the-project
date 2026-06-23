@@ -17,7 +17,7 @@ class DoctorRequestManagementController extends Controller
     // جلب الطلبات مع العلاقات الأساسية لتجنب مشكلة N+1
     $query = \App\Models\DoctorRequest::with(['doctor.user', 'parent.user', 'parent.children'])->latest();
 
-    // 💡 1. فلترة البحث (نبحث في اسم الدكتور أو اسم الأب)
+    // 1. فلترة البحث (نبحث في اسم الدكتور أو اسم الأب)
     if ($request->filled('search')) {
         $searchTerm = $request->search;
         
@@ -35,7 +35,7 @@ class DoctorRequestManagementController extends Controller
         });
     }
 
-    // 💡 2. فلترة حالة الطلب (Pending, Accepted, Rejected)
+    //  2. فلترة حالة الطلب (Pending, Accepted, Rejected)
     if ($request->filled('status') && $request->status !== 'all') {
         $query->where('status', $request->status);
     }

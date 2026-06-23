@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Manager</title>
+    <title>{{ __('Password Manager') }}</title>
 
     <style>
         /* ===== Reset ===== */
@@ -41,15 +41,30 @@
             position: relative;
             text-align: center;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
         }
 
+        /* 💡 دعم زر الرجوع للاتجاهين */
         .back-btn {
             position: absolute;
-            left: 0;
-            top: 0;
-            font-size: 28px;
-            color: #2f66f3;
-            text-decoration: none;
+            inset-inline-start: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
+        }
+
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
         }
 
         .title {
@@ -58,12 +73,13 @@
             color: #1d567e;
         }
 
+        /* 💡 دعم الشعار للاتجاهين */
         .logo {
             position: absolute;
-            right: 0;
-            top: 0;
+            inset-inline-end: 0;
             width: 50px;
             height: 34px;
+            object-fit: contain;
         }
 
         /* ===== Fields ===== */
@@ -88,7 +104,8 @@
             height: 42px;
             border: none;
             border-radius: 18px;
-            padding: 0 14px;
+            padding-inline-start: 14px;
+            padding-inline-end: 36px; /* 💡 مسافة إضافية عشان النص ما يغطيش على أيقونة العين */
             background: #cfeeee;
             font-size: 16px;
             outline: none;
@@ -97,11 +114,12 @@
         /* ===== Eye icon ===== */
         .eye {
             position: absolute;
-            right: 12px;
+            inset-inline-end: 12px; /* 💡 دعم RTL */
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
             font-size: 16px;
+            user-select: none;
         }
 
         /* ===== Buttons ===== */
@@ -129,6 +147,7 @@
             padding: 8px;
             border-radius: 14px;
             text-decoration: none;
+            font-weight: bold;
         }
 
         /* ===== Alerts ===== */
@@ -138,6 +157,7 @@
             padding: 10px;
             border-radius: 10px;
             margin-bottom: 15px;
+            font-size: 14px;
         }
 
         .success-box {
@@ -146,20 +166,7 @@
             padding: 10px;
             border-radius: 10px;
             margin-bottom: 15px;
-        }
-          .back-btn {
-            position: absolute;
-            left: 0;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            color: #2f80ed;
-            padding: 6px;
-        }
-
-        .back-btn svg {
-            width: 26px;
-            height: 26px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -169,13 +176,13 @@
     <div class="content">
 
         <div class="header">
-             <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-            <div class="title">Password Manager</div>
-            <img src="{{ asset('images/logo.png') }}" class="logo">
+            <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="title">{{ __('Password Manager') }}</div>
+            <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo">
         </div>
 
         @if(session('success'))
@@ -194,7 +201,7 @@
             @csrf
 
             <div class="field">
-                <label>Current Password</label>
+                <label>{{ __('Current Password') }}</label>
                 <div class="input-wrapper">
                     <input type="password" name="current_password" class="input" id="current" value="{{ old('current_password') }}">
                     <span class="eye" onclick="toggle('current')">👁</span>
@@ -202,7 +209,7 @@
             </div>
 
             <div class="field">
-                <label>New Password</label>
+                <label>{{ __('New Password') }}</label>
                 <div class="input-wrapper">
                     <input type="password" name="new_password" class="input" id="new" value="{{ old('new_password') }}">
                     <span class="eye" onclick="toggle('new')">👁</span>
@@ -210,17 +217,17 @@
             </div>
 
             <div class="field">
-                <label>Confirm New Password</label>
+                <label>{{ __('Confirm New Password') }}</label>
                 <div class="input-wrapper">
                     <input type="password" name="new_password_confirmation" class="input" id="confirm" value="{{ old('new_password_confirmation') }}">
                     <span class="eye" onclick="toggle('confirm')">👁</span>
                 </div>
             </div>
 
-            <button type="submit" class="btn">Change Password</button>
+            <button type="submit" class="btn">{{ __('Change Password') }}</button>
         </form>
 
-        <a href="{{ route('doctor.settings') }}" class="cancel">Cancel</a>
+        <a href="{{ route('doctor.settings') }}" class="cancel">{{ __('Cancel') }}</a>
 
     </div>
 </div>

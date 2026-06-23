@@ -22,7 +22,7 @@ class ReportController extends Controller
 {
     public function show(Request $request)
     {
-        $period = $request->get('period', 'week');
+        $period = $request->get('period', 'week'); //افتراضياً
         
         // 1. تحديث التقرير بالداتا الحقيقية
         $this->syncRealBraceletData($period);
@@ -31,7 +31,7 @@ class ReportController extends Controller
         $report = $this->buildReportData($period);
 
         if (!$report) {
-            return redirect()->route('parents.home')->with('error', 'لا يوجد بيانات لعرض التقرير.');
+            return redirect()->route('parents.home')->with('error', 'No data to display the report.');
         }
 
         return view('parents.report', compact('report', 'period'));
@@ -44,7 +44,7 @@ class ReportController extends Controller
         $report = $this->buildReportData($period);
 
         if (!$report) {
-            return back()->with('error', 'لا يمكن تحميل التقرير حالياً.');
+            return back()->with('error', 'The report cannot be downloaded at this time.');
         }
 
         $pdf = Pdf::loadView('parents.pdf', compact('report', 'period'))
@@ -56,6 +56,7 @@ class ReportController extends Controller
     /**
      * دالة سحب البيانات الحقيقية من الإسوارة وتوليد التقرير
      */
+    //وظيفتها "تبني وتخزن" التقرير في الداتابيز
     private function syncRealBraceletData(string $period)
     {
         $parentProfile = ParentProfile::where('user_id', Auth::id())->first();
@@ -65,18 +66,16 @@ class ReportController extends Controller
         if (!$child) return;
 
         $startDate = $period === 'week' ? Carbon::now()->subDays(7) : Carbon::now()->subDays(30);
-
+        //استخراج البيانات المستمرة
         $readings = SensorReading::where('child_id', $child->id)
             ->where('created_at', '>=', $startDate)
             ->get();
-
+        //استخراج الأحداث الحرجة
         $episodes = PanicEvent::where('child_id', $child->id)
             ->where('created_at', '>=', $startDate)
             ->get();
 
         $safeZoneBreaches = 0; 
-
-        // مسح تقرير هذه الفترة القديم لإعادة حسابه
         // التعديل الجديد: تحديث تقرير الشهر/الأسبوع الحالي فقط والاحتفاظ بالتاريخ القديم
         MedicalReport::where('child_id', $child->id)
             ->where('report_type', $period)
@@ -85,13 +84,30 @@ class ReportController extends Controller
             ->delete();
 
         if ($readings->isEmpty() && $episodes->isEmpty()) return;
-
+        //تستخدم دوال Collections في لارافل لاستخراج القيم الإحصائية (المتوسط، الأعلى، الأقل).
         $avgHeartRate = $readings->avg('heart_rate') ? round($readings->avg('heart_rate')) : 0;
         $peakHeartRate = $readings->max('heart_rate') ?? 0;
         $minHeartRate = $readings->where('heart_rate', '>', 0)->min('heart_rate') ?? 0;
         $avgSteps = $readings->avg('motion_level') ? round($readings->avg('motion_level') * 15) : 0;
+        //عدد النوبات
+        $parentProfile = \App\Models\ParentProfile::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
+$childModel = \App\Models\Child::where('parent_id', $parentProfile->id)->first();
+        // 1. تحديد بداية ونهاية الفترة السابقة (سواء كان التقرير أسبوعي أو شهري)
+        if ($period === 'week') {
+            // الأسبوع اللي فات
+            $startOfPrev = \Carbon\Carbon::now()->subWeek()->startOfWeek();
+            $endOfPrev   = \Carbon\Carbon::now()->subWeek()->endOfWeek();
+        } else {
+            // الشهر اللي فات
+            $startOfPrev = \Carbon\Carbon::now()->subMonth()->startOfMonth();
+            $endOfPrev   = \Carbon\Carbon::now()->subMonth()->endOfMonth();
+        }
 
-        $previousEpisodes = 0; 
+        // 2. حساب عدد النوبات الحقيقية في تلك الفترة من جدول نوبات الهلع
+        $previousEpisodes = \App\Models\PanicEvent::where('child_id', $childModel->id)
+            ->whereBetween('created_at', [$startOfPrev, $endOfPrev])
+            ->count();
+
         $currentEpisodes = $episodes->count();
         
         if ($previousEpisodes > 0) {
@@ -101,7 +117,7 @@ class ReportController extends Controller
         } else {
             $comparisonPercentage = 0; 
         }
-
+        //جلب قاعدة المقارنة
         $comparisonRule = ComparisonRule::where('is_active', true)
             ->where('min_value', '<=', $comparisonPercentage)
             ->where(function($query) use ($comparisonPercentage) {
@@ -137,7 +153,7 @@ class ReportController extends Controller
         $activeRules = RecommendationRule::where('is_active', true)->get()->keyBy('rule_key');
         $recommendationsToInsert = [];
         $sortOrder = 1;
-
+        //"تحذير شديد"
         if ($comparisonPercentage >= 50 && isset($activeRules['high_episodes_increase'])) {
             $recommendationsToInsert[] = ['message' => $activeRules['high_episodes_increase']->message, 'priority_level' => $activeRules['high_episodes_increase']->priority, 'sort_order' => $sortOrder++];
         } 
@@ -198,7 +214,7 @@ class ReportController extends Controller
             }
 
             $allDurations[] = $duration;
-            $eventDate = $start->toDateTimeString();
+            $eventDate = $start->toDateTimeString(); //حولنا وقت البداية ($start) إلى "نص صريح ومفهوم" باش الداتابيز تقبله وتخزنه بدون أخطاء
 
             \App\Models\ReportEpisodeDetail::create([
                 'report_id'      => $report->id, 
@@ -210,7 +226,16 @@ class ReportController extends Controller
                 'heart_rate'     => $actualHeartRate,
                 'severity'       => $ep->severity ?? 'High'
             ]);
-            
+            if (!empty($allDurations)) {
+            $calculatedAvgDuration = round(collect($allDurations)->avg(), 2);
+            $calculatedMaxDuration = collect($allDurations)->max();
+
+            // تحديث التقرير في الداتابيز بالأرقام الحقيقية
+            $report->update([
+                'avg_episode_duration_min' => $calculatedAvgDuration,
+                'longest_episode_duration_min' => $calculatedMaxDuration
+            ]);
+        }
             // 9. إضافة التنبيهات (Alert History) للتقرير
             // كل نوبة هلع نحولوها لتنبيه باش تنعرض في واجهة التقرير
             $report->alertHistory()->create([
@@ -255,6 +280,7 @@ class ReportController extends Controller
     /**
      * جلب التقرير الجاهز للواجهة 
      */
+    //"حلقة الوصل" بين قاعدة البيانات وواجهة المستخدم
     private function buildReportData(string $period)
     {
         $parentProfile = ParentProfile::where('user_id', Auth::id())->first();
@@ -276,13 +302,14 @@ class ReportController extends Controller
 
         // جلب التقرير
         $dbReport = $query->latest()->first();
-
+    //نمشوا لجدول قراءات الحساسات، ونجيبوا (آخر قراءة نبض وحركة جتها من الإسوارة) للطفل
         $latestReading = SensorReading::where('child_id', $childModel->id)->latest('created_at')->first();
 
         if (!$dbReport) {
             return $this->getEmptyReportFallback($childModel, $period, $latestReading);
         }
-
+//المنظومة هنا تاخذ كل الداتا المعقدة اللي في الداتابيز، وترتبها في "صندوق واحد منظم" 
+// باش تبعته لواجهة المستخدم  بطريقة نظيفة وسهلة القراءة.
         return [
             'period_label' => $period === 'week' ? 'Weekly Report' : 'Monthly Report',
             'child' => [
@@ -354,7 +381,7 @@ class ReportController extends Controller
             'trigger_insights' => ['Not enough data to determine triggers yet.']
         ];
     }
-
+    //الدالة المسؤولة عن عرض صفحة "سجل التقارير" (History) في لوحة تحكم ولي الأمر.
     public function history()
     {
         $parentProfile = \App\Models\ParentProfile::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
@@ -375,7 +402,7 @@ class ReportController extends Controller
 
         return view('reports-history', compact('reports'));
     }
-
+    //هذه دالة "الحذف الجماعي" (Bulk Delete
     public function destroyMultiple(Request $request)
     {
         $reportIds = $request->input('report_ids', []);

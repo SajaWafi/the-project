@@ -502,12 +502,12 @@
 
     // دالة إنشاء وتحديث الرسوم البيانية
     function renderCharts() {
-        const dataElement = document.getElementById('report-data');
+        const dataElement = document.getElementById('report-data');//جلب عنصر البيانات
         if (!dataElement) return;
-
+        //قراءة البيانات من HTML
         const labels = JSON.parse(dataElement.getAttribute('data-labels'));
-        const episodesData = JSON.parse(dataElement.getAttribute('data-episodes'));
-        const heartRateData = JSON.parse(dataElement.getAttribute('data-heartrate'));
+        const episodesData = JSON.parse(dataElement.getAttribute('data-episodes'));//بيانات النوبات
+        const heartRateData = JSON.parse(dataElement.getAttribute('data-heartrate'));//بيانات النبض
 
         const commonGridColor = 'rgba(148, 163, 184, 0.15)';
         const commonTickColor = '#64748b';
@@ -525,20 +525,21 @@
                     label: 'Episodes',
                     data: episodesData,
                     borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.14)',
+                    backgroundColor: 'rgba(245, 158, 11, 0.14)', //لون التعبئة تحت الخط.
                     fill: true,
-                    tension: 0.35,
+                    tension: 0.35,//يجعل الخط منحني بدل حاد
                     pointRadius: 4,
                     pointHoverRadius: 5,
                     borderWidth: 3
                 }]
             },
             options: {
-                responsive: true,
+                responsive: true, //يتأقلم مع حجم الشاشة.
                 maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: { display: false },
+                    //عندما تمرر الماوس:تظهر نافذة معلومات
                     tooltip: { backgroundColor: '#0f172a', titleColor: '#ffffff', bodyColor: '#ffffff', padding: 10, cornerRadius: 10 }
                 },
                 scales: {
@@ -586,10 +587,10 @@
 
     // كود التحديث الحي الذكي (كل 10 ثواني)
     setInterval(() => {
-        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })//هذا طلب AJAX.
             .then(response => response.text())
             .then(html => {
-                const parser = new DOMParser();
+                const parser = new DOMParser(); //تحويل النص إلى DOM
                 const doc = parser.parseFromString(html, 'text/html');
                 
                 // جلب المحتوى الجديد بالكامل

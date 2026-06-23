@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Complaints</title>
+    <title>{{ __('Doctor Complaints') }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -52,6 +52,8 @@
             color: #0ea5e9;
             font-size: 18px;
             text-decoration: none;
+            /* 💡 قلب السهم في اللغة العربية */
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .page-title {
@@ -158,53 +160,52 @@
             <a href="javascript:history.back()" class="back-arrow">
                 <i class="fas fa-chevron-left"></i>
             </a>
-            <h4 class="page-title">Complaints</h4>
+            <h4 class="page-title">{{ __('Complaints') }}</h4>
             <img class="header-logo" src="{{ asset('images/logo.png') }}" alt="Logo" onerror="this.style.display='none'">
         </div>
 
         <div class="complaint-body">
             <p class="instruction-text">
-                Need help or want to report an issue? Please provide details below for our admin team.
+                {{ __('Need help or want to report an issue? Please provide details below for our admin team.') }}
             </p>
 
             <form action="{{ route('doctor.complaints.store') }}" method="POST">
                 @csrf
 
                 <div class="form-group">
-                    <label>Issue Category</label>
+                    <label>{{ __('Issue Category') }}</label>
                     <select name="category" id="complaint-category" class="form-select" required>
-                        <option value="" disabled selected>Choose a category</option>
-                        <option value="system_error_or_bug">System Error or Bug (خلل في النظام)</option>
-                        <option value="technical_issue">Technical Issue (مشكلة تقنية بالحساب)</option>
-                        <option value="parent_dispute">Issue regarding a Parent (مشكلة مع ولي أمر)</option>
-                        <option value="general_suggestion">General Suggestion (اقتراح عام)</option>
-                        <option value="other">Other</option>
+                        <option value="" disabled selected>{{ __('Choose a category') }}</option>
+                        <option value="system_error_or_bug">{{ __('System Error or Bug') }}</option>
+                        <option value="technical_issue">{{ __('Technical Issue') }}</option>
+                        <option value="parent_dispute">{{ __('Issue regarding a Parent') }}</option>
+                        <option value="general_suggestion">{{ __('General Suggestion') }}</option>
+                        <option value="other">{{ __('Other') }}</option>
                     </select>
-                    
                 </div>
 
                 <div class="form-group" id="parent-select-group">
-                    <label>Parent Name or ID</label>
+                    <label>{{ __('Parent Name or ID') }}</label>
                     <input 
                         type="text" 
                         name="parent_info" 
                         class="form-input" 
-                        placeholder="Enter parent's name or ID..."
+                        placeholder="{{ __('Enter parent\'s name or ID...') }}"
                     >
                 </div>
 
                 <div class="form-group">
-                    <label>Details</label>
+                    <label>{{ __('Details:') }}</label>
                     <textarea 
                         name="message" 
                         class="form-textarea" 
-                        placeholder="Describe your issue or feedback in detail..." 
+                        placeholder="{{ __('Describe your issue or feedback in detail...') }}" 
                         required
                     ></textarea>
                 </div>
 
                 <button type="submit" class="submit-btn">
-                    Submit Report
+                    {{ __('Submit Report') }}
                 </button>
             </form>
         </div>
@@ -213,7 +214,8 @@
     <script>
         document.getElementById('complaint-category').addEventListener('change', function() {
             var parentGroup = document.getElementById('parent-select-group');
-            if (this.value === 'Parent Dispute') {
+            // 💡 تصحيح الخطأ البرمجي هنا لتتطابق القيمة مع الـ value في الـ select
+            if (this.value === 'parent_dispute') {
                 parentGroup.style.display = 'block';
             } else {
                 parentGroup.style.display = 'none';

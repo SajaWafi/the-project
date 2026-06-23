@@ -1,52 +1,61 @@
-@extends('signup.layout')
+@extends('doctor-signup.layout')
 
 @section('content')
+    
     <div class="header">
         <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-        <div class="title">Create Account</div>
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        
+        <div class="title">{{ __('Create Account') }}</div>
     </div>
 
-    <div class="subtitle small">Enter Your Child’s<br>Details</div>
+    <div class="subtitle">{{ __('Enter Your Details') }}</div>
 
     @if ($errors->any())
         <div class="error-box">
             @foreach ($errors->all() as $error)
-                <div>{{ $error }}</div>
+                <div>• {{ $error }}</div>
             @endforeach
         </div>
     @endif
 
-<form action="{{ route('signup.step3.post') }}" method="POST" style="display:flex; flex-direction:column; height:100%;">
-    @csrf
+    <form action="{{ route('doctor.step3.post') }}" method="POST" style="display:flex; flex-direction:column; flex-grow: 1;">
+        @csrf
 
-    <div class="field">
-        <label>Child’ Name:</label>
-        <input class="input" type="text" name="child_name" value="{{ old('child_name', session('signup.child_name')) }}">
-    </div>
+        <div class="field">
+            <label>{{ __('Phone Number:') }}</label>
+            <input class="input" type="tel" name="phone" value="{{ old('phone', session('doctor_signup.phone')) }}" required dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};">
+        </div>
 
-    <div class="field">
-        <label>Gender:</label>
-        <select class="input" name="child_gender">
-            <option value="" disabled {{ old('child_gender', session('signup.child_gender')) ? '' : 'selected' }}>Select option...</option>
-            <option value="Male" {{ old('child_gender', session('signup.child_gender')) == 'Male' ? 'selected' : '' }}>Male</option>
-            <option value="Female" {{ old('child_gender', session('signup.child_gender')) == 'Female' ? 'selected' : '' }}>Female</option>
-        </select>
-    </div>
+        <div class="field">
+            <label>{{ __('Gender:') }}</label>
+            <select class="select-input" name="gender" required>
+                <option value="" disabled {{ old('gender', session('doctor_signup.gender')) == '' ? 'selected' : '' }}>{{ __('Select') }}</option>
+                <option value="Male" {{ old('gender', session('doctor_signup.gender')) == 'Male' ? 'selected' : '' }}>{{ __('Male') }}</option>
+                <option value="Female" {{ old('gender', session('doctor_signup.gender')) == 'Female' ? 'selected' : '' }}>{{ __('Female') }}</option>
+            </select>
+        </div>
 
-    <div class="field">
-        <label>Date of Birth:</label>
-        <input class="input" type="date" name="dob" value="{{ old('dob', session('signup.child_birth_date')) }}">
-    </div>
+        <div class="field">
+            <label>{{ __('Specialize in:') }}</label>
+            <input class="input" type="text" name="specialize" value="{{ old('specialize', session('doctor_signup.specialize')) }}" required>
+        </div>
 
-    <button class="btn" type="submit">NEXT</button>
-</form>
+        <div class="field">
+            <label>{{ __('Date of Birth:') }}</label>
+            <input class="input" type="date" name="dob" value="{{ old('dob', session('doctor_signup.dob')) }}" required>
+        </div>
 
-         <div class="footer">
-        Already have an account?
-        <a href="{{ route('login.page') }}">Log in</a>
+        <div class="spacer"></div>
+
+        <button class="btn" type="submit">{{ __('DONE') }}</button>
+
+        <div class="footer">
+            {{ __('Already have an account?') }} <a href="{{ route('login.page') ?? '#' }}">{{ __('Log in') }}</a>
+        </div>
     </form>
+    
 @endsection

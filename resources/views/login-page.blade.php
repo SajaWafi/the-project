@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -266,7 +266,6 @@
         }
     </style>
 </head>
-<body>
 <div class="mobile-screen">
     <div class="content">
         <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
@@ -278,13 +277,11 @@
         <form action="{{ route('login.post') }}" method="POST" class="login-form">
             @csrf
 
-            <h1 class="title">Log in with Email</h1>
-            <div class="subtitle">Login to continue</div>
+            <h1 class="title">{{ __('Log in with Email') }}</h1>
+            <div class="subtitle">{{ __('Login to continue') }}</div>
 
             @if (session('success'))
-                <div class="success-box">
-                    {{ session('success') }}
-                </div>
+                <div class="success-box">{{ session('success') }}</div>
             @endif
 
             @if ($errors->any())
@@ -296,63 +293,34 @@
             @endif
 
             <div class="form-group">
-                <label class="label" for="email">Your email:</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    class="input"
-                    value="{{ old('email') }}"
-                    autocomplete="email"
-                    required
-                >
+                <label class="label" for="email">{{ __('Your email:') }}</label>
+                <input type="email" id="email" name="email" class="input" value="{{ old('email') }}" required>
             </div>
 
             <div class="form-group">
-                <label class="label" for="password">Password:</label>
-
+                <label class="label" for="password">{{ __('Password:') }}</label>
                 <div class="password-wrapper">
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="input password-input"
-                        autocomplete="current-password"
-                        required
-                    >
-
-                    <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
-                        <svg id="eyeSlashIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.11 1 12c.92-2.17 2.36-4.02 4.18-5.39" />
-                            <path d="M9.9 4.24A10.89 10.89 0 0 1 12 4c5 0 9.27 3.89 11 8a11.83 11.83 0 0 1-1.67 2.68" />
-                            <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" />
-                            <path d="M1 1l22 22" />
-                        </svg>
-
-                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                    </button>
+                    <input type="password" id="password" name="password" class="input password-input" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword()">👁</button>
                 </div>
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <label class="check-row" style="margin-bottom: 0;">
-                    <input type="checkbox" name="remember" >
-                    <span>Remember me</span>
+                    <input type="checkbox" name="remember">
+                    <span>{{ __('Remember me') }}</span>
                 </label>
                 
                 <a href="{{ route('forgot.password') }}" style="color: #2563eb; font-size: 14px; text-decoration: none; font-weight: 600;">
-                    Forgot Password?
+                    {{ __('Forgot Password?') }}
                 </a>
             </div>
 
-            <button type="submit" class="btn-login">Login</button>
+            <button type="submit" class="btn-login">{{ __('Login') }}</button>
 
             <div class="bottom-text" style="margin-top: 20px;">
-                Don’t have an account?
-                <a href="{{ route('signup.choice') }}">Sign up</a>
+                {{ __('Don’t have an account?') }}
+                <a href="{{ route('signup.choice') }}">{{ __('Sign up') }}</a>
             </div>
         </form>
     </div>

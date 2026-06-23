@@ -13,8 +13,8 @@ use App\Models\PanicEvent;
 use Carbon\Carbon;
 
 class SensorController extends Controller
-{
-    public function receiveData(Request $request)
+{   //هذه نقطة الدخول API.
+   /*public function receiveData(Request $request)
     {
         $validatedData = $request->validate([
             'bracelet_id'   => 'required',
@@ -45,16 +45,16 @@ class SensorController extends Controller
             ], 403);
         }
         // ==========================================
-
+        //إضافة وقت التسجيل
         $validatedData['recorded_at'] = Carbon::now();
 
         // 1. تخزين القراءة
         $reading = SensorReading::create($validatedData);
 
-        // 2. تخزين الموقع والتحقق من المنطقة الآمنة (تم دمج التكرار)
+        // 2. تخزين الموقع والتحقق من المنطقة الآمنة 
         $newLocation = null;
         if (!empty($validatedData['place_value'])) {
-            $coords = explode(',', $validatedData['place_value']);
+            $coords = explode(',', $validatedData['place_value']);//اقسيم الموقع 
             
             if (count($coords) == 2) {
                 $newLocation = Location::create([
@@ -79,12 +79,80 @@ class SensorController extends Controller
             'message' => 'Data analyzed and location saved successfully.'
         ], 201);
     }
+*/
+public function receiveData(Request $request)
+{
+    $validatedData = $request->validate([
+        'bracelet_id'    => 'required',
+        'child_id'       => 'required|exists:children,id',
+        'device_id'      => 'nullable|string', // مرسل من ESP لكن قد لا يخزن
+        'heart_rate'     => 'nullable|numeric', // غيرناها لـ numeric
+        'spo2'           => 'nullable|numeric',
+        'temperature'    => 'nullable|numeric',
+        'motion_level'   => 'nullable|integer',
+        'pressure_level' => 'nullable|integer',
+        'place_value'    => 'nullable|string',
+        'latitude'       => 'nullable|numeric',
+        'longitude'      => 'nullable|numeric',
+        'gps_status'     => 'nullable|string',
+        'sensor_status'  => 'nullable|string',
+    ]);
 
-    /**
+    $child = Child::find($validatedData['child_id']);
+
+    // 🛑 بوابة التفتيش (Security Gate) 🛑
+    if (!$child->is_bracelet_connected) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Access Denied: The parent has disconnected the bracelet from the app.'
+        ], 403);
+    }
+
+    if ((string) $child->bracelet_id !== (string) $validatedData['bracelet_id']) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Access Denied: Unrecognized Bracelet ID.'
+        ], 403);
+    }
+    // ==========================================
+    
+    // إضافة وقت التسجيل
+    $validatedData['recorded_at'] = \Carbon\Carbon::now();
+
+    // 1. تخزين القراءة
+    $reading = SensorReading::create($validatedData);
+
+    // 2. تخزين الموقع والتحقق من المنطقة الآمنة 
+    $newLocation = null;
+    
+    // التعديل هنا: نأخذ خطوط الطول والعرض مباشرة من الـ GPS
+    if (!empty($validatedData['latitude']) && !empty($validatedData['longitude'])) {
+        $newLocation = Location::create([
+            'child_id'    => $validatedData['child_id'],
+            'bracelet_id' => $validatedData['bracelet_id'],
+            'latitude'    => $validatedData['latitude'],
+            'longitude'   => $validatedData['longitude'],
+            'recorded_at' => \Carbon\Carbon::now(),
+        ]);
+
+        if ($child->parent_id) {
+            $this->checkSafeZone($child, $newLocation->latitude, $newLocation->longitude);
+        }
+    }
+
+    // 3. التحليل الطبي المتقدم وإدارة النوبات
+    $this->analyzeMedicalData($reading, $child);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Data analyzed and location saved successfully.'
+    ], 201);
+}
+/**
      * التحقق من خروج الطفل عن المنطقة الآمنة باستخدام المسافة
      */
     private function checkSafeZone($child, $currentLat, $currentLng)
-    {
+    {//يجلب كل المناطق الآمنة الخاصة بالطفل.
         $safeZones = SafeZone::where('child_id', $child->id)
                              ->where('is_active', 1)
                              ->get();
@@ -105,7 +173,7 @@ class SensorController extends Controller
                 break;
             }
         }
-
+       // إنشاء تنبيه الخروج
         if (!$isInsideSafeZone) {
             Alert::create([
                 'child_id'   => $child->id,
@@ -139,7 +207,7 @@ class SensorController extends Controller
             $maxHeartRate = 110;
         }
 
-        $hr = $reading->heart_rate ?? 0;
+        $hr = $reading->heart_rate ?? 0; //النبض.
         $motion = $reading->motion_level ?? 0;
 
         $isEmergency = false;
@@ -188,7 +256,7 @@ class SensorController extends Controller
             ->latest('started_at')
             ->first();
 
-        if ($isEmergency) {
+        if ($isEmergency) { //يتأكد اولا من وجود نوبة مفتوحة او لا
             if (!$openEvent) {
                 // فتح نوبة جديدة
                 $panicEvent = PanicEvent::create([

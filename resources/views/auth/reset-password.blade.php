@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}" lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,30 +21,31 @@
     </style>
 </head>
 <body>
-    <div class="mobile-screen">
-        <div class="content">
-            <div class="logo-container"><img src="{{ asset('images/logo.png') }}" alt="Taif Logo"></div>
-            <h1 class="page-title">Create New Password</h1>
+   <div class="mobile-screen" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+    <div class="content">
+        <div class="logo-container"><img src="{{ asset('images/logo.png') }}" alt="Taif Logo"></div>
+        
+        <h1 class="page-title">{{ __('Create New Password') }}</h1>
 
-            @if($errors->any()) <div class="alert-error">{{ $errors->first() }}</div> @endif
+        @if($errors->any()) <div class="alert-error">{{ $errors->first() }}</div> @endif
 
-            <form method="POST" action="{{ route('reset.password.post') }}">
-                @csrf
-                <div class="input-group">
-                    <label class="input-label">6-Digit Code:</label>
-                    <input type="text" name="code" class="code-input" placeholder="000000" maxlength="6" required autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label class="input-label">New Password:</label>
-                    <input type="password" name="password" class="form-input" placeholder="Enter new password" required>
-                </div>
-                <div class="input-group">
-                    <label class="input-label">Confirm Password:</label>
-                    <input type="password" name="password_confirmation" class="form-input" placeholder="Confirm new password" required>
-                </div>
-                <button type="submit" class="primary-btn">RESET PASSWORD</button>
-            </form>
-        </div>
+        <form method="POST" action="{{ route('reset.password.post') }}" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};">
+            @csrf
+            <div class="input-group">
+                <label class="input-label">{{ __('6-Digit Code:') }}</label>
+                <input type="text" name="code" class="code-input" placeholder="000000" maxlength="6" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label class="input-label">{{ __('New Password:') }}</label>
+                <input type="password" name="password" class="form-input" placeholder="{{ __('Enter new password') }}" required>
+            </div>
+            <div class="input-group">
+                <label class="input-label">{{ __('Confirm Password:') }}</label>
+                <input type="password" name="password_confirmation" class="form-input" placeholder="{{ __('Confirm new password') }}" required>
+            </div>
+            <button type="submit" class="primary-btn">{{ __('RESET PASSWORD') }}</button>
+        </form>
     </div>
+</div>
 </body>
 </html>

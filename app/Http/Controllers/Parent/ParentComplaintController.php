@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Complaint; // الموديل الجاهز عندكِ في قاعدة البيانات
+use App\Models\Complaint; 
 use Illuminate\Support\Facades\Auth;
 
 class ParentComplaintController extends Controller

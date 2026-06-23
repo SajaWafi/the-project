@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile</title>
+    <title>{{ __('My Profile') }}</title>
     <style>
         * {
             margin: 0;
@@ -36,14 +36,19 @@
             padding: 10px 18px 24px;
         }
 
-           .back-btn {
+        /* 💡 دعم زر الرجوع للاتجاهين */
+        .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             background: transparent;
             border: none;
             cursor: pointer;
             color: #2f80ed;
             padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .back-btn svg {
@@ -75,9 +80,10 @@
             text-align: center;
         }
 
+        /* 💡 دعم الشعار للاتجاهين */
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0;
             top: -2px;
             width: 34px;
             height: 34px;
@@ -91,9 +97,10 @@
             object-fit: cover;
         }
 
+        /* 💡 دعم زر الإضافة للاتجاهين (إذا كان موجوداً) */
         .add-btn {
             position: absolute;
-            left: 4px;
+            inset-inline-start: 4px;
             top: 0;
             font-size: 30px;
             line-height: 1;
@@ -144,8 +151,8 @@
 
         .menu-item:hover {
             background: rgba(255,255,255,0.18);
-            padding-left: 6px;
-            padding-right: 6px;
+            padding-inline-start: 6px;
+            padding-inline-end: 6px;
         }
 
         .menu-item:active {
@@ -183,11 +190,14 @@
             color: #111;
         }
 
+        /* 💡 قلب سهم القائمة للغة العربية */
         .menu-arrow {
             font-size: 30px;
             line-height: 1;
             color: #ee943f;
-            padding-right: 4px;
+            padding-inline-end: 4px;
+            display: inline-block;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .logout-overlay {
@@ -274,20 +284,20 @@
         <div class="logout-overlay" id="logoutOverlay" onclick="closeLogoutModal()"></div>
 
         <div class="logout-modal" id="logoutModal">
-            <div class="logout-modal-title">Logout</div>
+            <div class="logout-modal-title">{{ __('Logout') }}</div>
             <div class="logout-modal-text">
-                Are you sure you want to logout?
+                {{ __('Are you sure you want to logout?') }}
             </div>
 
             <div class="logout-modal-actions">
                 <button type="button" class="cancel-logout-btn" onclick="closeLogoutModal()">
-                    Cancel
+                    {{ __('Cancel') }}
                 </button>
 
                 <form action="{{ route('doctor.logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="confirm-logout-btn">
-                        Yes, Logout
+                        {{ __('Yes, Logout') }}
                     </button>
                 </form>
             </div>
@@ -296,13 +306,13 @@
         <div class="content">
 
             <div class="header">
-                   <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
 
-                <div class="title">My Profile</div>
+                <div class="title">{{ __('My Profile') }}</div>
 
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
@@ -310,13 +320,13 @@
             </div>
 
             <div class="profile-image-wrap">
-              <img 
-            src="{{ !empty(auth()->user()->profile_image)
-                ? asset('storage/' . auth()->user()->profile_image)
-                : asset('images/default-user.png') }}"
-            class="profile-image"
-            alt="Profile"
-        >
+                <img 
+                    src="{{ !empty(auth()->user()->profile_image)
+                        ? asset('storage/' . auth()->user()->profile_image)
+                        : asset('images/default-user.png') }}"
+                    class="profile-image"
+                    alt="Profile"
+                >
             </div>
 
             <div class="doctor-name">
@@ -332,7 +342,7 @@
                                 <path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </div>
-                        <div class="menu-text">Privacy Policy</div>
+                        <div class="menu-text">{{ __('Privacy Policy') }}</div>
                     </div>
                     <div class="menu-arrow">›</div>
                 </a>
@@ -345,7 +355,7 @@
                                 <path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a8 8 0 0 0-1.7-1l-.3-2.6h-4l-.3 2.6a8 8 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 1.7 1l.3 2.6h4l.3-2.6a8 8 0 0 0 1.7-1l2.4 1 2-3.5-2-1.5c.1-.3.1-.7.1-1Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
                             </svg>
                         </div>
-                        <div class="menu-text">Settings</div>
+                        <div class="menu-text">{{ __('Settings') }}</div>
                     </div>
                     <div class="menu-arrow">›</div>
                 </a>
@@ -359,7 +369,7 @@
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="2"/>
                             </svg>
                         </div>
-                        <div class="menu-text">Logout</div>
+                        <div class="menu-text">{{ __('Logout') }}</div>
                     </div>
                     <div class="menu-arrow">›</div>
                 </a>

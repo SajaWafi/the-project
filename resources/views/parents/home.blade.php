@@ -277,10 +277,11 @@
         alert(payload.notification.title + "\n" + payload.notification.body);
     });
 </script>
-
 <script>
+    // الحصول على Canvas.
     const ctx = document.getElementById('activityChart').getContext('2d');
-
+    
+    // استلام البيانات من Laravel
     const labels = {!! json_encode($chartLabels ?? []) !!};
     const heartRates = {!! json_encode($heartRatesChart ?? []) !!};
     const motionLevels = {!! json_encode($motionLevelsChart ?? []) !!};
@@ -297,7 +298,8 @@
         }
     };
 
-  const myChart = new Chart(ctx, {
+    // إنشاء الرسم البياني
+    const myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
@@ -350,18 +352,19 @@
                     }
                 },
 
-                // 2. المحور الجديد للحركة (من 0 إلى 100) ومخفي
+                // 2. المحور الجديد للحركة (من 0 إلى 2) ومخفي
                 yMotion: {
                     type: 'linear',
                     display: false, // مخفي باش ما يخربش شكل الواجهة
                     min: 0,
-                    max: 100 
+                    max: 2 
                 }
             }
         },
         plugins: [chartBgPlugin]
     });
 
+    // التحديث اللحظي كل 5 ثواني
     setInterval(function() {
         fetch('{{ route("home.live") }}')
             .then(response => response.json())
@@ -373,11 +376,11 @@
                 const activityStatusEl = document.getElementById('liveActivityStatus');
                 activityStatusEl.innerText = data.live_status;
                 if (data.live_status === 'Panic Episode') {
-                    activityStatusEl.style.color = '#ef4444'; // أحمر للخطورة
+                    activityStatusEl.style.color = '#ef4444'; // أحمر
                 } else if (data.live_status === 'Anxiety') {
-                    activityStatusEl.style.color = '#e29244'; // برتقالي للقلق
+                    activityStatusEl.style.color = '#e29244'; // برتقالي
                 } else {
-                    activityStatusEl.style.color = '#3b82f6'; // أزرق للطبيعي (Calm)
+                    activityStatusEl.style.color = '#3b82f6'; // أزرق للطبيعي
                 }
                 
                 // تحديث أيقونة وخلفية مربع الاتصال ديناميكياً
@@ -388,20 +391,16 @@
                 if (data.isConnected) {
                     connElement.innerText = 'Connected';
                     connElement.style.color = '#14b8a6'; // أخضر
-                    svgElement.style.color = '#14b8a6'; // أخضر
-                    
+                    svgElement.style.color = '#14b8a6'; 
                     connCard.classList.remove('red');
                     connCard.classList.add('green');
-                    
                     svgElement.innerHTML = '<path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
                 } else {
                     connElement.innerText = 'Disconnected';
                     connElement.style.color = '#ef4444'; // أحمر
-                    svgElement.style.color = '#ef4444'; // أحمر
-                    
+                    svgElement.style.color = '#ef4444'; 
                     connCard.classList.remove('green');
                     connCard.classList.add('red');
-                    
                     svgElement.innerHTML = '<path d="M1.42 9a16 16 0 0 1 21.16 0M5 12.55a11 11 0 0 1 14.08 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01M3 3l18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
                 }
 

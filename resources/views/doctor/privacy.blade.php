@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Doctor</title>
+    <title>{{ __('Privacy Policy - Doctor') }}</title>
     <style>
         /* ===== Reset ===== */
         * {
@@ -59,14 +59,16 @@
             margin-top: 20px;
         }
 
+        /* 💡 دعم زر الرجوع للاتجاهين */
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             background: transparent;
             border: none;
             cursor: pointer;
             color: #2f80ed;
             padding: 6px;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
         }
 
         .back-btn svg {
@@ -81,9 +83,10 @@
             text-align: center;
         }
 
+        /* 💡 دعم الشعار للاتجاهين */
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0;
             top: -2px;
             width: 34px;
             height: 34px;
@@ -137,31 +140,31 @@
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
-                <div class="title">Privacy Policy</div>
+                <div class="title">{{ __('Privacy Policy') }}</div>
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="logo">
                 </div>
             </div>
 
             <div class="policy-card">
-                <div class="policy-title">Professional Confidentiality</div>
+                <div class="policy-title">{{ __('Professional Confidentiality') }}</div>
                 <div class="policy-text">
-                    As a healthcare provider on the Taif platform, you play a vital role in guiding and consulting parents. This policy outlines how information is handled within your dashboard.
+                    {{ __('As a healthcare provider on the Taif platform, you play a vital role in guiding and consulting parents. This policy outlines how information is handled within your dashboard.') }}
                 </div>
 
-                <div class="policy-subtitle">1. Data Access & Scope</div>
+                <div class="policy-subtitle">{{ __('1. Data Access & Scope') }}</div>
                 <div class="policy-text">
-                    You have access to appointment schedules, basic profile details, and chat histories with parents. To ensure the highest level of child privacy, live IoT sensor data (such as real-time heart rate or location) is strictly controlled by the parents and is not accessible through this dashboard.
+                    {{ __('You have access to appointment schedules, basic profile details, and chat histories with parents. To ensure the highest level of child privacy, live IoT sensor data (such as real-time heart rate or location) is strictly controlled by the parents and is not accessible through this dashboard.') }}
                 </div>
 
-                <div class="policy-subtitle">2. Purpose of Information</div>
+                <div class="policy-subtitle">{{ __('2. Purpose of Information') }}</div>
                 <div class="policy-text">
-                    The information provided to you is used solely to facilitate appointment bookings, manage your consultation schedule, and enable secure, direct communication with parents.
+                    {{ __('The information provided to you is used solely to facilitate appointment bookings, manage your consultation schedule, and enable secure, direct communication with parents.') }}
                 </div>
 
-                <div class="policy-subtitle">3. Secure Communications</div>
+                <div class="policy-subtitle">{{ __('3. Secure Communications') }}</div>
                 <div class="policy-text">
-                    All chat messages, medical notes, and consultation details shared via the Taif platform are encrypted and strictly confidential. Sharing any patient or parent information outside this platform is prohibited.
+                    {{ __('All chat messages, medical notes, and consultation details shared via the Taif platform are encrypted and strictly confidential. Sharing any patient or parent information outside this platform is prohibited.') }}
                 </div>
             </div>
         </div>

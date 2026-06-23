@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pending Approval</title>
+    <title>{{ __('Pending Approval') }}</title>
 
     <style>
         * {
@@ -157,12 +157,11 @@
             </div>
 
             <h1 class="title">
-                Account Pending
+                {{ __('Account Pending') }}
             </h1>
 
             <p class="message">
-                Your doctor account has been created successfully.
-                Please wait until the admin approves your account.
+                {{ __('Your doctor account has been created successfully. Please wait until the admin approves your account.') }}
             </p>
 
             <div class="status-box">
@@ -171,11 +170,11 @@
                 </div>
 
                 <div class="status-title">
-                    Waiting for Admin Approval
+                    {{ __('Waiting for Admin Approval') }}
                 </div>
 
                 <div class="status-text">
-                    You cannot access the doctor dashboard until your account is approved by the admin.
+                    {{ __('You cannot access the doctor dashboard until your account is approved by the admin.') }}
                 </div>
             </div>
 
@@ -184,17 +183,17 @@
                     @csrf
 
                     <button type="submit" class="primary-btn">
-                        Logout
+                        {{ __('Logout') }}
                     </button>
                 </form>
 
                 <a href="{{ route('welcome') }}" class="secondary-btn">
-                    Back to Welcome
+                    {{ __('Back to Welcome') }}
                 </a>
             </div>
 
             <div class="small-note">
-                If your approval is taking too long, please contact the system administrator.
+                {{ __('If your approval is taking too long, please contact the system administrator.') }}
             </div>
         </div>
     </div>

@@ -74,7 +74,7 @@ class ParentRequestController extends Controller
                     ->where('child_id', $child->id)
                     ->where('doctor_id', $requestItem->doctor_id)
                     ->exists();
-
+                //يتأكد أن الربط غير موجود.
                 if (!$alreadyLinked) {
                     DB::table('child_doctor')->insert([
                         'child_id' => $child->id,
@@ -85,10 +85,10 @@ class ParentRequestController extends Controller
                 $requestItem->update(['status' => 'accepted']);
             });
 
-            return back()->with('success', 'تم قبول طلب الدكتور بنجاح وتم ربط الطفل.');
+            return back()->with('success', 'The doctors request was accepted and the child was tied up.');
 
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'حدث خطأ أثناء معالجة الطلب، الرجاء المحاولة لاحقاً.']);
+            return back()->withErrors(['error' => 'An error occurred while processing the request, please try again later.']);
         }
     }
 
@@ -108,6 +108,6 @@ class ParentRequestController extends Controller
 
         $requestItem->update(['status' => 'rejected']);
 
-        return back()->with('success', 'تم رفض الطلب.');
+        return back()->with('success', 'The request was rejected.');
     }
 }

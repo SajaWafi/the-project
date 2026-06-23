@@ -93,6 +93,7 @@ Route::prefix('admin')
     Route::post('/bracelets', [BraceletController::class, 'store'])->name('bracelets.store');
     Route::put('/bracelets/{id}', [BraceletController::class, 'update'])->name('bracelets.update');
     Route::delete('/bracelets/{id}', [BraceletController::class, 'destroy'])->name('bracelets.destroy');
+    Route::post('/bracelets/{id}/unlink', [BraceletController::class, 'unlink'])->name('bracelets.unlink');
 
             //appointmentsMangegment
             Route::get('/appointments', [AdminAppointmentController::class, 'index'])

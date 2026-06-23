@@ -47,8 +47,6 @@
         .leaflet-control-locate { background-color: #fff; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: 0.2s; }
         .leaflet-control-locate:hover { background-color: #f0f0f0; }
 
-        /* 💡 تم التعديل: إعطاء z-index عالي جداً لخانة البحث باش تغطي على كل شيء */
-        /* 💡 تنسيقات خانة البحث الجديدة (متطابقة مع صفحة اللوكيشن) */
         .search-wrapper { position: relative; width: 100%; margin-bottom: 15px; z-index: 9999; }
         .search-bar { background: #fff; border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06); width: 100%; border: 1px solid #eaeaea; }
         .search-left { display: flex; align-items: center; gap: 10px; flex: 1; }
@@ -59,6 +57,68 @@
         .search-result-item { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #f0f0f0; cursor: pointer; text-align: left; color: #333; }
         .search-result-item:last-child { border-bottom: none; }
         .search-result-item:hover { background: #f0f8ff; color: #2f80ed; font-weight: bold; }
+
+        /* 💡 تم إضافة تنسيقات المودال الخاص بالحذف 💡 */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(2px); /* تأثير ضبابي خفيف خلف المودال */
+            border-radius: 30px;
+            z-index: 99999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 20px;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .custom-modal {
+            background: #fff;
+            padding: 24px 20px;
+            text-align: center;
+            border-radius: 20px;
+            width: calc(100% - 40px);
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(50px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.show .custom-modal {
+            transform: translateY(0);
+        }
+        .modal-title-custom {
+            font-size: 16px;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 8px;
+        }
+        .modal-desc-custom {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .modal-btns-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        .modal-action-btn {
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            min-width: 90px;
+        }
+        .btn-cancel { background: #bcecdf; color: #111; }
+        .btn-confirm { background: #2f80ed; color: #fff; }
     </style>
 </head>
 <body>
@@ -66,7 +126,7 @@
     <div class="mobile-screen">
         <div class="content">
             <div class="header">
-                <button class="back-btn" onclick="window.location.href='{{ route('location') }}'" type="button" aria-label="Back">
+               <button class="back-btn" onclick="window.history.back()" type="button" aria-label="Back">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -99,7 +159,6 @@
                     <div id="realMap"></div>
                 </div>
 
-               <!-- 💡 خانة البحث المدمجة (بنفس تصميم الـ Location) -->
                 <div class="search-wrapper">
                     <div class="search-bar">
                         <div class="search-left">
@@ -149,10 +208,10 @@
                             <div class="saved-sub">Radius: {{ $zone->radius_meters }}m</div>
                         </div>
 
-                        <form action="{{ route('safe.zone.destroy', $zone->id) }}" method="POST" onsubmit="event.stopPropagation(); return confirm('Delete this safe zone?');">
+                        <form id="delete-form-{{ $zone->id }}" action="{{ route('safe.zone.destroy', $zone->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="trash-btn" onclick="event.stopPropagation();">
+                            <button type="button" class="trash-btn" onclick="event.stopPropagation(); openDeleteModal('{{ $zone->id }}');">
                                 <svg viewBox="0 0 24 24" fill="none">
                                     <path d="M5 7h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                     <path d="M9 7V5h6v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -167,6 +226,18 @@
 
             </div>
         </div>
+
+        <div class="modal-overlay" id="customDeleteModal">
+            <div class="custom-modal">
+                <div class="modal-title-custom">Delete Location</div>
+                <div class="modal-desc-custom">Are you sure you want to delete this safe zone?</div>
+                <div class="modal-btns-row">
+                    <button class="modal-action-btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                    <button class="modal-action-btn btn-confirm" onclick="confirmDeleteAction()">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+        
     </div>
 
     <script>
@@ -179,7 +250,6 @@
 
         function initMap(lat = 32.8872, lng = 13.1913) {
             if (map) { map.remove(); }
-
             map = L.map('realMap', { zoomControl: false }).setView([lat, lng], 15);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -190,17 +260,15 @@
                 onAdd: function(map) {
                     var btn = L.DomUtil.create('div', 'leaflet-control-locate');
                     btn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2f80ed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>`;
-                    btn.title = "موقعي الحالي";
+                    btn.title = "My current location";
 
                     L.DomEvent.disableClickPropagation(btn);
-
                     btn.onclick = function(e) {
                         e.preventDefault();
                         e.stopPropagation();
 
                         if (navigator.geolocation) {
                             btn.style.opacity = '0.5'; 
-                            
                             navigator.geolocation.getCurrentPosition(
                                 function(pos) {
                                     btn.style.opacity = '1';
@@ -211,25 +279,23 @@
                                     map.flyTo(newLatLng, 16, { animate: true, duration: 1.5 });
                                     if (marker) marker.setLatLng(newLatLng);
                                     if (circle) circle.setLatLng(newLatLng);
-
                                     document.getElementById('inputLat').value = currentLat;
                                     document.getElementById('inputLng').value = currentLng;
                                 },
                                 function(error) {
                                     btn.style.opacity = '1';
-                                    alert("تعذر تحديد موقعك. يرجى تفعيل الموقع (GPS) وإعطاء الصلاحية للمتصفح.");
+                                    alert("Your location could not be determined. Please enable location services (GPS) and grant permission to your browser.");
                                 },
                                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } 
                             );
                         } else {
-                            alert("متصفحك لا يدعم ميزة تحديد الموقع.");
+                            alert("Your browser does not support location services.");
                         }
                     };
-
                     return btn;
                 }
             });
-            
+
             new L.Control.Locate({ position: 'topright' }).addTo(map);
 
             const customIcon = L.divIcon({
@@ -268,36 +334,39 @@
             setTimeout(() => { map.invalidateSize(); }, 200);
         }
 
-        // 💡 تم التعديل: تحسين وتخصيص البحث لليبيا فقط باللغة العربية
         async function searchMapLocation() {
             const query = document.getElementById('mapSearchInput').value.trim();
             const resultsDiv = document.getElementById('searchResults');
-            
-            if (query.length < 2) {
-                alert("يرجى كتابة حرفين على الأقل للبحث");
-                return;
-            }
-
+           if (query.length < 2) {
             resultsDiv.style.display = 'block';
-            resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #666; text-align: center;">جاري البحث...</div>';
+            resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">يرجى كتابة حرفين على الأقل للبحث.</div>';
+            
+            setTimeout(() => {
+                resultsDiv.style.display = 'none';
+                resultsDiv.innerHTML = '';
+            }, 3000);
+            
+            return;
+        }
 
-            try {
-                // إضافة countrycodes=ly للبحث داخل ليبيا فقط، و accept-language=ar للعربية
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #666; text-align: center;">Searching...</div>';
+            try { //جلب البيانات من الخادم (The API Call)
                 const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=ly&accept-language=ar`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-
+                //معالجة النتائج الفارغة (Empty State)
                 if (data.length === 0) {
-                    resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">لم يتم العثور على نتائج. تأكد من اسم المنطقة.</div>';
+                    resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">No results were found. Please check the region name.</div>';
                     return;
                 }
 
                 resultsDiv.innerHTML = '';
+                //بناء القائمة المنسدلة (Dynamic DOM Manipulation)
                 data.forEach(place => {
                     const item = document.createElement('div');
                     item.className = 'search-result-item';
                     
-                    // استخراج اسم منطقي ومرتب للعرض
                     let displayName = place.display_name;
                     item.textContent = displayName;
                     
@@ -313,7 +382,6 @@
                         document.getElementById('inputLat').value = lat;
                         document.getElementById('inputLng').value = lng;
                         
-                        // ناخذوا الاسم الأول من النتيجة باش نعبوا بيه خانة الاسم
                         let shortName = place.name || displayName.split(',')[0];
                         document.getElementById('zoneName').value = shortName;
                         
@@ -324,30 +392,26 @@
 
             } catch (error) {
                 console.error("Search error:", error);
-                resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">حدث خطأ في الاتصال بخدمة البحث.</div>';
+                resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">An error occurred in connecting to the search service.</div>';
             }
         }
 
-        // إخفاء القائمة لما تضغطي في أي مكان فاضي
         document.addEventListener('click', function(e) {
             const resultsDiv = document.getElementById('searchResults');
             const searchInput = document.getElementById('mapSearchInput');
             const searchBtn = document.querySelector('.search-btn');
             
-            if (e.target !== searchInput && e.target !== searchBtn && !searchBtn.contains(e.target) && !resultsDiv.contains(e.target)) {
+            if (e.target !== searchInput && e.target !== searchBtn && !searchBtn?.contains(e.target) && !resultsDiv.contains(e.target)) {
                 resultsDiv.style.display = 'none';
             }
         });
 
-        // تشغيل البحث لما نضغط زر Enter في الكيبورد بدون ما ندير Refresh للصفحة
         document.getElementById('mapSearchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault(); 
                 searchMapLocation();
             }
         });
-
-        // -----------------------------------------------------
 
         function viewSavedZone(lat, lng, radius) {
             let newLatLng = new L.LatLng(lat, lng);
@@ -386,11 +450,11 @@
             if (circle) { circle.setRadius(Number(value)); }
         }
 
-        radiusSlider.addEventListener('input', function () {
+        radiusSlider.addEventListener('input', function () { 
             updateSafeCircle(this.value);
             document.getElementById('inputRadius').value = this.value;
         });
-
+        
         function resetSafeZone() {
             radiusSlider.value = 100;
             updateSafeCircle(100);
@@ -402,13 +466,12 @@
 
         function prepareFormData() {
             if (!marker) {
-                alert("الرجاء انتظار تحميل الخريطة");
+                alert("Please wait for the map to load.");
                 return false;
             }
-
             const nameInput = document.getElementById('zoneName').value.trim();
             if (!nameInput) {
-                alert("الرجاء كتابة اسم المنطقة (مثلاً: المنزل)");
+                alert("Please write the name of the area (e.g., house)");
                 return false;
             }
 
@@ -422,6 +485,26 @@
         }
 
         getUserLocation();
+
+        let currentDeleteFormId = null;
+
+        function openDeleteModal(zoneId) {
+            currentDeleteFormId = 'delete-form-' + zoneId;
+            const modal = document.getElementById('customDeleteModal');
+            modal.classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('customDeleteModal');
+            modal.classList.remove('show');
+            currentDeleteFormId = null;
+        }
+
+        function confirmDeleteAction() {
+            if (currentDeleteFormId) {
+                document.getElementById(currentDeleteFormId).submit();
+            }
+        }
     </script>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Alert Sounds</title>
+    <title>{{ __('Alert Sounds') }}</title>
 
     <style>
         /* ===== Reset ===== */
@@ -41,21 +41,45 @@
             position: relative;
             text-align: center;
             margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+        }
+
+        /* 💡 زر الرجوع مع دعم الاتجاهين */
+        .back-btn {
+            position: absolute;
+            inset-inline-start: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #2f80ed;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: {{ app()->getLocale() == 'ar' ? 'scaleX(-1)' : 'none' }};
+        }
+
+        .back-btn svg {
+            width: 26px;
+            height: 26px;
         }
 
         .title {
             font-size: 26px;
             font-weight: 800;
             color: #1d567e;
-            padding-top: 5px;
         }
 
+        /* 💡 دعم الشعار للاتجاهين */
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: -10px;
             top: -10px;
             width: 100px;
-            height:100px;
+            height: 100px;
             object-fit: contain;
         }
 
@@ -105,12 +129,13 @@
             transition: 0.3s;
         }
 
+        /* 💡 تصميم زر التبديل لدعم اللغتين */
         .slider:before {
             content: "";
             position: absolute;
             width: 20px;
             height: 20px;
-            left: 2px;
+            inset-inline-start: 2px;
             top: 2px;
             background: white;
             border-radius: 50%;
@@ -122,7 +147,7 @@
         }
 
         input:checked + .slider:before {
-            transform: translateX(22px);
+            transform: translateX({{ app()->getLocale() == 'ar' ? '-22px' : '22px' }});
         }
 
         /* ===== Alerts ===== */
@@ -132,25 +157,9 @@
             padding: 10px;
             border-radius: 10px;
             margin-bottom: 10px;
-            display: none; /* مخفي افتراضياً، يظهر بالجافاسكربت */
+            display: none;
             text-align: center;
             font-weight: bold;
-        }
-
-        .back-btn {
-            position: absolute;
-            left: 0;
-            top: 5px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            color: #2f80ed;
-            padding: 6px;
-        }
-
-        .back-btn svg {
-            width: 26px;
-            height: 26px;
         }
     </style>
 </head>
@@ -158,13 +167,9 @@
 <body>
 
 @php
-    // جلب إعدادات الدكتور الحالية من الداتابيز باش نعرضوها
     $userSettings = \App\Models\NotificationSetting::where('user_id', auth()->id())->get()->keyBy('notification_type');
     
-    // إعدادات الإشعارات العامة
     $notif = $userSettings['doctor_notification'] ?? null;
-    
-    // إعدادات رسائل الأهل
     $chat = $userSettings['chat'] ?? null;
 @endphp
 
@@ -177,16 +182,16 @@
                     <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
-            <div class="title">Alert Sounds</div>
+            <div class="title">{{ __('Alert Sounds') }}</div>
             <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo">
         </div>
 
-        <div id="toast-message" class="success-box">Saved Successfully!</div>
+        <div id="toast-message" class="success-box">{{ __('Saved Successfully!') }}</div>
 
-        <div class="chip">Notifications</div>
+        <div class="chip">{{ __('Notifications') }}</div>
 
         <div class="row">
-            <span>Sound</span>
+            <span>{{ __('Sound') }}</span>
             <label class="switch">
                 <input type="checkbox" class="smart-toggle" data-type="doctor_notification" data-field="has_sound" 
                        {{ ($notif->has_sound ?? true) ? 'checked' : '' }}>
@@ -195,7 +200,7 @@
         </div>
 
         <div class="row">
-            <span>Vibrate</span>
+            <span>{{ __('Vibrate') }}</span>
             <label class="switch">
                 <input type="checkbox" class="smart-toggle" data-type="doctor_notification" data-field="has_vibrate" 
                        {{ ($notif->has_vibrate ?? true) ? 'checked' : '' }}>
@@ -203,10 +208,10 @@
             </label>
         </div>
 
-        <div class="chip" style="margin-top:20px;">Parents Messages</div>
+        <div class="chip" style="margin-top:20px;">{{ __('Parents Messages') }}</div>
 
         <div class="row">
-            <span>Sound</span>
+            <span>{{ __('Sound') }}</span>
             <label class="switch">
                 <input type="checkbox" class="smart-toggle" data-type="chat" data-field="has_sound" 
                        {{ ($chat->has_sound ?? true) ? 'checked' : '' }}>
@@ -215,7 +220,7 @@
         </div>
 
         <div class="row">
-            <span>Vibrate</span>
+            <span>{{ __('Vibrate') }}</span>
             <label class="switch">
                 <input type="checkbox" class="smart-toggle" data-type="chat" data-field="has_vibrate" 
                        {{ ($chat->has_vibrate ?? true) ? 'checked' : '' }}>
@@ -227,6 +232,9 @@
 </div>
 
 <script>
+    // 💡 نقل رسالة الخطأ لتكون قابلة للترجمة
+    const serverErrorMsg = "{{ __('Connection error. Please try again later.') }}";
+
     document.querySelectorAll('.smart-toggle').forEach(toggle => {
         toggle.addEventListener('change', function() {
             let typeVal = this.getAttribute('data-type');
@@ -234,8 +242,7 @@
             let isChecked = this.checked ? 1 : 0;
             let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            // إرسال البيانات للكنترولر
-            fetch("{{ route('settings.toggle') }}", {
+           fetch("{{ route('doctor.settings.toggle') }}",, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -250,12 +257,10 @@
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
-                    // إظهار رسالة النجاح لفترة قصيرة
                     let toast = document.getElementById('toast-message');
                     toast.style.display = 'block';
                     setTimeout(() => { toast.style.display = 'none'; }, 2000);
 
-                    // ميزة إضافية: لو فعل الاهتزاز، خلي المتصفح يهتز كنوع من التأكيد
                     if(isChecked === 1 && fieldVal === 'has_vibrate') {
                         if (navigator.vibrate) {
                             navigator.vibrate(200);
@@ -265,9 +270,8 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                // لو صار خطأ في النت، رجع الزر لحالته السابقة
                 this.checked = !this.checked; 
-                alert('حدث خطأ في الاتصال بالسيرفر. يرجى المحاولة لاحقاً.');
+                alert(serverErrorMsg);
             });
         });
     });
