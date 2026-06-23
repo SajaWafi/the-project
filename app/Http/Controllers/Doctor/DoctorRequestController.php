@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class DoctorRequestController extends Controller
 {
-    // دالة عرض الطلبات في واجهة الدكتور
+    // show requess
     public function index()
     {
         // 1. نجيبوا بروفايل الدكتور الحالي
@@ -19,7 +19,7 @@ class DoctorRequestController extends Controller
             abort(404, 'Doctor profile not found.');
         }
 
-        // 2. نجيبوا الطلبات بناءً على الـ doctor_id (مع منع التكرار)
+        // 2. نجيبوا الطلبات بناءً على الـ doctor_id 
         $requests = DoctorRequest::with('parentProfile.user')
             ->where('doctor_id', $doctorProfile->id)
             ->orderBy('created_at', 'desc')
