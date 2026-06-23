@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Alert Sounds</title>
+    <title>{{ __('Alert Sounds') }}</title>
 
     <style>
         * {
@@ -42,7 +42,8 @@
             inset: 0;
             background-image: url('{{ asset('images/bg.png') }}');
             background-size: 165% 100%;
-            background-position: left bottom;
+            /* 💡 خلفية تتكيف مع اتجاه اللغة */
+            background-position: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} bottom;
             opacity: 0.9;
             z-index: 0;
             pointer-events: none;
@@ -79,7 +80,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* 💡 محاذاة منطقية لزر الرجوع */
             border: none;
             background: transparent;
             cursor: pointer;
@@ -92,6 +93,8 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+            /* 💡 عكس سهم الرجوع في النسخة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -102,7 +105,7 @@
 
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0; /* 💡 محاذاة منطقية للشعار */
             width: 100px;
             height: 100px;
             object-fit: contain;
@@ -155,12 +158,13 @@
             border-radius: 50%;
             position: absolute;
             top: 2px;
-            left: 2px;
+            /* 💡 التموضع المنطقي يخلي الزر يتوافق يمين/يسار حسب اللغة */
+            inset-inline-start: 2px;
             transition: 0.3s;
         }
 
         .switch.active::after {
-            left: 22px;
+            inset-inline-start: 22px;
         }
 
         @media (max-width: 480px) {
@@ -196,69 +200,72 @@
             </div>
 
             <div class="header">
-                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
 
-                <div class="page-title">Alert Sounds</div>
+                <div class="page-title">{{ __('Alert Sounds') }}</div>
 
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Taif">
             </div>
 
-            <div class="section-chip">Warning</div>
+            <div class="section-chip">{{ __('Warning') }}</div>
 
             <div class="sound-row">
-                <span>Sound</span>
+                <span>{{ __('Sound') }}</span>
                 <div class="switch {{ (optional($userSettings->get('warning'))->has_sound ?? true) ? 'active' : '' }}" 
                      onclick="toggleSetting(this)" data-type="warning" data-field="has_sound"></div>
             </div>
 
             <div class="sound-row">
-                <span>Vibrate</span>
+                <span>{{ __('Vibrate') }}</span>
                 <div class="switch {{ (optional($userSettings->get('warning'))->has_vibrate ?? true) ? 'active' : '' }}" 
                      onclick="toggleSetting(this)" data-type="warning" data-field="has_vibrate"></div>
             </div>
 
-            <div class="section-chip">Alerts</div>
+
+            <div class="section-chip">{{ __('Alerts') }}</div>
 
             <div class="sound-row">
-                <span>Sound</span>
+                <span>{{ __('Sound') }}</span>
                 <div class="switch {{ (optional($userSettings->get('alert'))->has_sound ?? true) ? 'active' : '' }}" 
                      onclick="toggleSetting(this)" data-type="alert" data-field="has_sound"></div>
             </div>
 
             <div class="sound-row">
-                <span>Vibrate</span>
+                <span>{{ __('Vibrate') }}</span>
                 <div class="switch {{ (optional($userSettings->get('alert'))->has_vibrate ?? true) ? 'active' : '' }}" 
                      onclick="toggleSetting(this)" data-type="alert" data-field="has_vibrate"></div>
             </div>
 
-            <div class="section-chip">Appointment</div>
+
+            <div class="section-chip">{{ __('Appointment') }}</div>
 
             <div class="sound-row">
-                <span>Sound</span>
+                <span>{{ __('Sound') }}</span>
                 <div class="switch {{ (optional($userSettings->get('appointment'))->has_sound ?? true) ? 'active' : '' }}" 
                      onclick="toggleSetting(this)" data-type="appointment" data-field="has_sound"></div>
             </div>
 
             <div class="sound-row">
-                <span>Vibrate</span>
+                <span>{{ __('Vibrate') }}</span>
                 <div class="switch {{ (optional($userSettings->get('appointment'))->has_vibrate ?? true) ? 'active' : '' }}" 
                      onclick="toggleSetting(this)" data-type="appointment" data-field="has_vibrate"></div>
             </div>
 
-            <div class="section-chip">Doctors Messages</div>
+
+            <div class="section-chip">{{ __('Doctors Messages') }}</div>
 
             <div class="sound-row">
-                <span>Sound</span>
+                <span>{{ __('Sound') }}</span>
                 <div class="switch {{ (optional($userSettings->get('chat'))->has_sound ?? true) ? 'active' : '' }}" 
                      onclick="toggleSetting(this)" data-type="chat" data-field="has_sound"></div>
             </div>
 
             <div class="sound-row">
-                <span>Vibrate</span>
+                <span>{{ __('Vibrate') }}</span>
                 <div class="switch {{ (optional($userSettings->get('chat'))->has_vibrate ?? true) ? 'active' : '' }}" 
                      onclick="toggleSetting(this)" data-type="chat" data-field="has_vibrate"></div>
             </div>
@@ -302,7 +309,8 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                el.classList.toggle('active'); // إرجاع الزر لحالته لو صار خطأ في النت
+                // إرجاع الزر لحالته لو صار خطأ في النت
+                el.classList.toggle('active'); 
             });
         }
     </script>
