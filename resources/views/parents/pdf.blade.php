@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
-    <title>Health Report PDF</title>
+    <title>{{ __('Health Report PDF') }}</title>
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;
             color: #1f2937;
             font-size: 12px;
             line-height: 1.8;
+            direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
+            text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};
         }
 
         .header {
@@ -27,6 +29,7 @@
         .subtitle {
             color: #6b7280;
             font-size: 11px;
+            direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
 
         .box {
@@ -93,7 +96,7 @@
         table.data td {
             border: 1px solid #dbe5f1;
             padding: 8px;
-            text-align: left;
+            text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};
         }
 
         table.data th {
@@ -103,7 +106,7 @@
 
         ul {
             margin: 0;
-            padding-left: 18px;
+            padding-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: 18px;
         }
 
         .footer {
@@ -118,85 +121,85 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">TAIF - Health Report</div>
+        <div class="title">{{ __('TAIF - Health Report') }}</div>
         <div class="subtitle">
-            Child Name: {{ $report['child']['name'] }} |
-            Age: {{ $report['child']['age'] }} years |
-            Report Type: {{ $period === 'week' ? 'Weekly' : 'Monthly' }} |
-            Issue Date: {{ now()->format('Y-m-d') }}
+            {{ __('Child Name:') }} {{ $report['child']['name'] }} |
+            {{ __('Age:') }} {{ $report['child']['age'] }} {{ __('years') }} |
+            {{ __('Report Type:') }} {{ $period === 'week' ? __('Weekly') : __('Monthly') }} |
+            {{ __('Issue Date:') }} {{ now()->format('Y-m-d') }}
         </div>
     </div>
 
     <div class="box danger">
-        <div class="section-title">General Summary</div>
-        <strong>Current Status:</strong> {{ $report['live_status'] }}<br>
-        <strong>Total Episodes:</strong> {{ $report['episodes_count'] }}<br>
-        <strong>Trend:</strong> {{ $report['episode_trend_text'] }}
+        <div class="section-title">{{ __('General Summary') }}</div>
+        <strong>{{ __('Current Status:') }}</strong> {{ __($report['live_status']) }}<br>
+        <strong>{{ __('Total Episodes:') }}</strong> {{ $report['episodes_count'] }}<br>
+        <strong>{{ __('Trend:') }}</strong> {{ __($report['episode_trend_text']) }}
     </div>
 
     <table class="grid">
         <tr>
             <td>
                 <div class="metric">
-                    <div class="metric-label">Average Heart Rate</div>
-                    <div class="metric-value">{{ $report['avg_heart_rate'] }} BPM</div>
-                    <div>Peak: {{ $report['peak_heart_rate'] }}</div>
-                    <div>Minimum: {{ $report['min_heart_rate'] }}</div>
+                    <div class="metric-label">{{ __('Average Heart Rate') }}</div>
+                    <div class="metric-value" dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ $report['avg_heart_rate'] }} {{ __('BPM') }}</div>
+                    <div>{{ __('Peak:') }} <span dir="ltr">{{ $report['peak_heart_rate'] }}</span></div>
+                    <div>{{ __('Minimum:') }} <span dir="ltr">{{ $report['min_heart_rate'] }}</span></div>
                 </div>
             </td>
             <td>
                 <div class="metric">
-                    <div class="metric-label">Activity</div>
+                    <div class="metric-label">{{ __('Activity') }}</div>
                     <div class="metric-value">{{ $report['avg_steps'] }}</div>
-                    <div>Average steps</div>
-                    <div>Safe-zone exits: {{ $report['safe_zone_breaches'] }}</div>
+                    <div>{{ __('Average steps') }}</div>
+                    <div>{{ __('Safe-zone exits:') }} {{ $report['safe_zone_breaches'] }}</div>
                 </div>
             </td>
         </tr>
     </table>
 
     <div class="box warning">
-        <div class="section-title">Medical Recommendations</div>
+        <div class="section-title">{{ __('Medical Recommendations') }}</div>
         <ul>
             @foreach($report['medical_recommendations'] as $item)
-                <li>{{ $item }}</li>
+                <li>{{ __($item) }}</li>
             @endforeach
         </ul>
     </div>
 
     <div class="box">
-        <div class="section-title">Smart Insights</div>
+        <div class="section-title">{{ __('Smart Insights') }}</div>
         <ul>
             @foreach($report['trigger_insights'] as $item)
-                <li>{{ $item }}</li>
+                <li>{{ __($item) }}</li>
             @endforeach
         </ul>
     </div>
 
     <div class="box">
-        <div class="section-title">Episode Details</div>
+        <div class="section-title">{{ __('Episode Details') }}</div>
         <table class="data">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Location</th>
-                    <th>Duration</th>
-                    <th>Heart Rate</th>
-                    <th>Trigger</th>
-                    <th>Status</th>
+                    <th>{{ __('Date') }}</th>
+                    <th>{{ __('Time') }}</th>
+                    <th>{{ __('Location') }}</th>
+                    <th>{{ __('Duration') }}</th>
+                    <th>{{ __('Heart Rate') }}</th>
+                    <th>{{ __('Trigger') }}</th>
+                    <th>{{ __('Status') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($report['episodes'] as $episode)
                     <tr>
-                        <td>{{ $episode['date'] }}</td>
-                        <td>{{ $episode['time'] }}</td>
-                        <td>{{ $episode['location'] }}</td>
-                        <td>{{ $episode['duration'] }}</td>
-                        <td>{{ $episode['heart_rate'] }}</td>
-                        <td>{{ $episode['trigger'] }}</td>
-                        <td>{{ $episode['status'] }}</td>
+                        <td dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ $episode['date'] }}</td>
+                        <td dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ $episode['time'] }}</td>
+                        <td>{{ __($episode['location']) }}</td>
+                        <td>{{ __($episode['duration']) }}</td>
+                        <td dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ $episode['heart_rate'] }}</td>
+                        <td>{{ __($episode['trigger']) }}</td>
+                        <td>{{ __($episode['status']) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -204,16 +207,16 @@
     </div>
 
     <div class="box">
-        <div class="section-title">Alert History</div>
+        <div class="section-title">{{ __('Alert History') }}</div>
         <ul>
             @foreach($report['alerts'] as $alert)
-                <li>{{ $alert }}</li>
+                <li>{{ __($alert) }}</li>
             @endforeach
         </ul>
     </div>
 
     <div class="footer">
-        This report was generated by the TAIF monitoring system.
+        {{ __('This report was generated by the TAIF monitoring system.') }}
     </div>
 </body>
 </html>

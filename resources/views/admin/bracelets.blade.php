@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bracelets Management - Taif Project</title>
+    <title>{{ __('Bracelets Management - Taif Project') }}</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,7 +28,9 @@
 
         * { box-sizing: border-box; }
         body { margin: 0; display: flex; background-color: var(--page-bg); font-family: 'Public Sans', Arial, sans-serif; }
-        .admin-main-content { width: calc(100% - 260px); margin-left: 260px; padding: 2rem; }
+        
+        /* 💡 استخدام الخصائص المنطقية */
+        .admin-main-content { width: calc(100% - 260px); margin-inline-start: 260px; padding: 2rem; }
         .admin-page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1.2rem 1.5rem; background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03); }
         .admin-page-title { margin-bottom: 0; font-weight: 700; }
         .admin-page-subtitle { color: #6b7280; }
@@ -45,14 +47,17 @@
         .bracelet-filter-search-wrapper { display: flex; gap: 10px; align-items: center; }
         .bracelet-status-filter { width: 170px; background: #f8fafc; }
         .bracelet-search-wrapper { position: relative; width: 250px; }
-        .bracelet-search-icon { position: absolute; left: 12px; top: 10px; color: #6b7280; }
-        .bracelet-search-input { padding-left: 2.5rem; background: #f8fafc; }
+        .bracelet-search-icon { position: absolute; inset-inline-start: 12px; top: 10px; color: #6b7280; }
+        .bracelet-search-input { padding-inline-start: 2.5rem; background: #f8fafc; }
+        
         .bracelet-table { width: 100%; border-collapse: collapse; table-layout: auto; }
-        .bracelet-table th, .bracelet-table td { padding: 15px 20px; text-align: left; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .bracelet-table th, .bracelet-table td { padding: 15px 20px; text-align: start; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         .bracelet-table th { background-color: #f8fafd; color: var(--muted-text); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        .bracelet-info-cell { display: flex; align-items: center; padding-left: 0.5rem; }
-        .bracelet-icon { width: 40px; height: 40px; margin-right: 12px; display: flex; align-items: center; justify-content: center; background: #edf2f7; color: var(--taif-blue); border-radius: 10px; font-size: 18px; }
+        
+        .bracelet-info-cell { display: flex; align-items: center; padding-inline-start: 0.5rem; }
+        .bracelet-icon { width: 40px; height: 40px; margin-inline-end: 12px; display: flex; align-items: center; justify-content: center; background: #edf2f7; color: var(--taif-blue); border-radius: 10px; font-size: 18px; }
         .bracelet-id-main { color: #111827; font-weight: 800; font-size: 16px; }
+        
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
         .status-connected { background: #c6f6d5; color: #22543d; }
         .status-disconnected { background: #fee2e2; color: #dc2626; }
@@ -64,7 +69,7 @@
         .action-view { background: #e0f2fe; color: #0ea5e9; }
         .action-edit { background: #e0e7ff; color: #4f46e5; }
         .action-delete { background: #fee2e2; color: #dc2626; }
-        .action-unlink { background: #fef3c7; color: #d97706; } /* 💡 زر فك الربط */
+        .action-unlink { background: #fef3c7; color: #d97706; }
         
         .bracelet-action-button:hover { transform: translateY(-1px); opacity: 0.9; }
         .add-bracelet-button { height: 34px; padding: 0 14px; display: flex; align-items: center; gap: 7px; border: none; border-radius: 10px; background: var(--taif-orange); color: white; font-size: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
@@ -82,18 +87,18 @@
         .create-modal .admin-modal-header { background: var(--taif-blue); }
         .unlink-modal .admin-modal-header { background: var(--warning-yellow); }
         
-        .admin-modal-close { position: absolute; top: 15px; right: 15px; color: rgba(255, 255, 255, 0.8); font-size: 22px; cursor: pointer; transition: 0.2s; z-index: 10; }
+        .admin-modal-close { position: absolute; top: 15px; inset-inline-end: 15px; color: rgba(255, 255, 255, 0.8); font-size: 22px; cursor: pointer; transition: 0.2s; z-index: 10; }
         .admin-modal-close:hover { color: white; transform: scale(1.1); }
         .admin-modal-body { padding: 30px 25px; }
-        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group { margin-bottom: 20px; text-align: start; }
         .form-group label { display: block; margin-bottom: 8px; color: #1f5b87; font-size: 14px; font-weight: 700; }
         .form-input { width: 100%; height: 45px; padding: 0 15px; background: #f8fafc; border: 2px solid var(--light-border); border-radius: 12px; font-size: 15px; }
         .form-input:focus { outline: none; background: white; border-color: var(--taif-orange); }
         .modal-save-btn { width: 100%; padding: 12px; background: var(--taif-orange); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .modal-save-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(246, 173, 85, 0.3); }
         
-        /* Select2 Custom Styling for Admin panel */
-        .select2-container--default .select2-selection--single { height: 45px; background: #f8fafc; border: 2px solid var(--light-border); border-radius: 12px; display: flex; align-items: center; padding-left: 5px; }
+        /* Select2 Custom Styling */
+        .select2-container--default .select2-selection--single { height: 45px; background: #f8fafc; border: 2px solid var(--light-border); border-radius: 12px; display: flex; align-items: center; padding-inline-start: 5px; }
         .select2-container--default .select2-selection--single .select2-selection__rendered { color: #333; font-size: 15px; }
         .select2-container--default .select2-selection--single .select2-selection__arrow { height: 43px; }
         .select2-container--default.select2-container--open .select2-selection--single { border-color: var(--taif-orange); background: white; }
@@ -102,7 +107,7 @@
         .details-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
         .details-row:last-child { border: none; }
         .details-label { color: var(--muted-text); font-weight: 700; }
-        .details-value { color: var(--dark-text); font-weight: 600; }
+        .details-value { color: var(--dark-text); font-weight: 600; text-align: end; }
         .large-icon { width: 80px; height: 80px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; background: #f0fff4; color: var(--taif-green); border-radius: 12px; font-size: 35px; }
         .warning-icon { width: 72px; height: 72px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #dc2626; border-radius: 50%; font-size: 30px; }
         .unlink-warning-icon { background: #fef3c7; color: #d97706; }
@@ -114,7 +119,8 @@
         .cancel-btn { background: #e5e7eb; color: #374151; }
         .delete-btn { background: var(--danger-red); color: white; }
         .unlink-btn { background: var(--warning-yellow); color: white; }
-        @media (max-width: 992px) { .admin-main-content { width: calc(100% - 75px); margin-left: 75px; } }
+        
+        @media (max-width: 992px) { .admin-main-content { width: calc(100% - 75px); margin-inline-start: 75px; } }
     </style>
 </head>
 
@@ -124,8 +130,8 @@
     <div class="admin-main-content text-start">
         <div class="admin-page-header">
             <div>
-                <h4 class="admin-page-title">Bracelets Management</h4>
-                <small class="admin-page-subtitle">Manage smart devices, track connections, and assign bracelets</small>
+                <h4 class="admin-page-title">{{ __('Bracelets Management') }}</h4>
+                <small class="admin-page-subtitle">{{ __('Manage smart devices, track connections, and assign bracelets') }}</small>
             </div>
         </div>
 
@@ -134,43 +140,43 @@
                 <div class="stat-icon" style="background: #e0f2fe; color: #0ea5e9;"><i class="fas fa-microchip"></i></div>
                 <div class="stat-info">
                     <h3>{{ $totalBracelets }}</h3>
-                    <p>Total Devices</p>
+                    <p>{{ __('Total Devices') }}</p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon" style="background: #dcfce7; color: #22c55e;"><i class="fas fa-link"></i></div>
                 <div class="stat-info">
                     <h3>{{ $assignedBracelets }}</h3>
-                    <p>Assigned</p>
+                    <p>{{ __('Assigned') }}</p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon" style="background: #f1f5f9; color: #64748b;"><i class="fas fa-box-open"></i></div>
                 <div class="stat-info">
                     <h3>{{ $unassignedBracelets }}</h3>
-                    <p>In Stock</p>
+                    <p>{{ __('In Stock') }}</p>
                 </div>
             </div>
         </div>
 
         <div class="bracelet-management-card">
             <div class="bracelet-table-header">
-                <h6 class="bracelet-table-title">Devices Directory</h6>
+                <h6 class="bracelet-table-title">{{ __('Devices Directory') }}</h6>
 
                 <div class="bracelet-filter-search-wrapper">
                     <button type="button" class="add-bracelet-button" onclick="openAdminModal('braceletCreateModal')">
-                        <i class="fas fa-plus"></i> Add Bracelet
+                        <i class="fas fa-plus"></i> {{ __('Add Bracelet') }}
                     </button>
 
                     <select id="braceletStatusFilter" class="form-control form-control-sm bracelet-status-filter">
-                        <option value="all">All statuses</option>
-                        <option value="active">Connected</option>
-                        <option value="inactive">Disconnected</option>
+                        <option value="all">{{ __('All statuses') }}</option>
+                        <option value="active">{{ __('Connected') }}</option>
+                        <option value="inactive">{{ __('Disconnected') }}</option>
                     </select>
 
                     <div class="bracelet-search-wrapper">
                         <i class="fas fa-search bracelet-search-icon"></i>
-                        <input type="text" id="braceletSearchInput" class="form-control form-control-sm bracelet-search-input" placeholder="Search ID or Serial...">
+                        <input type="text" id="braceletSearchInput" class="form-control form-control-sm bracelet-search-input" placeholder="{{ __('Search ID or Serial...') }}">
                     </div>
                 </div>
             </div>
@@ -178,12 +184,12 @@
             <table id="braceletManagementTable" class="bracelet-table">
                 <thead>
                     <tr>
-                        <th>Device Info</th>
-                        <th>Serial Number</th>
-                        <th>Assigned Child</th>
-                        <th>Last Sync</th>
-                        <th>Status</th>
-                        <th style="text-align: center;">Actions</th>
+                        <th>{{ __('Device Info') }}</th>
+                        <th>{{ __('Serial Number') }}</th>
+                        <th>{{ __('Assigned Child') }}</th>
+                        <th>{{ __('Last Sync') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align: center;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
@@ -192,9 +198,9 @@
                         @php
                             $status = $bracelet->status ?? 'inactive';
                             $statusClass = $status === 'active' ? 'status-connected' : 'status-disconnected';
-                            $statusText = $status === 'active' ? 'Connected' : 'Disconnected';
+                            $statusText = $status === 'active' ? __('Connected') : __('Disconnected');
                             
-                            $childName = $bracelet->child ? $bracelet->child->name : 'Unassigned';
+                            $childName = $bracelet->child ? $bracelet->child->name : __('Unassigned');
                             $childClass = $bracelet->child ? 'child-badge' : 'child-badge child-unassigned';
                         @endphp
 
@@ -205,13 +211,13 @@
                                         <i class="fas fa-microchip"></i>
                                     </div>
                                     <div>
-                                        <div class="bracelet-id-main">Bracelet #{{ $bracelet->id }}</div>
+                                        <div class="bracelet-id-main" dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ __('Bracelet #') }}{{ $bracelet->id }}</div>
                                     </div>
                                 </div>
                             </td>
 
-                            <td style="font-family: monospace; font-size: 14px; color: #4b5563; font-weight: bold;">
-                                {{ $bracelet->serial_number ?? 'N/A' }}
+                            <td dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}; font-family: monospace; font-size: 14px; color: #4b5563; font-weight: bold;">
+                                {{ $bracelet->serial_number ?? __('N/A') }}
                             </td>
 
                             <td>
@@ -219,30 +225,30 @@
                             </td>
 
                             <td>
-                                <span style="font-weight: 600; color: #4a5568;">
-                                    {{ $bracelet->last_sync_at ? \Carbon\Carbon::parse($bracelet->last_sync_at)->format('M d, Y h:i A') : 'Never' }}
+                                <span style="font-weight: 600; color: #4a5568;" dir="ltr">
+                                    {{ $bracelet->last_sync_at ? \Carbon\Carbon::parse($bracelet->last_sync_at)->format('M d, Y h:i A') : __('Never') }}
                                 </span>
                             </td>
 
                             <td>
                                 <span class="status-badge {{ $statusClass }}">
-                                    @if($status === 'active') <i class="fas fa-circle" style="font-size: 8px; margin-right: 3px;"></i> @endif
+                                    @if($status === 'active') <i class="fas fa-circle" style="font-size: 8px; margin-inline-end: 3px;"></i> @endif
                                     {{ $statusText }}
                                 </span>
                             </td>
 
                             <td>
                                 <div class="bracelet-action-buttons">
-                                    <button type="button" class="bracelet-action-button action-view js-view-bracelet" title="View Details"
+                                    <button type="button" class="bracelet-action-button action-view js-view-bracelet" title="{{ __('View Details') }}"
                                         data-id="{{ $bracelet->id }}"
-                                        data-serial="{{ $bracelet->serial_number ?? 'N/A' }}"
+                                        data-serial="{{ $bracelet->serial_number ?? __('N/A') }}"
                                         data-child="{{ $childName }}"
                                         data-status="{{ $statusText }}"
-                                        data-sync="{{ $bracelet->last_sync_at ?? 'Never' }}">
+                                        data-sync="{{ $bracelet->last_sync_at ?? __('Never') }}">
                                         <i class="fas fa-eye"></i>
                                     </button>
 
-                                    <button type="button" class="bracelet-action-button action-edit js-edit-bracelet" title="Edit & Link"
+                                    <button type="button" class="bracelet-action-button action-edit js-edit-bracelet" title="{{ __('Edit & Link') }}"
                                         data-id="{{ $bracelet->id }}"
                                         data-serial="{{ $bracelet->serial_number }}"
                                         data-child-id="{{ $bracelet->child_id }}"
@@ -253,7 +259,7 @@
                                     @if($bracelet->child_id)
                                     <form action="{{ route('admin.bracelets.unlink', $bracelet->id) }}" method="POST" class="m-0">
                                         @csrf
-                                        <button type="button" class="bracelet-action-button action-unlink js-unlink-bracelet" title="Unlink Child"
+                                        <button type="button" class="bracelet-action-button action-unlink js-unlink-bracelet" title="{{ __('Unlink Child') }}"
                                             data-id="{{ $bracelet->id }}" data-child="{{ $childName }}">
                                             <i class="fas fa-link-slash"></i>
                                         </button>
@@ -263,7 +269,7 @@
                                     <form action="{{ route('admin.bracelets.destroy', $bracelet->id ?? 0) }}" method="POST" class="m-0">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button" class="bracelet-action-button action-delete js-delete-bracelet" title="Delete Bracelet"
+                                        <button type="button" class="bracelet-action-button action-delete js-delete-bracelet" title="{{ __('Delete Bracelet') }}"
                                             data-id="{{ $bracelet->id }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -274,7 +280,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="text-center py-5 text-muted">
-                                No bracelets found in the system.
+                                {{ __('No bracelets found in the system.') }}
                             </td>
                         </tr>
                     @endforelse
@@ -286,7 +292,7 @@
     <div id="braceletCreateModal" class="admin-modal-overlay create-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
-                <i class="fas fa-plus-circle"></i> Add New Bracelet
+                <i class="fas fa-plus-circle"></i> {{ __('Add New Bracelet') }}
             </div>
             <span class="admin-modal-close" onclick="closeAdminModal('braceletCreateModal')">&times;</span>
 
@@ -295,19 +301,19 @@
                     @csrf
                     
                     <div class="form-group">
-                        <label>Serial Number (MAC Address or Code)</label>
-                        <input type="text" name="serial_number" class="form-input" placeholder="e.g. ESP32-A1B2C3" required>
+                        <label>{{ __('Serial Number (MAC Address or Code)') }}</label>
+                        <input type="text" name="serial_number" class="form-input" placeholder="{{ __('e.g. ESP32-A1B2C3') }}" required dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
 
                     <div class="form-group">
-                        <label>Initial Status</label>
+                        <label>{{ __('Initial Status') }}</label>
                         <select name="status" class="form-input">
-                            <option value="active">Connected</option>
-                            <option value="inactive" selected>Disconnected</option>
+                            <option value="active">{{ __('Connected') }}</option>
+                            <option value="inactive" selected>{{ __('Disconnected') }}</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="modal-save-btn">Add Bracelet</button>
+                    <button type="submit" class="modal-save-btn">{{ __('Add Bracelet') }}</button>
                 </form>
             </div>
         </div>
@@ -315,16 +321,16 @@
 
     <div id="braceletViewModal" class="admin-modal-overlay view-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-microchip"></i> Device Details</div>
+            <div class="admin-modal-header"><i class="fas fa-microchip"></i> {{ __('Device Details') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('braceletViewModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="large-icon"><i class="fas fa-link"></i></div>
-                <h3 id="viewId" style="color: #1f5b87; font-weight: 700; margin-bottom: 5px;"></h3>
+                <h3 id="viewId" style="color: #1f5b87; font-weight: 700; margin-bottom: 5px;" dir="ltr"></h3>
                 <span id="viewStatus" class="status-badge" style="margin-bottom: 20px;"></span>
                 <div class="details-box">
-                    <div class="details-row"><span class="details-label">Serial Number</span><span class="details-value" id="viewSerial" style="font-family: monospace;"></span></div>
-                    <div class="details-row"><span class="details-label">Assigned Child</span><span class="details-value" id="viewChild"></span></div>
-                    <div class="details-row"><span class="details-label">Last Sync</span><span class="details-value" id="viewSync"></span></div>
+                    <div class="details-row"><span class="details-label">{{ __('Serial Number') }}</span><span class="details-value" id="viewSerial" style="font-family: monospace;" dir="ltr"></span></div>
+                    <div class="details-row"><span class="details-label">{{ __('Assigned Child') }}</span><span class="details-value" id="viewChild"></span></div>
+                    <div class="details-row"><span class="details-label">{{ __('Last Sync') }}</span><span class="details-value" id="viewSync" dir="ltr"></span></div>
                 </div>
             </div>
         </div>
@@ -333,7 +339,7 @@
     <div id="braceletEditModal" class="admin-modal-overlay edit-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
-                <i class="fas fa-edit"></i> Edit & Link Device
+                <i class="fas fa-edit"></i> {{ __('Edit & Link Device') }}
             </div>
             <span class="admin-modal-close" onclick="closeAdminModal('braceletEditModal')">&times;</span>
 
@@ -343,34 +349,34 @@
                     @method('PUT')
 
                     <div class="form-group">
-                        <label>Serial Number</label>
-                        <input type="text" id="editSerialNumber" name="serial_number" class="form-input" required>
+                        <label>{{ __('Serial Number') }}</label>
+                        <input type="text" id="editSerialNumber" name="serial_number" class="form-input" required dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
 
                    <div class="form-group">
-                        <label>Assign to Child</label>
+                        <label>{{ __('Assign to Child') }}</label>
                         <select id="editChildId" name="child_id" class="form-input" style="width: 100%;">
-                            <option value="">-- Unassigned (In Stock) --</option>
+                            <option value="">{{ __('-- Unassigned (In Stock) --') }}</option>
                             @foreach($children as $child)
                                 @php
                                     $isAssigned = in_array($child->id, $assignedChildIds) ? 'true' : 'false';
                                 @endphp
                                 <option value="{{ $child->id }}" data-assigned="{{ $isAssigned }}">
-                                    {{ $child->name }} {{ $isAssigned == 'true' ? '(Already Assigned)' : '' }}
+                                    {{ $child->name }} {{ $isAssigned == 'true' ? __('(Already Assigned)') : '' }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Connection Status</label>
+                        <label>{{ __('Connection Status') }}</label>
                         <select id="editStatus" name="status" class="form-input">
-                            <option value="active">Connected</option>
-                            <option value="inactive">Disconnected</option>
+                            <option value="active">{{ __('Connected') }}</option>
+                            <option value="inactive">{{ __('Disconnected') }}</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="modal-save-btn">Save Changes</button>
+                    <button type="submit" class="modal-save-btn">{{ __('Save Changes') }}</button>
                 </form>
             </div>
         </div>
@@ -379,7 +385,7 @@
     <div id="braceletUnlinkModal" class="admin-modal-overlay unlink-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
-                <i class="fas fa-link-slash"></i> Unlink Child
+                <i class="fas fa-link-slash"></i> {{ __('Unlink Child') }}
             </div>
             <span class="admin-modal-close" onclick="closeAdminModal('braceletUnlinkModal')">&times;</span>
 
@@ -388,15 +394,15 @@
                     <i class="fas fa-link-slash"></i>
                 </div>
 
-                <h4 class="delete-title">Are you sure?</h4>
+                <h4 class="delete-title">{{ __('Are you sure?') }}</h4>
                 <p class="delete-message">
-                    You are about to unlink <strong id="unlinkChildText"></strong> from <strong id="unlinkIdText"></strong>.<br>
-                    The device will be returned to stock.
+                    {{ __('You are about to unlink') }} <strong id="unlinkChildText"></strong> {{ __('from') }} <strong id="unlinkIdText" dir="ltr"></strong>.<br>
+                    {{ __('The device will be returned to stock.') }}
                 </p>
 
                 <div class="delete-actions">
-                    <button type="button" class="cancel-btn" onclick="closeAdminModal('braceletUnlinkModal')">Cancel</button>
-                    <button type="button" class="unlink-btn" id="confirmBraceletUnlinkBtn">Unlink</button>
+                    <button type="button" class="cancel-btn" onclick="closeAdminModal('braceletUnlinkModal')">{{ __('Cancel') }}</button>
+                    <button type="button" class="unlink-btn" id="confirmBraceletUnlinkBtn">{{ __('Unlink') }}</button>
                 </div>
             </div>
         </div>
@@ -405,7 +411,7 @@
     <div id="braceletDeleteModal" class="admin-modal-overlay delete-modal">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
-                <i class="fas fa-trash"></i> Delete Device
+                <i class="fas fa-trash"></i> {{ __('Delete Device') }}
             </div>
             <span class="admin-modal-close" onclick="closeAdminModal('braceletDeleteModal')">&times;</span>
 
@@ -414,15 +420,15 @@
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
 
-                <h4 class="delete-title">Are you sure?</h4>
+                <h4 class="delete-title">{{ __('Are you sure?') }}</h4>
                 <p class="delete-message">
-                    You are about to delete <strong id="deleteIdText"></strong>.<br>
-                    This action cannot be undone.
+                    {{ __('You are about to delete') }} <strong id="deleteIdText" dir="ltr"></strong>.<br>
+                    {{ __('This action cannot be undone.') }}
                 </p>
 
                 <div class="delete-actions">
-                    <button type="button" class="cancel-btn" onclick="closeAdminModal('braceletDeleteModal')">Cancel</button>
-                    <button type="button" class="delete-btn" id="confirmBraceletDeleteBtn">Delete</button>
+                    <button type="button" class="cancel-btn" onclick="closeAdminModal('braceletDeleteModal')">{{ __('Cancel') }}</button>
+                    <button type="button" class="delete-btn" id="confirmBraceletDeleteBtn">{{ __('Delete') }}</button>
                 </div>
             </div>
         </div>
@@ -440,7 +446,7 @@
         // 💡 تفعيل مكتبة البحث Select2
         $(document).ready(function() {
             $('#editChildId').select2({
-                placeholder: "Search for a child...",
+                placeholder: "{{ __('Search for a child...') }}",
                 allowClear: true,
                 dropdownParent: $('#braceletEditModal') // مهم جداً باش تخدم داخل المودال
             });
@@ -471,21 +477,20 @@
         // عرض التفاصيل
         document.querySelectorAll('.js-view-bracelet').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.getElementById('viewId').innerText = "Bracelet #" + this.dataset.id;
+                document.getElementById('viewId').innerText = "{{ __('Bracelet #') }}" + this.dataset.id;
                 document.getElementById('viewSerial').innerText = this.dataset.serial;
                 document.getElementById('viewChild').innerText = this.dataset.child;
                 document.getElementById('viewSync').innerText = this.dataset.sync;
                 
                 const statusSpan = document.getElementById('viewStatus');
                 statusSpan.innerText = this.dataset.status;
-                statusSpan.className = 'status-badge ' + (this.dataset.status === 'Connected' ? 'status-connected' : 'status-disconnected');
+                statusSpan.className = 'status-badge ' + (this.dataset.status === '{{ __('Connected') }}' || this.dataset.status === 'Connected' ? 'status-connected' : 'status-disconnected');
 
                 openAdminModal('braceletViewModal');
             });
         });
 
-        // دالة التعديل (Edit)
-     // دالة التعديل (Edit) المتقدمة
+        // دالة التعديل (Edit) المتقدمة
         document.querySelectorAll('.js-edit-bracelet').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.getElementById('editStatus').value = this.dataset.status;
@@ -517,7 +522,7 @@
         document.querySelectorAll('.js-unlink-bracelet').forEach(btn => {
             btn.addEventListener('click', function() {
                 unlinkForm = this.closest('form');
-                document.getElementById('unlinkIdText').innerText = "Bracelet #" + this.dataset.id;
+                document.getElementById('unlinkIdText').innerText = "{{ __('Bracelet #') }}" + this.dataset.id;
                 document.getElementById('unlinkChildText').innerText = this.dataset.child;
                 openAdminModal('braceletUnlinkModal');
             });
@@ -531,7 +536,7 @@
         document.querySelectorAll('.js-delete-bracelet').forEach(btn => {
             btn.addEventListener('click', function() {
                 deleteForm = this.closest('form');
-                document.getElementById('deleteIdText').innerText = "Bracelet #" + this.dataset.id;
+                document.getElementById('deleteIdText').innerText = "{{ __('Bracelet #') }}" + this.dataset.id;
                 openAdminModal('braceletDeleteModal');
             });
         });

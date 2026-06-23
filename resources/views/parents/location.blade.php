@@ -127,16 +127,22 @@
                     <div class="info-text">
                         <span class="info-label">Last Update</span>
                         <span class="info-val">
-                            @php
+                     @php
                                 $sec = $lastUpdateSec ?? 0;
-                                if ($sec < 60) {
+                                
+                                if (!isset($latestLocation) && $sec == 0) {
+                                    echo 'No data yet';
+                                } elseif ($sec < 60) {
                                     echo round($sec) . ' seconds ago';
                                 } elseif ($sec < 3600) {
                                     echo round($sec / 60) . ' mins ago';
-                                } else {
+                                } elseif ($sec < 86400) { // أقل من 24 ساعة
                                     $hours = floor($sec / 3600);
                                     $mins = round(($sec % 3600) / 60);
                                     echo $hours . ' hr ' . $mins . ' min ago';
+                                } else { // لو فات 24 ساعة يكتب بالأيام
+                                    $days = floor($sec / 86400);
+                                    echo $days . ($days == 1 ? ' day ago' : ' days ago');
                                 }
                             @endphp
                         </span>
@@ -215,17 +221,18 @@
             </a>
         </div>
     </div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
-    let map; //يمثل الخريطة نفسها.
-    let userMarker; //يمثل علامة الطفل على الخريطة.
-    let safeZoneCircles = []; //مصفوفة نخزن فيها دوائر المناطق الآمنة.
-    let autoFollow = true;  //الخريطة تتبع الطفل تلقائياً.
+    let map; 
+    let userMarker; 
+    let safeZoneCircles = []; 
+    let autoFollow = true;  
+    let pathLine; // 💡 متغير جديد لخط المسار
 
     const currentLat = {{ $latitude ?? 32.8872 }};
     const currentLng = {{ $longitude ?? 13.1913 }};
-    const safeZonesData = @json($safeZones ?? []); //تحويل Safe Zones من Laravel إلى JSON.
+    const safeZonesData = @json($safeZones ?? []); 
+    const pathCoordinates = @json($pathCoordinates ?? []); // 💡 استقبال مصفوفة المسار من الكنترولر
 
     function createCustomIcon() {
         return L.divIcon({
@@ -235,19 +242,29 @@
             iconAnchor: [9, 9]
         });
     }
-    //إنشاء الخريطة
+    
+    // إنشاء الخريطة
     function initMap(lat, lng) {
         if (map) { map.remove(); } 
-    //تهيئة الخريطة وتحديد مستوى الرؤية
-        map = L.map('map', { zoomControl: false }).setView([lat, lng], 17);//حددت المركز على إحداثيات الطفل الحالية
+        map = L.map('map', { zoomControl: false }).setView([lat, lng], 17);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '' 
         }).addTo(map);
 
+        // 💡 رسم خط المسار (التراكنق)
+        pathLine = L.polyline(pathCoordinates, {
+            color: '#2f80ed', // لون الخط أزرق
+            weight: 4,        // عرض الخط
+            opacity: 0.8,
+            dashArray: '5, 10', // يخلي الخط متقطع شوية يعطي شكل أحلى للتتبع
+            lineJoin: 'round'
+        }).addTo(map);
+
         userMarker = L.marker([lat, lng], { icon: createCustomIcon() }).addTo(map);
-    //المرور على جميع المناطق الآمنة.
+        
+        // رسم المناطق الآمنة
         safeZonesData.forEach(zone => {
             let circle = L.circle([zone.center_latitude, zone.center_longitude], {
                 radius: zone.radius_meters,
@@ -259,12 +276,13 @@
             }).addTo(map);
             safeZoneCircles.push(circle);
         });
-//إيقاف التتبع عند تحريك الخريطة إذا الأب حرك الخريطة بيده.
+
         map.on('dragstart', function() {
             autoFollow = false;
         });
     }
-    //وظيفتها البحث في OpenStreetMap
+    
+    // وظيفة البحث
     async function searchMapLocation() {
         const query = document.getElementById('mapSearchInput').value.trim();
         const resultsDiv = document.getElementById('searchResults');
@@ -272,20 +290,17 @@
         if (query.length < 2) {
             resultsDiv.style.display = 'flex';
             resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #4b60ff; text-align: center;">Please enter at least two letters for your search.</div>';
-            
-            // إخفاء الرسالة تلقائياً بعد 3 ثوانٍ 
             setTimeout(() => {
                 resultsDiv.style.display = 'none';
                 resultsDiv.innerHTML = '';
             }, 3000);
-    
-    return;
-}
+            return;
+        }
 
         resultsDiv.style.display = 'flex';
         resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #666; text-align: center;">Searching..</div>';
 
-        try { //محرك بحث OpenStreetMap
+        try { 
             const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=ly&accept-language=ar`;
             const response = await fetch(apiUrl);
             const data = await response.json();
@@ -294,19 +309,17 @@
                 resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">No results were found.</div>';
                 return;
             }
-        //بناء القائمة المنسدلة ديناميكياً 
+            
             resultsDiv.innerHTML = '';
             data.forEach(place => {
                 const item = document.createElement('div');
                 item.className = 'search-result-item';
                 item.textContent = place.display_name;
-                //إذا ضغط الأب على نتيجة.
+                
                 item.onclick = function() {
                     const lat = parseFloat(place.lat);
                     const lng = parseFloat(place.lon);
-                    //إيقاف التتبع
                     autoFollow = false; 
-                    //الخريطة تنتقل للمكان المختار.
                     if (map) map.flyTo([lat, lng], 16, { animate: true, duration: 1.5 });
                     
                     document.getElementById('mapSearchInput').value = place.name || place.display_name.split(',')[0];
@@ -320,7 +333,7 @@
             resultsDiv.innerHTML = '<div style="padding: 10px; font-size: 12px; color: #ef4444; text-align: center;">A communication error has occurred .</div>';
         }
     }
-        //الضغط بالخارج للإغلاق
+    
     document.addEventListener('click', function(e) {
         const resultsDiv = document.getElementById('searchResults');
         const searchInput = document.getElementById('mapSearchInput');
@@ -328,24 +341,21 @@
             resultsDiv.style.display = 'none';
         }
     });
-    //البحث بزر Enter
+    
     document.getElementById('mapSearchInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             searchMapLocation();
         }
     });
-    //تنقل الخريطة مباشرة إلى المنطقة الآمنة.
+    
     function focusOnZone(lat, lng) {
         autoFollow = false; 
         if (map) {
-            map.flyTo([lat, lng], 17, {
-                animate: true,
-                duration: 1.5
-            });
+            map.flyTo([lat, lng], 17, { animate: true, duration: 1.5 });
         }
     }
-    //المسؤول عن تشغيل الخريطة أول ما تفتح الصفحة، وبرمجة زر "تحديد موقع الطفل"  
+    
     document.addEventListener('DOMContentLoaded', function() {
         initMap(currentLat, currentLng);
 
@@ -353,20 +363,23 @@
              autoFollow = true; 
              if (map && userMarker) {
                  map.flyTo(userMarker.getLatLng(), 17, {
-                     animate: true,
-                     duration: 1.0
+                     animate: true, duration: 1.0
                  });
              }
         });
 
         setInterval(function() {
-            //الجافاسكربت هنا يرسل طلب صامت (في الخلفية) للينك location.live
             fetch('{{ route("location.live") ?? "" }}')
                 .then(response => response.ok ? response.json() : null)
                 .then(data => {
                     if (data && data.lat && data.lng) {
                         let newLatLng = new L.LatLng(data.lat, data.lng);
                         userMarker.setLatLng(newLatLng); 
+                        
+                        // 💡 إضافة النقطة الجديدة لخط المسار
+                        if (pathLine) {
+                            pathLine.addLatLng(newLatLng);
+                        }
                         
                         if (autoFollow) {
                             map.setView(newLatLng, map.getZoom()); 

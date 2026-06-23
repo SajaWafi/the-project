@@ -207,7 +207,12 @@ body {
 
             <a href="{{ route('chat', $doc['id']) }}" class="btn-icon">
                 <i class="fi fi-ss-messages"></i>
-            </a>           
+            </a>  
+            
+            <!-- أيقونة المهام من مكتبة Flaticon -->
+            <a href="{{ route('doctor.tasks', $doc['id']) }}" class="btn-icon" title="{{ __('Home Tasks') }}">
+                <i class="fi fi-sr-clipboard-list"></i>
+            </a>      
         </div>
     </div>
 </div>

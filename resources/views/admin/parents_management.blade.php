@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent Management - Taif Project</title>
+    <title>{{ __('Parent Management - Taif Project') }}</title>
 
     <link
         rel="stylesheet"
@@ -16,11 +16,6 @@
     >
 
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
 
     <style>
         :root {
@@ -48,12 +43,7 @@
             font-family: 'Public Sans', Arial, sans-serif;
         }
 
-        .admin-main-content {
-            width: calc(100% - 260px);
-            margin-left: 260px;
-            padding: 2rem;
-        }
-
+        /* 💡 استخدام الخصائص المنطقية لدعم الاتجاهين */
         .admin-page-header {
             display: flex;
             justify-content: space-between;
@@ -80,8 +70,8 @@
         }
 
         .admin-status-text {
-            margin-right: 1rem;
-            text-align: right;
+            margin-inline-end: 1rem;
+            text-align: end;
         }
 
         .admin-status-title {
@@ -136,13 +126,13 @@
 
         .parent-search-icon {
             position: absolute;
-            left: 12px;
+            inset-inline-start: 12px;
             top: 10px;
             color: #6b7280;
         }
 
         .parent-search-input {
-            padding-left: 2.5rem;
+            padding-inline-start: 2.5rem;
             background: #f8fafc;
         }
 
@@ -155,7 +145,7 @@
         .parent-table th,
         .parent-table td {
             padding: 15px 20px;
-            text-align: left;
+            text-align: start;
             border-bottom: 1px solid #f1f5f9;
         }
 
@@ -170,13 +160,13 @@
         .parent-info-cell {
             display: flex;
             align-items: center;
-            padding-left: 1rem;
+            padding-inline-start: 1rem;
         }
 
         .parent-profile-image {
             width: 40px;
             height: 40px;
-            margin-right: 12px;
+            margin-inline-end: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -243,20 +233,9 @@
             transition: 0.2s;
         }
 
-        .parent-action-view {
-            background: #e0f2fe;
-            color: #0ea5e9;
-        }
-
-        .parent-action-edit {
-            background: #e0e7ff;
-            color: #4f46e5;
-        }
-
-        .parent-action-delete {
-            background: #fef3c7;
-            color: #d97706;
-        }
+        .parent-action-view { background: #e0f2fe; color: #0ea5e9; }
+        .parent-action-edit { background: #e0e7ff; color: #4f46e5; }
+        .parent-action-delete { background: #fef3c7; color: #d97706; }
 
         .parent-action-button:hover {
             transform: translateY(-1px);
@@ -279,13 +258,8 @@
         }
 
         @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .admin-modal-box {
@@ -301,15 +275,8 @@
         }
 
         @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .admin-modal-header {
@@ -324,22 +291,14 @@
             text-align: center;
         }
 
-        .view-parent-modal .admin-modal-header {
-            background: var(--taif-green);
-        }
-
-        .edit-parent-modal .admin-modal-header {
-            background: var(--taif-orange);
-        }
-
-        .delete-parent-modal .admin-modal-header {
-            background: var(--danger-red);
-        }
+        .view-parent-modal .admin-modal-header { background: var(--taif-green); }
+        .edit-parent-modal .admin-modal-header { background: var(--taif-orange); }
+        .delete-parent-modal .admin-modal-header { background: var(--danger-red); }
 
         .admin-modal-close {
             position: absolute;
             top: 15px;
-            right: 15px;
+            inset-inline-end: 15px;
             color: rgba(255, 255, 255, 0.8);
             font-size: 22px;
             cursor: pointer;
@@ -351,9 +310,7 @@
             transform: scale(1.1);
         }
 
-        .admin-modal-body {
-            padding: 30px 25px;
-        }
+        .admin-modal-body { padding: 30px 25px; }
 
         .view-parent-large-image {
             width: 80px;
@@ -389,24 +346,13 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .view-parent-info-row:last-child {
-            border: none;
-        }
-
-        .view-parent-info-label {
-            color: var(--muted-text);
-            font-weight: 700;
-        }
-
-        .view-parent-info-value {
-            color: var(--dark-text);
-            font-weight: 600;
-            text-align: right;
-        }
+        .view-parent-info-row:last-child { border: none; }
+        .view-parent-info-label { color: var(--muted-text); font-weight: 700; }
+        .view-parent-info-value { color: var(--dark-text); font-weight: 600; text-align: end; }
 
         .parent-edit-form-group {
             margin-bottom: 16px;
-            text-align: left;
+            text-align: start;
         }
 
         .parent-edit-form-group label {
@@ -506,81 +452,62 @@
             cursor: pointer;
         }
 
-        .delete-cancel-button {
-            background: #e5e7eb;
-            color: #374151;
-        }
+        .delete-cancel-button { background: #e5e7eb; color: #374151; }
+        .delete-confirm-button { background: var(--danger-red); color: white; }
 
-        .delete-confirm-button {
-            background: var(--danger-red);
-            color: white;
-        }
-
-        @media (max-width: 992px) {
-            .admin-sidebar {
-                width: 75px;
-            }
-
-            .admin-sidebar-title,
-            .admin-sidebar-link span {
-                display: none;
-            }
-
-            .admin-main-content {
-                width: calc(100% - 75px);
-                margin-left: 75px;
-            }
-        }
         .add-new-button {
-        height: 34px;
-        padding: 0 16px;
-        border: none;
-        border-radius: 10px;
-        background: var(--taif-orange);
-        color: white;
-        font-size: 13px;
-        font-weight: 800;
-        cursor: pointer;
-    }
+            height: 34px;
+            padding: 0 16px;
+            border: none;
+            border-radius: 10px;
+            background: var(--taif-orange);
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
 
-    .add-new-button:hover {
-        opacity: 0.9;
-    }
+        .add-new-button:hover { opacity: 0.9; }
+
     </style>
+</head>
 <body>
     @include('admin.partials.sidebar')
 
-    <div class="admin-main-content text-start">
+    <div class="admin-main-content">
         <div class="admin-page-header">
             <div>
                 <h4 class="admin-page-title">
-                    Parent Management
+                    {{ __('Parent Management') }}
                 </h4>
                 <small class="admin-page-subtitle">
-                    Manage parents and their children information
+                    {{ __('Manage parents and their children information') }}
                 </small>
             </div>
 
             <div class="admin-status-wrapper">
                 <div class="admin-status-text">
-                    <div class="admin-status-title">Admin Panel</div>
+                    <div class="admin-status-title">{{ __('Admin Panel') }}</div>
                     <small class="admin-online-status">
-                        <i class="fas fa-circle me-1"></i> Online
+                        <i class="fas fa-circle me-1"></i> {{ __('Online') }}
                     </small>
                 </div>
-                <button class="admin-logout-button">
-                    <i class="fas fa-sign-out-alt text-danger"></i>
-                </button>
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="admin-logout-button">
+                        <i class="fas fa-sign-out-alt text-danger"></i>
+                    </button>
+                </form>
             </div>
         </div>
 
         <div class="parent-management-card">
             <div class="parent-table-header">
-                <h6 class="parent-table-title">Parents Directory</h6>
+                <h6 class="parent-table-title">{{ __('Parents Directory') }}</h6>
 
                 <form action="{{ route('admin.parents.index') }}" method="GET" id="searchForm" style="display:flex; gap:10px; align-items:center;">
                     <button type="button" class="add-new-button" onclick="openAdminModal('parentCreateModal')">
-                        + Add Parent
+                        + {{ __('Add Parent') }}
                     </button>
 
                     <div class="parent-search-wrapper">
@@ -591,7 +518,7 @@
                             id="parentSearchInput"
                             value="{{ request('search') }}"
                             class="form-control form-control-sm parent-search-input"
-                            placeholder="Search names or phones..."
+                            placeholder="{{ __('Search names or phones...') }}"
                         >
                     </div>
                 </form>
@@ -600,12 +527,12 @@
             <table id="parentManagementTable" class="parent-table">
                 <thead>
                     <tr>
-                        <th>Parent</th>
-                        <th>Phone</th>
-                        <th>Relation</th>
-                        <th>Child</th>
-                        <th>Joined Date</th>
-                        <th style="text-align: center;">Actions</th>
+                        <th>{{ __('Parent') }}</th>
+                        <th>{{ __('Phone') }}</th>
+                        <th>{{ __('Relation') }}</th>
+                        <th>{{ __('Child') }}</th>
+                        <th>{{ __('Joined Date') }}</th>
+                        <th style="text-align: center;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
@@ -616,7 +543,7 @@
                             $parentFullName = trim(($parent->user->first_name ?? '') . ' ' . ($parent->user->last_name ?? ''));
 
                             if ($parentFullName === '') {
-                                $parentFullName = 'No Name';
+                                $parentFullName = __('No Name');
                             }
 
                             $parentImage = $parent->user?->profile_image
@@ -632,26 +559,26 @@
                                     </div>
                                     <div>
                                         <div class="parent-full-name">{{ $parentFullName }}</div>
-                                        <div class="parent-email">{{ $parent->user->email ?? 'N/A' }}</div>
+                                        <div class="parent-email">{{ $parent->user->email ?? __('N/A') }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ $parent->user->phone ?? 'N/A' }}</td>
-                            <td>{{ $parent->relation_to_child ?? 'N/A' }}</td>
+                            <td dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ $parent->user->phone ?? __('N/A') }}</td>
+                            <td>{{ __($parent->relation_to_child ?? 'N/A') }}</td>
                             <td>
-                                <span class="child-name-badge">{{ $child->name ?? 'N/A' }}</span>
+                                <span class="child-name-badge">{{ $child->name ?? __('N/A') }}</span>
                             </td>
                             <td>{{ $parent->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="parent-action-buttons">
                                     <button type="button" class="parent-action-button parent-action-view js-view-parent"
                                         data-name="{{ $parentFullName }}"
-                                        data-email="{{ $parent->user->email ?? 'N/A' }}"
-                                        data-phone="{{ $parent->user->phone ?? 'N/A' }}"
-                                        data-relation="{{ $parent->relation_to_child ?? 'N/A' }}"
-                                        data-child-name="{{ $child->name ?? 'N/A' }}"
-                                        data-child-gender="{{ $child->gender ?? 'N/A' }}"
-                                        data-autism-level="{{ $child->autism_level ?? 'N/A' }}"
+                                        data-email="{{ $parent->user->email ?? __('N/A') }}"
+                                        data-phone="{{ $parent->user->phone ?? __('N/A') }}"
+                                        data-relation="{{ __($parent->relation_to_child ?? 'N/A') }}"
+                                        data-child-name="{{ $child->name ?? __('N/A') }}"
+                                        data-child-gender="{{ __($child->gender ?? 'N/A') }}"
+                                        data-autism-level="{{ __($child->autism_level ?? 'N/A') }}"
                                         data-image="{{ $parentImage }}">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -680,7 +607,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">No parents found.</td>
+                            <td colspan="6" class="text-center py-5 text-muted">{{ __('No parents found.') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -694,34 +621,34 @@
 
     <div id="parentViewModal" class="admin-modal-overlay view-parent-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-id-card"></i> Parent Profile</div>
+            <div class="admin-modal-header"><i class="fas fa-id-card"></i> {{ __('Parent Profile') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('parentViewModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="view-parent-large-image"><i class="fas fa-user"></i></div>
                 <h3 id="viewParentName" class="view-parent-name"></h3>
                 <div class="view-parent-details-box">
                     <div class="view-parent-info-row">
-                        <span class="view-parent-info-label">Email</span>
+                        <span class="view-parent-info-label">{{ __('Email') }}</span>
                         <span class="view-parent-info-value" id="viewParentEmail"></span>
                     </div>
                     <div class="view-parent-info-row">
-                        <span class="view-parent-info-label">Phone</span>
-                        <span class="view-parent-info-value" id="viewParentPhone"></span>
+                        <span class="view-parent-info-label">{{ __('Phone') }}</span>
+                        <span class="view-parent-info-value" id="viewParentPhone" dir="ltr"></span>
                     </div>
                     <div class="view-parent-info-row">
-                        <span class="view-parent-info-label">Relation</span>
+                        <span class="view-parent-info-label">{{ __('Relation') }}</span>
                         <span class="view-parent-info-value" id="viewParentRelation"></span>
                     </div>
                     <div class="view-parent-info-row">
-                        <span class="view-parent-info-label">Child</span>
+                        <span class="view-parent-info-label">{{ __('Child Name') }}</span>
                         <span class="view-parent-info-value" id="viewChildName"></span>
                     </div>
                     <div class="view-parent-info-row">
-                        <span class="view-parent-info-label">Child Gender</span>
+                        <span class="view-parent-info-label">{{ __('Child Gender') }}</span>
                         <span class="view-parent-info-value" id="viewChildGender"></span>
                     </div>
                     <div class="view-parent-info-row">
-                        <span class="view-parent-info-label">Autism Level</span>
+                        <span class="view-parent-info-label">{{ __('Autism Level') }}</span>
                         <span class="view-parent-info-value" id="viewAutismLevel"></span>
                     </div>
                 </div>
@@ -731,52 +658,52 @@
 
     <div id="parentEditModal" class="admin-modal-overlay edit-parent-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-user-edit"></i> Edit Parent</div>
+            <div class="admin-modal-header"><i class="fas fa-user-edit"></i> {{ __('Edit Parent') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('parentEditModal')">&times;</span>
             <div class="admin-modal-body">
                 <form id="parentUpdateForm" method="POST">
                     @csrf @method('PUT')
-                    <div class="parent-edit-section-title">Parent Information</div>
+                    <div class="parent-edit-section-title">{{ __('Parent Information') }}</div>
                     <div class="parent-edit-form-group">
-                        <label>First Name</label>
+                        <label>{{ __('First Name') }}</label>
                         <input type="text" id="editParentFirstName" name="first_name" class="parent-edit-input">
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Last Name</label>
+                        <label>{{ __('Last Name') }}</label>
                         <input type="text" id="editParentLastName" name="last_name" class="parent-edit-input">
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Phone</label>
-                        <input type="text" id="editParentPhone" name="phone" class="parent-edit-input">
+                        <label>{{ __('Phone') }}</label>
+                        <input type="text" id="editParentPhone" name="phone" class="parent-edit-input" dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Relation To Child</label>
+                        <label>{{ __('Relation To Child') }}</label>
                         <input type="text" id="editParentRelation" name="relation_to_child" class="parent-edit-input">
                     </div>
 
-                    <div class="parent-edit-section-title">Child Information</div>
+                    <div class="parent-edit-section-title">{{ __('Child Information') }}</div>
                     <div class="parent-edit-form-group">
-                        <label>Child Name</label>
+                        <label>{{ __('Child Name') }}</label>
                         <input type="text" id="editChildName" name="child_name" class="parent-edit-input">
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Child Gender</label>
+                        <label>{{ __('Child Gender') }}</label>
                         <select id="editChildGender" name="child_gender" class="parent-edit-select">
-                            <option value="">Select gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="">{{ __('Select gender') }}</option>
+                            <option value="Male">{{ __('Male') }}</option>
+                            <option value="Female">{{ __('Female') }}</option>
                         </select>
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Autism Level</label>
+                        <label>{{ __('Autism Level') }}</label>
                         <select id="editAutismLevel" name="autism_level" class="parent-edit-select">
-                            <option value="">Select level</option>
-                            <option value="Mild">Mild</option>
-                            <option value="Moderate">Moderate</option>
-                            <option value="Severe">Severe</option>
+                            <option value="">{{ __('Select level') }}</option>
+                            <option value="Mild">{{ __('Mild') }}</option>
+                            <option value="Moderate">{{ __('Moderate') }}</option>
+                            <option value="Severe">{{ __('Severe') }}</option>
                         </select>
                     </div>
-                    <button type="submit" class="parent-edit-save-button">Save Changes</button>
+                    <button type="submit" class="parent-edit-save-button">{{ __('Save Changes') }}</button>
                 </form>
             </div>
         </div>
@@ -784,15 +711,15 @@
 
     <div id="parentDeleteModal" class="admin-modal-overlay delete-parent-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-trash"></i> Delete Parent</div>
+            <div class="admin-modal-header"><i class="fas fa-trash"></i> {{ __('Delete Parent') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('parentDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="delete-warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <h4 class="delete-title">Are you sure?</h4>
-                <p class="delete-message">You are about to delete <strong id="deleteParentName">this parent</strong>. This action cannot be undone.</p>
+                <h4 class="delete-title">{{ __('Are you sure?') }}</h4>
+                <p class="delete-message">{{ __('You are about to delete') }} <strong id="deleteParentName"></strong>. {{ __('This action cannot be undone.') }}</p>
                 <div class="delete-actions">
-                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('parentDeleteModal')">Cancel</button>
-                    <button type="button" class="delete-confirm-button" id="confirmParentDeleteButton">Delete</button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('parentDeleteModal')">{{ __('Cancel') }}</button>
+                    <button type="button" class="delete-confirm-button" id="confirmParentDeleteButton">{{ __('Delete') }}</button>
                 </div>
             </div>
         </div>
@@ -800,72 +727,72 @@
 
     <div id="parentCreateModal" class="admin-modal-overlay create-parent-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header" style="background: var(--taif-blue);"><i class="fas fa-user-plus"></i> Add Parent And Child</div>
+            <div class="admin-modal-header" style="background: var(--taif-blue);"><i class="fas fa-user-plus"></i> {{ __('Add Parent And Child') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('parentCreateModal')">&times;</span>
             <div class="admin-modal-body">
                 <form action="{{ route('admin.parents.store') }}" method="POST">
                     @csrf
-                    <div class="parent-edit-section-title">Parent Information</div>
+                    <div class="parent-edit-section-title">{{ __('Parent Information') }}</div>
                     <div class="parent-edit-form-group">
-                        <label>First Name</label>
+                        <label>{{ __('First Name') }}</label>
                         <input type="text" name="first_name" class="parent-edit-input" required>
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Last Name</label>
+                        <label>{{ __('Last Name') }}</label>
                         <input type="text" name="last_name" class="parent-edit-input" required>
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Email</label>
-                        <input type="email" name="email" class="parent-edit-input" required>
+                        <label>{{ __('Email') }}</label>
+                        <input type="email" name="email" class="parent-edit-input" required dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Phone</label>
-                        <input type="text" name="phone" class="parent-edit-input">
+                        <label>{{ __('Phone') }}</label>
+                        <input type="text" name="phone" class="parent-edit-input" dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Gender</label>
+                        <label>{{ __('Gender') }}</label>
                         <select name="gender" class="parent-edit-select">
-                            <option value="">Select gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="">{{ __('Select gender') }}</option>
+                            <option value="Male">{{ __('Male') }}</option>
+                            <option value="Female">{{ __('Female') }}</option>
                         </select>
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Password</label>
-                        <input type="password" name="password" class="parent-edit-input" required>
+                        <label>{{ __('Password') }}</label>
+                        <input type="password" name="password" class="parent-edit-input" required dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Relation To Child</label>
+                        <label>{{ __('Relation To Child') }}</label>
                         <input type="text" name="relation_to_child" class="parent-edit-input">
                     </div>
 
-                    <div class="parent-edit-section-title">Child Information</div>
+                    <div class="parent-edit-section-title">{{ __('Child Information') }}</div>
                     <div class="parent-edit-form-group">
-                        <label>Child Name</label>
+                        <label>{{ __('Child Name') }}</label>
                         <input type="text" name="child_name" class="parent-edit-input" required>
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Child Gender</label>
+                        <label>{{ __('Child Gender') }}</label>
                         <select name="child_gender" class="parent-edit-select">
-                            <option value="">Select gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="">{{ __('Select gender') }}</option>
+                            <option value="Male">{{ __('Male') }}</option>
+                            <option value="Female">{{ __('Female') }}</option>
                         </select>
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Child Birth Date</label>
+                        <label>{{ __('Child Birth Date') }}</label>
                         <input type="date" name="child_birth_date" class="parent-edit-input">
                     </div>
                     <div class="parent-edit-form-group">
-                        <label>Autism Level</label>
+                        <label>{{ __('Autism Level') }}</label>
                         <select name="autism_level" class="parent-edit-select">
-                            <option value="">Select level</option>
-                            <option value="Mild">Mild</option>
-                            <option value="Moderate">Moderate</option>
-                            <option value="Severe">Severe</option>
+                            <option value="">{{ __('Select level') }}</option>
+                            <option value="Mild">{{ __('Mild') }}</option>
+                            <option value="Moderate">{{ __('Moderate') }}</option>
+                            <option value="Severe">{{ __('Severe') }}</option>
                         </select>
                     </div>
-                    <button type="submit" class="parent-edit-save-button">Add Parent And Child</button>
+                    <button type="submit" class="parent-edit-save-button">{{ __('Add Parent And Child') }}</button>
                 </form>
             </div>
         </div>
@@ -874,9 +801,6 @@
     <script>
         let parentDeleteForm = null;
 
-        // ---------------------------------------------------------
-        // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
-        // ---------------------------------------------------------
         let searchTimeout = null;
         const parentSearchInput = document.getElementById('parentSearchInput');
         const searchForm = document.getElementById('searchForm');
@@ -890,26 +814,20 @@
             });
         }
 
-        // ---------------------------------------------------------
-        // 2. دالة عرض التفاصيل (Composite Data Population)
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-view-parent').forEach(function (button) {
             button.addEventListener('click', function () {
-                document.getElementById('viewParentName').innerText = this.dataset.name || 'N/A';
-                document.getElementById('viewParentEmail').innerText = this.dataset.email || 'N/A';
-                document.getElementById('viewParentPhone').innerText = this.dataset.phone || 'N/A';
-                document.getElementById('viewParentRelation').innerText = this.dataset.relation || 'N/A';
-                document.getElementById('viewChildName').innerText = this.dataset.childName || 'N/A';
-                document.getElementById('viewChildGender').innerText = this.dataset.childGender || 'N/A';
-                document.getElementById('viewAutismLevel').innerText = this.dataset.autismLevel || 'N/A';
+                document.getElementById('viewParentName').innerText = this.dataset.name || '{{ __('N/A') }}';
+                document.getElementById('viewParentEmail').innerText = this.dataset.email || '{{ __('N/A') }}';
+                document.getElementById('viewParentPhone').innerText = this.dataset.phone || '{{ __('N/A') }}';
+                document.getElementById('viewParentRelation').innerText = this.dataset.relation || '{{ __('N/A') }}';
+                document.getElementById('viewChildName').innerText = this.dataset.childName || '{{ __('N/A') }}';
+                document.getElementById('viewChildGender').innerText = this.dataset.childGender || '{{ __('N/A') }}';
+                document.getElementById('viewAutismLevel').innerText = this.dataset.autismLevel || '{{ __('N/A') }}';
 
                 document.getElementById('parentViewModal').style.display = 'flex';
             });
         });
 
-        // ---------------------------------------------------------
-        // 3. دالة التعديل (Dynamic Form Routing & Pre-filling)
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-edit-parent').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('editParentFirstName').value = this.dataset.firstName || '';
@@ -927,13 +845,10 @@
             });
         });
 
-        // ---------------------------------------------------------
-        // 4. دوال الحذف (Safe Deletion Flow)
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-parent').forEach(function (button) {
             button.addEventListener('click', function () {
                 parentDeleteForm = this.closest('form');
-                document.getElementById('deleteParentName').innerText = this.dataset.name || 'this parent';
+                document.getElementById('deleteParentName').innerText = this.dataset.name || '{{ __('this parent') }}';
                 document.getElementById('parentDeleteModal').style.display = 'flex';
             });
         });
@@ -947,9 +862,6 @@
             });
         }
 
-        // ---------------------------------------------------------
-        // 5. دوال التحكم بنوافذ الـ Modals (UX Polish)
-        // ---------------------------------------------------------
         function closeAdminModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }

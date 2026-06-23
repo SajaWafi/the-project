@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alerts Management - Taif Project</title>
+    <title>{{ __('Alerts Management - Taif Project') }}</title>
 
     <link
         rel="stylesheet"
@@ -14,7 +14,7 @@
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     >
-        <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 
     <style>
         :root {
@@ -42,9 +42,10 @@
             font-family: Arial, sans-serif;
         }
 
+        /* 💡 الخصائص المنطقية */
         .admin-main-content {
             width: calc(100% - 260px);
-            margin-left: 260px;
+            margin-inline-start: 260px;
             padding: 2rem;
         }
 
@@ -74,8 +75,8 @@
         }
 
         .admin-status-text {
-            margin-right: 1rem;
-            text-align: right;
+            margin-inline-end: 1rem;
+            text-align: end;
         }
 
         .admin-status-title {
@@ -147,13 +148,13 @@
 
         .alerts-search-icon {
             position: absolute;
-            left: 12px;
+            inset-inline-start: 12px;
             top: 10px;
             color: #6b7280;
         }
 
         .alerts-search-input {
-            padding-left: 2.5rem;
+            padding-inline-start: 2.5rem;
             background: #f8fafc;
         }
 
@@ -166,7 +167,7 @@
         .alerts-table th,
         .alerts-table td {
             padding: 15px 20px;
-            text-align: left;
+            text-align: start;
             border-bottom: 1px solid #f1f5f9;
             vertical-align: middle;
         }
@@ -204,40 +205,14 @@
             white-space: nowrap;
         }
 
-        .type-panic {
-            background: #fee2e2;
-            color: #dc2626;
-        }
+        .type-panic { background: #fee2e2; color: #dc2626; }
+        .type-heart_rate { background: #fef3c7; color: #d97706; }
+        .type-safe_zone { background: #fee2e2; color: #dc2626; }
+        .type-activity { background: #fef3c7; color: #d97706; }
+        .type-default { background: #e0f2fe; color: #0ea5e9; }
 
-        .type-heart_rate {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .type-safe_zone {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .type-activity {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .type-default {
-            background: #e0f2fe;
-            color: #0ea5e9;
-        }
-
-        .read-yes {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .read-no {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
+        .read-yes { background: #c6f6d5; color: #22543d; }
+        .read-no { background: #e0f2fe; color: #0369a1; }
 
         .alerts-action-buttons {
             display: flex;
@@ -263,25 +238,10 @@
             text-decoration: none;
         }
 
-        .alerts-action-view {
-            background: #e0f2fe;
-            color: #0ea5e9;
-        }
-
-        .alerts-action-read {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-
-        .alerts-action-unread {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .alerts-action-delete {
-            background: #fef3c7;
-            color: #d97706;
-        }
+        .alerts-action-view { background: #e0f2fe; color: #0ea5e9; }
+        .alerts-action-read { background: #dcfce7; color: #16a34a; }
+        .alerts-action-unread { background: #fef3c7; color: #d97706; }
+        .alerts-action-delete { background: #fef3c7; color: #d97706; }
 
         .alerts-action-button:hover {
             transform: translateY(-1px);
@@ -355,26 +315,19 @@
             text-align: center;
         }
 
-        .view-alert-modal .admin-modal-header {
-            background: var(--taif-green);
-        }
-
-        .delete-alert-modal .admin-modal-header {
-            background: var(--danger-red);
-        }
+        .view-alert-modal .admin-modal-header { background: var(--taif-green); }
+        .delete-alert-modal .admin-modal-header { background: var(--danger-red); }
 
         .admin-modal-close {
             position: absolute;
             top: 15px;
-            right: 15px;
+            inset-inline-end: 15px;
             color: rgba(255, 255, 255, 0.8);
             font-size: 22px;
             cursor: pointer;
         }
 
-        .admin-modal-body {
-            padding: 30px 25px;
-        }
+        .admin-modal-body { padding: 30px 25px; }
 
         .view-alert-details-box {
             padding: 15px;
@@ -390,19 +343,13 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .view-alert-info-row:last-child {
-            border: none;
-        }
-
-        .view-alert-info-label {
-            color: var(--muted-text);
-            font-weight: 700;
-        }
-
+        .view-alert-info-row:last-child { border: none; }
+        .view-alert-info-label { color: var(--muted-text); font-weight: 700; }
+        
         .view-alert-info-value {
             color: var(--dark-text);
             font-weight: 600;
-            text-align: right;
+            text-align: end;
             max-width: 260px;
             overflow-wrap: break-word;
         }
@@ -430,25 +377,9 @@
             font-size: 30px;
         }
 
-        .delete-title {
-            margin-bottom: 10px;
-            color: #111827;
-            font-size: 22px;
-            font-weight: 800;
-        }
-
-        .delete-message {
-            margin-bottom: 24px;
-            color: #6b7280;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .delete-actions {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-        }
+        .delete-title { margin-bottom: 10px; color: #111827; font-size: 22px; font-weight: 800; }
+        .delete-message { margin-bottom: 24px; color: #6b7280; font-size: 14px; line-height: 1.6; }
+        .delete-actions { display: flex; justify-content: center; gap: 12px; }
 
         .delete-cancel-button,
         .delete-confirm-button {
@@ -461,71 +392,16 @@
             cursor: pointer;
         }
 
-        .delete-cancel-button {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .delete-confirm-button {
-            background: var(--danger-red);
-            color: white;
-        }
+        .delete-cancel-button { background: #e5e7eb; color: #374151; }
+        .delete-confirm-button { background: var(--danger-red); color: white; }
 
         @media (max-width: 992px) {
             .admin-main-content {
                 width: calc(100% - 75px);
-                margin-left: 75px;
+                margin-inline-start: 75px;
             }
-
-            .alerts-table-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-
-            .alerts-filter-search-wrapper {
-                flex-wrap: wrap;
-            }
-            /* إصلاح وتجميل أزرار الترقيم (Pagination) */
-            nav[role="navigation"] {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-                margin-top: 30px;
-                padding: 15px 0;
-                border-top: 1px solid #edf2f7;
-            }
-
-            /* تصغير الأسهم الكبيرة */
-            nav[role="navigation"] svg {
-                width: 22px;
-                height: 22px;
-            }
-
-            /* تنسيق النصوص والروابط */
-            nav[role="navigation"] p {
-                font-size: 14px;
-                color: #718096;
-                margin-bottom: 0;
-                font-weight: 600;
-            }
-
-            nav[role="navigation"] a, 
-            nav[role="navigation"] span {
-                font-size: 14px;
-                font-weight: 600;
-                color: #4a5568;
-                transition: 0.3s;
-            }
-
-            /* إخفاء العناصر الزائدة اللي تطلع أحياناً في لارافيل */
-            .hidden.sm\:flex-1.sm\:flex.sm\:items-center.sm\:justify-between {
-                display: flex;
-                width: 100%;
-                justify-content: space-between;
-                align-items: center;
-            }
+            .alerts-table-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .alerts-filter-search-wrapper { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -536,11 +412,25 @@
         <div class="admin-page-header">
             <div>
                 <h4 class="admin-page-title">
-                    Alerts Management
+                    {{ __('Alerts Management') }}
                 </h4>
                 <small class="admin-page-subtitle">
-                    Monitor and manage system alerts
+                    {{ __('Monitor and manage system alerts') }}
                 </small>
+            </div>
+            <div class="admin-status-wrapper">
+                <div class="admin-status-text">
+                    <div class="admin-status-title">{{ __('Admin Panel') }}</div>
+                    <small class="admin-online-status">
+                        <i class="fas fa-circle me-1"></i> {{ __('Online') }}
+                    </small>
+                </div>
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="admin-logout-button">
+                        <i class="fas fa-sign-out-alt text-danger"></i>
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -567,30 +457,30 @@
         <div class="alerts-management-card">
             <div class="alerts-table-header">
                 <h6 class="alerts-table-title">
-                    Alerts Directory
+                    {{ __('Alerts Directory') }}
                 </h6>
 
                 <form action="{{ route('admin.alerts.index') }}" method="GET" id="searchForm" class="alerts-filter-search-wrapper" style="display: flex; gap: 10px; align-items: center; justify-content: flex-end;">
                     
                     <select name="type" id="alertTypeFilter" class="form-control form-control-sm alerts-type-filter">
-                        <option value="all" {{ request('type') == 'all' ? 'selected' : '' }}>All types</option>
-                        <option value="panic" {{ request('type') == 'panic' ? 'selected' : '' }}>Panic</option>
-                        <option value="heart_rate" {{ request('type') == 'heart_rate' ? 'selected' : '' }}>Heart Rate</option>
-                        <option value="safe_zone" {{ request('type') == 'safe_zone' ? 'selected' : '' }}>Safe Zone</option>
-                        <option value="activity" {{ request('type') == 'activity' ? 'selected' : '' }}>Activity</option>
+                        <option value="all" {{ request('type') == 'all' ? 'selected' : '' }}>{{ __('All types') }}</option>
+                        <option value="panic" {{ request('type') == 'panic' ? 'selected' : '' }}>{{ __('Panic') }}</option>
+                        <option value="heart_rate" {{ request('type') == 'heart_rate' ? 'selected' : '' }}>{{ __('Heart Rate') }}</option>
+                        <option value="safe_zone" {{ request('type') == 'safe_zone' ? 'selected' : '' }}>{{ __('Safe Zone') }}</option>
+                        <option value="activity" {{ request('type') == 'activity' ? 'selected' : '' }}>{{ __('Activity') }}</option>
                     </select>
 
                     <select name="read_status" id="alertReadFilter" class="form-control form-control-sm alerts-read-filter">
-                        <option value="all" {{ request('read_status') == 'all' ? 'selected' : '' }}>All read status</option>
-                        <option value="read" {{ request('read_status') == 'read' ? 'selected' : '' }}>Read</option>
-                        <option value="unread" {{ request('read_status') == 'unread' ? 'selected' : '' }}>Unread</option>
+                        <option value="all" {{ request('read_status') == 'all' ? 'selected' : '' }}>{{ __('All read status') }}</option>
+                        <option value="read" {{ request('read_status') == 'read' ? 'selected' : '' }}>{{ __('Read') }}</option>
+                        <option value="unread" {{ request('read_status') == 'unread' ? 'selected' : '' }}>{{ __('Unread') }}</option>
                     </select>
 
                     <select name="date_filter" id="alertDateFilter" class="form-control form-control-sm alerts-date-filter">
-                        <option value="all" {{ request('date_filter') == 'all' ? 'selected' : '' }}>All dates</option>
-                        <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>Today</option>
-                        <option value="yesterday" {{ request('date_filter') == 'yesterday' ? 'selected' : '' }}>Yesterday</option>
-                        <option value="week" {{ request('date_filter') == 'week' ? 'selected' : '' }}>This Week</option>
+                        <option value="all" {{ request('date_filter') == 'all' ? 'selected' : '' }}>{{ __('All dates') }}</option>
+                        <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>{{ __('Today') }}</option>
+                        <option value="yesterday" {{ request('date_filter') == 'yesterday' ? 'selected' : '' }}>{{ __('Yesterday') }}</option>
+                        <option value="week" {{ request('date_filter') == 'week' ? 'selected' : '' }}>{{ __('This Week') }}</option>
                     </select>
 
                     <div class="alerts-search-wrapper">
@@ -601,7 +491,7 @@
                             id="alertSearchInput"
                             value="{{ request('search') }}"
                             class="form-control form-control-sm alerts-search-input"
-                            placeholder="Search title or message..."
+                            placeholder="{{ __('Search title or message...') }}"
                         >
                     </div>
                 </form>
@@ -612,14 +502,14 @@
                     <thead>
                         <tr>
                             <th style="width: 50px; text-align: center;">#</th>
-                            <th>Title</th>
-                            <th>Message</th>
-                            <th>Type</th>
-                            <th>Parent</th>
-                            <th>Child</th>
-                            <th>Read</th>
-                            <th>Sent At</th>
-                            <th style="text-align:center;">Actions</th>
+                            <th>{{ __('Title') }}</th>
+                            <th>{{ __('Message') }}</th>
+                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Parent') }}</th>
+                            <th>{{ __('Child') }}</th>
+                            <th>{{ __('Read') }}</th>
+                            <th>{{ __('Sent At') }}</th>
+                            <th style="text-align:center;">{{ __('Actions') }}</th>
                         </tr>
                     </thead>
 
@@ -627,9 +517,9 @@
                         @forelse($alerts as $alert)
                             @php
                                 $parentName = trim(($alert->parent->user->first_name ?? '') . ' ' . ($alert->parent->user->last_name ?? ''));
-                                if ($parentName === '') $parentName = 'N/A';
+                                if ($parentName === '') $parentName = __('N/A');
                                 
-                                $childName = $alert->child->name ?? 'N/A';
+                                $childName = $alert->child->name ?? __('N/A');
                                 $alertType = $alert->alert_type ?? 'default';
 
                                 $typeClass = match($alertType) {
@@ -655,14 +545,14 @@
                                 </td>
                                 <td>
                                     <span class="alert-type-badge {{ $typeClass }}">
-                                        {{ str_replace('_', ' ', $alertType) }}
+                                        {{ __(ucwords(str_replace('_', ' ', $alertType))) }}
                                     </span>
                                 </td>
                                 <td>{{ $parentName }}</td>
                                 <td>{{ $childName }}</td>
                                 <td>
                                     <span class="alert-read-badge {{ $alert->is_read ? 'read-yes' : 'read-no' }}">
-                                        {{ $alert->is_read ? 'Read' : 'Unread' }}
+                                        {{ $alert->is_read ? __('Read') : __('Unread') }}
                                     </span>
                                 </td>
                                 <td>{{ $alertDate->format('M d, Y h:i A') }}</td>
@@ -671,24 +561,24 @@
                                         <button type="button" class="alerts-action-button alerts-action-view js-view-alert"
                                             data-title="{{ $alert->title }}"
                                             data-message="{{ $alert->message }}"
-                                            data-type="{{ str_replace('_', ' ', $alertType) }}"
+                                            data-type="{{ __(ucwords(str_replace('_', ' ', $alertType))) }}"
                                             data-parent="{{ $parentName }}"
                                             data-child="{{ $childName }}"
-                                            data-read="{{ $alert->is_read ? 'Read' : 'Unread' }}"
+                                            data-read="{{ $alert->is_read ? __('Read') : __('Unread') }}"
                                             data-sent-at="{{ $alertDate->format('M d, Y h:i A') }}"
-                                            data-panic-event="{{ $alert->panic_event_id ?? 'N/A' }}">
+                                            data-panic-event="{{ $alert->panic_event_id ?? __('N/A') }}">
                                             <i class="fas fa-eye"></i>
                                         </button>
 
                                         @if(!$alert->is_read)
                                             <form action="{{ route('admin.alerts.mark-read', $alert->id) }}" method="POST" style="margin: 0;">
                                                 @csrf
-                                                <button type="submit" class="alerts-action-button alerts-action-read" title="Mark as read">Read</button>
+                                                <button type="submit" class="alerts-action-button alerts-action-read" title="{{ __('Mark as read') }}">{{ __('Read') }}</button>
                                             </form>
                                         @else
                                             <form action="{{ route('admin.alerts.mark-unread', $alert->id) }}" method="POST" style="margin: 0;">
                                                 @csrf
-                                                <button type="submit" class="alerts-action-button alerts-action-unread" title="Mark as unread">Unread</button>
+                                                <button type="submit" class="alerts-action-button alerts-action-unread" title="{{ __('Mark as unread') }}">{{ __('Unread') }}</button>
                                             </form>
                                         @endif
 
@@ -706,8 +596,8 @@
                                 <td colspan="9">
                                     <div class="empty-state">
                                         <div class="empty-state-icon"><i class="fas fa-bell"></i></div>
-                                        <div class="empty-state-title">No alerts found</div>
-                                        <div class="empty-state-text">Alerts will appear here once the system starts generating them.</div>
+                                        <div class="empty-state-title">{{ __('No alerts found') }}</div>
+                                        <div class="empty-state-text">{{ __('Alerts will appear here once the system starts generating them.') }}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -726,34 +616,34 @@
 
     <div id="alertViewModal" class="admin-modal-overlay view-alert-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-bell"></i> Alert Details</div>
+            <div class="admin-modal-header"><i class="fas fa-bell"></i> {{ __('Alert Details') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('alertViewModal')">&times;</span>
             <div class="admin-modal-body">
                 <div class="view-alert-details-box">
-                    <div class="view-alert-info-row"><span class="view-alert-info-label">Title</span><span class="view-alert-info-value" id="viewAlertTitle"></span></div>
-                    <div class="view-alert-info-row"><span class="view-alert-info-label">Type</span><span class="view-alert-info-value" id="viewAlertType"></span></div>
-                    <div class="view-alert-info-row"><span class="view-alert-info-label">Parent</span><span class="view-alert-info-value" id="viewAlertParent"></span></div>
-                    <div class="view-alert-info-row"><span class="view-alert-info-label">Child</span><span class="view-alert-info-value" id="viewAlertChild"></span></div>
-                    <div class="view-alert-info-row"><span class="view-alert-info-label">Read Status</span><span class="view-alert-info-value" id="viewAlertRead"></span></div>
-                    <div class="view-alert-info-row"><span class="view-alert-info-label">Sent At</span><span class="view-alert-info-value" id="viewAlertSentAt"></span></div>
-                    <div class="view-alert-info-row"><span class="view-alert-info-label">Panic Event ID</span><span class="view-alert-info-value" id="viewAlertPanicEvent"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">{{ __('Title') }}</span><span class="view-alert-info-value" id="viewAlertTitle"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">{{ __('Type') }}</span><span class="view-alert-info-value" id="viewAlertType"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">{{ __('Parent') }}</span><span class="view-alert-info-value" id="viewAlertParent"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">{{ __('Child') }}</span><span class="view-alert-info-value" id="viewAlertChild"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">{{ __('Read Status') }}</span><span class="view-alert-info-value" id="viewAlertRead"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">{{ __('Sent At') }}</span><span class="view-alert-info-value" id="viewAlertSentAt" dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}"></span></div>
+                    <div class="view-alert-info-row"><span class="view-alert-info-label">{{ __('Panic Event ID') }}</span><span class="view-alert-info-value" id="viewAlertPanicEvent"></span></div>
                 </div>
-                <div class="view-alert-message" id="viewAlertMessage" style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 8px; border-left: 4px solid var(--taif-blue);"></div>
+                <div class="view-alert-message" id="viewAlertMessage" style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 8px; border-inline-start: 4px solid var(--taif-blue);"></div>
             </div>
         </div>
     </div>
 
     <div id="alertDeleteModal" class="admin-modal-overlay delete-alert-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-trash"></i> Delete Alert</div>
+            <div class="admin-modal-header"><i class="fas fa-trash"></i> {{ __('Delete Alert') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('alertDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="delete-warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <h4 class="delete-title">Are you sure?</h4>
-                <p class="delete-message">You are about to delete alert:<br><strong id="deleteAlertName">this alert</strong>.<br>This action cannot be undone.</p>
+                <h4 class="delete-title">{{ __('Are you sure?') }}</h4>
+                <p class="delete-message">{{ __('You are about to delete alert:') }}<br><strong id="deleteAlertName" dir="auto"></strong>.<br>{{ __('This action cannot be undone.') }}</p>
                 <div class="delete-actions">
-                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('alertDeleteModal')">Cancel</button>
-                    <button type="button" class="delete-confirm-button" id="confirmAlertDeleteButton">Delete</button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('alertDeleteModal')">{{ __('Cancel') }}</button>
+                    <button type="button" class="delete-confirm-button" id="confirmAlertDeleteButton">{{ __('Delete') }}</button>
                 </div>
             </div>
         </div>
@@ -762,9 +652,6 @@
     <script>
         let alertDeleteForm = null;
 
-        // ---------------------------------------------------------
-        // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
-        // ---------------------------------------------------------
         let searchTimeout = null;
         const searchForm = document.getElementById('searchForm');
         
@@ -773,24 +660,20 @@
             searchTimeout = setTimeout(() => { if (searchForm) searchForm.submit(); }, 500);
         });
 
-        // إرسال الفورم فوراً عند تغيير أي قائمة منسدلة
         document.getElementById('alertTypeFilter')?.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
         document.getElementById('alertReadFilter')?.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
         document.getElementById('alertDateFilter')?.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
 
-        // ---------------------------------------------------------
-        // 2. دوال عرض التفاصيل والحذف
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-view-alert').forEach(function (button) {
             button.addEventListener('click', function () {
-                document.getElementById('viewAlertTitle').innerText = this.dataset.title || 'N/A';
-                document.getElementById('viewAlertType').innerText = this.dataset.type || 'N/A';
-                document.getElementById('viewAlertParent').innerText = this.dataset.parent || 'N/A';
-                document.getElementById('viewAlertChild').innerText = this.dataset.child || 'N/A';
-                document.getElementById('viewAlertRead').innerText = this.dataset.read || 'N/A';
-                document.getElementById('viewAlertSentAt').innerText = this.dataset.sentAt || 'N/A';
-                document.getElementById('viewAlertPanicEvent').innerText = this.dataset.panicEvent || 'N/A';
-                document.getElementById('viewAlertMessage').innerText = this.dataset.message || 'N/A';
+                document.getElementById('viewAlertTitle').innerText = this.dataset.title || '{{ __('N/A') }}';
+                document.getElementById('viewAlertType').innerText = this.dataset.type || '{{ __('N/A') }}';
+                document.getElementById('viewAlertParent').innerText = this.dataset.parent || '{{ __('N/A') }}';
+                document.getElementById('viewAlertChild').innerText = this.dataset.child || '{{ __('N/A') }}';
+                document.getElementById('viewAlertRead').innerText = this.dataset.read || '{{ __('N/A') }}';
+                document.getElementById('viewAlertSentAt').innerText = this.dataset.sentAt || '{{ __('N/A') }}';
+                document.getElementById('viewAlertPanicEvent').innerText = this.dataset.panicEvent || '{{ __('N/A') }}';
+                document.getElementById('viewAlertMessage').innerText = this.dataset.message || '{{ __('N/A') }}';
                 document.getElementById('alertViewModal').style.display = 'flex';
             });
         });
@@ -798,7 +681,7 @@
         document.querySelectorAll('.js-delete-alert').forEach(function (button) {
             button.addEventListener('click', function () {
                 alertDeleteForm = this.closest('form');
-                document.getElementById('deleteAlertName').innerText = this.dataset.name || 'this alert';
+                document.getElementById('deleteAlertName').innerText = this.dataset.name || '{{ __('this alert') }}';
                 document.getElementById('alertDeleteModal').style.display = 'flex';
             });
         });

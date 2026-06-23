@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complaints - TAIF</title>
+    <title>{{ __('Complaints - TAIF') }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -52,6 +52,9 @@
             color: #0ea5e9;
             font-size: 18px;
             text-decoration: none;
+            display: inline-block;
+            /* 💡 قلب سهم الفونت أوسوم للغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -92,9 +95,11 @@
             color: var(--taif-blue);
             font-size: 13px;
             font-weight: 700;
+            text-align: start; /* 💡 محاذاة النص المنطقية */
         }
 
-        .form-select, .form-textarea {
+        /* 💡 تم إضافة .form-input هنا لتوحيد التصميم */
+        .form-select, .form-textarea, .form-input {
             width: 100%;
             background: rgba(255, 255, 255, 0.9);
             border: 2px solid #edf2f7;
@@ -105,6 +110,11 @@
             outline: none;
             box-sizing: border-box;
             font-family: inherit;
+            text-align: start; /* 💡 محاذاة الإدخال المنطقية */
+        }
+
+        .form-input {
+            height: 50px;
         }
 
         .form-select {
@@ -118,7 +128,7 @@
             line-height: 1.5;
         }
 
-        .form-select:focus, .form-textarea:focus {
+        .form-select:focus, .form-textarea:focus, .form-input:focus {
             background: white;
             border-color: #0ea5e9;
         }
@@ -128,7 +138,7 @@
         }
 
         .submit-btn {
-        width: 100%;
+            width: 100%;
             height: 52px;
             background: var(--taif-orange);
             color: #fff;
@@ -151,55 +161,55 @@
 
     <div class="mobile-container">
         <div class="mobile-header">
-           <a href="javascript:history.back()" class="back-arrow">
+            <a href="javascript:history.back()" class="back-arrow" aria-label="Back">
                 <i class="fas fa-chevron-left"></i>
             </a>
-            <h4 class="page-title">Complaints</h4>
+            <h4 class="page-title">{{ __('Complaints') }}</h4>
             <img class="header-logo" src="{{ asset('images/logo.png') }}" alt="Logo" onerror="this.style.display='none'">
         </div>
 
         <div class="complaint-body">
             <p class="instruction-text">
-                Please select the category of your issue and provide details. Our administration team will review it.
+                {{ __('Please select the category of your issue and provide details. Our administration team will review it.') }}
             </p>
 
             <form action="{{ route('complaints.store') }}" method="POST">
                 @csrf
 
                 <div class="form-group">
-                    <label>Complaint Type</label>
+                    <label>{{ __('Complaint Type') }}</label>
                     <select name="category" id="complaint-category" class="form-select" required>
-                        <option value="" disabled selected>Choose a category</option>
-                        <option value="System Error / Bug">System Error or Bug </option>
-                        <option value="Technical Issue">Technical Issue </option>
-                        <option value="Doctor Dispute">Complaint Against a Doctor </option>
-                        <option value="General Suggestion">General Suggestion </option>
-                        <option value="Other">Other</option>
+                        <option value="" disabled selected>{{ __('Choose a category') }}</option>
+                        <option value="System Error / Bug">{{ __('System Error or Bug') }}</option>
+                        <option value="Technical Issue">{{ __('Technical Issue') }}</option>
+                        <option value="Doctor Dispute">{{ __('Complaint Against a Doctor') }}</option>
+                        <option value="General Suggestion">{{ __('General Suggestion') }}</option>
+                        <option value="Other">{{ __('Other') }}</option>
                     </select>
                 </div>
 
-               <div class="form-group" id="doctor-select-group" style="display: none;">
-    <label>Doctor Name or ID</label>
-    <input 
-        type="text" 
-        name="doctor_name" 
-        class="form-input" 
-        placeholder="Enter doctor's name..."
-    >
-</div>
+                <div class="form-group" id="doctor-select-group">
+                    <label>{{ __('Doctor Name or ID') }}</label>
+                    <input 
+                        type="text" 
+                        name="doctor_name" 
+                        class="form-input" 
+                        placeholder="{{ __('Enter doctor\'s name...') }}"
+                    >
+                </div>
 
                 <div class="form-group">
-                    <label>Complaint Details</label>
+                    <label>{{ __('Complaint Details') }}</label>
                     <textarea 
                         name="message" 
                         class="form-textarea" 
-                        placeholder="Describe your issue or feedback in detail..." 
+                        placeholder="{{ __('Describe your issue or feedback in detail...') }}" 
                         required
                     ></textarea>
                 </div>
 
                 <button type="submit" class="submit-btn">
-                    Submit Complaint
+                    {{ __('Submit Complaint') }}
                 </button>
             </form>
         </div>
@@ -208,6 +218,7 @@
     <script>
         document.getElementById('complaint-category').addEventListener('change', function() {
             var doctorGroup = document.getElementById('doctor-select-group');
+            // المراجع في الـ Javascript لا يزال يستخدم القيمة الإنجليزية المخفية بالـ Value
             if (this.value === 'Doctor Dispute') {
                 doctorGroup.style.display = 'block';
             } else {

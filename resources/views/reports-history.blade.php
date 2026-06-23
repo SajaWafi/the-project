@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports History</title>
+    <title>{{ __('Reports History') }}</title>
 
     <style>
         * {
@@ -47,7 +47,7 @@
             background-image: url('{{ asset('images/bg.png') }}');
             background-repeat: no-repeat;
             background-size: 165% 100%;
-            background-position: left bottom;
+            background-position: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} bottom;
             opacity: 0.9;
             z-index: 0;
             pointer-events: none;
@@ -84,7 +84,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             border: none;
             background: transparent;
             cursor: pointer;
@@ -97,6 +97,7 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -107,7 +108,7 @@
 
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0;
             width: 42px;
             height: 42px;
             object-fit: contain;
@@ -152,7 +153,7 @@
 
         .report-check {
             position: absolute;
-            left: 12px;
+            inset-inline-start: 12px;
             top: 50%;
             transform: translateY(-50%);
             width: 18px;
@@ -180,7 +181,7 @@
         }
 
         .delete-mode .report-card {
-            padding-left: 40px;
+            padding-inline-start: 40px;
         }
 
         .report-card.selected {
@@ -210,6 +211,8 @@
             font-size: 15px;
             font-weight: 500;
             color: #202020;
+            direction: ltr; /* التواريخ والأشهر أفضل تبقى يسار لليمين */
+            text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};
         }
 
         .report-arrow {
@@ -221,6 +224,7 @@
         .report-arrow svg {
             width: 18px;
             height: 18px;
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .delete-actions {
@@ -318,22 +322,18 @@
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 0;
-                background: #fff;
-            }
-
-            .mobile-screen {
-                width: 100%;
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-                box-shadow: none;
-            }
+            body { padding: 0; background: #fff; }
+            .mobile-screen { width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; box-shadow: none; }
         }
     </style>
 </head>
 <body>
+    
+    <script>
+        const jsLang = {
+            selectOne: "{{ __('Please select at least one report.') }}"
+        };
+    </script>
 
     <div class="mobile-screen">
         <div class="content">
@@ -346,13 +346,13 @@
             </div>
 
             <div class="header">
-                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
 
-                <div class="page-title">Reports History</div>
+                <div class="page-title">{{ __('Reports History') }}</div>
 
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Taif">
             </div>
@@ -367,7 +367,7 @@
                             <path d="M10 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             <path d="M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                         </svg>
-                        <span>Delete</span>
+                        <span>{{ __('Delete') }}</span>
                     </button>
                 </div>
 
@@ -379,7 +379,7 @@
                         <div class="report-card-wrapper">
                             <input type="checkbox" class="report-check" value="{{ $report->id }}">
 
-                            <a href="{{ route('report', ['period' => 'month']) }}" class="report-card">
+                            <a href="{{ route('reports.show', $report->id) }}" class="report-card">
                                 <div class="report-left">
                                     <div class="report-icon">
                                         <svg viewBox="0 0 24 24" fill="none">
@@ -389,7 +389,7 @@
                                             <path d="M15 11v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                         </svg>
                                     </div>
-                                    <div class="report-title">{{ $monthName }} Report {{ $report->report_year }}</div>
+                                    <div class="report-title">{{ $monthName }} {{ __('Report') }} {{ $report->report_year }}</div>
                                 </div>
 
                                 <div class="report-arrow">
@@ -404,11 +404,11 @@
 
                 <div class="delete-actions" id="deleteActions">
                     <button class="delete-btn" type="button" onclick="openDeleteModal()">
-                        Delete Selected
+                        {{ __('Delete Selected') }}
                     </button>
                 </div>
             @else
-                <div class="empty-state">No reports yet.</div>
+                <div class="empty-state">{{ __('No reports yet.') }}</div>
             @endif
 
         </div>
@@ -416,14 +416,14 @@
 
     <div class="delete-modal" id="deleteModal" onclick="closeDeleteModal(event)">
         <div class="delete-box">
-            <div class="delete-title">Delete Reports</div>
+            <div class="delete-title">{{ __('Delete Reports') }}</div>
             <div class="delete-text">
-                Are you sure you want to delete the selected report(s)?
+                {{ __('Are you sure you want to delete the selected report(s)?') }}
             </div>
 
             <div class="delete-buttons">
-                <button class="cancel-btn" type="button" onclick="closeDeleteModal()">Cancel</button>
-                <button class="confirm-btn" type="button" onclick="confirmDelete()">Delete</button>
+                <button class="cancel-btn" type="button" onclick="closeDeleteModal()">{{ __('Cancel') }}</button>
+                <button class="confirm-btn" type="button" onclick="confirmDelete()">{{ __('Delete') }}</button>
             </div>
         </div>
     </div>
@@ -433,13 +433,14 @@
         const deleteActions = document.getElementById('deleteActions');
         const deleteModal = document.getElementById('deleteModal');
         const reportsList = document.getElementById('reportsList');
+        const mobileScreen = document.querySelector('.mobile-screen');
 
         if (deleteToggle) {
             deleteToggle.addEventListener('click', function () {
-                document.body.classList.toggle('delete-mode');
+                mobileScreen.classList.toggle('delete-mode');
                 deleteActions.classList.toggle('show');
 
-                if (!document.body.classList.contains('delete-mode')) {
+                if (!mobileScreen.classList.contains('delete-mode')) {
                     document.querySelectorAll('.report-check').forEach(check => {
                         check.checked = false;
                     });
@@ -464,7 +465,7 @@
 
         document.querySelectorAll('.report-card').forEach(card => {
             card.addEventListener('click', function (e) {
-                if (document.body.classList.contains('delete-mode')) {
+                if (mobileScreen.classList.contains('delete-mode')) {
                     e.preventDefault();
                     const wrapper = this.closest('.report-card-wrapper');
                     const checkbox = wrapper.querySelector('.report-check');
@@ -477,7 +478,7 @@
         function openDeleteModal() {
             const checked = document.querySelectorAll('.report-check:checked');
             if (!checked.length) {
-                alert('Please select at least one report.');
+                alert(jsLang.selectOne);
                 return;
             }
             deleteModal.classList.add('show');
@@ -494,19 +495,16 @@
 
             if (selectedIds.length === 0) return;
 
-            // 1. إنشاء فورم مخفي برمجياً
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = "{{ route('reports.destroy') }}";
 
-            // 2. إضافة توكن الحماية الخاص بـ لارافل (CSRF)
             const csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';
             csrfToken.name = '_token';
             csrfToken.value = "{{ csrf_token() }}";
             form.appendChild(csrfToken);
 
-            // 3. إضافة مصفوفة الـ IDs اللي تم اختيارها
             selectedIds.forEach(id => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
@@ -515,7 +513,6 @@
                 form.appendChild(input);
             });
 
-            // 4. إرسال الفورم
             document.body.appendChild(form);
             form.submit();
         }

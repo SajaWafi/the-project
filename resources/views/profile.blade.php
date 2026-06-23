@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile</title>
+    <title>{{ __('My Profile') }}</title>
 
     <style>
         * {
@@ -47,7 +47,8 @@
             background-image: url('{{ asset('images/bg.png') }}');
             background-repeat: no-repeat;
             background-size: 165% 100%;
-            background-position: left bottom;
+            /* 💡 خلفية متكيفة مع اللغة */
+            background-position: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} bottom;
             opacity: 0.92;
             z-index: 0;
             pointer-events: none;
@@ -71,7 +72,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* منطقي */
             border: none;
             background: transparent;
             cursor: pointer;
@@ -84,6 +85,8 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+            /* 💡 قلب سهم الرجوع في اللغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -94,8 +97,8 @@
 
         .app-logo {
             position: absolute;
-            right: 0;
-            width:100px;
+            inset-inline-end: 0; /* منطقي */
+            width: 100px;
             height: 100px;
             object-fit: contain;
         }
@@ -127,7 +130,7 @@
 
         .avatar-star {
             position: absolute;
-            left: -8px;
+            inset-inline-start: -8px; /* منطقي */
             top: 70px;
             font-size: 28px;
             color: #f1d46a;
@@ -136,7 +139,7 @@
 
         .edit-avatar-btn {
             position: absolute;
-            right: 2px;
+            inset-inline-end: 2px; /* منطقي */
             bottom: 6px;
             width: 34px;
             height: 34px;
@@ -195,6 +198,11 @@
             text-decoration: none;
             color: #111;
             padding: 6px 0;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            cursor: pointer;
+            width: 100%;
         }
 
         .menu-left {
@@ -221,6 +229,11 @@
             height: 20px;
         }
 
+        /* 💡 قلب أيقونة تسجيل الخروج إذا كانت الشاشة بالعربي */
+        .logout-icon-svg {
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
+        }
+
         .menu-text {
             font-size: 20px;
             font-weight: 500;
@@ -237,35 +250,11 @@
         .arrow-right svg {
             width: 20px;
             height: 20px;
+            /* 💡 قلب سهم المنيو في اللغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
-        @media (max-width: 480px) {
-            body {
-                padding: 0;
-                background: #fff;
-            }
-
-            .mobile-screen {
-                width: 100%;
-                max-width: 100%;
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-                box-shadow: none;
-            }
-
-            .content {
-                padding: 14px 16px 26px;
-            }
-        }
-                .logout-btn-trigger {
-            width: 100%;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
+        /* تنسيقات نافذة الخروج */
         .logout-overlay {
             position: absolute;
             inset: 0;
@@ -274,7 +263,7 @@
             display: none;
             align-items: flex-end;
             justify-content: center;
-            padding: 0 0 0;
+            padding: 0;
         }
 
         .logout-overlay.show {
@@ -340,6 +329,12 @@
             background: #2f80ed;
             color: #fff;
         }
+
+        @media (max-width: 480px) {
+            body { padding: 0; background: #fff; }
+            .mobile-screen { width: 100%; max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; box-shadow: none; }
+            .content { padding: 14px 16px 26px; }
+        }
     </style>
 </head>
 <body>
@@ -347,66 +342,66 @@
     <div class="mobile-screen">
         <div class="content">
 
-
             <div class="header">
-                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
 
-                <div class="page-title">My Profile</div>
+                <div class="page-title">{{ __('My Profile') }}</div>
 
                 <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
             </div>
 
-           <div class="profile-top">
-    <div class="avatar-wrap">
-            <img 
-            src="{{ !empty(auth()->user()->profile_image)
-                ? asset('storage/' . auth()->user()->profile_image)
-                : asset('images/default-user.png') }}"
-            alt="Profile"
-            class="avatar"
-        >
+            <div class="profile-top">
+                <div class="avatar-wrap">
+                    <img 
+                        src="{{ !empty(auth()->user()->profile_image)
+                            ? asset('storage/' . auth()->user()->profile_image)
+                            : asset('images/default-user.png') }}"
+                        alt="Profile"
+                        class="avatar"
+                        id="profileAvatar"
+                    >
 
-        <div class="avatar-star">★</div>
+                    <div class="avatar-star">★</div>
 
-        <button class="edit-avatar-btn" type="button" onclick="window.location='{{ route('edit.profile') }}'">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                <path d="M12.5 5.5 16.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-        </button>
-    </div>
-
-    <div class="name-en">
-        {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
-    </div>
-
-    <div class="name-ar">
-    {{ optional(optional(auth()->user()->parentProfile)->child)->name ?? 'No Child' }}
-</div>
-
-</div>
-
-            <a href="{{ route('edit.profile') }}" class="menu-item">
-                <div class="menu-left">
-                    <div class="menu-icon">
+                    <button class="edit-avatar-btn" type="button" onclick="window.location='{{ route('edit.profile') }}'">
                         <svg viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
-                            <path d="M5 20c0-3.2 3-5 7-5s7 1.8 7 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            <path d="M12.5 5.5 16.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <input type="file" id="avatarInput" accept="image/*">
+                </div>
+
+                <div class="name-en">
+                    {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                </div>
+
+                <div class="name-ar">
+                    {{ optional(optional(auth()->user()->parentProfile)->child)->name ?? __('No Child') }}
+                </div>
+            </div>
+
+            <div class="menu-list">
+                <a href="{{ route('edit.profile') }}" class="menu-item">
+                    <div class="menu-left">
+                        <div class="menu-icon">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M5 20c0-3.2 3-5 7-5s7 1.8 7 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="menu-text">{{ __('Profile') }}</div>
+                    </div>
+                    <div class="arrow-right">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
-                    <div class="menu-text">Profile</div>
-                </div>
-
-                <div class="arrow-right">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-            </a>
+                </a>
 
                 <a href="{{ route('bracelet.show') }}" class="menu-item">
                     <div class="menu-left">
@@ -416,9 +411,8 @@
                                 <path d="M10 7h4M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                             </svg>
                         </div>
-                        <div class="menu-text">Connect Bracelet</div>
+                        <div class="menu-text">{{ __('Connect Bracelet') }}</div>
                     </div>
-
                     <div class="arrow-right">
                         <svg viewBox="0 0 24 24" fill="none">
                             <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -426,7 +420,7 @@
                     </div>
                 </a>
 
-               <a href="{{ route('privacy.policy') }}" class="menu-item">
+                <a href="{{ route('privacy.policy') }}" class="menu-item">
                     <div class="menu-left">
                         <div class="menu-icon">
                             <svg viewBox="0 0 24 24" fill="none">
@@ -434,9 +428,8 @@
                                 <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
                             </svg>
                         </div>
-                        <div class="menu-text">Privacy Policy</div>
+                        <div class="menu-text">{{ __('Privacy Policy') }}</div>
                     </div>
-
                     <div class="arrow-right">
                         <svg viewBox="0 0 24 24" fill="none">
                             <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -452,9 +445,8 @@
                                 <path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a7.4 7.4 0 0 0-1.7-1L14.5 3h-5l-.3 3a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.5l2 1.5a7 7 0 0 0 0 2l-2 1.5l2 3.5l2.4-1a7.4 7.4 0 0 0 1.7 1l.3 3h5l.3-3a7.4 7.4 0 0 0 1.7-1l2.4 1l2-3.5-2-1.5c.1-.3.1-.7.1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                             </svg>
                         </div>
-                        <div class="menu-text">Settings</div>
+                        <div class="menu-text">{{ __('Settings') }}</div>
                     </div>
-
                     <div class="arrow-right">
                         <svg viewBox="0 0 24 24" fill="none">
                             <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -462,73 +454,78 @@
                     </div>
                 </a>
 
-           <button type="button" class="menu-item logout-btn-trigger" onclick="openLogoutModal()">
-    <div class="menu-left">
-        <div class="menu-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M10 7V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                <path d="M14 12H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                <path d="M7 9L4 12L7 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </div>
-        <div class="menu-text">Logout</div>
-    </div>
-
-    <div class="arrow-right">
-        <svg viewBox="0 0 24 24" fill="none">
-            <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </div>
-</button>
-
-</div>
-
-<div class="logout-overlay" id="logoutOverlay" onclick="closeLogoutModal(event)">
-    <div class="logout-sheet" onclick="event.stopPropagation()">
-        <div class="logout-title">Logout</div>
-        <div class="logout-text">Are you sure you want to log out?</div>
-
-        <div class="logout-actions">
-            <button type="button" class="logout-action-btn logout-cancel" onclick="closeLogoutModal()">
-                Cancel
-            </button>
-
-            <form action="{{ route('logout') }}" method="POST" style="margin:0;">
-                @csrf
-                <button type="submit" class="logout-action-btn logout-confirm">
-                    Yes, Logout
+                <button type="button" class="menu-item" onclick="openLogoutModal()">
+                    <div class="menu-left">
+                        <div class="menu-icon">
+                            <svg class="logout-icon-svg" viewBox="0 0 24 24" fill="none">
+                                <path d="M10 7V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M14 12H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M7 9L4 12L7 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="menu-text">{{ __('Logout') }}</div>
+                    </div>
+                    <div class="arrow-right">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                 </button>
-            </form>
+            </div>
+
         </div>
-    </div>
-</div>
+
+        <div class="logout-overlay" id="logoutOverlay" onclick="closeLogoutModal(event)">
+            <div class="logout-sheet" onclick="event.stopPropagation()">
+                <div class="logout-title">{{ __('Logout') }}</div>
+                <div class="logout-text">{{ __('Are you sure you want to log out?') }}</div>
+
+                <div class="logout-actions">
+                    <button type="button" class="logout-action-btn logout-cancel" onclick="closeLogoutModal()">
+                        {{ __('Cancel') }}
+                    </button>
+
+                    <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="logout-action-btn logout-confirm">
+                            {{ __('Yes, Logout') }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
+        // سكريبت معاينة الصورة (إذا كان مفعل)
         const avatarInput = document.getElementById('avatarInput');
         const profileAvatar = document.getElementById('profileAvatar');
 
-        avatarInput.addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        if(avatarInput) {
+            avatarInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                profileAvatar.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-            const logoutOverlay = document.getElementById('logoutOverlay');
-
-    function openLogoutModal() {
-        document.getElementById('logoutOverlay').classList.add('show');
-    }
-
-    function closeLogoutModal(event) {
-        if (!event || event.target.id === 'logoutOverlay') {
-            document.getElementById('logoutOverlay').classList.remove('show');
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if(profileAvatar) profileAvatar.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
         }
-    }
+
+        // سكريبت المودال الخاص بتسجيل الخروج
+        const logoutOverlay = document.getElementById('logoutOverlay');
+
+        function openLogoutModal() {
+            logoutOverlay.classList.add('show');
+        }
+
+        function closeLogoutModal(event) {
+            if (!event || event.target.id === 'logoutOverlay') {
+                logoutOverlay.classList.remove('show');
+            }
+        }
     </script>
 
 </body>

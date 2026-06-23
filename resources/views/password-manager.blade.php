@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Manager</title>
+    <title>{{ __('Password Manager') }}</title>
 
     <style>
         * {
@@ -47,7 +47,8 @@
             background-image: url('{{ asset('images/bg.png') }}');
             background-repeat: no-repeat;
             background-size: 165% 100%;
-            background-position: right bottom;
+            /* 💡 خلفية متكيفة مع اللغة */
+            background-position: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }} bottom;
             opacity: 0.95;
             z-index: 0;
             pointer-events: none;
@@ -86,7 +87,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* منطقي */
             border: none;
             background: transparent;
             cursor: pointer;
@@ -99,6 +100,8 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+            /* 💡 قلب سهم الرجوع للغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -110,7 +113,7 @@
 
         .app-logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0; /* منطقي */
             width: 100px;
             height: 100px;
             object-fit: contain;
@@ -144,16 +147,19 @@
             outline: none;
             border-radius: 14px;
             background: #cfeeee;
-            padding: 0 46px 0 14px;
+            /* 💡 المسافات تتغير تلقائياً حسب اتجاه اللغة */
+            padding-inline-start: 14px;
+            padding-inline-end: 46px;
             font-size: 18px;
             color: #2f80ed;
             letter-spacing: 1px;
+            text-align: start;
         }
 
         .toggle-password {
             position: absolute;
             top: 50%;
-            right: 12px;
+            inset-inline-end: 12px; /* منطقي */
             transform: translateY(-50%);
             border: none;
             background: transparent;
@@ -229,23 +235,9 @@
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 0;
-                background: #fff;
-            }
-
-            .mobile-screen {
-                width: 100%;
-                max-width: 100%;
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-                box-shadow: none;
-            }
-
-            .content {
-                padding: 14px 10px 28px;
-            }
+            body { padding: 0; background: #fff; }
+            .mobile-screen { width: 100%; max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; box-shadow: none; }
+            .content { padding: 14px 10px 28px; }
         }
     </style>
 </head>
@@ -261,13 +253,13 @@
             </div>
 
             <div class="header">
-                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
 
-                <div class="page-title">Password Manager</div>
+                <div class="page-title">{{ __('Password Manager') }}</div>
 
                 <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
             </div>
@@ -291,7 +283,7 @@
 
                 <div class="form-area">
                     <div class="form-group">
-                        <label class="form-label">Current Password</label>
+                        <label class="form-label">{{ __('Current Password') }}</label>
                         <div class="password-wrapper">
                             <input
                                 type="password"
@@ -317,7 +309,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">New Password</label>
+                        <label class="form-label">{{ __('New Password') }}</label>
                         <div class="password-wrapper">
                             <input
                                 type="password"
@@ -343,7 +335,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Confirm New Password</label>
+                        <label class="form-label">{{ __('Confirm New Password') }}</label>
                         <div class="password-wrapper">
                             <input
                                 type="password"
@@ -370,8 +362,8 @@
                 </div>
 
                 <div class="actions">
-                    <button type="submit" class="btn btn-primary">Change Password</button>
-                    <button class="btn btn-secondary" onclick="history.back()" type="button">Cancel</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Change Password') }}</button>
+                    <button class="btn btn-secondary" onclick="history.back()" type="button">{{ __('Cancel') }}</button>
                 </div>
             </form>
 

@@ -132,6 +132,10 @@ Route::prefix('parents')->middleware(['auth', 'role:parent'])->group(function ()
     Route::get('/doctor-profile/{id}', [DoctorController::class, 'show'])->name('doctor-profile');
     Route::delete('/doctors/{id}', [DoctorController::class, 'removeDoctor'])->name('doctors.delete');
 
+    // مسارات المهام الخاصة بولي الأمر
+Route::get('/doctors/{id}/tasks', [DoctorController::class, 'doctorTasks'])->name('doctor.tasks');
+Route::post('/tasks/{id}/toggle', [DoctorController::class, 'toggleTask'])->name('tasks.toggle');
+
     Route::get('/chat/{doctorId}', [ChatController::class, 'show'])->name('chat');
     Route::post('/chat/{doctorId}/send', [ChatController::class, 'send'])->name('chat.send');
     Route::post('/chat/{doctorId}/send-audio', [ChatController::class, 'sendAudio'])->name('chat.sendAudio');

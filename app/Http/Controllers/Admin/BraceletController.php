@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Bracelet;
 use App\Models\Child;
 use Illuminate\Http\Request;
+use App\Traits\LogsActivity; // 💡 استدعاء أداة التسجيل
 
 class BraceletController extends Controller
 {
+    use LogsActivity; // 💡 تفعيل التسجيل داخل الكنترولر
+
     public function index()
     {
         $bracelets = Bracelet::with('child')->get();
@@ -35,6 +38,9 @@ class BraceletController extends Controller
             'serial_number' => $request->serial_number,
             'status' => $request->status,
         ]);
+
+        // 💡 تسجيل الحركة (إضافة إسوارة)
+        $this->logActivity('إضافة إسوارة', "قام الأدمن بإضافة إسوارة ذكية جديدة للنظام برقم تسلسلي: {$request->serial_number}");
 
         return back()->with('success', 'Bracelet added successfully!');
     }
@@ -65,11 +71,22 @@ class BraceletController extends Controller
         }
 
         // 💡 تحديث بيانات الطفل الجديد
+        $childName = 'غير معروف';
         if ($newChildId) {
-            Child::where('id', $newChildId)->update([
+            $child = Child::find($newChildId);
+            $childName = $child->name ?? 'غير معروف';
+            
+            $child->update([
                 'bracelet_id' => $bracelet->id, 
                 'is_bracelet_connected' => ($request->status === 'active')
             ]);
+        }
+
+        // 💡 تسجيل الحركة (تعديل/ربط إسوارة)
+        if ($oldChildId != $newChildId && $newChildId != null) {
+            $this->logActivity('تعديل إسوارة', "قام الأدمن بربط الإسوارة رقم ({$request->serial_number}) بالطفل: {$childName}");
+        } else {
+            $this->logActivity('تعديل إسوارة', "قام الأدمن بتحديث بيانات الإسوارة رقم: {$request->serial_number}");
         }
 
         return back()->with('success', 'Bracelet updated successfully!');
@@ -79,11 +96,17 @@ class BraceletController extends Controller
     {
         $bracelet = Bracelet::findOrFail($id);
         
+        $childName = $bracelet->child ? $bracelet->child->name : 'طفل غير معروف';
+        $serialNumber = $bracelet->serial_number;
+
         if ($bracelet->child) {
             $bracelet->child->update(['bracelet_id' => null, 'is_bracelet_connected' => false]);
         }
 
         $bracelet->update(['child_id' => null]);
+
+        // 💡 تسجيل الحركة (إلغاء ربط)
+        $this->logActivity('إلغاء ربط إسوارة', "قام الأدمن بفك ارتباط الإسوارة رقم ({$serialNumber}) عن الطفل: {$childName} وإرجاعها للمخزن");
 
         return back()->with('success', 'Bracelet unlinked successfully! It is now in stock.');
     }
@@ -92,11 +115,16 @@ class BraceletController extends Controller
     {
         $bracelet = Bracelet::findOrFail($id);
         
+        $serialNumber = $bracelet->serial_number;
+
         if ($bracelet->child) {
             $bracelet->child->update(['bracelet_id' => null, 'is_bracelet_connected' => false]);
         }
 
         $bracelet->delete();
+
+        // 💡 تسجيل الحركة (حذف إسوارة)
+        $this->logActivity('حذف إسوارة', "قام الأدمن بحذف الإسوارة رقم ({$serialNumber}) من المنظومة بشكل نهائي");
 
         return back()->with('success', 'Bracelet deleted successfully!');
     }

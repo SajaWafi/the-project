@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctors Profile</title>
+    <title>{{ __('Doctors Profile') }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -33,7 +33,7 @@
         .bg-shape-top {
             position: absolute;
             top: -70px;
-            left: -70px;
+            inset-inline-start: -70px;
             width: 220px;
             height: 220px;
             background: rgba(201, 228, 245, 0.6);
@@ -44,7 +44,7 @@
         .bg-shape-left {
             position: absolute;
             bottom: 80px;
-            left: -70px;
+            inset-inline-start: -70px;
             width: 160px;
             height: 220px;
             background: rgba(210, 240, 225, 0.45);
@@ -55,7 +55,7 @@
         .bg-shape-bottom {
             position: absolute;
             bottom: -80px;
-            right: -80px;
+            inset-inline-end: -80px;
             width: 260px;
             height: 180px;
             background: rgba(230, 240, 235, 0.5);
@@ -65,7 +65,7 @@
 
         .star {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             top: 110px;
             color: #f3d467;
             font-size: 26px;
@@ -93,18 +93,17 @@
             overflow-y: auto;
         }
 
-       .header {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 22px;
-    font-weight: 800;
-    color: #1f567f;
-    margin-bottom: 20px;
-    margin-top: 15px; /* 👈 هذا الجديد */
-}
-
+        .header {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #1f567f;
+            margin-bottom: 20px;
+            margin-top: 15px; 
+        }
 
         .header-left {
             display: flex;
@@ -112,42 +111,43 @@
             gap: 10px;
         }
 
-       .back-btn {
-        position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 38px;
-        height: 38px;
-        border: none;
-        background: transparent;
-        padding: 0;
-        cursor: pointer;
-        color: #3d78ff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 5;
-    }
-
-    .back-btn svg {
-        width: 24px;
-        height: 24px;
-        display: block;
-    }
-
-        .title {
-        font-size: 28px;
-        font-weight: 800;
-        color: #1d567e;
-        text-align: center;
+        .back-btn {
+            position: absolute;
+            inset-inline-start: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            color: #3d78ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
         }
 
-       .header-logo {
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1d567e;
+            text-align: center;
+        }
+
+        .header-logo {
             position: absolute;
-            right: 10px;
+            inset-inline-end: 10px;
             width: 50px;
-            height:50px;
+            height: 50px;
             object-fit: contain;
         }
 
@@ -162,7 +162,7 @@
         .chat-btn {
             position: absolute;
             top: 10px;
-            right: 10px;
+            inset-inline-end: 10px;
             width: 34px;
             height: 34px;
             border-radius: 50%;
@@ -207,14 +207,18 @@
         }
 
         .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 12px;
-            margin-top: 6px;
+            display: flex;
+            gap: 12px;
         }
 
         .info-col {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.6); 
+            border-radius: 14px;
+            padding: 12px;
             text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
+            backdrop-filter: blur(4px); 
         }
 
         .time-text,
@@ -236,7 +240,7 @@
         .location-pill::before {
             content: "◉";
             position: absolute;
-            left: 10px;
+            inset-inline-start: 10px;
             top: 50%;
             transform: translateY(-55%);
             color: #ffffff;
@@ -252,6 +256,7 @@
             padding: 4px 10px;
             color: #4a78ff;
             font-size: 13px;
+            direction: ltr;
         }
 
         .about-box {
@@ -262,6 +267,7 @@
             font-size: 18px;
             line-height: 1.45;
             margin-bottom: 14px;
+            text-align: start;
         }
 
         /* schedule card */
@@ -291,8 +297,8 @@
 
         .schedule-lines {
             position: relative;
-            padding-left: 42px;
-            padding-right: 6px;
+            padding-inline-start: 42px;
+            padding-inline-end: 6px;
         }
 
         .line {
@@ -303,19 +309,20 @@
 
         .time-label {
             position: absolute;
-            left: -42px;
+            inset-inline-start: -42px;
             top: -10px;
             color: #3d78ff;
             font-size: 14px;
             width: 38px;
-            text-align: right;
+            text-align: end;
+            direction: ltr;
         }
 
         .event-box {
             position: absolute;
-            left: 26px;
+            inset-inline-start: 26px;
             top: 16px;
-            right: 16px;
+            inset-inline-end: 16px;
             background: #dde1ea;
             border-radius: 16px;
             padding: 10px 14px;
@@ -346,13 +353,6 @@
         .content::-webkit-scrollbar-thumb {
             background: rgba(0,0,0,0.15);
             border-radius: 10px;
-        }
-
-        .schedule-card {
-            background: #bfc8f0;
-            border-radius: 24px;
-            padding: 14px 12px;
-            margin-bottom: 18px;
         }
 
         .days-row {
@@ -401,6 +401,7 @@
             font-size: 12px;
             line-height: 2;
             padding-top: 6px;
+            direction: ltr;
         }
 
         .appointment-content {
@@ -412,6 +413,7 @@
             color: #2d63f6;
             font-size: 13px;
             margin-bottom: 8px;
+            direction: ltr;
         }
 
         .appointment-main {
@@ -420,6 +422,7 @@
             border-top: 1px dashed #2d63f6;
             border-bottom: 1px dashed #2d63f6;
             padding: 10px 12px;
+            text-align: start;
         }
 
         .doctor-row {
@@ -428,15 +431,6 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 5px;
-        }
-
-        .doctor-name {
-            color: #2d63f6;
-            font-size: 16px;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .doctor-actions {
@@ -448,158 +442,149 @@
         .appointment-sub {
             color: #555;
             font-size: 14px;
+            direction: ltr;
+            text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};
         }
+
         .profile-actions {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 3;
-}
+            position: absolute;
+            top: 10px;
+            inset-inline-end: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 3;
+        }
 
-.chat-btn,
-.delete-icon-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 2px solid #3d78ff;
-    color: #3d78ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-size: 18px;
-    background: #fff;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
+        .chat-btn,
+        .delete-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid #3d78ff;
+            color: #3d78ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 18px;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
 
-.delete-icon-btn {
-    border-color: #ff6b6b;
-    color: #ff4d4f;
-}
+        .delete-icon-btn {
+            border-color: #ff6b6b;
+            color: #ff4d4f;
+        }
 
-.chat-btn:hover,
-.delete-icon-btn:hover {
-    transform: scale(1.05);
-    transition: 0.2s ease;
-}
-.delete-modal-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(210, 216, 223, 0.82);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    padding: 22px;
-}
+        .chat-btn:hover,
+        .delete-icon-btn:hover {
+            transform: scale(1.05);
+            transition: 0.2s ease;
+        }
 
-.delete-modal-overlay.show {
-    display: flex;
-}
+        .delete-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(210, 216, 223, 0.82);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 22px;
+        }
 
-.delete-modal-box {
-    width: 100%;
-    max-width: 340px;
-    background: #f7f7f7;
-    border-radius: 34px;
-    padding: 42px 26px 34px;
-    text-align: center;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
-}
+        .delete-modal-overlay.show {
+            display: flex;
+        }
 
-.delete-modal-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #000;
-    margin-bottom: 22px;
-}
+        .delete-modal-box {
+            width: 100%;
+            max-width: 340px;
+            background: #f7f7f7;
+            border-radius: 34px;
+            padding: 42px 26px 34px;
+            text-align: center;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        }
 
-.delete-modal-text {
-    font-size: 22px;
-    line-height: 1.45;
-    color: #55657a;
-    margin-bottom: 34px;
-}
+        .delete-modal-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 22px;
+        }
 
-.delete-modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
+        .delete-modal-text {
+            font-size: 22px;
+            line-height: 1.45;
+            color: #55657a;
+            margin-bottom: 34px;
+        }
 
-.delete-modal-actions form {
-    margin: 0;
-}
+        .delete-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
 
-.modal-cancel-btn,
-.modal-delete-btn {
-    min-width: 150px;
-    height: 54px;
-    border: none;
-    border-radius: 30px;
-    font-size: 20px;
-    font-weight: 700;
-    cursor: pointer;
-    padding: 0 24px;
-}
+        .delete-modal-actions form {
+            margin: 0;
+        }
 
-.modal-cancel-btn {
-    background: #b8e6db;
-    color: #2d63f6;
-}
+        .modal-cancel-btn,
+        .modal-delete-btn {
+            min-width: 150px;
+            height: 54px;
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0 24px;
+        }
 
-.modal-delete-btn {
-    background: #3a82f6;
-    color: #ffffff;
-}
-.info-grid {
-    display: flex;
-    gap: 12px;
-}
-.info-col {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.6); /* أخف من الأبيض */
-    border-radius: 14px;
-    padding: 12px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* ظل خفيف جدًا */
-    backdrop-filter: blur(4px); /* يعطي نعومة */
-}
+        .modal-cancel-btn {
+            background: #b8e6db;
+            color: #2d63f6;
+        }
+
+        .modal-delete-btn {
+            background: #3a82f6;
+            color: #ffffff;
+        }
 
         .workplace-row {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
-    .workplace-pill {
-        flex: 1 1 48%;
-        min-width: 0;
-        background: #fff;
-        border-radius: 16px;
-        padding: 10px 12px;
-    }
+        .workplace-pill {
+            flex: 1 1 48%;
+            min-width: 0;
+            background: #fff;
+            border-radius: 16px;
+            padding: 10px 12px;
+            text-align: start;
+        }
 
-    .workplace-name {
-        color: #2d63f6;
-        font-size: 15px;
-        font-weight: 700;
-        margin-bottom: 6px;
-    }
+        .workplace-name {
+            color: #2d63f6;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
 
-    .workplace-meta {
-        color: #5b5b5b;
-        font-size: 12px;
-        line-height: 1.5;
-    }
-
-
-
+        .workplace-meta {
+            color: #5b5b5b;
+            font-size: 12px;
+            line-height: 1.5;
+            direction: ltr;
+            text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};
+        }
     </style>
 </head>
 <body>
@@ -611,39 +596,38 @@
         <div class="content">
             <div class="header">
                 <div class="header-left">
-                    <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                    <div class="title">Doctors Profile</div>
+                    <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div class="title">{{ __('Doctors Profile') }}</div>
                     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="header-logo">
                 </div>
             </div>
 
             <div class="profile-card">
                 <div class="profile-actions">
-                    <a href="{{ route('chat', $doctor['id'] ?? 1) }}" class="chat-btn" title="Chat">
+                    <a href="{{ route('chat', $doctor['id'] ?? 1) }}" class="chat-btn" title="{{ __('Chat') }}">
                         💬
                     </a>
 
-                   <button type="button" class="delete-icon-btn" onclick="openDeleteModal()" title="Delete Doctor">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 6h18"></path>
-                        <path d="M8 6V4h8v2"></path>
-                        <path d="M19 6l-1 14H6L5 6"></path>
-                        <path d="M10 11v6"></path>
-                        <path d="M14 11v6"></path>
-                    </svg>
-                </button>
+                   <button type="button" class="delete-icon-btn" onclick="openDeleteModal()" title="{{ __('Delete Doctor') }}">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18"></path>
+                            <path d="M8 6V4h8v2"></path>
+                            <path d="M19 6l-1 14H6L5 6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                        </svg>
+                    </button>
                 </div>
 
-               <img
-                 
-                class="doctor-image"
-                src="{{ $doctor['image'] ? asset('storage/' . $doctor['image']) : asset('images/default-user.png') }}"
-                alt="Doctor"
-            >
+                <img
+                    class="doctor-image"
+                    src="{{ !empty($doctor['image']) ? asset('storage/' . $doctor['image']) : asset('images/default-user.png') }}"
+                    alt="Doctor"
+                >
 
                 <div class="name-box">
                     <div class="doctor-name">{{ $doctor['name'] ?? 'Dr. Alexander Bennett' }}</div>
@@ -654,11 +638,9 @@
                     @forelse($workplaces as $workplace)
                         <div class="workplace-pill">
                             <div class="workplace-name">{{ $workplace->place_name }}</div>
-
                             <div class="workplace-meta">
                                 {{ is_array($workplace->days) ? implode(' - ', $workplace->days) : '' }}
                             </div>
-
                             <div class="workplace-meta">
                                 {{ str_pad($workplace->from_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($workplace->from_minute, 2, '0', STR_PAD_LEFT) }} {{ $workplace->from_period }}
                                 -
@@ -667,119 +649,121 @@
                         </div>
                     @empty
                         <div class="workplace-pill">
-                            <div class="workplace-name">No workplace</div>
+                            <div class="workplace-name">{{ __('No workplace') }}</div>
                         </div>
                     @endforelse
                 </div>
 
-                <div class="phone-pill">{{ $doctor['phone'] ?? 'No Phone' }}</div>
+                <div class="phone-pill">{{ $doctor['phone'] ?? __('No Phone') }}</div>
             </div>
 
             <div class="about-box">
-                {{ $doctor['bio'] ?? 'No bio available.' }}
+                {{ $doctor['bio'] ?? __('No bio available.') }}
             </div>
 
-<!--schedule-card -->
+            <!-- schedule-card -->
+            @forelse($appointments as $appointment)
+                @php
+                    $appointmentDate = \Carbon\Carbon::parse($appointment->date);
+                    $isToday = $appointmentDate->isToday();
+                    $headerText = $appointmentDate->format('d l') . ($isToday ? ' - ' . __('Today') : '');
+                @endphp
 
-@forelse($appointments as $appointment)
-    @php
-        $appointmentDate = \Carbon\Carbon::parse($appointment->date);
-        $isToday = $appointmentDate->isToday();
-        $headerText = $appointmentDate->format('d l') . ($isToday ? ' - Today' : '');
-    @endphp
-
-    <div class="schedule-card">
-        <div class="appointment-box">
-            <div class="times">
-                <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
-                <div>|</div>
-                <div>|</div>
-                <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
-            </div>
-
-            <div class="appointment-content">
-                <div class="appointment-header">
-                    <span>{{ $headerText }}</span>
-                </div>
-
-                <div class="appointment-main">
-                    <div class="appointment-info">
-                        <div class="appointment-sub">
-                            Child: {{ $appointment->child->name ?? 'N/A' }}
+                <div class="schedule-card">
+                    <div class="appointment-box">
+                        <div class="times">
+                            <div>{{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}</div>
+                            <div>|</div>
+                            <div>|</div>
+                            <div>{{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}</div>
                         </div>
 
-                        <div class="appointment-sub">
-                            Time:
-                            {{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($appointment->from_minute, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}
-                            -
-                            {{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($appointment->to_minute, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}
-                        </div>
+                        <div class="appointment-content">
+                            <div class="appointment-header">
+                                <span>{{ $headerText }}</span>
+                            </div>
 
-                        <div class="note">
-                            {{ $appointment->note ?: 'No note' }}
+                            <div class="appointment-main">
+                                <div class="appointment-info">
+                                    <div class="appointment-sub">
+                                        {{ __('Child') }}: {{ $appointment->child->name ?? 'N/A' }}
+                                    </div>
+
+                                    <div class="appointment-sub">
+                                        {{ __('Time') }}: 
+                                        {{ str_pad($appointment->from_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($appointment->from_minute, 2, '0', STR_PAD_LEFT) }} {{ $appointment->from_period }}
+                                        -
+                                        {{ str_pad($appointment->to_hour, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($appointment->to_minute, 2, '0', STR_PAD_LEFT) }} {{ $appointment->to_period }}
+                                    </div>
+
+                                    <div class="note" style="color: #555; font-size: 14px; margin-top: 4px;">
+                                        {{ $appointment->note ?: __('No note') }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-@empty
-    <div class="schedule-card">
-        <div class="appointment-box">
-            <div class="appointment-content">
-                <span class="mmm">No upcoming appointments with this doctor</span>
-            </div>
-        </div>
-    </div>
-@endforelse
+            @empty
+                <div class="schedule-card">
+                    <div class="appointment-box">
+                        <div class="appointment-content">
+                            <span class="mmm" style="color:#2d63f6; font-size:14px; text-align:center; display:block;">
+                                {{ __('No upcoming appointments with this doctor') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @endforelse
 
             <div class="bottom-space"></div>
         </div>
         
+        <!-- Delete Modal -->
         <div class="delete-modal-overlay" id="deleteModal">
-    <div class="delete-modal-box">
-        <div class="delete-modal-title">Delete Doctor</div>
-        <div class="delete-modal-text">
-            Are you sure you want to delete this doctor?
-        </div>
+            <div class="delete-modal-box">
+                <div class="delete-modal-title">{{ __('Delete Doctor') }}</div>
+                <div class="delete-modal-text">
+                    {{ __('Are you sure you want to delete this doctor?') }}
+                </div>
 
-        <div class="delete-modal-actions">
-            <button type="button" class="modal-cancel-btn" onclick="closeDeleteModal()">
-                Cancel
-            </button>
+                <div class="delete-modal-actions">
+                    <button type="button" class="modal-cancel-btn" onclick="closeDeleteModal()">
+                        {{ __('Cancel') }}
+                    </button>
 
-            <form action="{{ route('doctors.delete', $doctor['id'] ?? 1) }}" method="POST">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="modal-delete-btn">
-                    Yes, Delete
-                </button>
-            </form>
+                    <form action="{{ route('doctors.delete', $doctor['id'] ?? 1) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="modal-delete-btn">
+                            {{ __('Yes, Delete') }}
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-    </div>
+
     <script>
-    function openDeleteModal() {
-        document.getElementById('deleteModal').classList.add('show');
-    }
-
-    function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.remove('show');
-    }
-
-    function confirmDeleteDoctor() {
-        closeDeleteModal();
-        alert('Doctor deleted successfully');
-    }
-
-    document.addEventListener('click', function (event) {
-        const modal = document.getElementById('deleteModal');
-
-        if (event.target === modal) {
-            closeDeleteModal();
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.add('show');
         }
-    });
-</script>
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        function confirmDeleteDoctor() {
+            closeDeleteModal();
+            alert("{{ __('Doctor deleted successfully') }}");
+        }
+
+        document.addEventListener('click', function (event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) {
+                closeDeleteModal();
+            }
+        });
+    </script>
 </body>
 </html>

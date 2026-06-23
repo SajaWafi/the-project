@@ -180,4 +180,40 @@ class DoctorController extends Controller
 
         return redirect()->route('doctors')->with('success', 'The doctor was deleted and the link was successfully removed.');
     }
+
+    // عرض مهام الخطة العلاجية للأهل
+    public function doctorTasks($id)
+    {
+        $doctor = \App\Models\DoctorProfile::with('user')->findOrFail($id);
+        
+        // جلب بروفايل ولي الأمر والطفل المرتبط بيه
+        $parent = \App\Models\ParentProfile::where('user_id', auth()->id())->firstOrFail();
+        $child = \App\Models\Child::where('parent_id', $parent->id)->first(); 
+
+        if (!$child) {
+            abort(404, 'No child found for this parent.');
+        }
+
+        // جلب المهام وترتيبها (غير المكتملة تطلع فوق)
+        $tasks = \App\Models\HomeTask::where('child_id', $child->id)
+            ->orderBy('is_completed', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('parents.doctor-tasks', compact('doctor', 'tasks'));
+    }
+
+    // تغيير حالة المهمة (تم / لم يتم)
+    public function toggleTask($id)
+    {
+        $task = \App\Models\HomeTask::findOrFail($id);
+        
+        // عكس الحالة (لو 0 تولي 1، والعكس)
+        $task->update([
+            'is_completed' => !$task->is_completed
+        ]);
+
+        return back();
+    }
+    
 }

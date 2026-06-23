@@ -7,24 +7,24 @@
         >
 
         <div class="admin-sidebar-title">
-            TAIF PROJECT
+            {{ __('TAIF PROJECT') }}
         </div>
-        </div>
+    </div>
 
-        <div class="admin-sidebar-menu">
+    <div class="admin-sidebar-menu">
         <a
             href="{{ route('admin.dashboard') }}"
             class="admin-sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
         >
             <i class="fas fa-th-large"></i>
-            <span>Dashboard</span>
+            <span>{{ __('Dashboard') }}</span>
         </a>
 
         <a href="{{ route('admin.bracelets.index') }}" 
         class="admin-sidebar-link {{ request()->routeIs('admin.bracelets.*') ? 'active' : '' }}"
         >
             <i class="fas fa-microchip"></i>
-            <span>Manage bracelets</span>
+            <span>{{ __('Manage Bracelets') }}</span>
         </a>
 
         <a
@@ -32,7 +32,7 @@
             class="admin-sidebar-link {{ request()->routeIs('admin.doctors.*') ? 'active' : '' }}"
         >
             <i class="fas fa-user-md"></i>
-            <span>Manage Doctors</span>
+            <span>{{ __('Manage Doctors') }}</span>
         </a>
 
         <a
@@ -40,7 +40,7 @@
             class="admin-sidebar-link {{ request()->routeIs('admin.parents.*') ? 'active' : '' }}"
         >
             <i class="fas fa-users"></i>
-            <span>Manage Parents</span>
+            <span>{{ __('Manage Parents') }}</span>
         </a>
 
         <a
@@ -48,7 +48,7 @@
             class="admin-sidebar-link {{ request()->routeIs('admin.children.*') ? 'active' : '' }}"
         >
             <i class="fas fa-child"></i>
-            <span>Manage Children</span>
+            <span>{{ __('Manage Children') }}</span>
         </a>
 
         <a
@@ -56,7 +56,7 @@
             class="admin-sidebar-link {{ request()->routeIs('admin.doctor-requests.*') ? 'active' : '' }}"
         >
             <i class="fas fa-link"></i>
-            <span>Linking Requests</span>
+            <span>{{ __('Linking Requests') }}</span>
         </a>
 
         <a
@@ -64,24 +64,31 @@
             class="admin-sidebar-link {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}"
         >
             <i class="fas fa-calendar-check"></i>
-            <span>Appointments</span>
+            <span>{{ __('Appointments') }}</span>
         </a>
 
-           <a
+        <a
             href="{{ route('admin.complaints.index') }}"
-            class="admin-sidebar-link {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}"
+            class="admin-sidebar-link {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}"
         >
             <i class="fas fa-clipboard-list"></i>
-            <span> Manage Complaints</span>
+            <span>{{ __('Manage Complaints') }}</span>
         </a>
 
-
-      <a
+        <a
             href="{{ route('admin.alerts.index') }}"
             class="admin-sidebar-link {{ request()->routeIs('admin.alerts.*') ? 'active' : '' }}"
         >
             <i class="fas fa-bell"></i>
-            <span>Alerts</span>
+            <span>{{ __('Alerts') }}</span>
+        </a>
+
+        <a
+            href="{{ route('admin.activity-logs.index') }}"
+            class="admin-sidebar-link {{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}"
+        >
+            <i class="fas fa-history"></i>
+            <span>{{ __('Activity Logs') }}</span>
         </a>
 
         <a
@@ -89,7 +96,7 @@
             class="admin-sidebar-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
         >
             <i class="fas fa-cog"></i>
-            <span>Settings</span>
+            <span>{{ __('Settings') }}</span>
         </a>
     </div>
 </div>

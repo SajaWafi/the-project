@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
+use App\Traits\LogsActivity; // 💡 استدعاء أداة التسجيل
 
 class ComplaintController extends Controller
 {
+    use LogsActivity; // 💡 تفعيل التسجيل داخل الكنترولر
+
     // ---------------------------------------------------------
     // 1. دالة إضافة الشكوى (Store)
     // ---------------------------------------------------------
@@ -24,6 +27,9 @@ class ComplaintController extends Controller
             'message' => $request->message,
             'status' => 'pending', //(Default State)
         ]);
+
+        // 💡 تسجيل الحركة (إضافة شكوى) - في حال كان الأدمن يقدر يضيف شكوى
+        $this->logActivity('تقديم شكوى', "تم إدراج شكوى جديدة تحت تصنيف: {$request->category}");
 
         return back();
     }
@@ -77,11 +83,19 @@ class ComplaintController extends Controller
             'status' => 'required|in:pending,resolved',
         ]);
 
-        $complaint = Complaint::findOrFail($id);
+        // 💡 جلب الشكوى مع بيانات المستخدم لمعرفة صاحبها
+        $complaint = Complaint::with('user')->findOrFail($id);
 
         $complaint->status = $request->status;
         $complaint->save();
         
+        // 💡 تجهيز البيانات للتسجيل
+        $userName = $complaint->user ? $complaint->user->first_name . ' ' . $complaint->user->last_name : 'مستخدم غير معروف';
+        $statusAr = $request->status === 'resolved' ? 'محلولة' : 'قيد الانتظار';
+
+        // 💡 تسجيل الحركة (تعديل)
+        $this->logActivity('تعديل شكوى', "قام الأدمن بتغيير حالة شكوى مقدمة من ({$userName}) إلى: {$statusAr}");
+
         //[JSON Response]: إرجاع النتيجة كـ JSON لأن هذه الدالة تُستدعى عبر الجافاسكربت 
         return response()->json([
             'success' => true,
@@ -94,7 +108,16 @@ class ComplaintController extends Controller
     // ---------------------------------------------------------
     public function destroy($id)
     {
-        Complaint::findOrFail($id)->delete();
+        // 💡 جلبنا الشكوى مع المستخدم باش نحفظوا الاسم قبل الحذف
+        $complaint = Complaint::with('user')->findOrFail($id);
+        
+        $userName = $complaint->user ? $complaint->user->first_name . ' ' . $complaint->user->last_name : 'مستخدم غير معروف';
+        $category = $complaint->category;
+
+        $complaint->delete();
+
+        // 💡 تسجيل الحركة (حذف)
+        $this->logActivity('حذف شكوى', "قام الأدمن بحذف شكوى مقدمة من ({$userName}) تحت تصنيف: {$category}");
 
         return redirect()->back()
             ->with('success', 'Complaint deleted');

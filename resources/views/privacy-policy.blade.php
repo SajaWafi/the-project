@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Taif</title>
+    <title>{{ __('Privacy Policy') }} - Taif</title>
 
     <style>
         * {
@@ -47,7 +47,8 @@
             background-image: url('{{ asset('images/bg.png') }}');
             background-repeat: no-repeat;
             background-size: 165% 100%;
-            background-position: left bottom;
+            /* 💡 خلفية تتكيف مع لغة النظام */
+            background-position: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} bottom;
             opacity: 0.92;
             z-index: 0;
             pointer-events: none;
@@ -78,7 +79,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* 💡 محاذاة منطقية تعكس المكان تلقائياً */
             border: none;
             background: transparent;
             cursor: pointer;
@@ -91,6 +92,8 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+            /* 💡 عكس سهم الرجوع في حالة اللغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -101,8 +104,8 @@
 
         .app-logo {
             position: absolute;
-            right: 0;
-            width: 35px; /* صغرتها شوية باش تطلع متناسقة في الـ Header */
+            inset-inline-end: 0; /* 💡 محاذاة منطقية */
+            width: 35px;
             height: 35px;
             object-fit: contain;
         }
@@ -116,6 +119,8 @@
             padding: 9px 14px;
             border-radius: 14px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            /* لضمان بقاء التواريخ بأرقام واضحة ومقروءة بشكل صحيح بغض النظر عن اللغة */
+            direction: ltr; 
         }
 
         .policy-text {
@@ -126,6 +131,7 @@
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            text-align: justify; /* يجعل النص متناسقاً على الأطراف */
         }
 
         .policy-text p {
@@ -145,20 +151,20 @@
 
         .policy-list {
             list-style: none;
-            padding-left: 0;
+            padding-inline-start: 0; /* منطقي */
             margin: 0;
         }
 
         .policy-list li {
             margin-bottom: 6px;
-            padding-left: 14px;
+            padding-inline-start: 14px; /* منطقي */
             position: relative;
         }
 
         .policy-list li::before {
             content: "•";
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* منطقي لتظهر النقطة في الجهة الصحيحة */
             color: #2f80ed;
             font-weight: bold;
         }
@@ -194,49 +200,50 @@
             </div>
 
             <div class="header">
-                <a href="{{ route('profile') ?? '#' }}" class="back-btn">
+                <a href="{{ route('profile') ?? '#' }}" class="back-btn" aria-label="{{ __('Back') }}">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
 
-                <div class="page-title">Privacy Policy</div>
+                <div class="page-title">{{ __('Privacy Policy') }}</div>
 
                 <img src="{{ asset('images/logo.png') }}" alt="Taif Logo" class="app-logo">
             </div>
 
-            <div class="updated-badge">Last updated: May 2026</div>
+            <!-- يمكنك جعل الشهر يترجم من خلال Carbon أو استخدام الترجمة اليدوية -->
+            <div class="updated-badge">{{ __('Last updated: May 2026') }}</div>
 
             <div class="policy-text">
-                <p>Welcome to <strong>Taif</strong>. We are deeply committed to protecting your child's privacy and ensuring the highest level of data security.</p>
+                <p>{!! __('Welcome to Taif. We are deeply committed to protecting your child\'s privacy and ensuring the highest level of data security.') !!}</p>
 
                 <div class="policy-section">
-                    <h3>1. What Data We Collect</h3>
+                    <h3>{{ __('1. What Data We Collect') }}</h3>
                     <ul class="policy-list">
-                        <li><strong>Vital Signs:</strong> Heart rate and motion levels.</li>
-                        <li><strong>Location Data:</strong> GPS coordinates and altitude (floor detection).</li>
-                        <li><strong>Device Info:</strong> Bracelet ID and connection status.</li>
+                        <li>{{ __('Vital Signs: Heart rate and motion levels.') }}</li>
+                        <li>{{ __('Location Data: GPS coordinates and altitude (floor detection).') }}</li>
+                        <li>{{ __('Device Info: Bracelet ID and connection status.') }}</li>
                     </ul>
                 </div>
 
                 <div class="policy-section">
-                    <h3>2. How We Use Your Data</h3>
+                    <h3>{{ __('2. How We Use Your Data') }}</h3>
                     <ul class="policy-list">
-                        <li>To monitor your child's well-being in real-time.</li>
-                        <li>To detect panic attacks or meltdowns and trigger instant alerts.</li>
-                        <li>To track safe zone boundaries and ensure physical safety.</li>
-                        <li>To generate medical reports for better healthcare decisions.</li>
+                        <li>{{ __('To monitor your child\'s well-being in real-time.') }}</li>
+                        <li>{{ __('To detect panic attacks or meltdowns and trigger instant alerts.') }}</li>
+                        <li>{{ __('To track safe zone boundaries and ensure physical safety.') }}</li>
+                        <li>{{ __('To generate medical reports for better healthcare decisions.') }}</li>
                     </ul>
                 </div>
 
                 <div class="policy-section">
-                    <h3>3. Data Sharing & Privacy</h3>
-                    <p>Your child's data is strictly confidential. It is <strong>only</strong> shared with the linked parent accounts and authorized healthcare professionals you explicitly approve. We never sell your data to third parties.</p>
+                    <h3>{{ __('3. Data Sharing & Privacy') }}</h3>
+                    <p>{!! __('Your child\'s data is strictly confidential. It is only shared with the linked parent accounts and authorized healthcare professionals you explicitly approve. We never sell your data to third parties.') !!}</p>
                 </div>
 
                 <div class="policy-section">
-                    <h3>4. Data Security & Control</h3>
-                    <p>We implement industry-standard encryption to protect your data. You have full control to connect or disconnect the bracelet via the app at any time.</p>
+                    <h3>{{ __('4. Data Security & Control') }}</h3>
+                    <p>{{ __('We implement industry-standard encryption to protect your data. You have full control to connect or disconnect the bracelet via the app at any time.') }}</p>
                 </div>
             </div>
 

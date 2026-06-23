@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Management - Taif Project</title>
+    <title>{{ __('Doctor Management - Taif Project') }}</title>
 
     <link
         rel="stylesheet"
@@ -15,11 +15,6 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     >
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
 
     <style>
         :root {
@@ -47,12 +42,7 @@
             font-family: 'Public Sans', Arial, sans-serif;
         }
 
-        .admin-main-content {
-            width: calc(100% - 260px);
-            margin-left: 260px;
-            padding: 2rem;
-        }
-
+        /* 💡 الخصائص المنطقية لدعم الاتجاهين */
         .admin-page-header {
             display: flex;
             justify-content: space-between;
@@ -79,8 +69,8 @@
         }
 
         .admin-status-text {
-            margin-right: 1rem;
-            text-align: right;
+            margin-inline-end: 1rem;
+            text-align: end;
         }
 
         .admin-status-title {
@@ -146,13 +136,13 @@
 
         .doctor-search-icon {
             position: absolute;
-            left: 12px;
+            inset-inline-start: 12px;
             top: 10px;
             color: #6b7280;
         }
 
         .doctor-search-input {
-            padding-left: 2.5rem;
+            padding-inline-start: 2.5rem;
             background: #f8fafc;
         }
 
@@ -165,7 +155,7 @@
         .doctor-table th,
         .doctor-table td {
             padding: 15px 20px;
-            text-align: left;
+            text-align: start;
             border-bottom: 1px solid #f1f5f9;
         }
 
@@ -180,13 +170,13 @@
         .doctor-info-cell {
             display: flex;
             align-items: center;
-            padding-left: 1rem;
+            padding-inline-start: 1rem;
         }
 
         .doctor-profile-image {
             width: 40px;
             height: 40px;
-            margin-right: 12px;
+            margin-inline-end: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -241,20 +231,9 @@
             text-transform: uppercase;
         }
 
-        .approval-pending {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .approval-approved {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .approval-rejected {
-            background: #fee2e2;
-            color: #dc2626;
-        }
+        .approval-pending { background: #fef3c7; color: #d97706; }
+        .approval-approved { background: #c6f6d5; color: #22543d; }
+        .approval-rejected { background: #fee2e2; color: #dc2626; }
 
         .doctor-action-buttons {
             display: flex;
@@ -277,30 +256,11 @@
             transition: 0.2s;
         }
 
-        .doctor-action-view {
-            background: #e0f2fe;
-            color: #0ea5e9;
-        }
-
-        .doctor-action-edit {
-            background: #e0e7ff;
-            color: #4f46e5;
-        }
-
-        .doctor-action-approve {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-
-        .doctor-action-reject {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .doctor-action-delete {
-            background: #fef3c7;
-            color: #d97706;
-        }
+        .doctor-action-view { background: #e0f2fe; color: #0ea5e9; }
+        .doctor-action-edit { background: #e0e7ff; color: #4f46e5; }
+        .doctor-action-approve { background: #dcfce7; color: #16a34a; }
+        .doctor-action-reject { background: #fee2e2; color: #dc2626; }
+        .doctor-action-delete { background: #fef3c7; color: #d97706; }
 
         .doctor-action-button:hover {
             transform: translateY(-1px);
@@ -323,20 +283,16 @@
         }
 
         @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .admin-modal-box {
             position: relative;
             width: 420px;
             max-width: 95%;
-            overflow: hidden;
+            max-height: 92vh;
+            overflow-y: auto;
             background: white;
             border-radius: 25px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
@@ -344,15 +300,8 @@
         }
 
         @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .admin-modal-header {
@@ -367,22 +316,14 @@
             text-align: center;
         }
 
-        .view-doctor-modal .admin-modal-header {
-            background: var(--taif-green);
-        }
-
-        .edit-doctor-modal .admin-modal-header {
-            background: var(--taif-orange);
-        }
-
-        .delete-doctor-modal .admin-modal-header {
-            background: var(--danger-red);
-        }
+        .view-doctor-modal .admin-modal-header { background: var(--taif-green); }
+        .edit-doctor-modal .admin-modal-header { background: var(--taif-orange); }
+        .delete-doctor-modal .admin-modal-header { background: var(--danger-red); }
 
         .admin-modal-close {
             position: absolute;
             top: 15px;
-            right: 15px;
+            inset-inline-end: 15px;
             color: rgba(255, 255, 255, 0.8);
             font-size: 22px;
             cursor: pointer;
@@ -394,9 +335,7 @@
             transform: scale(1.1);
         }
 
-        .admin-modal-body {
-            padding: 30px 25px;
-        }
+        .admin-modal-body { padding: 30px 25px; }
 
         .view-doctor-large-image {
             width: 80px;
@@ -433,23 +372,13 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .view-doctor-info-row:last-child {
-            border: none;
-        }
-
-        .view-doctor-info-label {
-            color: var(--muted-text);
-            font-weight: 700;
-        }
-
-        .view-doctor-info-value {
-            color: var(--dark-text);
-            font-weight: 600;
-        }
+        .view-doctor-info-row:last-child { border: none; }
+        .view-doctor-info-label { color: var(--muted-text); font-weight: 700; }
+        .view-doctor-info-value { color: var(--dark-text); font-weight: 600; text-align: end;}
 
         .doctor-edit-form-group {
             margin-bottom: 20px;
-            text-align: left;
+            text-align: start;
         }
 
         .doctor-edit-form-group label {
@@ -538,31 +467,9 @@
             cursor: pointer;
         }
 
-        .delete-cancel-button {
-            background: #e5e7eb;
-            color: #374151;
-        }
+        .delete-cancel-button { background: #e5e7eb; color: #374151; }
+        .delete-confirm-button { background: var(--danger-red); color: white; }
 
-        .delete-confirm-button {
-            background: var(--danger-red);
-            color: white;
-        }
-
-        @media (max-width: 992px) {
-            .admin-sidebar {
-                width: 75px;
-            }
-
-            .admin-sidebar-title,
-            .admin-sidebar-link span {
-                display: none;
-            }
-
-            .admin-main-content {
-                width: calc(100% - 75px);
-                margin-left: 75px;
-            }
-        }
         .add-doctor-button {
             height: 34px;
             padding: 0 14px;
@@ -589,77 +496,87 @@
 <body>
     @include('admin.partials.sidebar')
 
-    <div class="admin-main-content text-start">
+    <div class="admin-main-content">
         <div class="admin-page-header">
             <div>
                 <h4 class="admin-page-title">
-                    Doctor Management
+                    {{ __('Doctor Management') }}
                 </h4>
                 <small class="admin-page-subtitle">
-                    Manage doctors and approval requests
+                    {{ __('Manage doctors and approval requests') }}
                 </small>
             </div>
             <div class="admin-status-wrapper">
                 <div class="admin-status-text">
+                    <div class="admin-status-title">{{ __('Admin Panel') }}</div>
+                    <small class="admin-online-status">
+                        <i class="fas fa-circle me-1"></i> {{ __('Online') }}
+                    </small>
                 </div>
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="admin-logout-button">
+                        <i class="fas fa-sign-out-alt text-danger"></i>
+                    </button>
+                </form>
             </div>
         </div>
 
         <div class="doctor-management-card">
             <div class="doctor-table-header">
                 <h6 class="doctor-table-title">
-                    Professional Directory
+                    {{ __('Professional Directory') }}
                 </h6>
 
                 <div class="doctor-filter-search-wrapper">
-    <button
-        type="button"
-        class="add-doctor-button"
-        onclick="openAdminModal('doctorCreateModal')"
-    >
-        <i class="fas fa-plus"></i>
-        Add Doctor
-    </button>
+                    <button
+                        type="button"
+                        class="add-doctor-button"
+                        onclick="openAdminModal('doctorCreateModal')"
+                    >
+                        <i class="fas fa-plus"></i>
+                        {{ __('Add Doctor') }}
+                    </button>
 
-    <form action="{{ route('admin.doctors.index') }}" method="GET" id="searchForm" style="display: flex; gap: 10px; align-items: center;">
-        
-        <select
-            name="approval"
-            id="doctorApprovalFilter"
-            class="form-control form-control-sm doctor-approval-filter"
-            style="width: 160px;"
-        >
-            <option value="all" {{ request('approval') == 'all' ? 'selected' : '' }}>All statuses</option>
-            <option value="pending" {{ request('approval') == 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="approved" {{ request('approval') == 'approved' ? 'selected' : '' }}>Approved</option>
-            <option value="rejected" {{ request('approval') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-        </select>
+                    <form action="{{ route('admin.doctors.index') }}" method="GET" id="searchForm" style="display: flex; gap: 10px; align-items: center;">
+                        
+                        <select
+                            name="approval"
+                            id="doctorApprovalFilter"
+                            class="form-control form-control-sm doctor-approval-filter"
+                            style="width: 160px;"
+                        >
+                            <option value="all" {{ request('approval') == 'all' ? 'selected' : '' }}>{{ __('All statuses') }}</option>
+                            <option value="pending" {{ request('approval') == 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                            <option value="approved" {{ request('approval') == 'approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                            <option value="rejected" {{ request('approval') == 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                        </select>
 
-        <div class="doctor-search-wrapper">
-            <i class="fas fa-search doctor-search-icon"></i>
-            <input
-                type="text"
-                name="search"
-                id="doctorSearchInput"
-                value="{{ request('search') }}"
-                class="form-control form-control-sm doctor-search-input"
-                placeholder="Search names..."
-            >
-        </div>
-    </form>
-</div>
+                        <div class="doctor-search-wrapper">
+                            <i class="fas fa-search doctor-search-icon"></i>
+                            <input
+                                type="text"
+                                name="search"
+                                id="doctorSearchInput"
+                                value="{{ request('search') }}"
+                                class="form-control form-control-sm doctor-search-input"
+                                placeholder="{{ __('Search names...') }}"
+                            >
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <table id="doctorManagementTable" class="doctor-table">
                 <thead>
                     <tr>
-                        <th>Full Name</th>
-                        <th>Specialty</th>
-                        <th>Phone</th>
-                        <th>Joined Date</th>
-                        <th>Approval</th>
-                        <th>Status</th>
-                        <th style="text-align: center;">Actions</th>
+                        <th>{{ __('Full Name') }}</th>
+                        <th>{{ __('Specialty') }}</th>
+                        <th>{{ __('Phone') }}</th>
+                        <th>{{ __('Joined Date') }}</th>
+                        <th>{{ __('Approval') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align: center;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
@@ -668,7 +585,7 @@
                         @php
                             $doctorFullName = trim(($doctor->user->first_name ?? '') . ' ' . ($doctor->user->last_name ?? ''));
                             if ($doctorFullName === '') {
-                                $doctorFullName = 'No Name';
+                                $doctorFullName = __('No Name');
                             }
 
                             $doctorImage = $doctor->user->profile_image
@@ -692,28 +609,28 @@
                                     </div>
                                     <div>
                                         <div class="doctor-full-name">{{ $doctorFullName }}</div>
-                                        <div class="doctor-email">{{ $doctor->user->email ?? 'N/A' }}</div>
+                                        <div class="doctor-email">{{ $doctor->user->email ?? __('N/A') }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span class="doctor-specialization-badge">{{ $doctor->specialization ?? 'N/A' }}</span>
+                                <span class="doctor-specialization-badge">{{ __($doctor->specialization ?? 'N/A') }}</span>
                             </td>
-                            <td>{{ $doctor->user->phone ?? 'N/A' }}</td>
+                            <td dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ $doctor->user->phone ?? __('N/A') }}</td>
                             <td>{{ $doctor->created_at->format('M d, Y') }}</td>
                             <td>
-                                <span class="approval-badge {{ $approvalClass }}">{{ ucfirst($approvalStatus) }}</span>
+                                <span class="approval-badge {{ $approvalClass }}">{{ __($approvalStatus) }}</span>
                             </td>
                             <td>
-                                <span class="doctor-status-badge">Active</span>
+                                <span class="doctor-status-badge">{{ __('Active') }}</span>
                             </td>
                             <td>
                                 <div class="doctor-action-buttons">
                                     <button type="button" class="doctor-action-button doctor-action-view js-view-doctor"
                                         data-name="{{ $doctorFullName }}"
-                                        data-specialization="{{ $doctor->specialization ?? 'N/A' }}"
-                                        data-email="{{ $doctor->user->email ?? 'N/A' }}"
-                                        data-phone="{{ $doctor->user->phone ?? 'N/A' }}"
+                                        data-specialization="{{ __($doctor->specialization ?? 'N/A') }}"
+                                        data-email="{{ $doctor->user->email ?? __('N/A') }}"
+                                        data-phone="{{ $doctor->user->phone ?? __('N/A') }}"
                                         data-image="{{ $doctorImage }}">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -729,7 +646,7 @@
                                     @if($approvalStatus !== 'approved')
                                         <form action="{{ route('admin.doctors.approve', $doctor->id) }}" method="POST" class="m-0">
                                             @csrf
-                                            <button type="submit" class="doctor-action-button doctor-action-approve" title="Approve Doctor">
+                                            <button type="submit" class="doctor-action-button doctor-action-approve" title="{{ __('Approve Doctor') }}">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         </form>
@@ -738,7 +655,7 @@
                                     @if($approvalStatus !== 'rejected')
                                         <form action="{{ route('admin.doctors.reject', $doctor->id) }}" method="POST" class="m-0">
                                             @csrf
-                                            <button type="submit" class="doctor-action-button doctor-action-reject" title="Reject Doctor">
+                                            <button type="submit" class="doctor-action-button doctor-action-reject" title="{{ __('Reject Doctor') }}">
                                                 <i class="fas fa-times"></i>
                                             </button>
                                         </form>
@@ -756,7 +673,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5 text-muted">No doctors found.</td>
+                            <td colspan="7" class="text-center py-5 text-muted">{{ __('No doctors found.') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -768,10 +685,9 @@
         </div>
     </div>
 
-    <!-- view doctor modal -->
     <div id="doctorViewModal" class="admin-modal-overlay view-doctor-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-id-card"></i> Doctor Profile</div>
+            <div class="admin-modal-header"><i class="fas fa-id-card"></i> {{ __('Doctor Profile') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('doctorViewModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="view-doctor-large-image"><img id="viewDoctorImage" src="" alt="Doctor Image"></div>
@@ -779,109 +695,103 @@
                 <span id="viewDoctorSpecialization" class="doctor-specialization-badge d-inline-block mb-4" style="font-size: 13px;"></span>
                 <div class="view-doctor-details-box">
                     <div class="view-doctor-info-row">
-                        <span class="view-doctor-info-label">Email</span>
+                        <span class="view-doctor-info-label">{{ __('Email') }}</span>
                         <span class="view-doctor-info-value" id="viewDoctorEmail"></span>
                     </div>
                     <div class="view-doctor-info-row">
-                        <span class="view-doctor-info-label">Phone</span>
-                        <span class="view-doctor-info-value" id="viewDoctorPhone"></span>
+                        <span class="view-doctor-info-label">{{ __('Phone') }}</span>
+                        <span class="view-doctor-info-value" id="viewDoctorPhone" dir="ltr"></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- edit doctor modal -->
     <div id="doctorEditModal" class="admin-modal-overlay edit-doctor-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-user-edit"></i> Edit Information</div>
+            <div class="admin-modal-header"><i class="fas fa-user-edit"></i> {{ __('Edit Information') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('doctorEditModal')">&times;</span>
             <div class="admin-modal-body">
                 <form id="doctorUpdateForm" method="POST">
                     @csrf @method('PUT')
                     <div class="doctor-edit-form-group">
-                        <label>First Name</label>
+                        <label>{{ __('First Name') }}</label>
                         <input type="text" id="editDoctorFirstName" name="first_name" class="doctor-edit-input">
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Last Name</label>
+                        <label>{{ __('Last Name') }}</label>
                         <input type="text" id="editDoctorLastName" name="last_name" class="doctor-edit-input">
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Specialization</label>
+                        <label>{{ __('Specialization') }}</label>
                         <input type="text" id="editDoctorSpecialization" name="specialization" class="doctor-edit-input">
                     </div>
-                    <button type="submit" class="doctor-edit-save-button">Save Changes</button>
+                    <button type="submit" class="doctor-edit-save-button">{{ __('Save Changes') }}</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- delete doctor modal -->
     <div id="doctorDeleteModal" class="admin-modal-overlay delete-doctor-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-trash"></i> Delete Doctor</div>
+            <div class="admin-modal-header"><i class="fas fa-trash"></i> {{ __('Delete Doctor') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('doctorDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="delete-warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <h4 class="delete-title">Are you sure?</h4>
-                <p class="delete-message">You are about to delete <strong id="deleteDoctorName">this doctor</strong>. This action cannot be undone.</p>
+                <h4 class="delete-title">{{ __('Are you sure?') }}</h4>
+                <p class="delete-message">{{ __('You are about to delete') }} <strong id="deleteDoctorName"></strong>. {{ __('This action cannot be undone.') }}</p>
                 <div class="delete-actions">
-                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('doctorDeleteModal')">Cancel</button>
-                    <button type="button" class="delete-confirm-button" id="confirmDoctorDeleteButton">Delete</button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('doctorDeleteModal')">{{ __('Cancel') }}</button>
+                    <button type="button" class="delete-confirm-button" id="confirmDoctorDeleteButton">{{ __('Delete') }}</button>
                 </div>
             </div>
         </div>
     </div>
 
-
-
-    <!-- create doctor modal -->
-
     <div id="doctorCreateModal" class="admin-modal-overlay create-doctor-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header" style="background: var(--taif-blue);"><i class="fas fa-user-plus"></i> Add New Doctor</div>
+            <div class="admin-modal-header" style="background: var(--taif-blue);"><i class="fas fa-user-plus"></i> {{ __('Add New Doctor') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('doctorCreateModal')">&times;</span>
             <div class="admin-modal-body">
                 <form action="{{ route('admin.doctors.store') }}" method="POST">
                     @csrf
                     <div class="doctor-edit-form-group">
-                        <label>First Name</label>
+                        <label>{{ __('First Name') }}</label>
                         <input type="text" name="first_name" class="doctor-edit-input" required>
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Last Name</label>
+                        <label>{{ __('Last Name') }}</label>
                         <input type="text" name="last_name" class="doctor-edit-input" required>
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Email</label>
-                        <input type="email" name="email" class="doctor-edit-input" required>
+                        <label>{{ __('Email') }}</label>
+                        <input type="email" name="email" class="doctor-edit-input" required dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Phone</label>
-                        <input type="text" name="phone" class="doctor-edit-input">
+                        <label>{{ __('Phone') }}</label>
+                        <input type="text" name="phone" class="doctor-edit-input" dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Gender</label>
+                        <label>{{ __('Gender') }}</label>
                         <select name="gender" class="doctor-edit-input">
-                            <option value="">Select gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="">{{ __('Select gender') }}</option>
+                            <option value="Male">{{ __('Male') }}</option>
+                            <option value="Female">{{ __('Female') }}</option>
                         </select>
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Password</label>
-                        <input type="password" name="password" class="doctor-edit-input" required>
+                        <label>{{ __('Password') }}</label>
+                        <input type="password" name="password" class="doctor-edit-input" required dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Specialization</label>
+                        <label>{{ __('Specialization') }}</label>
                         <input type="text" name="specialization" class="doctor-edit-input" required>
                     </div>
                     <div class="doctor-edit-form-group">
-                        <label>Bio</label>
+                        <label>{{ __('Bio') }}</label>
                         <input type="text" name="bio" class="doctor-edit-input">
                     </div>
-                    <button type="submit" class="doctor-edit-save-button">Add Doctor</button>
+                    <button type="submit" class="doctor-edit-save-button">{{ __('Add Doctor') }}</button>
                 </form>
             </div>
         </div>
@@ -890,9 +800,6 @@
     <script>
         let doctorDeleteForm = null;
 
-        // ---------------------------------------------------------
-        // 1. الفلترة عبر السيرفر (Server-Side Debouncing)
-        // ---------------------------------------------------------
         let searchTimeout = null;
         const doctorSearchInput = document.getElementById('doctorSearchInput');
         const doctorApprovalFilter = document.getElementById('doctorApprovalFilter');
@@ -900,9 +807,7 @@
 
         if (doctorSearchInput) {
             doctorSearchInput.addEventListener('keyup', function () {
-                // إيقاف العداد القديم مع كل حرف يُكتب
                 clearTimeout(searchTimeout);
-                // إرسال الفورم بعد التوقف عن الكتابة بنصف ثانية
                 searchTimeout = setTimeout(() => {
                     if (searchForm) searchForm.submit();
                 }, 500);
@@ -911,48 +816,37 @@
 
         if (doctorApprovalFilter) {
             doctorApprovalFilter.addEventListener('change', function () {
-                // إرسال الفورم فوراً عند اختيار حالة جديدة
                 if (searchForm) searchForm.submit();
             });
         }
 
-        // ---------------------------------------------------------
-        // 2. دالة عرض التفاصيل (View Modal Population)
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-view-doctor').forEach(function (button) {
             button.addEventListener('click', function () {
-                document.getElementById('viewDoctorName').innerText = this.dataset.name || 'N/A';
-                document.getElementById('viewDoctorSpecialization').innerText = this.dataset.specialization || 'N/A';
-                document.getElementById('viewDoctorEmail').innerText = this.dataset.email || 'N/A';
-                document.getElementById('viewDoctorPhone').innerText = this.dataset.phone || 'N/A';
+                document.getElementById('viewDoctorName').innerText = this.dataset.name || '{{ __('N/A') }}';
+                document.getElementById('viewDoctorSpecialization').innerText = this.dataset.specialization || '{{ __('N/A') }}';
+                document.getElementById('viewDoctorEmail').innerText = this.dataset.email || '{{ __('N/A') }}';
+                document.getElementById('viewDoctorPhone').innerText = this.dataset.phone || '{{ __('N/A') }}';
                 document.getElementById('viewDoctorImage').src = this.dataset.image;
 
                 document.getElementById('doctorViewModal').style.display = 'flex';
             });
         });
 
-        // ---------------------------------------------------------
-        // 3. دالة التعديل (Dynamic Form Routing)
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-edit-doctor').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('editDoctorFirstName').value = this.dataset.firstName || '';
                 document.getElementById('editDoctorLastName').value = this.dataset.lastName || '';
                 document.getElementById('editDoctorSpecialization').value = this.dataset.specialization || '';
                 
-                // حقن الـ ID في رابط الفورم
                 document.getElementById('doctorUpdateForm').action = '/admin/doctors/' + this.dataset.id;
                 document.getElementById('doctorEditModal').style.display = 'flex';
             });
         });
 
-        // ---------------------------------------------------------
-        // 4. دالة الحذف (Safe Deletion Flow)
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-doctor').forEach(function (button) {
             button.addEventListener('click', function () {
                 doctorDeleteForm = this.closest('form');
-                document.getElementById('deleteDoctorName').innerText = this.dataset.name || 'this doctor';
+                document.getElementById('deleteDoctorName').innerText = this.dataset.name || '{{ __('this doctor') }}';
                 document.getElementById('doctorDeleteModal').style.display = 'flex';
             });
         });
@@ -964,9 +858,6 @@
             });
         }
 
-        // ---------------------------------------------------------
-        // 5. دوال الإغلاق (UX Controls)
-        // ---------------------------------------------------------
         function closeAdminModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }

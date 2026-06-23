@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appointment Management - Taif Project</title>
+    <title>{{ __('Appointment Management - Taif Project') }}</title>
 
     <link
         rel="stylesheet"
@@ -47,9 +47,10 @@
             font-family: Arial, sans-serif;
         }
 
+        /* 💡 استخدام الخصائص المنطقية للاتجاهات */
         .admin-main-content {
             width: calc(100% - 260px);
-            margin-left: 260px;
+            margin-inline-start: 260px;
             padding: 2rem;
         }
 
@@ -79,8 +80,8 @@
         }
 
         .admin-status-text {
-            margin-right: 1rem;
-            text-align: right;
+            margin-inline-end: 1rem;
+            text-align: end;
         }
 
         .admin-status-title {
@@ -147,13 +148,13 @@
 
         .appointment-search-icon {
             position: absolute;
-            left: 12px;
+            inset-inline-start: 12px;
             top: 10px;
             color: #6b7280;
         }
 
         .appointment-search-input {
-            padding-left: 2.5rem;
+            padding-inline-start: 2.5rem;
             background: #f8fafc;
         }
 
@@ -166,7 +167,7 @@
         .appointment-table th,
         .appointment-table td {
             padding: 15px 20px;
-            text-align: left;
+            text-align: start;
             border-bottom: 1px solid #f1f5f9;
             vertical-align: middle;
         }
@@ -300,7 +301,7 @@
         .admin-modal-close {
             position: absolute;
             top: 15px;
-            right: 15px;
+            inset-inline-end: 15px;
             color: rgba(255, 255, 255, 0.8);
             font-size: 22px;
             cursor: pointer;
@@ -336,12 +337,12 @@
         .view-appointment-info-value {
             color: var(--dark-text);
             font-weight: 600;
-            text-align: right;
+            text-align: end;
         }
 
         .appointment-edit-form-group {
             margin-bottom: 16px;
-            text-align: left;
+            text-align: start;
         }
 
         .appointment-edit-form-group label {
@@ -466,7 +467,7 @@
 
             .admin-main-content {
                 width: calc(100% - 75px);
-                margin-left: 75px;
+                margin-inline-start: 75px;
             }
         }
     </style>
@@ -478,22 +479,33 @@
         <div class="admin-page-header">
             <div>
                 <h4 class="admin-page-title">
-                    Appointment Management
+                    {{ __('Appointment Management') }}
                 </h4>
                 <small class="admin-page-subtitle">
-                    Manage all appointments in the system
+                    {{ __('Manage all appointments in the system') }}
                 </small>
             </div>
 
             <div class="admin-status-wrapper">
-                <div class="admin-status-text"></div>
+                <div class="admin-status-text">
+                    <div class="admin-status-title">{{ __('Admin Panel') }}</div>
+                    <small class="admin-online-status">
+                        <i class="fas fa-circle me-1"></i> {{ __('Online') }}
+                    </small>
+                </div>
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="admin-logout-button">
+                        <i class="fas fa-sign-out-alt text-danger"></i>
+                    </button>
+                </form>
             </div>
         </div>
 
         <div class="appointment-management-card">
             <div class="appointment-table-header">
                 <h6 class="appointment-table-title">
-                    Appointments Directory
+                    {{ __('Appointments Directory') }}
                 </h6>
 
                 <form action="{{ route('admin.appointments.index') }}" method="GET" id="searchForm" class="appointment-filter-search-wrapper" style="display: flex; gap: 10px; align-items: center; justify-content: flex-end;">
@@ -503,11 +515,11 @@
                         id="appointmentStatusFilter"
                         class="form-control form-control-sm appointment-status-filter"
                     >
-                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All statuses</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>{{ __('All statuses') }}</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                        <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>{{ __('Scheduled') }}</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>{{ __('Completed') }}</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                     </select>
 
                     <select
@@ -515,10 +527,10 @@
                         id="appointmentDateFilter"
                         class="form-control form-control-sm appointment-date-filter"
                     >
-                        <option value="all" {{ request('date_filter') == 'all' ? 'selected' : '' }}>All dates</option>
-                        <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>Today</option>
-                        <option value="upcoming" {{ request('date_filter') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
-                        <option value="past" {{ request('date_filter') == 'past' ? 'selected' : '' }}>Past</option>
+                        <option value="all" {{ request('date_filter') == 'all' ? 'selected' : '' }}>{{ __('All dates') }}</option>
+                        <option value="today" {{ request('date_filter') == 'today' ? 'selected' : '' }}>{{ __('Today') }}</option>
+                        <option value="upcoming" {{ request('date_filter') == 'upcoming' ? 'selected' : '' }}>{{ __('Upcoming') }}</option>
+                        <option value="past" {{ request('date_filter') == 'past' ? 'selected' : '' }}>{{ __('Past') }}</option>
                     </select>
 
                     <div class="appointment-search-wrapper">
@@ -529,7 +541,7 @@
                             id="appointmentSearchInput"
                             value="{{ request('search') }}"
                             class="form-control form-control-sm appointment-search-input"
-                            placeholder="Search doctor or parent..."
+                            placeholder="{{ __('Search doctor or parent...') }}"
                         >
                     </div>
                 </form>
@@ -538,14 +550,14 @@
             <table class="appointment-table">
                 <thead>
                     <tr>
-                        <th>Doctor</th>
-                        <th>Parent</th>
-                        <th>Child</th>
-                        <th>Workplace</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Status</th>
-                        <th style="text-align:center;">Actions</th>
+                        <th>{{ __('Doctor') }}</th>
+                        <th>{{ __('Parent') }}</th>
+                        <th>{{ __('Child') }}</th>
+                        <th>{{ __('Workplace') }}</th>
+                        <th>{{ __('Date') }}</th>
+                        <th>{{ __('Time') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align:center;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
@@ -584,15 +596,15 @@
                         @endphp
 
                         <tr data-status="{{ $status }}">
-                            <td>{{ $doctorName ?: 'N/A' }}</td>
-                            <td>{{ $parentName ?: 'N/A' }}</td>
-                            <td>{{ $appointment->child->name ?? 'N/A' }}</td>
-                            <td>{{ $appointment->workplace->place_name ?? 'N/A' }}</td>
+                            <td>{{ $doctorName ?: __('N/A') }}</td>
+                            <td>{{ $parentName ?: __('N/A') }}</td>
+                            <td>{{ $appointment->child->name ?? __('N/A') }}</td>
+                            <td>{{ $appointment->workplace->place_name ?? __('N/A') }}</td>
                             <td>{{ $appointmentDate->format('M d, Y') }}</td>
-                            <td>{{ $timeText }}</td>
+                            <td dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}">{{ $timeText }}</td>
                             <td>
                                 <span class="appointment-status-badge {{ $statusClass }}">
-                                    {{ ucfirst($status) }}
+                                    {{ __($status) }}
                                 </span>
                             </td>
                             <td>
@@ -600,14 +612,14 @@
                                     <button
                                         type="button"
                                         class="appointment-action-button appointment-action-view js-view-appointment"
-                                        data-doctor="{{ $doctorName ?: 'N/A' }}"
-                                        data-parent="{{ $parentName ?: 'N/A' }}"
-                                        data-child="{{ $appointment->child->name ?? 'N/A' }}"
-                                        data-workplace="{{ $appointment->workplace->place_name ?? 'N/A' }}"
+                                        data-doctor="{{ $doctorName ?: __('N/A') }}"
+                                        data-parent="{{ $parentName ?: __('N/A') }}"
+                                        data-child="{{ $appointment->child->name ?? __('N/A') }}"
+                                        data-workplace="{{ $appointment->workplace->place_name ?? __('N/A') }}"
                                         data-date="{{ $appointmentDate->format('M d, Y') }}"
                                         data-time="{{ $timeText }}"
-                                        data-status="{{ ucfirst($status) }}"
-                                        data-note="{{ $appointment->note ?? 'N/A' }}"
+                                        data-status="{{ __($status) }}"
+                                        data-note="{{ $appointment->note ?? __('N/A') }}"
                                     >
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -639,7 +651,7 @@
                                         <button
                                             type="button"
                                             class="appointment-action-button appointment-action-delete js-delete-appointment"
-                                            data-name="{{ $doctorName ?: 'Doctor' }} / {{ $parentName ?: 'Parent' }}"
+                                            data-name="{{ $doctorName ?: __('Doctor') }} / {{ $parentName ?: __('Parent') }}"
                                         >
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -650,7 +662,7 @@
                     @empty
                         <tr>
                             <td colspan="8" class="text-center py-5 text-muted">
-                                No appointments found.
+                                {{ __('No appointments found.') }}
                             </td>
                         </tr>
                     @endforelse
@@ -665,18 +677,18 @@
 
     <div id="appointmentViewModal" class="admin-modal-overlay view-appointment-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-calendar-check"></i> Appointment Details</div>
+            <div class="admin-modal-header"><i class="fas fa-calendar-check"></i> {{ __('Appointment Details') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('appointmentViewModal')">&times;</span>
             <div class="admin-modal-body">
                 <div class="view-appointment-details-box">
-                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Doctor</span><span class="view-appointment-info-value" id="viewAppointmentDoctor"></span></div>
-                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Parent</span><span class="view-appointment-info-value" id="viewAppointmentParent"></span></div>
-                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Child</span><span class="view-appointment-info-value" id="viewAppointmentChild"></span></div>
-                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Workplace</span><span class="view-appointment-info-value" id="viewAppointmentWorkplace"></span></div>
-                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Date</span><span class="view-appointment-info-value" id="viewAppointmentDate"></span></div>
-                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Time</span><span class="view-appointment-info-value" id="viewAppointmentTime"></span></div>
-                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Status</span><span class="view-appointment-info-value" id="viewAppointmentStatus"></span></div>
-                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">Note</span><span class="view-appointment-info-value" id="viewAppointmentNote"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">{{ __('Doctor') }}</span><span class="view-appointment-info-value" id="viewAppointmentDoctor"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">{{ __('Parent') }}</span><span class="view-appointment-info-value" id="viewAppointmentParent"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">{{ __('Child') }}</span><span class="view-appointment-info-value" id="viewAppointmentChild"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">{{ __('Workplace') }}</span><span class="view-appointment-info-value" id="viewAppointmentWorkplace"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">{{ __('Date') }}</span><span class="view-appointment-info-value" id="viewAppointmentDate"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">{{ __('Time') }}</span><span class="view-appointment-info-value" id="viewAppointmentTime" dir="ltr" style="text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }}"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">{{ __('Status') }}</span><span class="view-appointment-info-value" id="viewAppointmentStatus"></span></div>
+                    <div class="view-appointment-info-row"><span class="view-appointment-info-label">{{ __('Note') }}</span><span class="view-appointment-info-value" id="viewAppointmentNote"></span></div>
                 </div>
             </div>
         </div>
@@ -684,45 +696,45 @@
 
     <div id="appointmentEditModal" class="admin-modal-overlay edit-appointment-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-edit"></i> Edit Appointment</div>
+            <div class="admin-modal-header"><i class="fas fa-edit"></i> {{ __('Edit Appointment') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('appointmentEditModal')">&times;</span>
             <div class="admin-modal-body">
                 <form id="appointmentUpdateForm" method="POST">
                     @csrf @method('PUT')
                     <div class="appointment-edit-form-group">
-                        <label>Date</label>
+                        <label>{{ __('Date') }}</label>
                         <input type="date" id="editAppointmentDate" name="date" class="appointment-edit-input">
                     </div>
                     <div class="appointment-edit-form-group">
-                        <label>Time Since</label>
-                        <div class="time-grid">
+                        <label>{{ __('Time Since') }}</label>
+                        <div class="time-grid" dir="ltr">
                             <select id="editFromHour" name="from_hour" class="appointment-edit-select">@for($i = 1; $i <= 12; $i++)<option value="{{ $i }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>@endfor</select>
                             <select id="editFromMinute" name="from_minute" class="appointment-edit-select">@foreach([0, 15, 30, 45] as $minute)<option value="{{ $minute }}">{{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}</option>@endforeach</select>
                             <select id="editFromPeriod" name="from_period" class="appointment-edit-select"><option value="AM">AM</option><option value="PM">PM</option></select>
                         </div>
                     </div>
                     <div class="appointment-edit-form-group">
-                        <label>Time To</label>
-                        <div class="time-grid">
+                        <label>{{ __('Time To') }}</label>
+                        <div class="time-grid" dir="ltr">
                             <select id="editToHour" name="to_hour" class="appointment-edit-select">@for($i = 1; $i <= 12; $i++)<option value="{{ $i }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>@endfor</select>
                             <select id="editToMinute" name="to_minute" class="appointment-edit-select">@foreach([0, 15, 30, 45] as $minute)<option value="{{ $minute }}">{{ str_pad($minute, 2, '0', STR_PAD_LEFT) }}</option>@endforeach</select>
                             <select id="editToPeriod" name="to_period" class="appointment-edit-select"><option value="AM">AM</option><option value="PM">PM</option></select>
                         </div>
                     </div>
                     <div class="appointment-edit-form-group">
-                        <label>Status</label>
+                        <label>{{ __('Status') }}</label>
                         <select id="editAppointmentStatus" name="status" class="appointment-edit-select">
-                            <option value="pending">Pending</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
+                            <option value="pending">{{ __('Pending') }}</option>
+                            <option value="scheduled">{{ __('Scheduled') }}</option>
+                            <option value="completed">{{ __('Completed') }}</option>
+                            <option value="cancelled">{{ __('Cancelled') }}</option>
                         </select>
                     </div>
                     <div class="appointment-edit-form-group">
-                        <label>Note</label>
+                        <label>{{ __('Note') }}</label>
                         <textarea id="editAppointmentNote" name="note" class="appointment-edit-textarea"></textarea>
                     </div>
-                    <button type="submit" class="appointment-edit-save-button">Save Changes</button>
+                    <button type="submit" class="appointment-edit-save-button">{{ __('Save Changes') }}</button>
                 </form>
             </div>
         </div>
@@ -730,15 +742,15 @@
 
     <div id="appointmentDeleteModal" class="admin-modal-overlay delete-appointment-modal">
         <div class="admin-modal-box">
-            <div class="admin-modal-header"><i class="fas fa-trash"></i> Delete Appointment</div>
+            <div class="admin-modal-header"><i class="fas fa-trash"></i> {{ __('Delete Appointment') }}</div>
             <span class="admin-modal-close" onclick="closeAdminModal('appointmentDeleteModal')">&times;</span>
             <div class="admin-modal-body text-center">
                 <div class="delete-warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <h4 class="delete-title">Are you sure?</h4>
-                <p class="delete-message">You are about to delete appointment:<br><strong id="deleteAppointmentName">this appointment</strong>.<br>This action cannot be undone.</p>
+                <h4 class="delete-title">{{ __('Are you sure?') }}</h4>
+                <p class="delete-message">{{ __('You are about to delete appointment:') }}<br><strong id="deleteAppointmentName" dir="auto"></strong>.<br>{{ __('This action cannot be undone.') }}</p>
                 <div class="delete-actions">
-                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('appointmentDeleteModal')">Cancel</button>
-                    <button type="button" class="delete-confirm-button" id="confirmAppointmentDeleteButton">Delete</button>
+                    <button type="button" class="delete-cancel-button" onclick="closeAdminModal('appointmentDeleteModal')">{{ __('Cancel') }}</button>
+                    <button type="button" class="delete-confirm-button" id="confirmAppointmentDeleteButton">{{ __('Delete') }}</button>
                 </div>
             </div>
         </div>
@@ -747,9 +759,6 @@
     <script>
         let appointmentDeleteForm = null;
 
-        // ---------------------------------------------------------
-        // 1. الفلترة الفورية عبر السيرفر (Server-Side Debouncing)
-        // ---------------------------------------------------------
         let searchTimeout = null;
         const searchForm = document.getElementById('searchForm');
         const appointmentSearchInput = document.getElementById('appointmentSearchInput');
@@ -765,7 +774,6 @@
             });
         }
 
-        // إرسال الفورم فوراً عند تغيير أي قائمة منسدلة
         if (appointmentStatusFilter) {
             appointmentStatusFilter.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
         }
@@ -773,27 +781,21 @@
             appointmentDateFilter.addEventListener('change', () => { if(searchForm) searchForm.submit(); });
         }
 
-        // ---------------------------------------------------------
-        // 2. دالة عرض التفاصيل
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-view-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
-                document.getElementById('viewAppointmentDoctor').innerText = this.dataset.doctor || 'N/A';
-                document.getElementById('viewAppointmentParent').innerText = this.dataset.parent || 'N/A';
-                document.getElementById('viewAppointmentChild').innerText = this.dataset.child || 'N/A';
-                document.getElementById('viewAppointmentWorkplace').innerText = this.dataset.workplace || 'N/A';
-                document.getElementById('viewAppointmentDate').innerText = this.dataset.date || 'N/A';
-                document.getElementById('viewAppointmentTime').innerText = this.dataset.time || 'N/A';
-                document.getElementById('viewAppointmentStatus').innerText = this.dataset.status || 'N/A';
-                document.getElementById('viewAppointmentNote').innerText = this.dataset.note || 'N/A';
+                document.getElementById('viewAppointmentDoctor').innerText = this.dataset.doctor || '{{ __('N/A') }}';
+                document.getElementById('viewAppointmentParent').innerText = this.dataset.parent || '{{ __('N/A') }}';
+                document.getElementById('viewAppointmentChild').innerText = this.dataset.child || '{{ __('N/A') }}';
+                document.getElementById('viewAppointmentWorkplace').innerText = this.dataset.workplace || '{{ __('N/A') }}';
+                document.getElementById('viewAppointmentDate').innerText = this.dataset.date || '{{ __('N/A') }}';
+                document.getElementById('viewAppointmentTime').innerText = this.dataset.time || '{{ __('N/A') }}';
+                document.getElementById('viewAppointmentStatus').innerText = this.dataset.status || '{{ __('N/A') }}';
+                document.getElementById('viewAppointmentNote').innerText = this.dataset.note || '{{ __('N/A') }}';
 
                 document.getElementById('appointmentViewModal').style.display = 'flex';
             });
         });
 
-        // ---------------------------------------------------------
-        // 3. دالة التعديل
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-edit-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
                 document.getElementById('editAppointmentDate').value = this.dataset.date || '';
@@ -813,13 +815,10 @@
             });
         });
 
-        // ---------------------------------------------------------
-        // 4. دوال الحذف والإغلاق
-        // ---------------------------------------------------------
         document.querySelectorAll('.js-delete-appointment').forEach(function (button) {
             button.addEventListener('click', function () {
                 appointmentDeleteForm = this.closest('form');
-                document.getElementById('deleteAppointmentName').innerText = this.dataset.name || 'this appointment';
+                document.getElementById('deleteAppointmentName').innerText = this.dataset.name || '{{ __('this appointment') }}';
                 document.getElementById('appointmentDeleteModal').style.display = 'flex';
             });
         });

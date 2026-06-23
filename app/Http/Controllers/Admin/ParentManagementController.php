@@ -9,31 +9,35 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Child;
 use Illuminate\Support\Facades\Hash;
+use App\Traits\LogsActivity; // 💡 استدعاء الـ Trait
 
 class ParentManagementController extends Controller
 {
+    use LogsActivity; // 💡 تفعيل الـ Trait داخل الكلاس
+
     // ---------------------------------------------------------
     // 1. دالة العرض (Index)
     // ---------------------------------------------------------
    public function index(Request $request)
-{
-    $query = ParentProfile::with(['user', 'children'])->latest();
+   {
+        $query = ParentProfile::with(['user', 'children'])->latest();
 
-    // 💡 فلترة البحث: تبحث في اسم الأب أو اسم العائلة أو رقم الهاتف
-    if ($request->filled('search')) {
-        $searchTerm = $request->search;
-        
-        $query->whereHas('user', function($q) use ($searchTerm) {
-            $q->where('first_name', 'like', "%{$searchTerm}%")
-              ->orWhere('last_name', 'like', "%{$searchTerm}%")
-              ->orWhere('phone', 'like', "%{$searchTerm}%");
-        });
-    }
+        // 💡 فلترة البحث: تبحث في اسم الأب أو اسم العائلة أو رقم الهاتف
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            
+            $query->whereHas('user', function($q) use ($searchTerm) {
+                $q->where('first_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('last_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('phone', 'like', "%{$searchTerm}%");
+            });
+        }
 
-    $parents = $query->paginate(10)->appends($request->query());
+        $parents = $query->paginate(10)->appends($request->query());
 
-    return view('admin.parents_management', compact('parents'));
-}
+        return view('admin.parents_management', compact('parents'));
+   }
+
     // ---------------------------------------------------------
     // 2. دالة التعديل (Update - تعديل ثلاثي الأبعاد)
     // ---------------------------------------------------------
@@ -79,6 +83,9 @@ class ParentManagementController extends Controller
                 ]);
             }
 
+            // 💡 تسجيل الحركة (تعديل)
+            $this->logActivity('تعديل ولي أمر', "قام الأدمن بتحديث بيانات ولي الأمر: {$request->first_name} {$request->last_name}");
+
             DB::commit();
 
             return back()->with('success', 'Parent updated successfully.');
@@ -88,9 +95,10 @@ class ParentManagementController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
-        // ---------------------------------------------------------
-        // 3. دالة الحذف (Destroy)
-        // ---------------------------------------------------------
+
+    // ---------------------------------------------------------
+    // 3. دالة الحذف (Destroy)
+    // ---------------------------------------------------------
     public function destroy($id)
     {
         $parent = ParentProfile::with(['user', 'children'])->findOrFail($id);
@@ -98,11 +106,17 @@ class ParentManagementController extends Controller
         DB::beginTransaction();
 
         try {
+            // حفظ الاسم قبل الحذف باش نسجلوه في الـ Log
+            $parentName = $parent->user ? $parent->user->first_name . ' ' . $parent->user->last_name : 'ولي أمر غير معروف';
+
             if ($parent->user) {
                 $parent->user->delete();
             } else {
                 $parent->delete();
             }
+
+            // 💡 تسجيل الحركة (حذف)
+            $this->logActivity('حذف ولي أمر', "قام الأدمن بحذف حساب ولي الأمر: {$parentName}");
 
             DB::commit();
 
@@ -113,10 +127,11 @@ class ParentManagementController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
-        // ---------------------------------------------------------
-        // 4. دالة الإضافة (Store - الإدخال المتسلسل)
-        // ---------------------------------------------------------
-        public function store(Request $request)
+
+    // ---------------------------------------------------------
+    // 4. دالة الإضافة (Store - الإدخال المتسلسل)
+    // ---------------------------------------------------------
+    public function store(Request $request)
     {
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -160,6 +175,9 @@ class ParentManagementController extends Controller
                 'autism_level' => $request->autism_level,
             ]);
 
+            // 💡 تسجيل الحركة (إضافة)
+            $this->logActivity('إضافة ولي أمر', "قام الأدمن بإنشاء حساب جديد لولي الأمر: {$request->first_name} {$request->last_name}");
+
             DB::commit();
 
             return back()->with('success', 'Parent and child added successfully.');
@@ -169,4 +187,4 @@ class ParentManagementController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
-    }
+}

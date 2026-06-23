@@ -44,7 +44,21 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'role:doctor'])->g
     Route::get('/parent-profile/{id}', [ParentController::class, 'show'])->name('parent.profile');
     Route::get('/parents/search/ajax', [ParentController::class, 'searchAjax'])->name('parents.search.ajax');
     Route::delete('/parents/{id}/remove', [ParentController::class, 'removeParent'])->name('parent.remove');
-    
+
+    Route::post('/notes/store', [ParentController::class, 'storeNote'])->name('notes.store');
+    Route::get('/parent-profile/{id}/export-pdf', [ParentController::class, 'exportPdf'])->name('parent.export_pdf');
+    // عرض صفحة الملاحظات الخاصة بولي الأمر/الطفل
+Route::get('/parent-profile/{id}/notes', [ParentController::class, 'notesIndex'])->name('parent.notes');
+
+// تعديل وحذف ملاحظة
+Route::put('/notes/{id}/update', [ParentController::class, 'updateNote'])->name('notes.update');
+Route::delete('/notes/{id}/delete', [ParentController::class, 'destroyNote'])->name('notes.destroy');
+// عرض صفحة المهام المنزلية المستقلة
+Route::get('/parent-profile/{id}/tasks', [App\Http\Controllers\Doctor\ParentController::class, 'tasksIndex'])->name('parent.tasks');
+Route::post('/tasks/store', [App\Http\Controllers\Doctor\ParentController::class, 'storeTask'])->name('tasks.store');
+Route::put('/tasks/{id}/update', [App\Http\Controllers\Doctor\ParentController::class, 'updateTask'])->name('tasks.update');
+Route::delete('/tasks/{id}/delete', [App\Http\Controllers\Doctor\ParentController::class, 'destroyTask'])->name('tasks.destroy');
+
     Route::get('/children/search', [ChildController::class, 'searchPage'])->name('children.search');
     Route::get('/children/find', [ChildController::class, 'find'])->name('children.find');
     Route::post('/children/{id}/attach', [ChildController::class, 'attach'])->name('children.attach');

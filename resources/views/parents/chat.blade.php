@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent Chat</title>
+    <title>{{ __('Parent Chat') }}</title>
 
     <style>
         * {
@@ -38,7 +38,7 @@
         .bg-top {
             position: absolute;
             top: -40px;
-            left: -40px;
+            inset-inline-start: -40px; /* منطقي */
             width: 180px;
             height: 140px;
             background: rgba(180, 212, 250, 0.35);
@@ -49,7 +49,7 @@
         .bg-bottom-left {
             position: absolute;
             bottom: 80px;
-            left: -60px;
+            inset-inline-start: -60px; /* منطقي */
             width: 220px;
             height: 180px;
             background: rgba(188, 233, 223, 0.35);
@@ -60,7 +60,7 @@
         .bg-bottom-right {
             position: absolute;
             bottom: 130px;
-            right: -20px;
+            inset-inline-end: -20px; /* منطقي */
             width: 80px;
             height: 80px;
             background: rgba(240, 229, 197, 0.35);
@@ -82,7 +82,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* منطقي */
             background: transparent;
             border: none;
             cursor: pointer;
@@ -96,6 +96,8 @@
         .back-btn svg {
             width: 26px;
             height: 26px;
+            /* 💡 قلب السهم في اللغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .doctor-avatar {
@@ -104,7 +106,7 @@
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
-            margin-left: 26px;
+            margin-inline-start: 32px; /* منطقي لتفادي زر الرجوع */
         }
 
         .header-info {
@@ -153,7 +155,7 @@
         .mute-menu {
             position: absolute;
             top: 42px;
-            right: 0;
+            inset-inline-end: 0; /* منطقي */
             width: 190px;
             background: #ffffff;
             border-radius: 14px;
@@ -172,7 +174,7 @@
             border: none;
             background: #ffffff;
             padding: 12px 14px;
-            text-align: left;
+            text-align: start; /* منطقي */
             font-size: 14px;
             color: #3d4d63;
             cursor: pointer;
@@ -214,7 +216,7 @@
         }
 
         .message-row.me {
-            align-items: flex-end;
+            align-items: flex-end; /* يتجاوب تلقائياً مع اللغات */
         }
 
         .message-row.other {
@@ -231,20 +233,22 @@
             word-wrap: break-word;
         }
 
+        /* 💡 خصائص انحناء الحواف المنطقية، تنعكس بروحها بدون أكواد إضافية */
         .bubble.me {
             background: #c9efe9;
-            border-bottom-right-radius: 8px;
+            border-end-end-radius: 8px; 
         }
 
         .bubble.other {
             background: #cfe0ff;
-            border-bottom-left-radius: 8px;
+            border-end-start-radius: 8px;
         }
 
         .time {
             font-size: 12px;
             color: #7f7f7f;
             margin-top: 6px;
+            direction: ltr; /* الوقت ديما LTR */
         }
 
         .image-message {
@@ -272,7 +276,7 @@
         .message-action-menu {
             position: absolute;
             top: -6px;
-            right: 0;
+            inset-inline-end: 0; /* منطقي */
             background: white;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
@@ -332,6 +336,7 @@
         .audio-player {
             width: 170px;
             height: 34px;
+            direction: ltr; /* مشغل الصوت ديما LTR */
         }
 
         .input-bar-wrap {
@@ -399,8 +404,8 @@
 
         .selected-file-preview {
             position: absolute;
-            left: 18px;
-            right: 42px;
+            inset-inline-end: 18px;
+            inset-inline-start: 42px;
             top: 50%;
             transform: translateY(-50%);
             font-size: 13px;
@@ -410,11 +415,12 @@
             text-overflow: ellipsis;
             pointer-events: none;
             display: none;
+            direction: ltr; /* لأسماء الملفات */
         }
 
         .clear-file-btn {
             position: absolute;
-            right: 12px;
+            inset-inline-start: 12px;
             top: 50%;
             transform: translateY(-50%);
             width: 22px;
@@ -443,11 +449,13 @@
             font-size: 18px;
             cursor: pointer;
             flex-shrink: 0;
+            /* 💡 قلب السهم في اللغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .recording-status {
             position: absolute;
-            left: 58px;
+            inset-inline-end: 58px;
             bottom: 92px;
             background: rgba(255,255,255,0.95);
             color: #444;
@@ -476,6 +484,7 @@
         .recording-time {
             font-weight: 700;
             color: #1d567e;
+            direction: ltr;
         }
 
         .image-modal {
@@ -503,7 +512,7 @@
         .image-modal-close {
             position: absolute;
             top: 18px;
-            right: 22px;
+            inset-inline-start: 22px; /* منطقي */
             background: rgba(255,255,255,0.15);
             color: white;
             border: none;
@@ -523,11 +532,23 @@
 </head>
 <body>
     @php
-        $doctorName = $doctor['name'] ?? 'Doctor';
+        $doctorName = $doctor['name'] ?? __('Doctor');
         $doctorImage = !empty($doctor['image'])
             ? asset('storage/' . $doctor['image'])
             : asset('images/default-user.png');
     @endphp
+
+    <script>
+        const chatLang = {
+            online: "• {{ __('Online') }}",
+            muted: "• {{ __('Notifications muted') }}",
+            deleteBtn: "{{ __('Delete') }}",
+            openFile: "{{ __('Open file') }}",
+            sendError: "{{ __('Failed to send message.') }}",
+            deleteError: "{{ __('Failed to delete message.') }}",
+            audioError: "{{ __('Failed to send audio.') }}"
+        };
+    </script>
 
     <div class="phone">
         <div class="bg-top"></div>
@@ -535,28 +556,28 @@
         <div class="bg-bottom-right"></div>
 
         <div class="header">
-            <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
 
-            <img src="{{ $doctorImage }}" alt="Doctor" class="doctor-avatar">
+            <img src="{{ $doctorImage }}" alt="{{ __('Doctor') }}" class="doctor-avatar">
 
             <div class="header-info">
                 <div class="doctor-name">{{ $doctorName }}</div>
-                <div class="online-status">• Online</div>
+                <div class="online-status">• {{ __('Online') }}</div>
             </div>
 
             <div class="menu-wrapper">
                 <button type="button" class="menu-btn" onclick="toggleMuteMenu()">⋮</button>
 
                 <div class="mute-menu" id="muteMenu">
-                    <button type="button" onclick="muteNotifications('1hour')">Mute for 1 hour</button>
-                    <button type="button" onclick="muteNotifications('1day')">Mute for 1 day</button>
-                    <button type="button" onclick="muteNotifications('1month')">Mute for 1 month</button>
-                    <button type="button" onclick="muteNotifications('forever')">Mute forever</button>
-                    <button type="button" onclick="unmuteNotifications()">Unmute</button>
+                    <button type="button" onclick="muteNotifications('1hour')">{{ __('Mute for 1 hour') }}</button>
+                    <button type="button" onclick="muteNotifications('1day')">{{ __('Mute for 1 day') }}</button>
+                    <button type="button" onclick="muteNotifications('1month')">{{ __('Mute for 1 month') }}</button>
+                    <button type="button" onclick="muteNotifications('forever')">{{ __('Mute forever') }}</button>
+                    <button type="button" onclick="unmuteNotifications()">{{ __('Unmute') }}</button>
                 </div>
             </div>
         </div>
@@ -589,7 +610,7 @@
                         >
                             <img
                                 src="{{ asset('storage/' . $message->file_path) }}"
-                                alt="image"
+                                alt="Image"
                                 class="chat-image"
                                 onclick="openImageModal(this.src)"
                             >
@@ -626,7 +647,7 @@
                     @if($isMe)
                         <div class="message-action-menu">
                             <button type="button" class="message-action-btn" onclick="deleteMessage({{ $message->id }}, this)">
-                                Delete
+                                {{ __('Delete') }}
                             </button>
                         </div>
                     @endif
@@ -635,14 +656,14 @@
                 </div>
             @empty
                 <div class="empty-chat" id="emptyChat" style="text-align:center; color:#777; margin-top:20px;">
-                    No messages yet. Start the conversation.
+                    {{ __('No messages yet. Start the conversation.') }}
                 </div>
             @endforelse
         </div>
 
         <div class="recording-status" id="recordingStatus">
             <span class="recording-dot"></span>
-            <span>Recording...</span>
+            <span>{{ __('Recording...') }}</span>
             <span class="recording-time" id="recordingTime">00:00</span>
         </div>
 
@@ -677,7 +698,7 @@
                     name="message"
                     class="message-input"
                     id="messageInput"
-                    placeholder="Write Here..."
+                    placeholder="{{ __('Write Here...') }}"
                     autocomplete="off"
                 >
                 <div id="selectedFilePreview" class="selected-file-preview"></div>
@@ -695,7 +716,6 @@
     </div>
 
 <script>
-    //  1. متغيرات النظام وحالة الكتم
     let isMutedStatus = {{ isset($isMuted) && $isMuted ? 'true' : 'false' }};
     let pressTimer = null;
     let isRecording = false;
@@ -705,9 +725,6 @@
     let recordingSeconds = 0;
     let recordingInterval = null;
 
-    // ---------------------------------------------------------
-    //  2. دوال الكتم (تتصل بالسيرفر مباشرة)
-    // ---------------------------------------------------------
     function toggleMuteMenu() {
         const menu = document.getElementById('muteMenu');
         menu.classList.toggle('show');
@@ -731,7 +748,7 @@
                 updateDoctorStatus();
             }
         })
-        .catch(error => console.error('Error muting:', error));
+        .catch(error => console.error('Error:', error));
     }
 
     function unmuteNotifications() {
@@ -752,7 +769,7 @@
                 updateDoctorStatus();
             }
         })
-        .catch(error => console.error('Error unmuting:', error));
+        .catch(error => console.error('Error:', error));
     }
 
     function isMuted() {
@@ -764,17 +781,14 @@
         if (!status) return;
 
         if (isMuted()) {
-            status.textContent = '• Notifications muted';
+            status.textContent = chatLang.muted;
             status.style.color = '#ff9500';
         } else {
-            status.textContent = '• Online';
+            status.textContent = chatLang.online;
             status.style.color = '#34c759';
         }
     }
 
-    // ---------------------------------------------------------
-    //  3. دوال الشات الأساسية (النزول لأسفل، عرض الصور، الملفات)
-    // ---------------------------------------------------------
     function scrollChatToBottom() {
         const chatArea = document.getElementById('chatArea');
         if (chatArea) {
@@ -809,9 +823,6 @@
         input.classList.remove('has-file');
     }
 
-    // ---------------------------------------------------------
-    //  4. دوال حذف الرسائل والقوائم المنبثقة
-    // ---------------------------------------------------------
     function closeAllMessageMenus() {
         document.querySelectorAll('.message-action-menu').forEach(menu => {
             menu.classList.remove('show');
@@ -857,7 +868,7 @@
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to delete message');
+                throw new Error(data.message || chatLang.deleteError);
             }
 
             const row = button.closest('.message-row');
@@ -865,14 +876,11 @@
 
             closeAllMessageMenus();
         } catch (error) {
-            alert(error.message || 'Failed to delete message.');
+            alert(error.message || chatLang.deleteError);
             console.error(error);
         }
     }
 
-    // ---------------------------------------------------------
-    //  5. دوال إنشاء عناصر الرسائل في الشاشة بعد الإرسال
-    // ---------------------------------------------------------
     function createTextMessage(text, timeText) {
         const chatArea = document.getElementById('chatArea');
         const row = document.createElement('div');
@@ -926,7 +934,7 @@
         const link = document.createElement('a');
         link.href = fileUrl;
         link.target = '_blank';
-        link.textContent = fileName || 'Open file';
+        link.textContent = fileName || chatLang.openFile;
         link.style.color = 'inherit';
         link.style.textDecoration = 'underline';
         link.style.wordBreak = 'break-all';
@@ -998,7 +1006,7 @@
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'message-action-btn';
-            btn.textContent = 'Delete';
+            btn.textContent = chatLang.deleteBtn;
             btn.onclick = function () { deleteMessage(messageId, btn); };
 
             menu.appendChild(btn);
@@ -1013,9 +1021,6 @@
         chatArea.appendChild(row);
     }
 
-    // ---------------------------------------------------------
-    //  6. دوال إرسال الرسائل (نص، ملفات، وصوت)
-    // ---------------------------------------------------------
     async function sendMessage(event) {
         event.preventDefault();
 
@@ -1050,7 +1055,7 @@
             }
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to send message');
+                throw new Error(data.message || chatLang.sendError);
             }
 
             const emptyChat = document.getElementById('emptyChat');
@@ -1068,7 +1073,7 @@
             clearSelectedFile();
             scrollChatToBottom();
         } catch (error) {
-            alert(error.message || 'Failed to send message.');
+            alert(error.message || chatLang.sendError);
             console.error(error);
         }
     }
@@ -1105,7 +1110,7 @@
             }
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to send audio');
+                throw new Error(data.message || chatLang.audioError);
             }
 
             const emptyChat = document.getElementById('emptyChat');
@@ -1114,7 +1119,7 @@
             createAudioMessage(data.file_url, data.time, data.id);
             scrollChatToBottom();
         } catch (error) {
-            alert(error.message || 'Failed to send audio');
+            alert(error.message || chatLang.audioError);
             console.error(error);
         }
     }
@@ -1170,9 +1175,6 @@
         }
     }
 
-    // ---------------------------------------------------------
-    //  7. مراقبة الأحداث (Event Listeners)
-    // ---------------------------------------------------------
     document.getElementById('chatForm').addEventListener('submit', sendMessage);
 
     document.getElementById('fileInput').addEventListener('change', function () {

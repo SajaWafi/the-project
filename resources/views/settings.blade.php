@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
+    <title>{{ __('Settings') }}</title>
 
     <style>
         * {
@@ -47,7 +47,7 @@
             background-image: url('{{ asset('images/bg.png') }}');
             background-repeat: no-repeat;
             background-size: 165% 100%;
-            background-position: left top;
+            background-position: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} top;
             opacity: 0.55;
             z-index: 0;
             pointer-events: none;
@@ -91,7 +91,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0;
             border: none;
             background: transparent;
             cursor: pointer;
@@ -104,6 +104,7 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -114,7 +115,7 @@
 
         .app-logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0;
             width: 100px;
             height: 100px;
             object-fit: contain;
@@ -156,7 +157,7 @@
             border: none;
             padding: 0;
             margin: 0;
-            text-align: left;
+            text-align: start;
             font: inherit;
             appearance: none;
             -webkit-appearance: none;
@@ -197,41 +198,49 @@
             color: #ff3b3b;
         }
 
+        .settings-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .item-value {
+            color: #f19a43;
+            font-size: 13px;
+        }
+
         .item-arrow {
             color: #f19a43;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            margin-left: 12px;
         }
 
         .item-arrow svg {
             width: 18px;
             height: 18px;
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
-        .delete-btn-trigger {
-            width: 100%;
-        }
-
-        .delete-overlay {
+        /* 💡 كلاسات الـ Modals الموحدة */
+        .modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(130, 160, 210, 0.18);
+            background: rgba(130, 160, 210, 0.25);
             z-index: 20;
             display: none;
             align-items: flex-end;
             justify-content: center;
         }
 
-        .delete-overlay.show {
+        .modal-overlay.show {
             display: flex;
         }
 
-        .delete-sheet {
+        .modal-sheet {
             width: 100%;
-            background: #f7f7f7;
+            background: #ffffff;
             border-radius: 28px 28px 0 0;
             padding: 22px 20px 30px;
             box-shadow: 0 -8px 24px rgba(0,0,0,0.08);
@@ -239,24 +248,77 @@
             transition: transform 0.25s ease;
         }
 
-        .delete-overlay.show .delete-sheet {
+        .modal-overlay.show .modal-sheet {
             transform: translateY(0);
         }
 
-        .delete-title {
+        .modal-title {
             text-align: center;
             font-size: 18px;
             font-weight: 800;
             color: #111;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
+        /* تنسيقات نافذة اللغة */
+        .lang-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .lang-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: #f8f9fa;
+            border-radius: 14px;
+            text-decoration: none;
+            color: #111;
+            font-weight: 700;
+            font-size: 15px;
+            border: 1.5px solid transparent;
+            transition: 0.2s;
+        }
+
+        .lang-option.active {
+            border-color: #2f80ed;
+            color: #2f80ed;
+            background: #f0f6ff;
+        }
+
+        .check-icon {
+            width: 20px;
+            height: 20px;
+            color: #2f80ed;
+        }
+
+        .cancel-btn-full {
+            width: 100%;
+            background: #d4eddb;
+            color: #2f80ed;
+            height: 48px;
+            border-radius: 999px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .cancel-btn-full:active {
+            transform: scale(0.98);
+        }
+
+        /* تنسيقات نافذة الحذف */
         .delete-text {
             text-align: center;
             font-size: 14px;
             color: #666;
-            line-height: 1.35;
-            margin-bottom: 18px;
+            line-height: 1.45;
+            margin-bottom: 22px;
         }
 
         .delete-actions {
@@ -267,7 +329,7 @@
 
         .delete-action-btn {
             min-width: 110px;
-            height: 32px;
+            height: 40px;
             border-radius: 999px;
             border: none;
             font-size: 14px;
@@ -291,23 +353,9 @@
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 0;
-                background: #fff;
-            }
-
-            .mobile-screen {
-                width: 100%;
-                max-width: 100%;
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-                box-shadow: none;
-            }
-
-            .content {
-                padding: 14px 14px 22px;
-            }
+            body { padding: 0; background: #fff; }
+            .mobile-screen { width: 100%; max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; box-shadow: none; }
+            .content { padding: 14px 14px 22px; }
         }
     </style>
 </head>
@@ -322,19 +370,47 @@
             </div>
 
             <div class="header">
-                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
 
-                <div class="page-title">Settings</div>
+                <div class="page-title">{{ __('Settings') }}</div>
 
                 <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo" onerror="this.style.display='none'">
             </div>
 
             <div class="settings-section">
-                <div class="section-chip">Account</div>
+                <div class="section-chip">{{ __('Preferences') }}</div>
+
+                <div class="settings-list">
+                    {{-- 💡 زر تغيير اللغة يفتح الـ Modal --}}
+                    <button type="button" class="settings-item" onclick="openLangModal()">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+                                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="1.8"/>
+                                </svg>
+                            </div>
+                            <div class="settings-text">{{ __('Language') }}</div>
+                        </div>
+
+                        <div class="settings-right">
+                            <div class="item-value">{{ app()->getLocale() == 'ar' ? 'العربية' : 'English' }}</div>
+                            <div class="item-arrow">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-chip">{{ __('Account') }}</div>
 
                 <div class="settings-list">
                     <a href="{{ route('password.manager') }}" class="settings-item">
@@ -346,7 +422,7 @@
                                     <path d="M8.5 10h3M10 8.5v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                 </svg>
                             </div>
-                            <div class="settings-text">Password Manager</div>
+                            <div class="settings-text">{{ __('Password Manager') }}</div>
                         </div>
 
                         <div class="item-arrow">
@@ -356,7 +432,7 @@
                         </div>
                     </a>
 
-                    <button type="button" class="settings-item delete-btn-trigger" onclick="openDeleteModal()">
+                    <button type="button" class="settings-item" onclick="openDeleteModal()">
                         <div class="settings-left">
                             <div class="settings-icon">
                                 <svg viewBox="0 0 24 24" fill="none">
@@ -364,7 +440,7 @@
                                     <path d="M5 20c0-3.2 3-5 7-5s7 1.8 7 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                 </svg>
                             </div>
-                            <div class="settings-text danger">Delete Account</div>
+                            <div class="settings-text danger">{{ __('Delete Account') }}</div>
                         </div>
 
                         <div class="item-arrow">
@@ -377,7 +453,7 @@
             </div>
 
             <div class="settings-section">
-                <div class="section-chip">Notifications</div>
+                <div class="section-chip">{{ __('Notifications') }}</div>
 
                 <div class="settings-list">
                     <a href="{{ route('panic.alert') }}" class="settings-item">
@@ -388,7 +464,7 @@
                                     <path d="M10 18a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                 </svg>
                             </div>
-                            <div class="settings-text">Panic Alert</div>
+                            <div class="settings-text">{{ __('Panic Alert') }}</div>
                         </div>
 
                         <div class="item-arrow">
@@ -406,7 +482,7 @@
                                     <path d="M9.5 10.5l1.5 1.5 3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
-                            <div class="settings-text">Location Alerts</div>
+                            <div class="settings-text">{{ __('Location Alerts') }}</div>
                         </div>
 
                         <div class="item-arrow">
@@ -425,7 +501,7 @@
                                     <path d="M13 10l4-3v10l-4-3h-2V10h2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                                 </svg>
                             </div>
-                            <div class="settings-text">Alert Sound</div>
+                            <div class="settings-text">{{ __('Alert Sound') }}</div>
                         </div>
 
                         <div class="item-arrow">
@@ -438,7 +514,7 @@
             </div>
 
             <div class="settings-section">
-                <div class="section-chip">Reports</div>
+                <div class="section-chip">{{ __('Reports') }}</div>
 
                 <div class="settings-list">
                     <a href="{{ route('reports.history') }}" class="settings-item">
@@ -451,7 +527,7 @@
                                     <path d="M20 19V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                 </svg>
                             </div>
-                            <div class="settings-text">View Reports History</div>
+                            <div class="settings-text">{{ __('View Reports History') }}</div>
                         </div>
 
                         <div class="item-arrow">
@@ -471,7 +547,7 @@
                                     <path d="M16 15v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                                 </svg>
                             </div>
-                            <div class="settings-text">Reports Settings</div>
+                            <div class="settings-text">{{ __('Reports Settings') }}</div>
                         </div>
 
                         <div class="item-arrow">
@@ -484,7 +560,7 @@
             </div>
 
             <div class="settings-section">
-                <div class="section-chip">Support</div>
+                <div class="section-chip">{{ __('Support') }}</div>
 
                 <div class="settings-list">
                     <a href="{{ route('complaints.create') }}" class="settings-item">
@@ -494,7 +570,7 @@
                                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
-                            <div class="settings-text">Submit Complaint</div>
+                            <div class="settings-text">{{ __('Submit Complaint') }}</div>
                         </div>
 
                         <div class="item-arrow">
@@ -508,33 +584,66 @@
 
         </div>
 
-        <div class="delete-overlay" id="deleteOverlay" onclick="closeDeleteModal(event)">
-            <div class="delete-sheet">
-                <div class="delete-title">Delete Account</div>
+        {{-- 💡 نافذة (Modal) تغيير اللغة --}}
+        <div class="modal-overlay" id="langOverlay" onclick="closeLangModal(event)">
+            <div class="modal-sheet">
+                <div class="modal-title">{{ __('Select Language') }}</div>
+
+                <div class="lang-options">
+                    <a href="{{ route('lang.switch', 'ar') }}" class="lang-option {{ app()->getLocale() == 'ar' ? 'active' : '' }}">
+                        <span dir="ltr">العربية</span>
+                        @if(app()->getLocale() == 'ar')
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        @endif
+                    </a>
+
+                    <a href="{{ route('lang.switch', 'en') }}" class="lang-option {{ app()->getLocale() == 'en' ? 'active' : '' }}">
+                        <span dir="ltr">English</span>
+                        @if(app()->getLocale() == 'en')
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        @endif
+                    </a>
+                </div>
+
+                <button type="button" class="cancel-btn-full" onclick="closeLangModal()">
+                    {{ __('Cancel') }}
+                </button>
+            </div>
+        </div>
+
+        {{-- 💡 نافذة (Modal) حذف الحساب --}}
+        <div class="modal-overlay" id="deleteOverlay" onclick="closeDeleteModal(event)">
+            <div class="modal-sheet">
+                <div class="modal-title">{{ __('Delete Account') }}</div>
                 <div class="delete-text">
-                    Are you sure you want to delete<br>
-                    account?
+                    {{ __('Are you sure you want to delete') }}<br>
+                    {{ __('account?') }}
                 </div>
 
                 <div class="delete-actions">
-            <button type="button" class="delete-action-btn delete-cancel" onclick="closeDeleteModal()">
-                Cancel
-            </button>
+                    <button type="button" class="delete-action-btn delete-cancel" onclick="closeDeleteModal()">
+                        {{ __('Cancel') }}
+                    </button>
 
-            <form action="{{ route('delete.account') }}" method="POST" style="margin:0;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="delete-action-btn delete-confirm">
-                    Yes, Delete
-                </button>
-            </form>
-        </div>
+                    <form action="{{ route('delete.account') }}" method="POST" style="margin:0;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="delete-action-btn delete-confirm">
+                            {{ __('Yes, Delete') }}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         const deleteOverlay = document.getElementById('deleteOverlay');
+        const langOverlay = document.getElementById('langOverlay');
 
         function openDeleteModal() {
             deleteOverlay.classList.add('show');
@@ -543,6 +652,15 @@
         function closeDeleteModal(event) {
             if (event && event.target !== deleteOverlay) return;
             deleteOverlay.classList.remove('show');
+        }
+
+        function openLangModal() {
+            langOverlay.classList.add('show');
+        }
+
+        function closeLangModal(event) {
+            if (event && event.target !== langOverlay) return;
+            langOverlay.classList.remove('show');
         }
     </script>
 </body>

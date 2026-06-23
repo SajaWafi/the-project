@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\LogsActivity; // 💡 استدعاء أداة التسجيل
 
 class AdminAppointmentController extends Controller
 {
+    use LogsActivity; // 💡 تفعيل التسجيل داخل الكنترولر
+
     // ---------------------------------------------------------
     // دالة العرض: تجيب المواعيد مرتبة زمنياً بذكاء
     // ---------------------------------------------------------
-public function index(\Illuminate\Http\Request $request)
+    public function index(\Illuminate\Http\Request $request)
     {
         // 1. تحديد تاريخ اليوم الحالي
         $today = \Carbon\Carbon::today()->toDateString();
@@ -80,6 +83,7 @@ public function index(\Illuminate\Http\Request $request)
 
         return view('admin.appointments_management', compact('appointments'));
     }
+
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -97,7 +101,7 @@ public function index(\Illuminate\Http\Request $request)
             'note' => 'nullable|string|max:1000',
         ]);
 
-        $appointment = Appointment::findOrFail($id);
+        $appointment = Appointment::with(['doctor.user', 'parent.user'])->findOrFail($id);
 
         DB::beginTransaction();
 
@@ -117,6 +121,13 @@ public function index(\Illuminate\Http\Request $request)
                 'note' => $request->note,
             ]);
 
+            // 💡 تجهيز أسماء الأطراف للتسجيل
+            $doctorName = $appointment->doctor->user ? $appointment->doctor->user->first_name . ' ' . $appointment->doctor->user->last_name : 'غير معروف';
+            $parentName = $appointment->parent->user ? $appointment->parent->user->first_name . ' ' . $appointment->parent->user->last_name : 'غير معروف';
+            
+            // 💡 تسجيل الحركة (تعديل موعد)
+            $this->logActivity('تعديل موعد', "قام الأدمن بتحديث موعد بين الطبيب ({$doctorName}) وولي الأمر ({$parentName}) وتغيير حالته إلى: {$request->status}");
+
             DB::commit(); // حفظ التعديلات نهائياً لو كل شيء تمام
 
             return back()->with('success', 'Appointment updated successfully.');
@@ -129,9 +140,17 @@ public function index(\Illuminate\Http\Request $request)
 
     public function destroy($id)
     {
-        $appointment = Appointment::findOrFail($id);
+        $appointment = Appointment::with(['doctor.user', 'parent.user'])->findOrFail($id);
+
+        // 💡 حفظ الأسماء وتاريخ الموعد قبل الحذف للتسجيل
+        $doctorName = $appointment->doctor->user ? $appointment->doctor->user->first_name . ' ' . $appointment->doctor->user->last_name : 'غير معروف';
+        $parentName = $appointment->parent->user ? $appointment->parent->user->first_name . ' ' . $appointment->parent->user->last_name : 'غير معروف';
+        $date = \Carbon\Carbon::parse($appointment->date)->format('Y-m-d');
 
         $appointment->delete();
+
+        // 💡 تسجيل الحركة (حذف موعد)
+        $this->logActivity('حذف موعد', "قام الأدمن بإلغاء وحذف الموعد المجدول بتاريخ ({$date}) بين الطبيب ({$doctorName}) وولي الأمر ({$parentName})");
 
         return back()->with('success', 'Appointment deleted successfully.');
     }

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile</title>
+    <title>{{ __('Edit Profile') }}</title>
 
     <style>
         * {
@@ -47,7 +47,8 @@
             background-image: url('{{ asset('images/bg.png') }}');
             background-repeat: no-repeat;
             background-size: 165% 100%;
-            background-position: left bottom;
+            /* 💡 خلفية متكيفة مع اتجاه اللغة */
+            background-position: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} bottom;
             opacity: 0.92;
             z-index: 0;
             pointer-events: none;
@@ -84,7 +85,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* 💡 محاذاة منطقية لزر الرجوع */
             border: none;
             background: transparent;
             cursor: pointer;
@@ -97,6 +98,8 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+            /* 💡 قلب سهم الرجوع إذا كانت الشاشة بالعربي */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -107,7 +110,7 @@
 
         .app-logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0; /* 💡 محاذاة منطقية لشعار التطبيق */
             width: 100px;
             height: 100px;
             object-fit: contain;
@@ -140,7 +143,7 @@
 
         .avatar-star {
             position: absolute;
-            left: -8px;
+            inset-inline-start: -8px; /* 💡 محاذاة منطقية للنجمة */
             top: 68px;
             font-size: 26px;
             color: #f1d46a;
@@ -149,7 +152,7 @@
 
         .edit-avatar-btn {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0; /* 💡 محاذاة منطقية لزر التعديل */
             bottom: 6px;
             width: 32px;
             height: 32px;
@@ -195,6 +198,7 @@
             font-weight: 600;
             color: #111;
             margin-bottom: 6px;
+            text-align: start; /* 💡 محاذاة النص المنطقية */
         }
 
         .form-input,
@@ -208,6 +212,12 @@
             padding: 0 14px;
             font-size: 15px;
             color: #1f2937;
+            text-align: start; /* 💡 محاذاة الإدخال المنطقية */
+        }
+
+        .ltr-input {
+            direction: ltr; /* لضمان صحة كتابة الإيميل والأرقام من اليسار لليمين */
+            text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};
         }
 
         .form-select {
@@ -216,6 +226,7 @@
             -moz-appearance: none;
             background-image: none;
             cursor: pointer;
+            padding-inline-end: 34px; /* 💡 تفريغ مساحة لعلامة الصح المنطقية */
         }
 
         .select-wrap {
@@ -225,7 +236,7 @@
         .select-wrap::after {
             content: "✓";
             position: absolute;
-            right: 14px;
+            inset-inline-end: 14px; /* 💡 وضع علامة الصح في النهاية المنطقية */
             top: 50%;
             transform: translateY(-50%);
             color: #41c8b6;
@@ -260,6 +271,7 @@
             border-radius: 12px;
             margin-bottom: 12px;
             font-size: 14px;
+            text-align: start; /* 💡 محاذاة التنبيهات */
         }
 
         .alert-success {
@@ -278,28 +290,14 @@
         }
 
         .alert-warning ul {
-            padding-left: 18px;
+            padding-inline-start: 18px; /* 💡 هوامش القوائم المنطقية */
             margin: 0;
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 0;
-                background: #fff;
-            }
-
-            .mobile-screen {
-                width: 100%;
-                max-width: 100%;
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-                box-shadow: none;
-            }
-
-            .content {
-                padding: 14px 16px 24px;
-            }
+            body { padding: 0; background: #fff; }
+            .mobile-screen { width: 100%; max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; box-shadow: none; }
+            .content { padding: 14px 16px 24px; }
         }
     </style>
 </head>
@@ -338,13 +336,13 @@
         </div>
 
         <div class="header">
-            <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+            <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
 
-            <div class="page-title">Profile</div>
+            <div class="page-title">{{ __('Profile') }}</div>
             <img src="{{ asset('images/logo.png') }}" alt="Taif" class="app-logo">
         </div>
 
@@ -358,7 +356,7 @@
                 src="{{ !empty(auth()->user()->profile_image)
                     ? asset('storage/' . auth()->user()->profile_image)
                     : asset('images/default-user.png') }}"
-                alt="Profile"
+                alt="{{ __('Profile') }}"
                 class="avatar"
             >
                     <div class="avatar-star">★</div>
@@ -380,64 +378,66 @@
 
             <div class="form-area">
                 <div class="form-group">
-                    <label class="form-label">first name</label>
+                    <label class="form-label">{{ __('First name') }}</label>
                     <input type="text" class="form-input" name="first_name" value="{{ old('first_name', $user?->first_name ?? '') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">last name</label>
+                    <label class="form-label">{{ __('Last name') }}</label>
                     <input type="text" class="form-input" name="last_name" value="{{ old('last_name', $user?->last_name ?? '') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input type="text" class="form-input" name="phone" value="{{ old('phone', $user?->phone ?? '') }}">
+                    <label class="form-label">{{ __('Phone Number') }}</label>
+                    <input type="text" class="form-input ltr-input" name="phone" value="{{ old('phone', $user?->phone ?? '') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" name="email" value="{{ old('email', $user?->email ?? '') }}">
+                    <label class="form-label">{{ __('Email') }}</label>
+                    <input type="email" class="form-input ltr-input" name="email" value="{{ old('email', $user?->email ?? '') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Child Name</label>
+                    <label class="form-label">{{ __('Child Name') }}</label>
                     <input type="text" class="form-input" name="child_name" value="{{ old('child_name', $child?->name ?? '') }}">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Gender</label>
+                    <label class="form-label">{{ __('Gender') }}</label>
                     <div class="select-wrap">
                         <select class="form-select" name="gender">
-                            <option value="">Select</option>
-                            <option value="male" {{ old('gender', $child?->gender ?? '') == 'male' ? 'selected' : '' }}>Male</option>
-                            <option value="female" {{ old('gender', $child?->gender ?? '') == 'female' ? 'selected' : '' }}>Female</option>
+                            <option value="">{{ __('Select') }}</option>
+                            <option value="male" {{ old('gender', $child?->gender ?? '') == 'male' ? 'selected' : '' }}>{{ __('Male') }}</option>
+                            <option value="female" {{ old('gender', $child?->gender ?? '') == 'female' ? 'selected' : '' }}>{{ __('Female') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Autism Levels</label>
+                    <label class="form-label">{{ __('Autism Levels') }}</label>
                     <div class="select-wrap">
                         <select class="form-select" name="autism_level">
-                            <option value="">Select level</option>
-                            <option value="Mild" {{ old('autism_level', $child?->autism_level ?? '') == 'Mild' ? 'selected' : '' }}>Mild</option>
-                            <option value="Moderate" {{ old('autism_level', $child?->autism_level ?? '') == 'Moderate' ? 'selected' : '' }}>Moderate</option>
-                            <option value="Severe" {{ old('autism_level', $child?->autism_level ?? '') == 'Severe' ? 'selected' : '' }}>Severe</option>
+                            <option value="">{{ __('Select level') }}</option>
+                            <option value="Mild" {{ old('autism_level', $child?->autism_level ?? '') == 'Mild' ? 'selected' : '' }}>{{ __('Mild') }}</option>
+                            <option value="Moderate" {{ old('autism_level', $child?->autism_level ?? '') == 'Moderate' ? 'selected' : '' }}>{{ __('Moderate') }}</option>
+                            <option value="Severe" {{ old('autism_level', $child?->autism_level ?? '') == 'Severe' ? 'selected' : '' }}>{{ __('Severe') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Date of Birth</label>
+                    <label class="form-label">{{ __('Date of Birth') }}</label>
                     <input
                         type="date"
-                        class="form-input"
+                        class="form-input ltr-input"
                         name="birth_date"
                         value="{{ old('birth_date', $child?->birth_date ? \Carbon\Carbon::parse($child->birth_date)->format('Y-m-d') : '') }}"
                     >
                 </div>
 
-                <button type="submit" class="save-btn">Save</button>
+                <div style="text-align: center;">
+                    <button type="submit" class="save-btn">{{ __('Save') }}</button>
+                </div>
             </div>
         </form>
 

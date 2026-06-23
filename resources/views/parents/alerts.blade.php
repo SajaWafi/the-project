@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alerts</title>
+    <title>{{ __('Alerts') }}</title>
 
     <style>
         * {
@@ -30,7 +30,8 @@
             position: relative;
             overflow: hidden;
             border-radius: 30px;
-            background: #f9f9f9 url('{{ asset('images/bg.png') }}') no-repeat left bottom;
+            /* 💡 خلفية متكيفة مع اللغة */
+            background: #f9f9f9 url('{{ asset('images/bg.png') }}') no-repeat {{ app()->getLocale() == 'ar' ? 'right' : 'left' }} bottom;
             background-size: 165% 100%;
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
         }
@@ -63,7 +64,8 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            /* 💡 تستخدم البداية المنطقية (يسار في الإنجليزي، يمين في العربي) */
+            inset-inline-start: 0;
             top: 50%;
             transform: translateY(-50%);
             width: 38px;
@@ -83,6 +85,8 @@
             width: 24px;
             height: 24px;
             display: block;
+            /* 💡 قلب السهم تلقائياً في العربي */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -94,7 +98,8 @@
 
         .logo {
             position: absolute;
-            right: 0;
+            /* 💡 تستخدم النهاية المنطقية */
+            inset-inline-end: 0;
             width: 38px;
             height: 38px;
             object-fit: contain;
@@ -141,22 +146,21 @@
             font-weight: 800;
             line-height: 1.15;
             margin-bottom: 12px;
-            letter-spacing: 0.2px;
         }
 
         .alert-time {
             font-size: 12px;
             color: #1f5b87;
             font-weight: bold;
+            direction: ltr; /* للحفاظ على تنسيق الوقت صحيحاً دائماً */
         }
 
         .alert-message {
             font-size: 14px;
             color: #5a6270;
-            line-height: 1.35;
+            line-height: 1.45;
         }
 
-        /* --- الألوان الجديدة التي تمت إضافتها --- */
         .title-red { color: #ff3434 !important; }
         .title-yellow { color: #d68100 !important; } 
         .title-blue { color: #1f5b87 !important; }
@@ -168,7 +172,6 @@
             color: #ff3434;
         }
 
-        /* --- تصميم قسم سؤال المنطقة الآمنة وأزرارها --- */
         .safe-question {
             margin-top: 15px;
             padding-top: 12px;
@@ -252,21 +255,12 @@
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 0;
-                background: #fff;
-            }
+            body { padding: 0; background: #fff; }
             .mobile-screen {
-                width: 100%;
-                max-width: 100%;
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-                box-shadow: none;
+                width: 100%; max-width: 100%; height: 100vh; max-height: 100vh;
+                border-radius: 0; box-shadow: none;
             }
-            .content {
-                padding: 12px 12px 90px;
-            }
+            .content { padding: 12px 12px 90px; }
         }
     </style>
 </head>
@@ -276,13 +270,13 @@
         <div class="content">
 
             <div class="header">
-                <a href="{{ route('home') }}" class="back-btn" aria-label="Back to home">
+                <a href="{{ route('home') }}" class="back-btn" aria-label="Back">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
-                <div class="page-title">Alerts</div>
-                <img src="{{ asset('images/logo.png') }}" alt="Taif" class="logo">
+                <div class="page-title">{{ __('Alerts') }}</div>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
             </div>
 
             @php
@@ -295,15 +289,14 @@
                 );
             @endphp
 
-            {{-- Today Alerts --}}
+            {{-- التنبيهات لليوم --}}
             @if($todayAlerts->count())
-                <div class="section-pill">Today</div>
+                <div class="section-pill">{{ __('Today') }}</div>
 
                 @foreach($todayAlerts as $alert)
                     @php
                         $type = $alert->alert_type;
 
-                        // 💡 التعديل هنا: مطابقة الأسماء القادمة من SensorController
                         $titleClass = match($type) {
                             'Danger' => 'title-red',
                             'Warning' => 'title-yellow',
@@ -324,7 +317,7 @@
                     <div class="alert-card {{ strtolower(str_replace(' ', '_', $type)) }}">
                         <div class="alert-top">
                             <div class="alert-title {{ $titleClass }}">
-                                {{ $icon }} {{ $alert->title }}
+                                {{ $icon }} {{ __($alert->title) }}
                             </div>
                             <div class="alert-time">
                                 {{ \Carbon\Carbon::parse($alert->sent_at ?? $alert->created_at)->format('h:i A') }}
@@ -332,35 +325,35 @@
                         </div>
 
                         <div class="alert-message">
-                            {{ $alert->message }}
+                            {{ __($alert->message) }}
                         </div>
 
                         @if($type === 'Warning')
                             <div class="heart-warning">
-                                ⚠️ High heart rate detected
+                                ⚠️ {{ __('High heart rate detected') }}
                             </div>
                         @endif
 
                         @if($type === 'safe_zone')
                             <div class="safe-question" id="safe-container-{{ $alert->id }}">
                                 @if(is_null($alert->parent_response))
-                                    <span id="safe-text-{{ $alert->id }}">Is the child with you?</span>
+                                    <span id="safe-text-{{ $alert->id }}">{{ __('Is the child with you?') }}</span>
                                     
                                     <form action="{{ route('alerts.response', $alert->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         <input type="hidden" name="parent_response" value="yes">
-                                        <button type="submit" class="safe-btn btn-yes">Yes</button>
+                                        <button type="submit" class="safe-btn btn-yes">{{ __('Yes') }}</button>
                                     </form>
 
                                     <form action="{{ route('alerts.response', $alert->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         <input type="hidden" name="parent_response" value="no">
-                                        <button type="submit" class="safe-btn btn-no">No</button>
+                                        <button type="submit" class="safe-btn btn-no">{{ __('No') }}</button>
                                     </form>
                                 @elseif($alert->parent_response === 'yes')
-                                    <span class="safe-answer-yes">✅ Child is safe with parent</span>
+                                    <span class="safe-answer-yes">✅ {{ __('Child is safe with parent') }}</span>
                                 @elseif($alert->parent_response === 'no')
-                                    <span class="safe-answer-no">🚨 Parent confirmed child is missing!</span>
+                                    <span class="safe-answer-no">🚨 {{ __('Parent confirmed child is missing!') }}</span>
                                 @endif
                             </div>
                         @endif
@@ -368,15 +361,14 @@
                 @endforeach
             @endif
 
-            {{-- Yesterday Alerts --}}
+            {{-- التنبيهات للأمس --}}
             @if($yesterdayAlerts->count())
-                <div class="section-pill">Yesterday</div>
+                <div class="section-pill">{{ __('Yesterday') }}</div>
 
                 @foreach($yesterdayAlerts as $alert)
                     @php
                         $type = $alert->alert_type;
 
-                        // 💡 نفس التعديل في الأمس
                         $titleClass = match($type) {
                             'Danger' => 'title-red',
                             'Warning' => 'title-yellow',
@@ -397,34 +389,34 @@
                     <div class="alert-card {{ strtolower(str_replace(' ', '_', $type)) }}">
                         <div class="alert-top">
                             <div class="alert-title {{ $titleClass }}">
-                                {{ $icon }} {{ $alert->title }}
+                                {{ $icon }} {{ __($alert->title) }}
                             </div>
                             <div class="alert-time">
                                 {{ \Carbon\Carbon::parse($alert->sent_at ?? $alert->created_at)->format('h:i A') }}
                             </div>
                         </div>
                         <div class="alert-message">
-                            {{ $alert->message }}
+                            {{ __($alert->message) }}
                         </div>
                     </div>
                 @endforeach
             @endif
 
-            {{-- Empty State --}}
+            {{-- حالة الفراغ --}}
             @if($alerts->isEmpty())
                 <div class="alert-card">
                     <div class="alert-title title-blue">
-                        No alerts
+                        {{ __('No alerts') }}
                     </div>
                     <div class="alert-message">
-                        No alerts for today or yesterday
+                        {{ __('No alerts for today or yesterday') }}
                     </div>
                 </div>
             @endif
 
         </div>
 
-        {{-- Bottom Navigation --}}
+        {{-- القائمة السفلية --}}
         <div class="bottom-nav">
             <a href="{{ route('doctors') }}" class="nav-item {{ request()->routeIs('parents.doctors') ? 'active' : '' }}">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none">

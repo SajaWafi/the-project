@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Location Alerts</title>
+    <title>{{ __('Location Alerts') }}</title>
 
     <style>
         * {
@@ -41,7 +41,8 @@
             inset: 0;
             background-image: url('{{ asset('images/bg.png') }}');
             background-size: 165% 100%;
-            background-position: right bottom;
+            /* 💡 خلفية متكيفة مع اتجاه اللغة */
+            background-position: {{ app()->getLocale() == 'ar' ? 'left' : 'right' }} bottom;
             opacity: 0.9;
             z-index: 0;
             pointer-events: none;
@@ -72,7 +73,7 @@
 
         .back-btn {
             position: absolute;
-            left: 0;
+            inset-inline-start: 0; /* 💡 محاذاة منطقية */
             border: none;
             background: transparent;
             cursor: pointer;
@@ -85,6 +86,8 @@
         .back-btn svg {
             width: 24px;
             height: 24px;
+            /* 💡 قلب سهم الرجوع في النسخة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .page-title {
@@ -95,7 +98,7 @@
 
         .logo {
             position: absolute;
-            right: 0;
+            inset-inline-end: 0; /* 💡 محاذاة منطقية */
             width: 100px;
             height: 100px;
             object-fit: contain;
@@ -154,6 +157,8 @@
         .arrow svg {
             width: 18px;
             height: 18px;
+            /* 💡 قلب سهم الانتقال للغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
         }
 
         .switch {
@@ -179,12 +184,13 @@
             border-radius: 50%;
             position: absolute;
             top: 2px;
-            left: 2px;
+            /* 💡 التموضع المنطقي يخلي الزر يخدم يمين/يسار حسب اللغة بروحه */
+            inset-inline-start: 2px;
             transition: 0.3s;
         }
 
         .switch.active::after {
-            left: 22px;
+            inset-inline-start: 22px;
         }
 
         @media (max-width: 480px) {
@@ -206,7 +212,7 @@
 <body>
 
     @php
-        // السطر هذا يجيب الإعدادات من الداتابيز مباشرة ويمنع أي إيرور في الصفحة
+        // جلب الإعدادات مباشرة لمنع أي خطأ
         $userSettings = \App\Models\NotificationSetting::where('user_id', auth()->id())->get()->keyBy('notification_type');
     @endphp
 
@@ -223,13 +229,13 @@
             </div>
 
             <div class="header">
-                <button class="back-btn" onclick="history.back()" type="button" aria-label="Back">
+                <button class="back-btn" onclick="history.back()" type="button" aria-label="{{ __('Back') }}">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
 
-                <div class="page-title">Location Alerts</div>
+                <div class="page-title">{{ __('Location Alerts') }}</div>
 
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Taif">
             </div>
@@ -242,7 +248,7 @@
                             <path d="M10 18a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                         </svg>
                     </div>
-                    <div class="title">Location Alerts</div>
+                    <div class="title">{{ __('Location Alerts') }}</div>
                 </div>
 
                 <div class="switch {{ (optional($userSettings->get('location'))->is_enabled ?? true) ? 'active' : '' }}" 
@@ -256,7 +262,7 @@
                             <circle cx="12" cy="12" r="7" fill="currentColor"/>
                         </svg>
                     </div>
-                    <div class="title">Safe Zone Settings</div>
+                    <div class="title">{{ __('Safe Zone Settings') }}</div>
                 </div>
 
                 <div class="arrow">
@@ -275,7 +281,7 @@
                             <path d="M12 9v6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                     </div>
-                    <div class="title">Leave Zone Alert</div>
+                    <div class="title">{{ __('Leave Zone Alert') }}</div>
                 </div>
 
                 <div class="switch {{ (optional($userSettings->get('leave_zone'))->is_enabled ?? true) ? 'active' : '' }}" 
@@ -290,7 +296,7 @@
                             <path d="M9.5 10.5l1.5 1.5 3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
-                    <div class="title">Enter Zone Alert</div>
+                    <div class="title">{{ __('Enter Zone Alert') }}</div>
                 </div>
 
                 <div class="switch {{ (optional($userSettings->get('enter_zone'))->is_enabled ?? true) ? 'active' : '' }}" 

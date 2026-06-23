@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Taif</title>
+    <title>{{ __('Admin Dashboard - Taif') }}</title>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -41,14 +41,13 @@
             display: flex;
             background: var(--bg-light);
             min-height: 100vh;
-            direction: ltr;
         }
 
         /* Sidebar */
         .admin-sidebar {
             position: fixed;
             top: 0;
-            left: 0;
+            inset-inline-start: 0; /* 💡 دعم الاتجاهين */
             z-index: 1000;
             width: 260px;
             min-height: 100vh;
@@ -79,7 +78,7 @@
 
         .admin-sidebar-menu {
             margin-top: 1rem;
-            text-align: left;
+            text-align: start; /* 💡 دعم الاتجاهين */
         }
 
         .admin-sidebar-link {
@@ -101,13 +100,13 @@
 
         .admin-sidebar-link i {
             width: 20px;
-            margin-right: 12px;
+            margin-inline-end: 12px; /* 💡 دعم الاتجاهين */
             text-align: center;
         }
 
         /* Main Content */
         .main-content {
-            margin-left: var(--sidebar-width);
+            margin-inline-start: var(--sidebar-width); /* 💡 دعم الاتجاهين */
             width: calc(100% - var(--sidebar-width));
             padding: 30px;
         }
@@ -139,7 +138,7 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border-left: 4px solid var(--primary-color);
+            border-inline-start: 4px solid var(--primary-color); /* 💡 دعم الاتجاهين */
         }
 
         .stat-number {
@@ -193,7 +192,6 @@
         }
 
         @media (max-width: 992px) {
-
             .admin-sidebar {
                 width: 75px;
             }
@@ -204,7 +202,7 @@
             }
 
             .main-content {
-                margin-left: 75px;
+                margin-inline-start: 75px; /* 💡 دعم الاتجاهين */
                 width: calc(100% - 75px);
             }
 
@@ -234,7 +232,6 @@
         #registrationChart{
             height: 100vh;  
             max-height: 350px;
-            position: left; 
             width: 100%;
             margin: 0 auto;           
         }
@@ -262,34 +259,34 @@
     <div class="main-content">
 
         <div class="header">
-            <h1>Admin Overview</h1>
-            <p>System performance and management portal for Taif project</p>
+            <h1>{{ __('Admin Overview') }}</h1>
+            <p>{{ __('System performance and management portal for Taif project') }}</p>
         </div>
 
         <div class="stats-grid">
 
             <div class="stat-card">
-                <div class="stat-label">Total Doctors</div>
+                <div class="stat-label">{{ __('Total Doctors') }}</div>
                 <div class="stat-number">{{ $doctorsCount ?? 0 }}</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">Total Parents</div>
+                <div class="stat-label">{{ __('Total Parents') }}</div>
                 <div class="stat-number">{{ $parentsCount ?? 0 }}</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">Total Children</div>
+                <div class="stat-label">{{ __('Total Children') }}</div>
                 <div class="stat-number">{{ $childrenCount ?? 0 }}</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">Pending Requests</div>
+                <div class="stat-label">{{ __('Pending Requests') }}</div>
                 <div class="stat-number">{{ $pendingRequestsCount ?? 0 }}</div>
             </div>
 
-            <div class="stat-card" style="border-left-color: #ef4444;">
-                <div class="stat-label">New Complaints</div>
+            <div class="stat-card" style="border-inline-start-color: #ef4444;">
+                <div class="stat-label">{{ __('New Complaints') }}</div>
                 <div class="stat-number">{{ array_sum($complaintsData ?? []) }}</div>
             </div>
 
@@ -298,12 +295,12 @@
         <div class="charts-container">
 
             <div class="chart-box">
-                <h3>Doctors Registrations</h3>
+                <h3>{{ __('Doctors Registrations') }}</h3>
                 <canvas id="registrationChart"></canvas>
             </div>
 
             <div class="chart-box">
-                <h3>User Distribution</h3>
+                <h3>{{ __('User Distribution') }}</h3>
                 <canvas id="userDistChart"></canvas>
             </div>
 
@@ -311,7 +308,7 @@
 
         <div class="charts-container2">
             <div class="chart-box">
-                <h3>Children by Autism Level</h3>
+                <h3>{{ __('Children by Autism Level') }}</h3>
 
                 <div class="chart-container">
                     <canvas id="autismLevelChart"></canvas>
@@ -319,7 +316,7 @@
             </div>
 
             <div class="chart-box">
-                <h3>Weekly Complaints Overview</h3>
+                <h3>{{ __('Weekly Complaints Overview') }}</h3>
                 <div class="chart-container">
                     <canvas id="complaintsChart"></canvas>
                 </div>
@@ -329,12 +326,12 @@
         <div class="charts-container">
 
             <div class="chart-box" style="margin-bottom: 30px;">
-                <h3>Appointments Booked</h3>
+                <h3>{{ __('Appointments Booked') }}</h3>
                 <canvas id="appointmentsChart"></canvas>
             </div>
 
             <div class="chart-box">
-                <h3>Doctor Approvals</h3>
+                <h3>{{ __('Doctor Approvals') }}</h3>
                 <canvas id="approvalChart"></canvas>
             </div>
             
@@ -351,16 +348,16 @@
     const registrationData = @json($doctorRegistrationsData);
     const labelsData = @json($daysLabels);
 
-    //doctor registration chart
+    // doctor registration chart
     const ctx1 = document.getElementById('registrationChart').getContext('2d');
 
     new Chart(ctx1, {
         type: 'line',
         data: {
-            labels: labelsData, // أسماء الأيام تتغير تلقائياً حسب اليوم الحالي
+            labels: labelsData, 
             datasets: [{
-                label: 'New Registrations',
-                data: registrationData, // بيانات التسجيل من قاعدة البيانات
+                label: '{{ __('New Registrations') }}',
+                data: registrationData, 
                 borderColor: '#2c5282',
                 backgroundColor: 'rgba(44, 82, 130, 0.1)',
                 fill: true,
@@ -382,7 +379,7 @@
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        stepSize: 1 // لضمان ظهور الأرقام كأعداد صحيحة (1, 2, 3) بدون كسور
+                        stepSize: 1
                     }
                 }
             }
@@ -395,7 +392,7 @@
     new Chart(ctx2, {
         type: 'doughnut',
         data: {
-            labels: ['Doctors', 'Parents'],
+            labels: ['{{ __('Doctors') }}', '{{ __('Parents') }}'],
             datasets: [{
                 data: [{{ $doctorsCount ?? 0 }}, {{ $parentsCount ?? 0 }}],
                 backgroundColor: ['#35b8a6', '#eb9443']
@@ -417,7 +414,7 @@
     new Chart(ctxAutism, {
         type: 'pie',
         data: {
-            labels: ['Mild', 'Moderate', 'Severe'],
+            labels: ['{{ __('Mild') }}', '{{ __('Moderate') }}', '{{ __('Severe') }}'],
             datasets: [{
                 data: [
                     {{ $mild ?? 0 }},
@@ -445,19 +442,18 @@
     const ctxComplaints = document.getElementById('complaintsChart').getContext('2d');
 
     const last7Days = [];
+    const localeString = '{{ app()->getLocale() == "ar" ? "ar-EG" : "en-US" }}'; // 💡 تحديد اللغة للأيام تلقائياً
 
     for (let i = 6; i >= 0; i--) {
         const d = new Date();
         d.setDate(d.getDate() - i);
         last7Days.push(
-            d.toLocaleDateString('en-US', {
+            d.toLocaleDateString(localeString, {
                 weekday: 'short'
             })
         );
     }
 
-
-    // تم تعديل اسم المتغير هنا ليتطابق مع الكنترولر
     const complaintsData = @json($complaintsData ?? []);
 
     new Chart(ctxComplaints, {
@@ -465,7 +461,7 @@
         data: {
             labels: last7Days,
             datasets: [{
-                label: 'Complaints',
+                label: '{{ __('Complaints') }}',
                 data: complaintsData,
                 backgroundColor: '#ef4444',
                 borderRadius: 5
@@ -487,22 +483,21 @@
         }
     });
 
-    // Doctor Approvals Chart (الكود الجديد المضاف)
+    // Doctor Approvals Chart
     const approvalData = @json($approvalStats ?? []);
 
     const pendingCount = approvalData['pending'] || 0;
     const approvedCount = approvalData['approved'] || 0;
     const rejectedCount = approvalData['rejected'] || 0;
 
-    // تم تغيير اسم المتغير إلى ctxApproval والـ id إلى approvalChart
     const ctxApproval = document.getElementById('approvalChart').getContext('2d');
 
     new Chart(ctxApproval, {
         type: 'doughnut',
         data: {
-            labels: ['pending', 'approved', 'rejected'],
+            labels: ['{{ __('Pending') }}', '{{ __('Approved') }}', '{{ __('Rejected') }}'],
             datasets: [{
-                label: 'Doctor Approvals',
+                label: '{{ __('Doctor Approvals') }}',
                 data: [pendingCount, approvedCount, rejectedCount],
                 backgroundColor: [
                     '#f6ad55', 
@@ -523,27 +518,23 @@
         }
     });
 
-    
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <script>
-    // استقبال البيانات من الكنترولر
+    // Appointments Chart
     const apptData = @json($appointmentsChartData);
     const apptLabels = @json($daysLabels);
 
-    const ctx = document.getElementById('appointmentsChart').getContext('2d');
+    const ctxAppt = document.getElementById('appointmentsChart').getContext('2d');
 
-    new Chart(ctx, {
+    new Chart(ctxAppt, {
         type: 'line',
         data: {
-            labels: apptLabels, // أسماء الأيام
+            labels: apptLabels, 
             datasets: [{
-                label: 'New Appointments',
-                data: apptData, // أرقام المواعيد لكل يوم
-                borderColor: '#38a169', // اخترتلك لون أخضر لتمييزه عن رسم الأطباء
+                label: '{{ __('New Appointments') }}',
+                data: apptData, 
+                borderColor: '#38a169', 
                 backgroundColor: 'rgba(56, 161, 105, 0.1)',
                 fill: true,
-                tension: 0.4, // لجعل الخط منحني بشكل سلس
+                tension: 0.4, 
                 borderWidth: 3,
                 pointBackgroundColor: '#38a169',
                 pointRadius: 4,
@@ -554,14 +545,14 @@
             responsive: true,
             plugins: {
                 legend: {
-                    display: false // إخفاء المربع التوضيحي إذا لم تكن تحتاجه
+                    display: false 
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        stepSize: 1 // لعرض أرقام صحيحة فقط (1, 2, 3) بدون فواصل عشرية
+                        stepSize: 1 
                     }
                 }
             }

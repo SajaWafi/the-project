@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\AdminAppointmentController;
 use App\Http\Controllers\Admin\AdminAlertController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\BraceletController;
+use App\Http\Controllers\Admin\ActivityLogController;
 
 
 Route::prefix('admin')
@@ -128,6 +129,7 @@ Route::prefix('admin')
     Route::delete('/settings/delete', [ProfileController::class, 'destroy'])->name('settings.destroy');
     Route::post('/settings/add-admin', [ProfileController::class, 'storeAdmin'])->name('settings.storeAdmin');
     
+Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
     });
 
 

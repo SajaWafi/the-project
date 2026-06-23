@@ -55,4 +55,14 @@ class Child extends Model
     {
         return $this->hasMany(SensorReading::class, 'child_id');
     }
+    /**
+     * علاقة الطفل بالإسوارة
+     */
+    /**
+     * علاقة الطفل بالإسوارة
+     */
+    public function bracelet()
+    {
+        return $this->belongsTo(Bracelet::class, 'bracelet_id');
+    }
 }

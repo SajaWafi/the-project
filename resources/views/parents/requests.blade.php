@@ -1,203 +1,206 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doctors - Requests & Notifications</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ __('Doctors - Requests & Notifications') }}</title>
 
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
-body {
-    background: #ffffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
+        body {
+            background: #ffffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-.phone {
-    width: 100%;
-    max-width: 360px;
-    max-height: 800px;
-    background: url('{{ asset('pics/bg.png') }}') no-repeat;
-    background-position: left;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-}
+        .phone {
+            width: 100%;
+            max-width: 360px;
+            max-height: 800px;
+            background: url('{{ asset('pics/bg.png') }}') no-repeat;
+            /* 💡 خلفية متكيفة مع اللغة */
+            background-position: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+        }
 
-.content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
+        .content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
 
-.header {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 16px 14px;
-}
+        .header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px 14px;
+        }
 
-.back-btn {
-    position: absolute;
-    left: 12px;
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: transparent;
-    color: #1d567e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    text-decoration: none;
-}
+        .back-btn {
+            position: absolute;
+            inset-inline-start: 12px; /* منطقي */
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: #1d567e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
 
-.back-btn svg {
-    width: 22px;
-    height: 22px;
-    display: block;
-}
+        .back-btn svg {
+            width: 22px;
+            height: 22px;
+            display: block;
+            /* 💡 قلب السهم في اللغة العربية */
+            transform: scaleX({{ app()->getLocale() == 'ar' ? '-1' : '1' }});
+        }
 
-.title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #1f567f;
-}
+        .title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1f567f;
+        }
 
-.logo {
-    position: absolute;
-    right: 12px;
-    width: 38px;
-    height: 38px;
-    object-fit: contain;
-}
+        .logo {
+            position: absolute;
+            inset-inline-end: 12px; /* منطقي */
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+        }
 
-/* المربع الأصفر الأصلي (للمواعيد) */
-.notice-box {
-    margin: 0 12px 10px;
-    background: #fff4d9;
-    border: 1px solid #f0cf7a;
-    color: #8a5a00;
-    border-radius: 14px;
-    padding: 12px;
-    font-size: 13px;
-    line-height: 1.4;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
+        /* المربع الأصفر الأصلي (للمواعيد) */
+        .notice-box {
+            margin: 0 12px 10px;
+            background: #fff4d9;
+            border: 1px solid #f0cf7a;
+            color: #8a5a00;
+            border-radius: 14px;
+            padding: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
 
-.notice-title {
-    font-weight: 700;
-    margin-bottom: 4px;
-}
+        .notice-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
 
-/* المربع الجديد (لإشعارات الرسائل) */
-.chat-notice-box {
-    margin: 0 12px 10px;
-    background: #eef2f6; /* أزرق فاتح جداً */
-    border: 1px solid #cdd8e4;
-    color: #2c3e50;
-    border-radius: 14px;
-    padding: 12px;
-    font-size: 13px;
-    line-height: 1.4;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-}
+        /* المربع الجديد (لإشعارات الرسائل) */
+        .chat-notice-box {
+            margin: 0 12px 10px;
+            background: #eef2f6;
+            border: 1px solid #cdd8e4;
+            color: #2c3e50;
+            border-radius: 14px;
+            padding: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
 
-.chat-notice-icon {
-    flex-shrink: 0;
-    margin-top: 2px;
-}
+        .chat-notice-icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
 
-.chat-notice-content {
-    flex: 1;
-}
+        .chat-notice-content {
+            flex: 1;
+        }
 
-.chat-notice-title {
-    font-weight: 700;
-    margin-bottom: 4px;
-    color: #1f567f;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .chat-notice-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1f567f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.chat-notice-time {
-    font-size: 11px;
-    font-weight: normal;
-    color: #7f8c8d;
-}
+        .chat-notice-time {
+            font-size: 11px;
+            font-weight: normal;
+            color: #7f8c8d;
+        }
 
-.list {
-    padding: 10px;
-    overflow-y: auto;
-    height: 580px;
-}
+        .list {
+            padding: 10px;
+            overflow-y: auto;
+            height: 580px;
+        }
 
-.card {
-    background: #C3EDE5;
-    border-radius: 20px;
-    padding: 14px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-}
+        .card {
+            background: #C3EDE5;
+            border-radius: 20px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
 
-.card img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-}
+        .card img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
 
-.card-info {
-    margin-left: 12px;
-    flex: 1;
-}
+        .card-info {
+            margin-inline-start: 12px; /* منطقي */
+            flex: 1;
+        }
 
-.name {
-    font-weight: 700;
-    color: #1f567f;
-}
+        .name {
+            font-weight: 700;
+            color: #1f567f;
+        }
 
-.specialty {
-    font-size: 14px;
-    color: #333;
-}
+        .specialty {
+            font-size: 14px;
+            color: #333;
+        }
 
-.actions {
-    margin-top: 8px;
-    display: flex;
-    gap: 10px;
-}
+        .actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 10px;
+        }
 
-.btn-icon {
-    width: 70px;
-    height: 36px;
-    border-radius: 25px;
-    background: white;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    color: #000000;
-    font-size: 12px;
-    cursor: pointer;
-}
-</style>
+        .btn-icon {
+            width: 70px;
+            height: 36px;
+            border-radius: 25px;
+            background: white;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #000000;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
@@ -215,7 +218,7 @@ body {
                               stroke-linejoin="round"/>
                     </svg>
                 </a>
-                <div class="title">Request</div>
+                <div class="title">{{ __('Request') }}</div>
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
             </div>
 
@@ -226,13 +229,13 @@ body {
                     @php
                         // جلب بيانات الدكتور بناءً على related_id الموجود في الإشعار
                         $doctor = \App\Models\DoctorProfile::find($appNotice->related_id);
-                        $doctorName = $doctor ? ($doctor->user->first_name . ' ' . $doctor->user->last_name) : 'Doctor';
+                        $doctorName = $doctor ? ($doctor->user->first_name . ' ' . $doctor->user->last_name) : __('Doctor');
                     @endphp
 
                     <div class="notice-box" style="margin: 0 0 12px; background: #fff4d9; border: 1px solid #f0cf7a; color: #8a5a00; border-radius: 14px; padding: 12px; font-size: 13px; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                         <div class="notice-title" style="font-weight: 700; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
-                            <span>Appointment Updated by Dr. {{ $doctorName }} ⚠️</span>
-                            <span style="font-size: 11px; font-weight: normal; color: #b37400;">
+                            <span>{{ __('Appointment Updated by Dr.') }} {{ $doctorName }} ⚠️</span>
+                            <span style="font-size: 11px; font-weight: normal; color: #b37400; direction: ltr;">
                                 {{ $appNotice->created_at->diffForHumans() }}
                             </span>
                         </div>
@@ -260,10 +263,10 @@ body {
                                     <span>
                                         {{ $latestMsg->title }} 
                                         @if($doctorMessages->count() > 1)
-                                            <span style="background: #1f567f; color: #fff; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-left: 4px;">{{ $doctorMessages->count() }}</span>
+                                            <span style="background: #1f567f; color: #fff; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-inline-start: 4px;">{{ $doctorMessages->count() }}</span>
                                         @endif
                                     </span>
-                                    <span style="font-size: 11px; font-weight: normal; color: #7f8c8d;">
+                                    <span style="font-size: 11px; font-weight: normal; color: #7f8c8d; direction: ltr;">
                                         {{ $latestMsg->created_at->diffForHumans() }}
                                     </span>
                                 </div>
@@ -276,7 +279,7 @@ body {
                                     @endforeach
                                     
                                     @if($doctorMessages->count() > 3)
-                                        <div style="font-size: 10px; color: #7f8c8d; text-align: center; margin-top: 2px;">+ {{ $doctorMessages->count() - 3 }} more...</div>
+                                        <div style="font-size: 10px; color: #7f8c8d; text-align: center; margin-top: 2px;">+ {{ $doctorMessages->count() - 3 }} {{ __('more...') }}</div>
                                     @endif
                                 </div>
                             </div>
@@ -296,42 +299,44 @@ body {
                         <img src="{{ $doctorImage }}" alt="Doctor Image">
 
                         <div class="card-info">
-                            <div class="name">
-                                Dr. {{ $request->doctor?->user?->first_name ?? 'طبيب' }} {{ $request->doctor?->user?->last_name ?? '' }}
+                            <div class="name" style="direction: ltr; text-align: {{ app()->getLocale() == 'ar' ? 'right' : 'left' }};">
+                                Dr. {{ $request->doctor?->user?->first_name ?? __('Doctor') }} {{ $request->doctor?->user?->last_name ?? '' }}
                             </div>
 
                             @if($request->status == 'pending')
-                                <div class="specialty" style="color: #1f567f;">Is sending request</div>
+                                <div class="specialty" style="color: #1f567f;">{{ __('Is sending request') }}</div>
                                 
                                 <div class="actions">
                                     <form action="{{ route('requests.accept', $request->id) }}" method="POST" style="display:inline;">
                                         @csrf
-                                        <button class="btn-icon" type="submit" style="background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;">accept</button>
+                                        <button class="btn-icon" type="submit" style="background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;">{{ __('accept') }}</button>
                                     </form>
 
                                     <form action="{{ route('requests.reject', $request->id) }}" method="POST" style="display:inline;">
                                         @csrf
-                                        <button class="btn-icon" type="submit" style="background: #ffebee; color: #c62828; border: 1px solid #ffcdd2;">reject</button>
+                                        <button class="btn-icon" type="submit" style="background: #ffebee; color: #c62828; border: 1px solid #ffcdd2;">{{ __('reject') }}</button>
                                     </form>
                                 </div>
 
                             @elseif($request->status == 'accepted')
-                                <div class="specialty" style="color: #2e7d32; font-weight: bold;">Already Linked ✔️</div>
+                                <div class="specialty" style="color: #2e7d32; font-weight: bold;">{{ __('Already Linked ✔️') }}</div>
                                 
                             @elseif($request->status == 'rejected')
-                                <div class="specialty" style="color: #c62828;">Request Rejected ❌</div>
+                                <div class="specialty" style="color: #c62828;">{{ __('Request Rejected ❌') }}</div>
                             @endif
                         </div>
                     </div>
                 @empty
                     <div class="card">
                         <div class="card-info">
-                            <div class="name">No requests</div>
-                            <div class="specialty">There are no pending requests right now</div>
+                            <div class="name">{{ __('No requests') }}</div>
+                            <div class="specialty">{{ __('There are no pending requests right now') }}</div>
                         </div>
                     </div>
                 @endforelse
 
             </div>
-            </div> </div> </div> </body>
+        </div>
+    </div>
+</body>
 </html>

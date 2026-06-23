@@ -1,7 +1,7 @@
 .admin-sidebar {
     position: fixed;
     top: 0;
-    left: 0;
+    inset-inline-start: 0; /* 💡 بديل left: 0 لتدعم الاتجاهين */
     z-index: 1000;
     width: 260px;
     min-height: 100vh;
@@ -10,6 +10,11 @@
     background-color: #2c5282;
     color: #e2e8f0;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 💡 عكس اتجاه الظل للسايد بار في اللغة العربية */
+html[dir="rtl"] .admin-sidebar {
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .admin-sidebar-header {
@@ -32,7 +37,7 @@
 
 .admin-sidebar-menu {
     margin-top: 1rem;
-    text-align: left;
+    text-align: start; /* 💡 بديل left لتدعم الاتجاهين */
 }
 
 .admin-sidebar-link {
@@ -54,13 +59,13 @@
 
 .admin-sidebar-link i {
     width: 20px;
-    margin-right: 12px;
+    margin-inline-end: 12px; /* 💡 بديل margin-right لتدعم الاتجاهين */
     text-align: center;
 }
 
 .admin-main-content {
     width: calc(100% - 260px);
-    margin-left: 260px;
+    margin-inline-start: 260px; /* 💡 بديل margin-left لتدعم الاتجاهين */
     padding: 2rem;
 }
 
@@ -76,6 +81,6 @@
 
     .admin-main-content {
         width: calc(100% - 75px);
-        margin-left: 75px;
+        margin-inline-start: 75px; /* 💡 بديل margin-left لتدعم الاتجاهين */
     }
 }
