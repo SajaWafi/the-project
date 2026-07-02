@@ -176,7 +176,11 @@ class AppointmentController extends Controller
         }
 
         $appointment = Appointment::where('doctor_id', $doctorProfile->id)->findOrFail($id);
-        $parents = ParentProfile::with('user')->get();
+        $parents = ParentProfile::with(['user', 'children'])
+        ->whereHas('children.doctors', function ($query) use ($doctorProfile) {
+            $query->where('doctor_profiles.id', $doctorProfile->id);
+        })
+        ->get();
         $workplaces = Workplace::where('doctor_id', $doctorProfile->id)->get();
 
         return view('doctor.edit-appointment', compact('appointment', 'parents', 'workplaces'));
@@ -188,7 +192,7 @@ class AppointmentController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'parent_id' => 'required|exists:parent_profiles,id',
+            'parent_id' => 'required|exists:parent_profiles,id|exists:',
             'date' => 'required|date|after_or_equal:today',
             'from_hour' => 'required|integer|min:1|max:12',
             'from_minute' => 'required|integer|in:0,15,30,45',

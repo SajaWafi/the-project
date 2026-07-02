@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <title>{{ __('Edit Appointment') }}</title>
     <style>
         * {
@@ -251,8 +252,61 @@
             width: 26px;
             height: 26px;
         }
+
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            height: 42px !important;
+            background: #f7e5cf !important;
+            border: none !important;
+            border-radius: 16px !important;
+            color: #eb9443 !important;
+            font-size: 20px !important;
+            padding: 0 14px !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .select2-container--default .select2-selection__rendered {
+            color: #eb9443 !important;
+            line-height: 42px !important;
+            padding-left: 0 !important;
+            padding-right: 25px !important;
+        }
+
+        .select2-container--default .select2-selection__placeholder {
+            color: #eb9443 !important;
+        }
+
+        .select2-container--default .select2-selection__arrow {
+            height: 42px !important;
+            right: 10px !important;
+        }
+
+        .select2-dropdown {
+            border: none !important;
+            border-radius: 16px !important;
+            overflow: hidden;
+        }
+
+        .select2-search__field {
+            border: none !important;
+            outline: none !important;
+            padding: 10px !important;
+        }
+
+        .select2-results__option--highlighted {
+            background: #eb9443 !important;
+        }
+
     </style>
 </head>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <body>
     <div class="phone">
         <div class="content">
@@ -415,4 +469,17 @@
         </div>
     </div>
 </body>
+
+<script>
+    $(document).ready(function () {
+
+        $('#parent_id').select2({
+            placeholder: 'Search parent...',
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+</script>
+
 </html>

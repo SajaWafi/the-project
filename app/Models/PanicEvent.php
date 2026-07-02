@@ -31,4 +31,24 @@ class PanicEvent extends Model
     {
         return $this->belongsTo(Child::class);
     }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function sensorReading()
+    {
+        return $this->belongsTo(SensorReading::class);
+    }
+
+    public function bracelet()
+    {
+        return $this->belongsTo(Bracelet::class);
+    }
+
+    public function alerts()
+    {
+        return $this->hasMany(Alert::class, 'panic_event_id');
+    }
 }
